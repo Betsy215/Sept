@@ -77,9 +77,5 @@ EOF
 **/AssetImportWorker*.log
 **/shadercompiler-AssetImportWorker*.log
 
-# Unity cache and temp files
-**/LiberationSans*.asset
-**/GameSceneOne.unity
-
 # Configuration files
 ignore.conf
