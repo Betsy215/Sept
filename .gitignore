@@ -8,6 +8,14 @@ Builds/
 Logs/
 UserSettings/
 
+# Git repository data (should never be tracked)
+.git/
+
+# Unity generated files
+Library/
+Temp/
+# ... rest of your existing content
+
 # MemoryCaptures
 MemoryCaptures/
 
@@ -61,3 +69,17 @@ sysinfo.txt
 # macOS
 .DS_Store
 EOF
+
+# Unity Plastic SCM
+.plastic/
+
+# Unity Asset Import Worker logs
+**/AssetImportWorker*.log
+**/shadercompiler-AssetImportWorker*.log
+
+# Unity cache and temp files
+**/LiberationSans*.asset
+**/GameSceneOne.unity
+
+# Configuration files
+ignore.conf
