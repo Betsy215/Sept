@@ -264,4 +264,12 @@ public class OrderSystem : MonoBehaviour
         }
         HideOrder();
     }
+    public void CompleteCurrentOrder()
+    {
+        if (orderActive)
+        {
+            Debug.Log("Order manually completed by serving");
+            OnOrderServed(); // This will hide the order and stop the timer
+        }
+    }
 }
