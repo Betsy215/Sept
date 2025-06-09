@@ -833,7 +833,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf94b1c6e21914d3fad5e9c40482ca7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodType: Burger
+  foodType: Red
   maxItems: 6
   itemPrefab: {fileID: 7967219586748323803, guid: ed0ec16cc60794fd18b3e444cd55d6f6, type: 3}
   itemContainer: {fileID: 159646092}
@@ -974,82 +974,6 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 694363360}
-  m_CullTransparentMesh: 1
---- !u!1 &727030161
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 727030162}
-  - component: {fileID: 727030164}
-  - component: {fileID: 727030163}
-  m_Layer: 5
-  m_Name: OrderPanel
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &727030162
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 727030161}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2106702898}
-  m_Father: {fileID: 1907019808}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &727030163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 727030161}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.9339623, g: 0.86788005, b: 0.86788005, a: 0.392}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &727030164
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 727030161}
   m_CullTransparentMesh: 1
 --- !u!1 &748145621
 GameObject:
@@ -1209,6 +1133,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 780500808}
   m_CullTransparentMesh: 1
+--- !u!1 &784244162
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 784244163}
+  m_Layer: 0
+  m_Name: OrderContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &784244163
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784244162}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1998227851}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &797004690
 GameObject:
   m_ObjectHideFlags: 0
@@ -1238,7 +1193,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf94b1c6e21914d3fad5e9c40482ca7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodType: Burger
+  foodType: Green
   maxItems: 6
   itemPrefab: {fileID: 7967219586748323803, guid: 90183fe8ad12a4166924a80c36de4969, type: 3}
   itemContainer: {fileID: 279741545}
@@ -1493,7 +1448,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf94b1c6e21914d3fad5e9c40482ca7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodType: Burger
+  foodType: Yellow
   maxItems: 6
   itemPrefab: {fileID: 7967219586748323803, guid: 9a4b59423ac3a4c9a9a770b467f6e795, type: 3}
   itemContainer: {fileID: 440178693}
@@ -1782,7 +1737,6 @@ RectTransform:
   - {fileID: 2006278980}
   - {fileID: 1850943417}
   - {fileID: 29513132}
-  - {fileID: 727030162}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1816,10 +1770,11 @@ Transform:
   m_GameObject: {fileID: 1998227850}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.95, y: 0.4, z: 1373.1147}
+  m_LocalPosition: {x: 0.95, y: 0.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 784244163}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1998227852
@@ -1838,10 +1793,10 @@ MonoBehaviour:
   timeBetweenOrders: 2
   minOrderItems: 1
   maxOrderItems: 4
-  orderContainer: {fileID: 2106702898}
+  orderContainer: {fileID: 784244163}
   orderTitleText: {fileID: 0}
   orderTimerText: {fileID: 0}
-  orderPanel: {fileID: 727030161}
+  orderPanel: {fileID: 0}
   availableFoods:
   - foodType: Red
     displayPrefab: {fileID: 7967219586748323803, guid: ed0ec16cc60794fd18b3e444cd55d6f6, type: 3}
@@ -1851,8 +1806,8 @@ MonoBehaviour:
     displayPrefab: {fileID: 7967219586748323803, guid: 9a4b59423ac3a4c9a9a770b467f6e795, type: 3}
   - foodType: Blue
     displayPrefab: {fileID: 7967219586748323803, guid: e24eb9f155a8744489505a398d78c870, type: 3}
-  itemSpacing: 2
-  startPosition: {x: 150, y: 100, z: 0}
+  itemSpacing: 0.6
+  startPosition: {x: 0, y: 0, z: 0}
   servePlate: {fileID: 0}
 --- !u!1 &2001225745
 GameObject:
@@ -1883,7 +1838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf94b1c6e21914d3fad5e9c40482ca7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodType: Burger
+  foodType: Blue
   maxItems: 6
   itemPrefab: {fileID: 7967219586748323803, guid: e24eb9f155a8744489505a398d78c870, type: 3}
   itemContainer: {fileID: 521404635}
@@ -2172,41 +2127,6 @@ MonoBehaviour:
   serveButton: {fileID: 0}
   plateCountText: {fileID: 0}
   startPosition: {x: 0, y: 0, z: 0}
---- !u!1 &2106702897
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2106702898}
-  m_Layer: 5
-  m_Name: OrderContainer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &2106702898
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106702897}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 727030162}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -49}
-  m_SizeDelta: {x: 1400, y: 2000}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
