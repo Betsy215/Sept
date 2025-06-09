@@ -16,6 +16,9 @@ public class ServePlate : MonoBehaviour
     [Header("Layout Settings")]
     public Vector3 startPosition = Vector3.zero; // Starting position for first item
     
+    [Header("Score System")]
+    public ScoreManager scoreManager; // Reference to score manager
+    
     // Private variables
     private List<GameObject> servedItems = new List<GameObject>();
     private List<string> servedItemTypes = new List<string>();
@@ -121,6 +124,18 @@ public class ServePlate : MonoBehaviour
     
     public void Serve()
     {
+        // Calculate score BEFORE clearing the plate
+        if (scoreManager != null)
+        {
+            scoreManager.CalculateAndAwardScore();
+        }
+    
+        // Complete the current order (remove it from display)
+        if (scoreManager != null && scoreManager.orderSystem != null)
+        {
+            scoreManager.orderSystem.CompleteCurrentOrder();
+        }
+    
         // Clear all items from the plate
         foreach (GameObject item in servedItems)
         {
@@ -129,15 +144,14 @@ public class ServePlate : MonoBehaviour
                 Destroy(item);
             }
         }
-        
+    
         servedItems.Clear();
         servedItemTypes.Clear();
-        
+    
         UpdateUI();
-        
+    
         Debug.Log("Served the plate! All items cleared.");
-        
-        // Here you could add logic for completing an order, scoring, etc.
+    
         OnPlateServed();
     }
     
