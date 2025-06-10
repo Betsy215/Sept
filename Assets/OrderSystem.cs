@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 [System.Serializable]
 public class OrderItem
@@ -12,11 +13,16 @@ public class OrderItem
 
 public class OrderSystem : MonoBehaviour
 {
+    [Header("Level Settings")]
+    public int ordersPerLevel = 3; // Configurable orders for current level
+    private int ordersCompleted = 0;
     [Header("Order Settings")]
     public float orderDisplayTime = 5f; // How long each order is shown
     public float timeBetweenOrders = 2f; // Time between orders
     public int minOrderItems = 1; // Minimum items in an order
     public int maxOrderItems = 4; // Maximum items in an order
+    [Header("Order Display UI")]
+    public Text orderProgressText; // New field for "Orders: 2/3"
     
     [Header("Order Display UI")]
     public Transform orderContainer; // Parent object to hold order items
@@ -33,7 +39,10 @@ public class OrderSystem : MonoBehaviour
     
     [Header("Serve Plate Reference")]
     public ServePlate servePlate; // Reference to check served items
-    
+    [Header("Level Complete UI")]
+    public GameObject levelCompletePanel; // Reference to the panel
+    public TextMeshProUGUI finalScoreText; // Reference to final score text
+    public ScoreManager scoreManager; // Reference to get the final score
     // Private variables
     private List<string> currentOrder = new List<string>();
     private List<GameObject> orderDisplayItems = new List<GameObject>();
@@ -56,6 +65,11 @@ public class OrderSystem : MonoBehaviour
         StartOrderCycle();
     }
     
+    void UpdateOrderProgress()
+    {
+        if (orderProgressText != null)
+            orderProgressText.text = $"{ordersCompleted}/{ordersPerLevel}";
+    }
     void StartOrderCycle()
     {
         if (orderCoroutine != null)
@@ -66,43 +80,52 @@ public class OrderSystem : MonoBehaviour
     
     IEnumerator OrderCycleCoroutine()
     {
-        while (true)
+        while (ordersCompleted < ordersPerLevel) // Add this condition
         {
             // Generate and display new order
             GenerateNewOrder();
             DisplayOrder();
-            
+        
             // Wait for order duration
             orderTimer = orderDisplayTime;
             orderActive = true;
-            
+        
             // Update timer every frame
             while (orderTimer > 0 && orderActive)
             {
                 orderTimer -= Time.deltaTime;
                 UpdateTimerDisplay();
-                
-                // Check if order was served (you can implement this check)
+            
+                // Check if order was served
                 if (CheckIfOrderServed())
                 {
                     OnOrderServed();
-                  
                     break;
                 }
-                
+            
                 yield return null;
             }
-            
+        
             // Order expired or was served
             if (orderActive)
             {
                 OnOrderExpired();
             }
-            
+        
             // Hide order and wait before next one
             HideOrder();
+        
+            // Check if level complete before waiting
+            if (ordersCompleted >= ordersPerLevel)
+            {
+                break; // Exit the loop
+            }
+        
             yield return new WaitForSeconds(timeBetweenOrders);
         }
+    
+        // Level is complete
+        EndLevel();
     }
     
     void GenerateNewOrder()
@@ -268,8 +291,43 @@ public class OrderSystem : MonoBehaviour
     {
         if (orderActive)
         {
-            Debug.Log("Order manually completed by serving");
-            OnOrderServed(); // This will hide the order and stop the timer
+            ordersCompleted++;
+            UpdateOrderProgress(); // Add this line
+            Debug.Log($"Order completed! {ordersCompleted}/{ordersPerLevel}");
+        
+            OnOrderServed();
+        
+            if (ordersCompleted >= ordersPerLevel)
+            {
+                EndLevel();
+            }
+        }
+    }
+
+    void EndLevel()
+    {
+        // Stop the order system
+        StopOrderSystem();
+    
+        // Show level complete popup
+        ShowLevelCompletePopup();
+    
+        Debug.Log("Level Complete!");
+    }
+
+    void ShowLevelCompletePopup()
+    {
+        // Show the panel
+        if (levelCompletePanel != null)
+        {
+            levelCompletePanel.SetActive(true);
+        }
+    
+        // Update final score text
+        if (finalScoreText != null && scoreManager != null)
+        {
+            int finalScore = scoreManager.GetCurrentScore();
+            finalScoreText.text = $"Final Score: {finalScore}";
         }
     }
 }
