@@ -2397,7 +2397,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a981167a5865b4326b1126510650f00c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ordersPerLevel: 3
+  ordersPerLevel: 1
   orderDisplayTime: 5
   timeBetweenOrders: 2
   minOrderItems: 1
