@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: GameObject
+    uniqueID: 3183804491
+    locked: 0
+  - name: GameUI
+    uniqueID: 2982788935
+    locked: 0
+  - name: Popup
+    uniqueID: 4032780529
+    locked: 0

@@ -40,6 +40,7 @@ public class OrderSystem : MonoBehaviour
     [Header("Serve Plate Reference")]
     public ServePlate servePlate; // Reference to check served items
     [Header("Level Complete UI")]
+    public GameObject popupCanvas; // Reference to the PopupCanvas
     public GameObject levelCompletePanel; // Reference to the panel
     public TextMeshProUGUI finalScoreText; // Reference to final score text
     public ScoreManager scoreManager; // Reference to get the final score
@@ -60,6 +61,10 @@ public class OrderSystem : MonoBehaviour
         // Hide order panel initially
         if (orderPanel != null)
             orderPanel.SetActive(false);
+            
+        // Make sure PopupCanvas starts disabled
+        if (popupCanvas != null)
+            popupCanvas.SetActive(false);
             
         // Start the order cycle
         StartOrderCycle();
@@ -143,7 +148,7 @@ public class OrderSystem : MonoBehaviour
             currentOrder.Add(foodType);
         }
         
-        Debug.Log($"Generated order: {string.Join(", ", currentOrder)}");
+       
     }
     
     void DisplayOrder()
@@ -228,14 +233,13 @@ public class OrderSystem : MonoBehaviour
     
     void OnOrderServed()
     {
-        Debug.Log("Order served successfully!");
         orderActive = false;
         // Scoring logic will go here later
     }
     
     void OnOrderExpired()
     {
-        Debug.Log("Order expired!");
+       
         orderActive = false;
         // Penalty logic could go here later
     }
@@ -293,7 +297,7 @@ public class OrderSystem : MonoBehaviour
         {
             ordersCompleted++;
             UpdateOrderProgress(); // Add this line
-            Debug.Log($"Order completed! {ordersCompleted}/{ordersPerLevel}");
+          
         
             OnOrderServed();
         
@@ -312,12 +316,18 @@ public class OrderSystem : MonoBehaviour
         // Show level complete popup
         ShowLevelCompletePopup();
     
-        Debug.Log("Level Complete!");
+      
     }
 
     void ShowLevelCompletePopup()
     {
-        // Show the panel
+        // First enable the PopupCanvas
+        if (popupCanvas != null)
+        {
+            popupCanvas.SetActive(true);
+        }
+        
+        // Then show the level complete panel
         if (levelCompletePanel != null)
         {
             levelCompletePanel.SetActive(true);

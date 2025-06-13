@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class FoodTray : MonoBehaviour
@@ -23,7 +24,8 @@ public class FoodTray : MonoBehaviour
     // Private variables
     private int currentItems;
     private GameObject[] itemObjects;
-    
+    public GameObject popupCanvas;
+
     void Start()
     {
         InitializeTray();
@@ -104,6 +106,19 @@ public class FoodTray : MonoBehaviour
     // Handle clicks on the tray itself
     void OnMouseDown()
     {
+        bool overUI = EventSystem.current.IsPointerOverGameObject();
+        bool popupActive = popupCanvas != null && popupCanvas.activeInHierarchy;
+
+        Debug.Log($"Tray clicked! Mouse over UI: {overUI}, Popup active: {popupActive}");
+
+        // Only block if we're over UI AND the popup canvas is active
+        if (overUI && popupActive) 
+        {
+            Debug.Log("Blocked by popup - tray click ignored");
+            return;
+        }
+
+        Debug.Log("Tray click proceeding...");
         OnItemClicked();
     }
     
@@ -121,7 +136,7 @@ public class FoodTray : MonoBehaviour
             {
                 // If no serve plate reference, just remove item (original behavior)
                 RemoveItem();
-                Debug.LogWarning("No serve plate assigned to " + foodType + " tray!");
+                
             }
             // If serve plate is full, item stays in tray (no removal)
         }

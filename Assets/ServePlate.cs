@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 public class ServePlate : MonoBehaviour
 {
@@ -46,7 +47,7 @@ public class ServePlate : MonoBehaviour
         // Check if plate has room
         if (servedItems.Count >= maxCapacity)
         {
-            Debug.Log("Serve plate is full!");
+        
             return false;
         }
         
@@ -68,7 +69,7 @@ public class ServePlate : MonoBehaviour
         
         UpdateUI();
         
-        Debug.Log($"Added {itemType} to serve plate. Total items: {servedItems.Count}");
+      
         return true;
     }
     
@@ -98,7 +99,7 @@ public class ServePlate : MonoBehaviour
             
             UpdateUI();
             
-            Debug.Log($"Removed item from serve plate. Remaining items: {servedItems.Count}");
+         
         }
     }
     
@@ -150,7 +151,7 @@ public class ServePlate : MonoBehaviour
     
         UpdateUI();
     
-        Debug.Log("Served the plate! All items cleared.");
+      
     
         OnPlateServed();
     }
@@ -214,6 +215,7 @@ public class ServedItem : MonoBehaviour
     
     void OnMouseDown()
     {
+        if (EventSystem.current.IsPointerOverGameObject()) return;
         if (parentPlate != null)
         {
             parentPlate.RemoveItem(itemIndex);

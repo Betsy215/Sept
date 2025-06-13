@@ -28,7 +28,7 @@ public class ScoreManager : MonoBehaviour
         
         if (!orderSystem.IsOrderActive())
         {
-            Debug.Log("No active order to score against");
+          
             return;
         }
         
@@ -47,19 +47,16 @@ public class ScoreManager : MonoBehaviour
                 orderedItem == servedItem)
             {
                 orderScore += POINTS_PER_ITEM;
-                Debug.Log($"Position {i}: {servedItem} matches {orderedItem} - +{POINTS_PER_ITEM} points");
+            
             }
-            else
-            {
-                Debug.Log($"Position {i}: {servedItem} does not match {orderedItem} - 0 points");
-            }
+            
         }
         
         // Award the score
         currentScore += orderScore;
         UpdateScoreDisplay();
         
-        Debug.Log($"Order completed! Earned {orderScore} points. Total score: {currentScore}");
+       
     }
     
     void UpdateScoreDisplay()
@@ -79,6 +76,6 @@ public class ScoreManager : MonoBehaviour
     {
         currentScore = 0;
         UpdateScoreDisplay();
-        Debug.Log("Score reset to 0");
+       
     }
 }
