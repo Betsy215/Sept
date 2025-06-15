@@ -76,6 +76,10 @@ EOF
 # Unity Asset Import Worker logs
 **/AssetImportWorker*.log
 **/shadercompiler-AssetImportWorker*.log
+**/AssetImportWorker0.log
+**/AssetImportWorker1.log
+**/*AssetImportWorker*.log
+*AssetImportWorker*.log
 
 # Configuration files
 ignore.conf
