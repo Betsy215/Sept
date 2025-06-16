@@ -16,6 +16,7 @@ public class LevelData : ScriptableObject
     
     [Header("Food Tray Settings")]
     public int maxItemsPerTray = 5;
+    public int activeTrayCount = 4; // NEW: Number of trays to activate for this level
     
     [Header("Serve Plate Settings")]
     public int plateMaxCapacity = 4;

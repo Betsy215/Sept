@@ -1,21 +1,19 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MainMenuScript : MonoBehaviour
 {
-    public async Task GoToScene(string sceneName)
+    // Start is called before the first frame update
+    void Start()
     {
-        await Task.Delay(TimeSpan.FromSeconds(4));
-        //SceneManager.LoadScene(sceneName);
+        
     }
 
-    public void QuitGame()
+    // Update is called once per frame
+    public void GotoScene(string scene)
     {
-        Application.Quit();
-       
+        SceneManager.LoadScene(scene);
     }
 }
