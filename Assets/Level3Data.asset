@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 636e6bf237c24bc2989b08069202de0c, type: 3}
-  m_Name: Level2Data
+  m_Name: Level3Data
   m_EditorClassIdentifier: 
-  levelNumber: 2
-  levelName: Day2
-  ordersPerLevel: 2
+  levelNumber: 3
+  levelName: Day3
+  ordersPerLevel: 3
   orderDisplayTime: 5
   timeBetweenOrders: 2
   minOrderItems: 1
   maxOrderItems: 4
   maxItemsPerTray: 5
-  activeTrayCount: 2
+  activeTrayCount: 4
   plateMaxCapacity: 4
   basePointsPerOrder: 100
   perfectOrderBonus: 50
