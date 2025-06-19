@@ -6,7 +6,7 @@ public class FoodTray : MonoBehaviour
 {
     [Header("Tray Settings")]
     public string foodType = "Burger"; // Name of the food type
-    public int maxItems = 5; // Maximum items in tray
+    public int maxItems = 6; // Maximum items in tray
     
     [Header("Visual Elements")]
     public GameObject itemPrefab; // Prefab for individual food items
@@ -159,6 +159,13 @@ public class FoodTray : MonoBehaviour
     public void CompleteRefill()
     {
         currentItems = maxItems;
+    
+        // CRITICAL FIX: Resize itemObjects array if maxItems changed
+        if (itemObjects == null || itemObjects.Length != maxItems)
+        {
+            itemObjects = new GameObject[maxItems];
+        }
+    
         CreateItems();
         UpdateUI();
     }

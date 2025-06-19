@@ -15,12 +15,12 @@ MonoBehaviour:
   levelNumber: 3
   levelName: Day3
   ordersPerLevel: 3
-  orderDisplayTime: 5
-  timeBetweenOrders: 2
+  orderDisplayTime: 2
+  timeBetweenOrders: 1
   minOrderItems: 1
   maxOrderItems: 4
-  maxItemsPerTray: 5
-  activeTrayCount: 4
+  maxItemsPerTray: 6
+  activeTrayCount: 3
   plateMaxCapacity: 4
   basePointsPerOrder: 100
   perfectOrderBonus: 50

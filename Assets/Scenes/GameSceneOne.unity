@@ -1349,6 +1349,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f1ecfd48ab036470cb164229133089ef, type: 2}
   - {fileID: 11400000, guid: eab1c2a998a9e48c9bffdf3b755d91fc, type: 2}
   - {fileID: 11400000, guid: f0e891de6ac564b92b146dcf76fb9af1, type: 2}
+  - {fileID: 11400000, guid: fdd3fe666cf7745039584c092d8d0d50, type: 2}
   orderSystem: {fileID: 1998227852}
   foodTrays:
   - {fileID: 656552139}
