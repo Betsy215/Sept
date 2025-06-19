@@ -15,11 +15,11 @@ MonoBehaviour:
   levelNumber: 2
   levelName: Day2
   ordersPerLevel: 2
-  orderDisplayTime: 5
-  timeBetweenOrders: 2
+  orderDisplayTime: 2
+  timeBetweenOrders: 1
   minOrderItems: 1
   maxOrderItems: 4
-  maxItemsPerTray: 5
+  maxItemsPerTray: 6
   activeTrayCount: 2
   plateMaxCapacity: 4
   basePointsPerOrder: 100
