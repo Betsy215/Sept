@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636e6bf237c24bc2989b08069202de0c, type: 3}
+  m_Name: Level4Data
+  m_EditorClassIdentifier: 
+  levelNumber: 4
+  levelName: Day4
+  ordersPerLevel: 3
+  orderDisplayTime: 2
+  timeBetweenOrders: 1
+  minOrderItems: 1
+  maxOrderItems: 4
+  maxItemsPerTray: 6
+  activeTrayCount: 4
+  plateMaxCapacity: 4
+  basePointsPerOrder: 100
+  perfectOrderBonus: 50
+  timeBonus: 10
+  backgroundColor: {r: 1, g: 1, b: 1, a: 1}
+  backgroundSprite: {fileID: 0}
