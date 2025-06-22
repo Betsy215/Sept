@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro;
 
 public class ScoreManager : MonoBehaviour
 {
     [Header("UI Elements")]
-    public Text scoreText;
-    public Text comboText;
+    public TextMeshProUGUI scoreText; // Level score
+    public TextMeshProUGUI totalScoreText; // NEW: Session total score
+    public TextMeshProUGUI comboText;
     
     [Header("Game References")]
     public ServePlate servePlate;
@@ -26,6 +28,21 @@ public class ScoreManager : MonoBehaviour
     {
         UpdateScoreUI();
         UpdateComboUI();
+        
+        // Subscribe to session events
+        SetupSessionEvents();
+        
+        // Update total score display
+        UpdateTotalScoreUI();
+    }
+    
+    void SetupSessionEvents()
+    {
+        // Subscribe to session total score changes
+        if (SessionManager.Instance != null)
+        {
+            SessionManager.Instance.OnTotalScoreChanged += UpdateTotalScoreDisplay;
+        }
     }
     
     // Called by LevelManager when level loads
@@ -145,7 +162,26 @@ public class ScoreManager : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = "Score: " + currentScore;
+            scoreText.text = "Level Score: " + currentScore;
+        }
+    }
+    
+    // NEW: Update total score UI
+    void UpdateTotalScoreUI()
+    {
+        if (totalScoreText != null && SessionManager.Instance != null)
+        {
+            int totalScore = SessionManager.Instance.GetTotalScore();
+            totalScoreText.text = "Total Score: " + totalScore;
+        }
+    }
+    
+    // NEW: Callback for session total score changes
+    void UpdateTotalScoreDisplay(int newTotalScore)
+    {
+        if (totalScoreText != null)
+        {
+            totalScoreText.text = "Total Score: " + newTotalScore;
         }
     }
     
@@ -162,6 +198,15 @@ public class ScoreManager : MonoBehaviour
             {
                 comboText.text = "";
             }
+        }
+    }
+    
+    // Clean up events when destroyed
+    void OnDestroy()
+    {
+        if (SessionManager.Instance != null)
+        {
+            SessionManager.Instance.OnTotalScoreChanged -= UpdateTotalScoreDisplay;
         }
     }
     

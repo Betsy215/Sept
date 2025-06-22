@@ -19,7 +19,7 @@ public class LevelManager : MonoBehaviour
     public Camera mainCamera;
     
     [Header("UI Elements")]
-    public Text levelNameText;
+    public TextMeshProUGUI levelInfoText;
     
     [Header("Scene Management")]
     public string mainMenuSceneName = "MainMenu"; // Name of your main menu scene
@@ -28,6 +28,7 @@ public class LevelManager : MonoBehaviour
     public GameObject popupCanvas;
     public GameObject levelCompletePanel;
     public TextMeshProUGUI finalScoreText;
+    public TextMeshProUGUI totalScoreText; // NEW: Display session total score
     public Button nextLevelButton;
     public Button mainMenuButton;
     
@@ -35,10 +36,52 @@ public class LevelManager : MonoBehaviour
     private int currentLevelIndex = 0;
     private LevelData currentLevelData;
     
+    // Add this method to your LevelManager for better debugging
     void Start()
     {
-        LoadLevel(currentLevelIndex);
+        // Register this LevelManager with SessionManager
+        if (SessionManager.Instance != null)
+        {
+            SessionManager.Instance.RegisterLevelManager(this);
+            // Also try to find other references
+            SessionManager.Instance.FindGameReferences();
+        
+            Debug.Log($"SessionManager found. Has active session: {SessionManager.Instance.HasActiveSession()}");
+            if (SessionManager.Instance.HasActiveSession())
+            {
+                Debug.Log($"Session total score: {SessionManager.Instance.GetTotalScore()}");
+                Debug.Log($"Session current level: {SessionManager.Instance.GetCurrentLevelIndex() + 1}");
+            }
+        }
+        else
+        {
+            Debug.LogError("SessionManager not found! Make sure it exists in the Main Menu scene.");
+        }
+    
+        // Check if we should continue from a specific level (for session continuation)
+        if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
+        {
+            int sessionLevel = SessionManager.Instance.GetCurrentLevelIndex();
+            Debug.Log($"Continuing from session level: {sessionLevel + 1}");
+            LoadLevel(sessionLevel);
+        }
+        else
+        {
+            Debug.Log("Starting from level 1 (no active session)");
+            LoadLevel(currentLevelIndex);
+        }
+    
         SetupLevelCompleteUI();
+        SetupSessionEvents();
+    }
+    
+    void SetupSessionEvents()
+    {
+        // Subscribe to session events if SessionManager exists
+        if (SessionManager.Instance != null)
+        {
+            SessionManager.Instance.OnSessionCompleted += OnSessionCompleted;
+        }
     }
     
     void SetupLevelCompleteUI()
@@ -53,7 +96,7 @@ public class LevelManager : MonoBehaviour
             nextLevelButton.onClick.AddListener(LoadNextLevel);
         }
         
-        // Set up main menu button (you can implement this later)
+        // Set up main menu button
         if (mainMenuButton != null)
         {
             mainMenuButton.onClick.AddListener(GoToMainMenu);
@@ -74,6 +117,12 @@ public class LevelManager : MonoBehaviour
             Debug.Log("All levels completed!");
             OnAllLevelsComplete();
         }
+    }
+    
+    // NEW: Public method to set current level (used by SessionManager)
+    public void SetCurrentLevel(int levelIndex)
+    {
+        currentLevelIndex = levelIndex;
     }
     
     void ApplyLevelSettings()
@@ -116,9 +165,9 @@ public class LevelManager : MonoBehaviour
         ApplyVisualSettings();
         
         // Update UI
-        if (levelNameText != null)
+        if (levelInfoText != null)
         {
-            levelNameText.text = currentLevelData.levelName;
+            levelInfoText.text = currentLevelData.levelName;
         }
     }
     
@@ -198,6 +247,15 @@ public class LevelManager : MonoBehaviour
     public void OnLevelComplete()
     {
         Debug.Log($"{currentLevelData.levelName} completed!");
+        
+        // Add level score to session total
+        if (SessionManager.Instance != null && scoreManager != null)
+        {
+            int levelScore = scoreManager.GetCurrentScore();
+            SessionManager.Instance.AddLevelScore(levelScore);
+            SessionManager.Instance.OnLevelCompleted(currentLevelIndex);
+        }
+        
         ShowLevelCompletePopup();
     }
     
@@ -215,11 +273,18 @@ public class LevelManager : MonoBehaviour
             levelCompletePanel.SetActive(true);
         }
         
-        // Update final score
+        // Update final score (level score)
         if (finalScoreText != null && scoreManager != null)
         {
             int finalScore = scoreManager.GetCurrentScore();
-            finalScoreText.text = $"Final Score: {finalScore}";
+            finalScoreText.text = $"Level Score: {finalScore}";
+        }
+        
+        // NEW: Update total session score
+        if (totalScoreText != null && SessionManager.Instance != null)
+        {
+            int totalScore = SessionManager.Instance.GetTotalScore();
+            totalScoreText.text = $"Total Score: {totalScore}";
         }
         
         // Setup buttons based on available levels
@@ -256,8 +321,22 @@ public class LevelManager : MonoBehaviour
     
     void OnAllLevelsComplete()
     {
-        Debug.Log("🎉 All levels completed! Game finished!");
+        Debug.Log("🎉 All levels completed! Session finished!");
+        
+        // Complete the session
+        if (SessionManager.Instance != null)
+        {
+            SessionManager.Instance.CompleteSession();
+        }
+        
         ShowLevelCompletePopup(); // Still show the popup, but Next Level button will be hidden
+    }
+    
+    void OnSessionCompleted()
+    {
+        Debug.Log("Session completed event received!");
+        // You can add additional session completion logic here
+        // For example, unlock achievements, show special completion screen, etc.
     }
     
     void GoToMainMenu()
@@ -275,6 +354,15 @@ public class LevelManager : MonoBehaviour
         }
     }
     
+    // Clean up events when destroyed
+    void OnDestroy()
+    {
+        if (SessionManager.Instance != null)
+        {
+            SessionManager.Instance.OnSessionCompleted -= OnSessionCompleted;
+        }
+    }
+    
     // Public getters
     public LevelData GetCurrentLevelData()
     {
@@ -286,13 +374,11 @@ public class LevelManager : MonoBehaviour
         return currentLevelIndex + 1;
     }
     
-    // NEW: Public method to get active tray count for current level
     public int GetActiveTrayCount()
     {
         return currentLevelData != null ? currentLevelData.activeTrayCount : foodTrays.Length;
     }
     
-    // NEW: Public method to get active trays only
     public FoodTray[] GetActiveTrays()
     {
         if (currentLevelData == null || foodTrays == null) return new FoodTray[0];
