@@ -47,8 +47,14 @@ public class ServePlate : MonoBehaviour
         // Check if plate has room
         if (servedItems.Count >= maxCapacity)
         {
-        
+            Debug.Log("Plate is full!");
             return false;
+        }
+        
+        // Play item pickup sound
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayItemPickup();
         }
         
         // Create item on the serve plate
@@ -69,7 +75,7 @@ public class ServePlate : MonoBehaviour
         
         UpdateUI();
         
-      
+        Debug.Log($"Added {itemType} to serve plate. Total items: {servedItems.Count}");
         return true;
     }
     
@@ -84,6 +90,12 @@ public class ServePlate : MonoBehaviour
     {
         if (itemIndex >= 0 && itemIndex < servedItems.Count)
         {
+            // Play item removal sound (same as pickup sound)
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayItemPickup();
+            }
+            
             // Destroy the item
             if (servedItems[itemIndex] != null)
             {
@@ -99,7 +111,7 @@ public class ServePlate : MonoBehaviour
             
             UpdateUI();
             
-         
+            Debug.Log($"Removed item at index {itemIndex}. Remaining items: {servedItems.Count}");
         }
     }
     
@@ -125,6 +137,13 @@ public class ServePlate : MonoBehaviour
     
     public void Serve()
     {
+        // Don't serve if plate is empty
+        if (servedItems.Count == 0)
+        {
+            Debug.Log("Cannot serve empty plate!");
+            return;
+        }
+        
         // Calculate score BEFORE clearing the plate
         if (scoreManager != null)
         {
@@ -135,6 +154,12 @@ public class ServePlate : MonoBehaviour
         if (scoreManager != null && scoreManager.orderSystem != null)
         {
             scoreManager.orderSystem.CompleteCurrentOrder();
+        }
+        
+        // Play order complete sound
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayOrderComplete();
         }
     
         // Clear all items from the plate
@@ -151,7 +176,7 @@ public class ServePlate : MonoBehaviour
     
         UpdateUI();
     
-      
+        Debug.Log("Order served!");
     
         OnPlateServed();
     }
@@ -159,7 +184,6 @@ public class ServePlate : MonoBehaviour
     void OnPlateServed()
     {
         // Override this method or add events here for when plate is served
-        // For example: update score, check if order matches customer request, etc.
     }
     
     void UpdateUI()
@@ -212,7 +236,6 @@ public class ServedItem : MonoBehaviour
     {
         itemIndex = newIndex;
     }
-    
     void OnMouseDown()
     {
         if (EventSystem.current.IsPointerOverGameObject()) return;

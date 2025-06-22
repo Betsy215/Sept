@@ -109,6 +109,13 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             SessionManager.Instance.StartNewSession();
         }
 
+        // NEW: Stop main menu music before loading game scene
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+            Debug.Log("ClickContinue: Stopped main menu music before loading game");
+        }
+
         // Load the game scene
         SceneManager.LoadScene(_sceneName);
     }

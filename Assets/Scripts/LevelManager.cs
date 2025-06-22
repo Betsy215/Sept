@@ -36,9 +36,11 @@ public class LevelManager : MonoBehaviour
     private int currentLevelIndex = 0;
     private LevelData currentLevelData;
     
-    // Add this method to your LevelManager for better debugging
     void Start()
     {
+        // Initialize AudioManager in game scene
+        InitializeAudioManager();
+        
         // Register this LevelManager with SessionManager
         if (SessionManager.Instance != null)
         {
@@ -73,6 +75,38 @@ public class LevelManager : MonoBehaviour
     
         SetupLevelCompleteUI();
         SetupSessionEvents();
+        
+        // Start gameplay music
+        StartGameplayMusic();
+    }
+    
+    void InitializeAudioManager()
+    {
+        // Ensure AudioManager exists in game scene
+        if (AudioManager.Instance == null)
+        {
+            Debug.Log("LevelManager: Creating AudioManager for Game Scene...");
+            GameObject audioManagerGO = new GameObject("AudioManager");
+            audioManagerGO.AddComponent<AudioManager>();
+        }
+        else
+        {
+            Debug.Log("LevelManager: AudioManager already exists");
+        }
+    }
+    
+    void StartGameplayMusic()
+    {
+        // Start gameplay background music
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayGameplayMusic();
+            Debug.Log("LevelManager: Started gameplay music");
+        }
+        else
+        {
+            Debug.LogWarning("LevelManager: AudioManager not found, cannot start gameplay music");
+        }
     }
     
     void SetupSessionEvents()
@@ -241,12 +275,24 @@ public class LevelManager : MonoBehaviour
             orderSystem.enabled = false;   // Disable and re-enable to restart
             orderSystem.enabled = true;
         }
+        
+        // Ensure gameplay music is playing
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayGameplayMusic();
+        }
     }
     
     // Called when current level is completed
     public void OnLevelComplete()
     {
         Debug.Log($"{currentLevelData.levelName} completed!");
+        
+        // Play level completion sound
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayLevelWin();
+        }
         
         // Add level score to session total
         if (SessionManager.Instance != null && scoreManager != null)
@@ -261,6 +307,12 @@ public class LevelManager : MonoBehaviour
     
     void ShowLevelCompletePopup()
     {
+        // Play level complete music
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayLevelCompleteMusic();
+        }
+        
         // Show popup canvas
         if (popupCanvas != null)
         {
@@ -311,17 +363,36 @@ public class LevelManager : MonoBehaviour
     
     public void LoadNextLevel()
     {
+        // Resume gameplay music when continuing to next level
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayGameplayMusic();
+        }
+        
         LoadLevel(currentLevelIndex + 1);
     }
     
     public void RestartLevel()
     {
+        // Resume gameplay music when restarting level
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayGameplayMusic();
+        }
+        
         LoadLevel(currentLevelIndex);
     }
     
     void OnAllLevelsComplete()
     {
         Debug.Log("🎉 All levels completed! Session finished!");
+        
+        // Play special completion sound/music
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayLevelWin();
+            // You could add a special "game complete" music here if you have one
+        }
         
         // Complete the session
         if (SessionManager.Instance != null)
@@ -336,12 +407,18 @@ public class LevelManager : MonoBehaviour
     {
         Debug.Log("Session completed event received!");
         // You can add additional session completion logic here
-        // For example, unlock achievements, show special completion screen, etc.
     }
     
     void GoToMainMenu()
     {
         Debug.Log("Going to Main Menu...");
+        
+        // Stop current music before returning to main menu
+        // Main menu will start its own music automatically
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+        }
         
         // Load the main menu scene
         if (!string.IsNullOrEmpty(mainMenuSceneName))
