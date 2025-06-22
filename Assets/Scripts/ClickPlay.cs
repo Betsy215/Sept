@@ -12,7 +12,7 @@ public class ClickPlay : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
     public AudioClip _compressClip,_uncompressClip;
     public AudioSource _source;
     public string _sceneName;
-   // public string sceneName;
+    // public string sceneName;
     
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -31,9 +31,19 @@ public class ClickPlay : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
     {
         yield return new WaitForSeconds(delayTime);
 
-        // Code to execute after the delay
+        // NEW: Ensure SessionManager exists and start new session before loading game
+        if (SessionManager.Instance == null)
+        {
+            Debug.Log("ClickPlay: Creating SessionManager...");
+            GameObject sessionManagerGO = new GameObject("SessionManager");
+            sessionManagerGO.AddComponent<SessionManager>();
+        }
+        
+        // Start new session
+        Debug.Log("ClickPlay: Starting new game session...");
+        SessionManager.Instance.StartNewSession();
 
+        // Load the game scene
         SceneManager.LoadScene(_sceneName);
     }
-
 }
