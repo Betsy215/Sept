@@ -12,7 +12,6 @@ public class ClickPlay : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
     public AudioClip _compressClip,_uncompressClip;
     public AudioSource _source;
     public string _sceneName;
-    // public string sceneName;
     
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -25,13 +24,13 @@ public class ClickPlay : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
         _img.sprite = _default;
         _source.PlayOneShot(_uncompressClip);
         StartCoroutine(WaitForDelay(2));
-       
     }
+    
     IEnumerator WaitForDelay(float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
 
-        // NEW: Ensure SessionManager exists and start new session before loading game
+        // Ensure SessionManager exists and start new session before loading game
         if (SessionManager.Instance == null)
         {
             Debug.Log("ClickPlay: Creating SessionManager...");
@@ -42,6 +41,13 @@ public class ClickPlay : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
         // Start new session
         Debug.Log("ClickPlay: Starting new game session...");
         SessionManager.Instance.StartNewSession();
+
+        // NEW: Stop main menu music before loading game scene
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopMusic();
+            Debug.Log("ClickPlay: Stopped main menu music before loading game");
+        }
 
         // Load the game scene
         SceneManager.LoadScene(_sceneName);
