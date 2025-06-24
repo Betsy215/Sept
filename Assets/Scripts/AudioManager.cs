@@ -99,10 +99,10 @@ public class AudioManager : MonoBehaviour
             Debug.Log($"AudioManager: Cannot play music. Clip: {musicClip != null}, Source: {musicSource != null}, Enabled: {musicEnabled}");
             return;
         }
-    
+        
         Debug.Log($"AudioManager: Playing music: {musicClip.name} (Loop: {shouldLoop})");
         musicSource.clip = musicClip;
-        musicSource.loop = shouldLoop;  // ← NEW: Set loop based on parameter
+        musicSource.loop = shouldLoop;
         musicSource.Play();
     }
     
@@ -130,17 +130,17 @@ public class AudioManager : MonoBehaviour
     // Convenience methods
     public void PlayMainMenuMusic()
     {
-        PlayMusic(mainMenuMusic);
+        PlayMusic(mainMenuMusic, true); // Loop main menu music
     }
     
     public void PlayGameplayMusic()
     {
-        PlayMusic(gameplayMusic);
+        PlayMusic(gameplayMusic, true); // Loop gameplay music
     }
     
     public void PlayLevelCompleteMusic()
     {
-        PlayMusic(levelCompleteMusic,false);
+        PlayMusic(levelCompleteMusic, false); // DON'T loop level complete music
     }
     
     public void PlayButtonClick()
@@ -171,14 +171,33 @@ public class AudioManager : MonoBehaviour
         
         if (!enabled && musicSource != null && musicSource.isPlaying)
         {
+            // Turn OFF: Stop the music
             musicSource.Stop();
+        }
+        else if (enabled && musicSource != null)
+        {
+            // Turn ON: Resume or restart music
+            if (musicSource.clip != null)
+            {
+                // If there's a clip assigned, play it
+                musicSource.Play();
+                Debug.Log($"AudioManager: Resumed music - {musicSource.clip.name}");
+            }
+            else
+            {
+                Debug.LogWarning("AudioManager: No music clip assigned to resume!");
+            }
         }
     }
     
     public void SetSFXEnabled(bool enabled)
     {
         sfxEnabled = enabled;
-        Debug.Log($"AudioManager: SFX {(enabled ? "enabled" : "disabled")}");
+        if (enabled && sfxSource != null && buttonClickSFX != null)
+        {
+            sfxSource.PlayOneShot(buttonClickSFX);
+            Debug.Log("AudioManager: Played SFX confirmation sound");
+        }
     }
     
     public void SetMusicVolume(float volume)
