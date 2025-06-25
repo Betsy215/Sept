@@ -5,7 +5,7 @@ public class SettingsButtonsController : MonoBehaviour
 {
     [Header("Settings Animation")]
     public Animator settingsAnimator;
-    public string showTrigger = "Show"; // Single trigger that toggles show/hide
+    public string showTrigger = "Show";
     
     [Header("Toggle Buttons")]
     public Button audioButton;
@@ -17,7 +17,7 @@ public class SettingsButtonsController : MonoBehaviour
     
     [Header("Color Settings")]
     [Range(0.3f, 1f)]
-    public float fadedAlpha = 0.5f; // How faded the "off" state should be
+    public float fadedAlpha = 0.5f;
     
     // Private variables
     private bool isAudioOn = true;
@@ -27,16 +27,26 @@ public class SettingsButtonsController : MonoBehaviour
     private Color originalAudioColor;
     private Color originalMusicColor;
     
-    // PlayerPrefs keys
-    private const string AUDIO_STATE_KEY = "AudioButtonState";
-    private const string MUSIC_STATE_KEY = "MusicButtonState";
+    // PlayerPrefs keys (shared across all scenes)
+    private const string AUDIO_STATE_KEY = "GlobalAudioState";
+    private const string MUSIC_STATE_KEY = "GlobalMusicState";
     
     void Start()
     {
         InitializeSettings();
+        LoadGlobalSettings();
         SetupButtonListeners();
-        LoadButtonStates();
         UpdateButtonVisuals();
+        
+        // Delay AudioManager application to ensure it exists
+        StartCoroutine(ApplySettingsAfterDelay());
+    }
+    
+    System.Collections.IEnumerator ApplySettingsAfterDelay()
+    {
+        // Wait a frame to ensure all other Start() methods have run
+        yield return null;
+        ApplySettingsToAudioManager();
     }
     
     void InitializeSettings()
@@ -68,12 +78,61 @@ public class SettingsButtonsController : MonoBehaviour
             originalMusicColor = musicButtonImage.color;
         }
         
-        Debug.Log("SettingsButtonsController: Initialized");
+        Debug.Log("SettingsButtonsController: Initialized in scene");
+    }
+    
+    void LoadGlobalSettings()
+    {
+        // Load global settings that persist across all scenes
+        isAudioOn = PlayerPrefs.GetInt(AUDIO_STATE_KEY, 1) == 1;
+        isMusicOn = PlayerPrefs.GetInt(MUSIC_STATE_KEY, 1) == 1;
+        
+        Debug.Log($"SettingsButtonsController: Loaded global settings - Audio: {isAudioOn}, Music: {isMusicOn}");
+    }
+    
+    void SaveGlobalSettings()
+    {
+        // Save global settings that persist across all scenes
+        PlayerPrefs.SetInt(AUDIO_STATE_KEY, isAudioOn ? 1 : 0);
+        PlayerPrefs.SetInt(MUSIC_STATE_KEY, isMusicOn ? 1 : 0);
+        PlayerPrefs.Save();
+        
+        Debug.Log($"SettingsButtonsController: Saved global settings - Audio: {isAudioOn}, Music: {isMusicOn}");
+    }
+    
+    void ApplySettingsToAudioManager()
+    {
+        // Ensure AudioManager reflects current settings
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetSFXEnabled(isAudioOn);
+            AudioManager.Instance.SetMusicEnabled(isMusicOn);
+            Debug.Log("SettingsButtonsController: Applied settings to AudioManager");
+        }
+        else
+        {
+            Debug.LogWarning("SettingsButtonsController: AudioManager not found! Will try again later...");
+            // Try again in a moment (AudioManager might be created by LevelManager)
+            Invoke(nameof(RetryApplySettings), 0.1f);
+        }
+    }
+    
+    void RetryApplySettings()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetSFXEnabled(isAudioOn);
+            AudioManager.Instance.SetMusicEnabled(isMusicOn);
+            Debug.Log("SettingsButtonsController: Applied settings to AudioManager (retry successful)");
+        }
+        else
+        {
+            Debug.LogWarning("SettingsButtonsController: AudioManager still not found after retry!");
+        }
     }
     
     void SetupButtonListeners()
     {
-        // Setup audio button
         if (audioButton != null)
         {
             audioButton.onClick.AddListener(ToggleAudio);
@@ -83,7 +142,6 @@ public class SettingsButtonsController : MonoBehaviour
             Debug.LogWarning("SettingsButtonsController: Audio button not assigned!");
         }
         
-        // Setup music button
         if (musicButton != null)
         {
             musicButton.onClick.AddListener(ToggleMusic);
@@ -94,33 +152,16 @@ public class SettingsButtonsController : MonoBehaviour
         }
     }
     
-    void LoadButtonStates()
-    {
-        // Load saved states (default to ON if no save exists)
-        isAudioOn = PlayerPrefs.GetInt(AUDIO_STATE_KEY, 1) == 1;
-        isMusicOn = PlayerPrefs.GetInt(MUSIC_STATE_KEY, 1) == 1;
-        
-        // Apply loaded states to AudioManager
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.SetSFXEnabled(isAudioOn);
-            AudioManager.Instance.SetMusicEnabled(isMusicOn);
-        }
-        
-        Debug.Log($"SettingsButtonsController: Loaded states - Audio: {isAudioOn}, Music: {isMusicOn}");
-    }
-    
-    void SaveButtonStates()
-    {
-        PlayerPrefs.SetInt(AUDIO_STATE_KEY, isAudioOn ? 1 : 0);
-        PlayerPrefs.SetInt(MUSIC_STATE_KEY, isMusicOn ? 1 : 0);
-        PlayerPrefs.Save();
-    }
-    
     // === BUTTON TOGGLE METHODS ===
     
     public void ToggleAudio()
     {
+        // Play click sound BEFORE turning off (if currently on)
+        if (isAudioOn && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayButtonClick();
+        }
+        
         isAudioOn = !isAudioOn;
         
         // Update AudioManager
@@ -128,7 +169,7 @@ public class SettingsButtonsController : MonoBehaviour
         {
             AudioManager.Instance.SetSFXEnabled(isAudioOn);
             
-            // Play click sound if audio is being turned ON
+            // Play click sound AFTER turning on (if just turned on)
             if (isAudioOn)
             {
                 AudioManager.Instance.PlayButtonClick();
@@ -136,7 +177,7 @@ public class SettingsButtonsController : MonoBehaviour
         }
         
         UpdateButtonVisuals();
-        SaveButtonStates();
+        SaveGlobalSettings();
         
         Debug.Log($"SettingsButtonsController: Audio toggled to {(isAudioOn ? "ON" : "OFF")}");
     }
@@ -149,10 +190,16 @@ public class SettingsButtonsController : MonoBehaviour
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.SetMusicEnabled(isMusicOn);
+            
+            // Play click sound if SFX is enabled
+            if (AudioManager.Instance.IsSFXEnabled())
+            {
+                AudioManager.Instance.PlayButtonClick();
+            }
         }
         
         UpdateButtonVisuals();
-        SaveButtonStates();
+        SaveGlobalSettings();
         
         Debug.Log($"SettingsButtonsController: Music toggled to {(isMusicOn ? "ON" : "OFF")}");
     }
@@ -173,7 +220,6 @@ public class SettingsButtonsController : MonoBehaviour
             
             if (!isAudioOn)
             {
-                // Make it faded when OFF
                 targetColor.a = fadedAlpha;
             }
             
@@ -189,7 +235,6 @@ public class SettingsButtonsController : MonoBehaviour
             
             if (!isMusicOn)
             {
-                // Make it faded when OFF
                 targetColor.a = fadedAlpha;
             }
             
@@ -227,31 +272,13 @@ public class SettingsButtonsController : MonoBehaviour
         return isMusicOn;
     }
     
-    // === MANUAL STATE SETTING (if needed) ===
+    // === UTILITY METHODS ===
     
-    public void SetAudioState(bool enabled)
+    public void RefreshSettings()
     {
-        isAudioOn = enabled;
-        
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.SetSFXEnabled(isAudioOn);
-        }
-        
+        // Public method to refresh settings (useful for debugging)
+        LoadGlobalSettings();
         UpdateButtonVisuals();
-        SaveButtonStates();
-    }
-    
-    public void SetMusicState(bool enabled)
-    {
-        isMusicOn = enabled;
-        
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.SetMusicEnabled(isMusicOn);
-        }
-        
-        UpdateButtonVisuals();
-        SaveButtonStates();
+        ApplySettingsToAudioManager();
     }
 }

@@ -10,7 +10,7 @@ public class LevelManager : MonoBehaviour
     
     [Header("Game Components")]
     public OrderSystem orderSystem;
-    public FoodTray[] foodTrays; // Array of all food trays
+    public FoodTray[] foodTrays;
     public ServePlate servePlate;
     public ScoreManager scoreManager;
     
@@ -22,13 +22,13 @@ public class LevelManager : MonoBehaviour
     public TextMeshProUGUI levelInfoText;
     
     [Header("Scene Management")]
-    public string mainMenuSceneName = "MainMenu"; // Name of your main menu scene
+    public string mainMenuSceneName = "MainMenu";
     
     [Header("Level Complete UI")]
     public GameObject popupCanvas;
     public GameObject levelCompletePanel;
     public TextMeshProUGUI finalScoreText;
-    public TextMeshProUGUI totalScoreText; // NEW: Display session total score
+    public TextMeshProUGUI totalScoreText;
     public Button nextLevelButton;
     public Button mainMenuButton;
     
@@ -38,14 +38,13 @@ public class LevelManager : MonoBehaviour
     
     void Start()
     {
-        // Initialize AudioManager in game scene
-        InitializeAudioManager();
+        // IMPORTANT: Ensure AudioManager exists (create if missing)
+        EnsureAudioManagerExists();
         
         // Register this LevelManager with SessionManager
         if (SessionManager.Instance != null)
         {
             SessionManager.Instance.RegisterLevelManager(this);
-            // Also try to find other references
             SessionManager.Instance.FindGameReferences();
         
             Debug.Log($"SessionManager found. Has active session: {SessionManager.Instance.HasActiveSession()}");
@@ -60,7 +59,7 @@ public class LevelManager : MonoBehaviour
             Debug.LogError("SessionManager not found! Make sure it exists in the Main Menu scene.");
         }
     
-        // Check if we should continue from a specific level (for session continuation)
+        // Check if we should continue from a specific level
         if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
         {
             int sessionLevel = SessionManager.Instance.GetCurrentLevelIndex();
@@ -80,18 +79,33 @@ public class LevelManager : MonoBehaviour
         StartGameplayMusic();
     }
     
-    void InitializeAudioManager()
+    [Header("Audio Setup")]
+    public GameObject audioManagerPrefab; // Assign the AudioManager prefab here
+    
+    void EnsureAudioManagerExists()
     {
-        // Ensure AudioManager exists in game scene
         if (AudioManager.Instance == null)
         {
-            Debug.Log("LevelManager: Creating AudioManager for Game Scene...");
-            GameObject audioManagerGO = new GameObject("AudioManager");
-            audioManagerGO.AddComponent<AudioManager>();
+            Debug.Log("LevelManager: AudioManager not found, creating one for Game Scene...");
+            
+            if (audioManagerPrefab != null)
+            {
+                // Use prefab with audio clips already assigned
+                GameObject audioManagerGO = Instantiate(audioManagerPrefab);
+                audioManagerGO.name = "AudioManager"; // Remove "(Clone)" from name
+                Debug.Log("LevelManager: Created AudioManager from prefab with audio clips");
+            }
+            else
+            {
+                // Fallback: create empty AudioManager
+                GameObject audioManagerGO = new GameObject("AudioManager");
+                audioManagerGO.AddComponent<AudioManager>();
+                Debug.LogWarning("LevelManager: Created empty AudioManager - assign audioManagerPrefab for full audio support");
+            }
         }
         else
         {
-            Debug.Log("LevelManager: AudioManager already exists");
+            Debug.Log("LevelManager: AudioManager exists (carried over from Main Menu)");
         }
     }
     
@@ -105,13 +119,12 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("LevelManager: AudioManager not found, cannot start gameplay music");
+            Debug.LogWarning("LevelManager: AudioManager still not found after creation attempt");
         }
     }
     
     void SetupSessionEvents()
     {
-        // Subscribe to session events if SessionManager exists
         if (SessionManager.Instance != null)
         {
             SessionManager.Instance.OnSessionCompleted += OnSessionCompleted;
@@ -120,17 +133,14 @@ public class LevelManager : MonoBehaviour
     
     void SetupLevelCompleteUI()
     {
-        // Hide popup initially
         if (popupCanvas != null)
             popupCanvas.SetActive(false);
         
-        // Set up next level button
         if (nextLevelButton != null)
         {
             nextLevelButton.onClick.AddListener(LoadNextLevel);
         }
         
-        // Set up main menu button
         if (mainMenuButton != null)
         {
             mainMenuButton.onClick.AddListener(GoToMainMenu);
@@ -153,7 +163,6 @@ public class LevelManager : MonoBehaviour
         }
     }
     
-    // NEW: Public method to set current level (used by SessionManager)
     public void SetCurrentLevel(int levelIndex)
     {
         currentLevelIndex = levelIndex;
@@ -163,7 +172,6 @@ public class LevelManager : MonoBehaviour
     {
         Debug.Log($"Loading {currentLevelData.levelName}");
         
-        // Apply Order System settings
         if (orderSystem != null)
         {
             orderSystem.ordersPerLevel = currentLevelData.ordersPerLevel;
@@ -173,19 +181,16 @@ public class LevelManager : MonoBehaviour
             orderSystem.maxOrderItems = currentLevelData.maxOrderItems;
         }
         
-        // Apply Food Tray settings with tray count management
         if (foodTrays != null)
         {
             ApplyTraySettings();
         }
         
-        // Apply Serve Plate settings
         if (servePlate != null)
         {
             servePlate.maxCapacity = currentLevelData.plateMaxCapacity;
         }
         
-        // Apply Score Manager settings
         if (scoreManager != null)
         {
             scoreManager.SetLevelSettings(
@@ -195,10 +200,8 @@ public class LevelManager : MonoBehaviour
             );
         }
         
-        // Apply visual settings
         ApplyVisualSettings();
         
-        // Update UI
         if (levelInfoText != null)
         {
             levelInfoText.text = currentLevelData.levelName;
@@ -215,20 +218,13 @@ public class LevelManager : MonoBehaviour
         {
             if (foodTrays[i] != null)
             {
-                // Determine if this tray should be active
                 bool shouldBeActive = i < activeTrayCount;
-                
-                // Activate/deactivate the entire tray GameObject
                 foodTrays[i].gameObject.SetActive(shouldBeActive);
                 
                 if (shouldBeActive)
                 {
-                    // Apply level settings to active trays
                     foodTrays[i].maxItems = currentLevelData.maxItemsPerTray;
-                    
-                    // Refill the tray for the new level
                     foodTrays[i].CompleteRefill();
-                    
                     Debug.Log($"Tray {i} ({foodTrays[i].foodType}): ACTIVE");
                 }
                 else
@@ -241,13 +237,11 @@ public class LevelManager : MonoBehaviour
     
     void ApplyVisualSettings()
     {
-        // Apply background sprite
         if (backgroundRenderer != null && currentLevelData.backgroundSprite != null)
         {
             backgroundRenderer.sprite = currentLevelData.backgroundSprite;
         }
         
-        // Apply background color
         if (mainCamera != null)
         {
             mainCamera.backgroundColor = currentLevelData.backgroundColor;
@@ -256,23 +250,20 @@ public class LevelManager : MonoBehaviour
     
     void StartLevel()
     {
-        // Hide level complete popup
         if (popupCanvas != null)
         {
             popupCanvas.SetActive(false);
         }
         
-        // Reset score for new level
         if (scoreManager != null)
         {
             scoreManager.ResetScore();
         }
         
-        // Start the order system (it should restart automatically)
         if (orderSystem != null)
         {
-            orderSystem.StopOrderSystem(); // Stop current cycle
-            orderSystem.enabled = false;   // Disable and re-enable to restart
+            orderSystem.StopOrderSystem();
+            orderSystem.enabled = false;
             orderSystem.enabled = true;
         }
         
@@ -283,7 +274,6 @@ public class LevelManager : MonoBehaviour
         }
     }
     
-    // Called when current level is completed
     public void OnLevelComplete()
     {
         Debug.Log($"{currentLevelData.levelName} completed!");
@@ -294,7 +284,6 @@ public class LevelManager : MonoBehaviour
             AudioManager.Instance.PlayLevelWin();
         }
         
-        // Add level score to session total
         if (SessionManager.Instance != null && scoreManager != null)
         {
             int levelScore = scoreManager.GetCurrentScore();
@@ -313,48 +302,40 @@ public class LevelManager : MonoBehaviour
             AudioManager.Instance.PlayLevelCompleteMusic();
         }
         
-        // Show popup canvas
         if (popupCanvas != null)
         {
             popupCanvas.SetActive(true);
         }
         
-        // Show level complete panel
         if (levelCompletePanel != null)
         {
             levelCompletePanel.SetActive(true);
         }
         
-        // Update final score (level score)
         if (finalScoreText != null && scoreManager != null)
         {
             int finalScore = scoreManager.GetCurrentScore();
             finalScoreText.text = $"Level Score: {finalScore}";
         }
         
-        // NEW: Update total session score
         if (totalScoreText != null && SessionManager.Instance != null)
         {
             int totalScore = SessionManager.Instance.GetTotalScore();
             totalScoreText.text = $"Total Score: {totalScore}";
         }
         
-        // Setup buttons based on available levels
         SetupLevelCompleteButtons();
     }
     
     void SetupLevelCompleteButtons()
     {
-        // Setup Next Level Button
         if (nextLevelButton != null)
         {
             bool hasMoreLevels = (currentLevelIndex + 1) < allLevels.Length;
             nextLevelButton.gameObject.SetActive(hasMoreLevels);
-            
             Debug.Log($"Next Level Button: {(hasMoreLevels ? "Shown" : "Hidden")} - Current: {currentLevelIndex + 1}, Total: {allLevels.Length}");
         }
         
-        // Main Menu button is always available
         if (mainMenuButton != null)
         {
             mainMenuButton.gameObject.SetActive(true);
@@ -363,7 +344,6 @@ public class LevelManager : MonoBehaviour
     
     public void LoadNextLevel()
     {
-        // Resume gameplay music when continuing to next level
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayGameplayMusic();
@@ -374,7 +354,6 @@ public class LevelManager : MonoBehaviour
     
     public void RestartLevel()
     {
-        // Resume gameplay music when restarting level
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayGameplayMusic();
@@ -387,40 +366,34 @@ public class LevelManager : MonoBehaviour
     {
         Debug.Log("🎉 All levels completed! Session finished!");
         
-        // Play special completion sound/music
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayLevelWin();
-            // You could add a special "game complete" music here if you have one
         }
         
-        // Complete the session
         if (SessionManager.Instance != null)
         {
             SessionManager.Instance.CompleteSession();
         }
         
-        ShowLevelCompletePopup(); // Still show the popup, but Next Level button will be hidden
+        ShowLevelCompletePopup();
     }
     
     void OnSessionCompleted()
     {
         Debug.Log("Session completed event received!");
-        // You can add additional session completion logic here
     }
     
     void GoToMainMenu()
     {
         Debug.Log("Going to Main Menu...");
         
-        // Stop current music before returning to main menu
-        // Main menu will start its own music automatically
+        // Stop current music - Main menu will auto-start its music
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.StopMusic();
         }
         
-        // Load the main menu scene
         if (!string.IsNullOrEmpty(mainMenuSceneName))
         {
             SceneManager.LoadScene(mainMenuSceneName);
@@ -431,7 +404,6 @@ public class LevelManager : MonoBehaviour
         }
     }
     
-    // Clean up events when destroyed
     void OnDestroy()
     {
         if (SessionManager.Instance != null)
