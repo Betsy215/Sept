@@ -2597,7 +2597,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe020f3419aca449182410be87164c1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scoreText: {fileID: 979542223}
+  inGameScoreText: {fileID: 1715448386}
+  finalScoreText: {fileID: 979542223}
   totalScoreText: {fileID: 1086603810}
   comboText: {fileID: 492118291}
   servePlate: {fileID: 2099376076}
@@ -3090,7 +3091,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 372, y: -1350}
+  m_AnchoredPosition: {x: 386, y: -636}
   m_SizeDelta: {x: 700, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1715448386

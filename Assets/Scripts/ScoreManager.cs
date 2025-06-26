@@ -6,8 +6,9 @@ using TMPro;
 public class ScoreManager : MonoBehaviour
 {
     [Header("UI Elements")]
-    public TextMeshProUGUI scoreText; // Level score
-    public TextMeshProUGUI totalScoreText; // NEW: Session total score
+    public TextMeshProUGUI inGameScoreText; // NEW: For in-game score display
+    public TextMeshProUGUI finalScoreText; // For level complete panel (your current scoreText)
+    public TextMeshProUGUI totalScoreText; // Session total score
     public TextMeshProUGUI comboText;
     
     [Header("Game References")]
@@ -26,6 +27,33 @@ public class ScoreManager : MonoBehaviour
     
     void Start()
     {
+        // Try to auto-find the in-game score text if not assigned
+        if (inGameScoreText == null)
+        {
+            // Look for common names for in-game score display
+            GameObject[] possibleObjects = {
+                GameObject.Find("scoreText"),
+                GameObject.Find("ScoreText"),
+                GameObject.Find("InGameScore"),
+                GameObject.Find("CurrentScore"),
+                GameObject.Find("LevelScore")
+            };
+            
+            foreach (GameObject obj in possibleObjects)
+            {
+                if (obj != null)
+                {
+                    TextMeshProUGUI textComponent = obj.GetComponent<TextMeshProUGUI>();
+                    if (textComponent != null && obj != finalScoreText?.gameObject)
+                    {
+                        inGameScoreText = textComponent;
+                        Debug.Log($"ScoreManager: Auto-found in-game score text: {obj.name}");
+                        break;
+                    }
+                }
+            }
+        }
+        
         UpdateScoreUI();
         UpdateComboUI();
         
@@ -34,6 +62,8 @@ public class ScoreManager : MonoBehaviour
         
         // Update total score display
         UpdateTotalScoreUI();
+        
+        Debug.Log($"ScoreManager: Initialized - InGame: {(inGameScoreText != null ? "Found" : "Missing")}, Final: {(finalScoreText != null ? "Found" : "Missing")}");
     }
     
     void SetupSessionEvents()
@@ -101,11 +131,12 @@ public class ScoreManager : MonoBehaviour
             consecutiveCorrectOrders = 0;
         }
         
-        // Update UI
+        // Update UI immediately after scoring
         UpdateScoreUI();
         UpdateComboUI();
         
         Debug.Log($"Order Score: {orderScore}, Time Bonus: {timeBonusPoints}, Combo: {comboMultiplier}x, Total: {totalScore}");
+        Debug.Log($"Current Level Score: {currentScore}");
     }
     
     int CalculateOrderScore(List<string> served, List<string> ordered)
@@ -160,13 +191,27 @@ public class ScoreManager : MonoBehaviour
     
     void UpdateScoreUI()
     {
-        if (scoreText != null)
+        string scoreDisplayText = "Level Score: " + currentScore;
+        
+        // Update in-game score display
+        if (inGameScoreText != null)
         {
-            scoreText.text = "Level Score: " + currentScore;
+            inGameScoreText.text = scoreDisplayText;
+            Debug.Log($"ScoreManager: Updated in-game score to '{scoreDisplayText}'");
+        }
+        else
+        {
+            Debug.LogWarning("ScoreManager: inGameScoreText is null! Please assign it in the inspector.");
+        }
+        
+        // Update final score display (for level complete panel)
+        if (finalScoreText != null)
+        {
+            finalScoreText.text = scoreDisplayText;
         }
     }
     
-    // NEW: Update total score UI
+    // Update total score UI
     void UpdateTotalScoreUI()
     {
         if (totalScoreText != null && SessionManager.Instance != null)
@@ -176,7 +221,7 @@ public class ScoreManager : MonoBehaviour
         }
     }
     
-    // NEW: Callback for session total score changes
+    // Callback for session total score changes
     void UpdateTotalScoreDisplay(int newTotalScore)
     {
         if (totalScoreText != null)
@@ -233,5 +278,14 @@ public class ScoreManager : MonoBehaviour
     {
         consecutiveCorrectOrders = 0;
         UpdateComboUI();
+    }
+    
+    // Test method to manually update score (for debugging)
+    [ContextMenu("Test Score Update")]
+    public void TestScoreUpdate()
+    {
+        currentScore += 100;
+        UpdateScoreUI();
+        Debug.Log("Test score update - added 100 points");
     }
 }
