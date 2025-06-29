@@ -806,7 +806,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 16cede518408e4f41ba496d80b8e5358, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 88be37cb207294e7eb739288092db756, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1727,6 +1727,7 @@ MonoBehaviour:
   - {fileID: 2001225746}
   servePlate: {fileID: 2099376076}
   scoreManager: {fileID: 1415756604}
+  customerManager: {fileID: 0}
   backgroundRenderer: {fileID: 0}
   mainCamera: {fileID: 199596645}
   levelInfoText: {fileID: 268141638}
@@ -3402,11 +3403,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1228970939274757246, guid: 21d9dafb12ad84b4b849b6515794c689, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.07
       objectReference: {fileID: 0}
     - target: {fileID: 1228970939274757246, guid: 21d9dafb12ad84b4b849b6515794c689, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.95
       objectReference: {fileID: 0}
     - target: {fileID: 1228970939274757246, guid: 21d9dafb12ad84b4b849b6515794c689, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3872,6 +3873,7 @@ MonoBehaviour:
   servePlate: {fileID: 0}
   scoreManager: {fileID: 1415756604}
   levelManager: {fileID: 905501929}
+  customerManager: {fileID: 0}
 --- !u!1 &2001225745
 GameObject:
   m_ObjectHideFlags: 0

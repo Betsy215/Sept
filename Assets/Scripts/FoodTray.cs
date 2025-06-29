@@ -187,6 +187,12 @@ public class FoodTray : MonoBehaviour
     {
         return currentItems > 0;
     }
+    
+    // NEW: Public method to get food type - NEEDED FOR CUSTOMER INTEGRATION
+    public string GetFoodType()
+    {
+        return foodType;
+    }
 }
 
 // Separate script for individual food items
