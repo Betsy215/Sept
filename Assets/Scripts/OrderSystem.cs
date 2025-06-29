@@ -42,14 +42,18 @@ public class OrderSystem : MonoBehaviour
     public ScoreManager scoreManager; // Reference to get the final score
     public LevelManager levelManager; // Reference to level manager
     
+    [Header("Customer Integration")]
+    public CustomerManager customerManager; // Reference to customer manager
+    
     // Private variables
     private List<string> currentOrder = new List<string>();
     private List<GameObject> orderDisplayItems = new List<GameObject>();
     private bool orderActive = false;
     private float orderTimer = 0f;
     private Coroutine orderCoroutine;
+    private Coroutine orderTimerCoroutine;
     
-    // NEW: Cache for active food types
+    // Cache for active food types
     private List<string> activeFoodTypes = new List<string>();
     
     void Start()
@@ -70,17 +74,14 @@ public class OrderSystem : MonoBehaviour
         UpdateActiveFoodTypes();
         
         // Hide order panel initially
-        if (orderPanel != null)
-            orderPanel.SetActive(false);
-            
-        // Update progress display
+        HideOrder();
+        
+        // Update order progress display
         UpdateOrderProgress();
-            
-        // Start the order cycle
-        StartOrderCycle();
+        
+        Debug.Log($"OrderSystem initialized. Orders per level: {ordersPerLevel}");
     }
     
-    // NEW: Method to update which food types are available based on active trays
     void UpdateActiveFoodTypes()
     {
         activeFoodTypes.Clear();
@@ -119,7 +120,7 @@ public class OrderSystem : MonoBehaviour
         Debug.Log($"Active food types for orders: {string.Join(", ", activeFoodTypes)}");
     }
     
-    // NEW: Helper method to check if we have an OrderItem for a given food type
+    // Helper method to check if we have an OrderItem for a given food type
     bool HasOrderItemForFoodType(string foodType)
     {
         return System.Array.Exists(availableFoods, item => 
@@ -132,7 +133,9 @@ public class OrderSystem : MonoBehaviour
             orderProgressText.text = $"{ordersCompleted}/{ordersPerLevel}";
     }
     
-    void StartOrderCycle()
+    #region Original Order Cycle (Modified for Customer Integration)
+    
+    public void StartOrderCycle()
     {
         if (orderCoroutine != null)
             StopCoroutine(orderCoroutine);
@@ -147,51 +150,145 @@ public class OrderSystem : MonoBehaviour
             // Update active food types each time (in case trays change mid-level)
             UpdateActiveFoodTypes();
             
-            // Generate and display new order
-            GenerateNewOrder();
-            DisplayOrder();
-        
-            // Wait for order duration
-            orderTimer = orderDisplayTime;
-            orderActive = true;
-        
-            // Update timer every frame
-            while (orderTimer > 0 && orderActive)
+            // CUSTOMER INTEGRATION: Spawn customer first
+            if (customerManager != null)
             {
-                orderTimer -= Time.deltaTime;
-                UpdateTimerDisplay();
+                Debug.Log("Spawning customer for new order");
+                customerManager.SpawnCustomerForCurrentLevel();
+                
+                // Wait for customer to reach service point and complete their delay
+                // The customer manager will call StartOrderCycleForCustomer() after delay
+                // So we yield break here to avoid double-processing
+                yield break;
+            }
+            else
+            {
+                // Fallback to original behavior if no customer manager
+                Debug.LogWarning("No CustomerManager found - using original order flow");
+                
+                // Generate and display new order
+                GenerateNewOrder();
+                DisplayOrder();
             
-                // Check if order was served
-                if (CheckIfOrderServed())
+                // Wait for order duration
+                orderTimer = orderDisplayTime;
+                orderActive = true;
+            
+                // Update timer every frame
+                while (orderTimer > 0 && orderActive)
                 {
-                    OnOrderServed();
-                    break;
+                    orderTimer -= Time.deltaTime;
+                    UpdateTimerDisplay();
+                
+                    // Check if order was served
+                    if (CheckIfOrderServed())
+                    {
+                        OnOrderServed();
+                        break;
+                    }
+                
+                    yield return null;
                 }
             
-                yield return null;
+                // Order expired or was served
+                if (orderActive)
+                {
+                    OnOrderExpired();
+                }
+            
+                // Hide order and wait before next one
+                HideOrder();
+            
+                // Check if level complete before waiting
+                if (ordersCompleted >= ordersPerLevel)
+                {
+                    break; // Exit the loop
+                }
+            
+                yield return new WaitForSeconds(timeBetweenOrders);
             }
-        
-            // Order expired or was served
-            if (orderActive)
-            {
-                OnOrderExpired();
-            }
-        
-            // Hide order and wait before next one
-            HideOrder();
-        
-            // Check if level complete before waiting
-            if (ordersCompleted >= ordersPerLevel)
-            {
-                break; // Exit the loop
-            }
-        
-            yield return new WaitForSeconds(timeBetweenOrders);
         }
     
         // Level is complete
         EndLevel();
     }
+    
+    #endregion
+    
+    #region Customer Integration Methods
+    
+    /// <summary>
+    /// Called by CustomerManager after customer delay to actually start the order
+    /// </summary>
+    public void StartOrderCycleForCustomer()
+    {
+        Debug.Log("Starting order cycle for customer");
+        
+        // Update active food types
+        UpdateActiveFoodTypes();
+        
+        // Generate and display new order
+        GenerateNewOrder();
+        DisplayOrder();
+
+        // Start order timer
+        orderTimer = orderDisplayTime;
+        orderActive = true;
+        
+        // Start timer coroutine
+        if (orderTimerCoroutine != null)
+            StopCoroutine(orderTimerCoroutine);
+            
+        orderTimerCoroutine = StartCoroutine(OrderTimerCoroutine());
+    }
+    
+    IEnumerator OrderTimerCoroutine()
+    {
+        // Update timer every frame
+        while (orderTimer > 0 && orderActive)
+        {
+            orderTimer -= Time.deltaTime;
+            UpdateTimerDisplay();
+        
+            // Check if order was served
+            if (CheckIfOrderServed())
+            {
+                OnOrderServed();
+                yield break;
+            }
+        
+            yield return null;
+        }
+
+        // Order expired if we get here
+        if (orderActive)
+        {
+            OnOrderExpired();
+        }
+
+        // Hide order 
+        HideOrder();
+
+        // Check if level complete
+        if (ordersCompleted >= ordersPerLevel)
+        {
+            EndLevel();
+        }
+        else
+        {
+            // Wait before allowing next customer
+            yield return new WaitForSeconds(timeBetweenOrders);
+            
+            // Ready for next order cycle - spawn next customer
+            if (customerManager != null)
+            {
+                Debug.Log("Ready for next customer");
+                customerManager.SpawnCustomerForCurrentLevel();
+            }
+        }
+    }
+    
+    #endregion
     
     void GenerateNewOrder()
     {
@@ -310,18 +407,63 @@ public class OrderSystem : MonoBehaviour
         return false;
     }
     
+    #region Event Handlers (Modified for Customer Integration)
+    
     void OnOrderServed()
     {
         orderActive = false;
+        
+        // CUSTOMER INTEGRATION: Notify customer manager
+        if (customerManager != null)
+        {
+            // Check if order was perfect
+            bool isPerfect = CheckIfOrderPerfect();
+            customerManager.HandleOrderServed(isPerfect);
+            Debug.Log($"Order served - Perfect: {isPerfect}");
+        }
+        
         // Scoring is handled by ScoreManager
     }
     
     void OnOrderExpired()
     {
         orderActive = false;
-        // Could add penalty logic here
+        
+        // CUSTOMER INTEGRATION: Notify customer manager
+        if (customerManager != null)
+        {
+            customerManager.HandleOrderExpired();
+            Debug.Log("Order expired - customer disappointed");
+        }
+        
         Debug.Log("Order expired!");
     }
+    
+    #endregion
+    
+    #region Order Validation
+    
+    bool CheckIfOrderPerfect()
+    {
+        if (servePlate == null)
+            return false;
+            
+        List<string> servedItems = servePlate.GetServedItemTypes();
+        
+        // Check if served items exactly match current order
+        if (servedItems.Count != currentOrder.Count)
+            return false;
+            
+        foreach (string orderItem in currentOrder)
+        {
+            if (!servedItems.Contains(orderItem))
+                return false;
+        }
+        
+        return true;
+    }
+    
+    #endregion
     
     void HideOrder()
     {
@@ -341,7 +483,7 @@ public class OrderSystem : MonoBehaviour
         {
             ordersCompleted++;
             UpdateOrderProgress();
-            OnOrderServed();
+            OnOrderServed(); // This will now notify customer manager
         
             if (ordersCompleted >= ordersPerLevel)
             {
@@ -361,6 +503,8 @@ public class OrderSystem : MonoBehaviour
             levelManager.OnLevelComplete();
         }
     }
+    
+    #region Public API
     
     // Public methods for external access
     public List<string> GetCurrentOrder()
@@ -385,18 +529,27 @@ public class OrderSystem : MonoBehaviour
             StopCoroutine(orderCoroutine);
             orderCoroutine = null;
         }
+        
+        if (orderTimerCoroutine != null)
+        {
+            StopCoroutine(orderTimerCoroutine);
+            orderTimerCoroutine = null;
+        }
+        
         HideOrder();
     }
     
-    // NEW: Public method to get currently active food types
+    // Public method to get currently active food types
     public List<string> GetActiveFoodTypes()
     {
         return new List<string>(activeFoodTypes);
     }
     
-    // NEW: Public method to manually refresh active food types (useful for debugging)
+    // Public method to manually refresh active food types (useful for debugging)
     public void RefreshActiveFoodTypes()
     {
         UpdateActiveFoodTypes();
     }
+    
+    #endregion
 }
