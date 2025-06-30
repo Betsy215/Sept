@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7599815499784295780}
   - component: {fileID: -1553348195026608517}
   - component: {fileID: -6185369822500061835}
+  - component: {fileID: -7655600882293471894}
   m_Layer: 0
   m_Name: Toad
   m_TagString: Untagged
@@ -106,3 +107,27 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-7655600882293471894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7264733269058083822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bb43ae4abb54aff92b5716d50983a92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementWaypoints: []
+  walkInAnimationState: Sad_Walking
+  waitingAnimationState: Sad_Walking
+  perfectReactionState: Perfect_Order
+  happyWalkOutState: happy_walking
+  sadWalkOutState: Sad_Walking
+  toadPatienceLevel: 5
+  toadMovementSpeed: 2
+  toadOrderDelay: 1
+  toadPreferredFoods:
+  - Burger
+  - Fries
