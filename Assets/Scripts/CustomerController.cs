@@ -164,7 +164,12 @@ public abstract class CustomerController : MonoBehaviour
     {
         if (movementWaypoints != null && movementWaypoints.Length > 1)
         {
+            Debug.Log($"{gameObject.name} starting move to service point: {movementWaypoints[1].position}");
             MoveToPosition(movementWaypoints[1].position); // Service point
+        }
+        else
+        {
+            Debug.LogError($"{gameObject.name} cannot move - waypoints not assigned! Length: {(movementWaypoints?.Length ?? 0)}");
         }
     }
     
