@@ -275,7 +275,7 @@ public class CustomerManager : MonoBehaviour
         if (orderSystem != null)
         {
             DebugLog("Customer delay complete - requesting order generation");
-            orderSystem.StartOrderCycle(); // This should generate and display the order
+            orderSystem.StartOrderCycleForCustomer(); // Use customer-specific method
             
             // Notify customer that order appeared
             customer.OnOrderGenerated();
