@@ -3,30 +3,26 @@ using System.Collections;
 
 public abstract class CustomerController : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    public Transform[] movementWaypoints; // 0: spawn, 1: service, 2: exit
-    
     [Header("Animation Settings")]
-    public string walkInAnimationState = "Sad_Walking";
-    public string waitingAnimationState = "Sad_Walking"; // Can be idle later
-    public string perfectReactionState = "Perfect_Order";
-    public string happyWalkOutState = "happy_walking";
-    public string sadWalkOutState = "Sad_Walking";
+    public string walkInAnimationState = "Sad_Toad_Walking";
+    public string waitingAnimationState = "Sad_Toad_Walking"; 
+    public string perfectReactionState = "Perfect_Order_Toad";
+    public string happyWalkOutState = "happy_toad_walking";
+    public string sadWalkOutState = "Sad_Toad_Walking";
     
     // Core components
     protected Animator animator;
-    protected bool isMoving;
-    protected Vector3 targetPosition;
     protected CustomerManager customerManager;
     
     // Current state tracking
     protected bool hasReachedServicePoint = false;
     protected bool isWaitingForOrder = false;
+    protected bool isWalkingIn = false;
+    protected bool isWalkingOut = false;
     
     // Abstract properties for variants to override
     public abstract float PatienceLevel { get; }
     public abstract string[] PreferredFoods { get; }
-    public abstract float MovementSpeed { get; }
     public abstract float OrderDelay { get; }
     
     protected virtual void Awake()
@@ -42,28 +38,49 @@ public abstract class CustomerController : MonoBehaviour
     
     protected virtual void Start()
     {
-        // Start the customer lifecycle
         StartCustomerLifecycle();
     }
     
-    protected virtual void Update()
-    {
-        HandleMovement();
-    }
-    
-    #region Customer Lifecycle
-    
     public virtual void StartCustomerLifecycle()
     {
-        // Begin by walking in
+        Debug.Log($"{gameObject.name} starting customer lifecycle");
+        isWalkingIn = true;
         PlayWalkInAnimation();
-        MoveToServicePoint();
+        
+        // Use animation events or coroutine to detect when walk-in animation completes
+        StartCoroutine(WaitForWalkInComplete());
+    }
+    
+    protected virtual IEnumerator WaitForWalkInComplete()
+    {
+        // Wait for the walk-in animation to complete
+        // This timing should match your animation length
+        float walkInDuration = GetAnimationLength(walkInAnimationState);
+        yield return new WaitForSeconds(walkInDuration);
+        
+        OnReachedServicePoint();
+    }
+    
+    protected virtual float GetAnimationLength(string animationName)
+    {
+        if (animator == null) return 1f;
+        
+        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip clip in clips)
+        {
+            if (clip.name == animationName)
+            {
+                return clip.length;
+            }
+        }
+        return 1f; // Default fallback
     }
     
     public virtual void OnReachedServicePoint()
     {
         hasReachedServicePoint = true;
         isWaitingForOrder = true;
+        isWalkingIn = false;
         
         // Notify customer manager to start order delay
         if (customerManager != null)
@@ -77,7 +94,6 @@ public abstract class CustomerController : MonoBehaviour
     public virtual void OnOrderGenerated()
     {
         Debug.Log($"{gameObject.name} sees the order and starts waiting");
-        // Customer can react to seeing the order (future: show thought bubble, etc.)
     }
     
     public virtual void OnOrderServed(bool perfect)
@@ -103,122 +119,36 @@ public abstract class CustomerController : MonoBehaviour
         isWaitingForOrder = false;
         Debug.Log($"{gameObject.name} is frustrated - order expired!");
         
-        // Stay sad, walk out disappointed
         StartCoroutine(DelayedWalkOut(false));
     }
     
     protected virtual IEnumerator DelayedWalkOut(bool happy)
     {
         // Wait a moment for reaction animation to play
-        yield return new WaitForSeconds(1.0f);
-        
-        PlayWalkOutAnimation(happy);
-        MoveToExitPoint();
-    }
-    
-    #endregion
-    
-    #region Animation Control
-    
-    public virtual void PlayWalkInAnimation()
-    {
-        if (animator != null)
+        if (happy)
         {
-            animator.Play(walkInAnimationState);
-            Debug.Log($"{gameObject.name} playing walk in animation: {walkInAnimationState}");
-        }
-    }
-    
-    public virtual void PlayOrderReaction(bool perfect)
-    {
-        if (animator != null)
-        {
-            if (perfect)
-            {
-                animator.Play(perfectReactionState);
-                Debug.Log($"{gameObject.name} playing perfect reaction: {perfectReactionState}");
-            }
-            else
-            {
-                // Stay in current sad animation or play a specific disappointed reaction
-                Debug.Log($"{gameObject.name} staying sad for wrong order");
-            }
-        }
-    }
-    
-    public virtual void PlayWalkOutAnimation(bool happy)
-    {
-        if (animator != null)
-        {
-            string animationState = happy ? happyWalkOutState : sadWalkOutState;
-            animator.Play(animationState);
-            Debug.Log($"{gameObject.name} playing walk out animation: {animationState}");
-        }
-    }
-    
-    #endregion
-    
-    #region Movement System
-    
-    public virtual void MoveToServicePoint()
-    {
-        if (movementWaypoints != null && movementWaypoints.Length > 1)
-        {
-            Debug.Log($"{gameObject.name} starting move to service point: {movementWaypoints[1].position}");
-            MoveToPosition(movementWaypoints[1].position); // Service point
+            float reactionDuration = GetAnimationLength(perfectReactionState);
+            yield return new WaitForSeconds(reactionDuration);
         }
         else
         {
-            Debug.LogError($"{gameObject.name} cannot move - waypoints not assigned! Length: {(movementWaypoints?.Length ?? 0)}");
+            yield return new WaitForSeconds(1.0f);
         }
-    }
-    
-    public virtual void MoveToExitPoint()
-    {
-        if (movementWaypoints != null && movementWaypoints.Length > 2)
-        {
-            MoveToPosition(movementWaypoints[2].position); // Exit point
-        }
-    }
-    
-    public virtual void MoveToPosition(Vector3 target)
-    {
-        targetPosition = target;
-        isMoving = true;
-    }
-    
-    protected virtual void HandleMovement()
-    {
-        if (!isMoving) return;
         
-        // Move towards target position
-        float step = MovementSpeed * Time.deltaTime;
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
-        
-        // Check if reached target
-        if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
-        {
-            isMoving = false;
-            OnReachedTarget();
-        }
+        PlayWalkOutAnimation(happy);
+        StartCoroutine(WaitForWalkOutComplete());
     }
     
-    protected virtual void OnReachedTarget()
+    protected virtual IEnumerator WaitForWalkOutComplete()
     {
-        // Check which waypoint we reached
-        if (movementWaypoints != null && movementWaypoints.Length > 1)
-        {
-            // Service point
-            if (Vector3.Distance(transform.position, movementWaypoints[1].position) < 0.1f && !hasReachedServicePoint)
-            {
-                OnReachedServicePoint();
-            }
-            // Exit point
-            else if (movementWaypoints.Length > 2 && Vector3.Distance(transform.position, movementWaypoints[2].position) < 0.1f)
-            {
-                OnReachedExit();
-            }
-        }
+        isWalkingOut = true;
+        
+        // Wait for walk-out animation to complete
+        string walkOutAnim = animator.GetBool("IsHappy") ? happyWalkOutState : sadWalkOutState;
+        float walkOutDuration = GetAnimationLength(walkOutAnim);
+        yield return new WaitForSeconds(walkOutDuration);
+        
+        OnReachedExit();
     }
     
     protected virtual void OnReachedExit()
@@ -235,9 +165,56 @@ public abstract class CustomerController : MonoBehaviour
         Destroy(gameObject);
     }
     
-    #endregion
+    public virtual void PlayWalkInAnimation()
+    {
+        if (animator != null)
+        {
+            animator.SetInteger("CustomerState", 0);
+            animator.SetBool("IsHappy", false);
+            animator.Play(walkInAnimationState);
+            Debug.Log($"{gameObject.name} playing walk in animation: {walkInAnimationState}");
+        }
+    }
     
-    #region Public Getters
+    public virtual void PlayOrderReaction(bool perfect)
+    {
+        if (animator != null)
+        {
+            if (perfect)
+            {
+                animator.SetBool("IsHappy", true);
+                animator.SetTrigger("TriggerReaction");
+                Debug.Log($"{gameObject.name} playing perfect reaction: {perfectReactionState}");
+            }
+            else
+            {
+                animator.SetBool("IsHappy", false);
+                animator.SetTrigger("TriggerReaction");
+                Debug.Log($"{gameObject.name} staying sad for wrong order");
+            }
+        }
+    }
+    
+    public virtual void PlayWalkOutAnimation(bool happy)
+    {
+        if (animator != null)
+        {
+            if (happy)
+            {
+                animator.SetInteger("CustomerState", 2);
+                animator.SetBool("IsHappy", true);
+                animator.Play(happyWalkOutState);
+                Debug.Log($"{gameObject.name} playing happy walk out: {happyWalkOutState}");
+            }
+            else
+            {
+                animator.SetInteger("CustomerState", 1);
+                animator.SetBool("IsHappy", false);
+                animator.Play(sadWalkOutState);
+                Debug.Log($"{gameObject.name} playing sad walk out: {sadWalkOutState}");
+            }
+        }
+    }
     
     public bool IsWaitingForOrder()
     {
@@ -249,5 +226,13 @@ public abstract class CustomerController : MonoBehaviour
         return hasReachedServicePoint;
     }
     
-    #endregion
+    public bool IsWalkingIn()
+    {
+        return isWalkingIn;
+    }
+    
+    public bool IsWalkingOut()
+    {
+        return isWalkingOut;
+    }
 }
