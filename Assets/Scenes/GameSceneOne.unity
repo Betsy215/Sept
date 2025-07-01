@@ -1750,11 +1750,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7599815499784295780, guid: 480e6c6abf9c641ceb659ed07c359013, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.4431
+      value: -4.64
       objectReference: {fileID: 0}
     - target: {fileID: 7599815499784295780, guid: 480e6c6abf9c641ceb659ed07c359013, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.5837
+      value: 2.25
       objectReference: {fileID: 0}
     - target: {fileID: 7599815499784295780, guid: 480e6c6abf9c641ceb659ed07c359013, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3933,7 +3933,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ordersPerLevel: 1
   orderDisplayTime: 5
-  timeBetweenOrders: 2
+  timeBetweenOrders: 5
   minOrderItems: 1
   maxOrderItems: 4
   orderProgressText: {fileID: 1707346227}
@@ -3951,7 +3951,7 @@ MonoBehaviour:
   - foodType: Blue
     displayPrefab: {fileID: 7967219586748323803, guid: e24eb9f155a8744489505a398d78c870, type: 3}
   itemSpacing: 0.6
-  startPosition: {x: 0, y: 0, z: 0}
+  startPosition: {x: -2, y: 0, z: 0}
   servePlate: {fileID: 0}
   scoreManager: {fileID: 1415756604}
   levelManager: {fileID: 905501929}
