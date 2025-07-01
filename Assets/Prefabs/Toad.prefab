@@ -119,14 +119,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bb43ae4abb54aff92b5716d50983a92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementWaypoints: []
-  walkInAnimationState: Sad_Walking
-  waitingAnimationState: Sad_Walking
+  walkInAnimationState: Sad_Toad_Walking
+  waitingAnimationState: Sad_Toad_Walking
   perfectReactionState: Perfect_Order
   happyWalkOutState: happy_walking
   sadWalkOutState: Sad_Walking
   toadPatienceLevel: 5
-  toadMovementSpeed: 2
   toadOrderDelay: 1
   toadPreferredFoods:
   - Burger
