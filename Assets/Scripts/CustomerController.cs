@@ -16,6 +16,12 @@ public abstract class CustomerController : MonoBehaviour
     [Tooltip("Additional delay after reaching service point before order generation")]
     public float servicePointDelay = 1.0f;
     
+    [Header("Walk-Out Settings")]
+    [Tooltip("Distance sad customers walk to the right")]
+    public float sadWalkDistance = 5.0f;
+    [Tooltip("Duration for sad customers to walk to the right")]
+    public float sadWalkDuration = 3.0f;
+    
     // Core components
     protected Animator animator;
     protected CustomerManager customerManager;
@@ -212,33 +218,98 @@ public abstract class CustomerController : MonoBehaviour
         StartCoroutine(DelayedWalkOut(false));
     }
     
+    /// <summary>
+    /// MODIFIED: Different walk-out behavior based on customer satisfaction
+    /// </summary>
     protected virtual IEnumerator DelayedWalkOut(bool happy)
     {
-        // Wait a moment for reaction animation to play
+        Debug.Log($"{gameObject.name}: Starting walk out sequence - Happy: {happy}");
+        
+        // Brief pause before walking out 
+        yield return new WaitForSeconds(0.3f);
+        
         if (happy)
         {
-            float reactionDuration = GetAnimationLength(perfectReactionState);
-            if (reactionDuration <= 0) reactionDuration = 1.0f;
-            yield return new WaitForSeconds(reactionDuration);
+            // Happy customers: normal walk out (could be any direction)
+            PlayWalkOutAnimation(true);
+            yield return StartCoroutine(WaitForWalkOutComplete());
         }
         else
         {
-            yield return new WaitForSeconds(1.0f);
+            // SAD/DISAPPOINTED customers: walk from middle to right
+            Debug.Log($"{gameObject.name}: Customer is sad - walking from current position to right");
+            yield return StartCoroutine(SadWalkOutToRight());
         }
-        
-        PlayWalkOutAnimation(happy);
-        StartCoroutine(WaitForWalkOutComplete());
     }
     
+    /// <summary>
+    /// NEW: Sad customers walk from middle (current position) to the right
+    /// </summary>
+    protected virtual IEnumerator SadWalkOutToRight()
+    {
+        isWalkingOut = true;
+        
+        // Play sad walking animation
+        PlaySadWalkOutAnimation();
+        
+        // Get current position (should be at service point - middle of screen)
+        Vector3 startPosition = transform.position;
+        Vector3 endPosition = startPosition + new Vector3(sadWalkDistance, 0f, 0f); // Move right
+        
+        // Walk to the right over time
+        float elapsed = 0f;
+        
+        Debug.Log($"{gameObject.name}: Walking from {startPosition} to {endPosition} over {sadWalkDuration}s");
+        
+        while (elapsed < sadWalkDuration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = elapsed / sadWalkDuration;
+            
+            // Move smoothly from start to end position
+            transform.position = Vector3.Lerp(startPosition, endPosition, progress);
+            
+            yield return null;
+        }
+        
+        // Ensure final position
+        transform.position = endPosition;
+        
+        Debug.Log($"{gameObject.name}: Reached exit position, removing customer");
+        
+        // Customer has exited
+        OnReachedExit();
+    }
+    
+    /// <summary>
+    /// NEW: Play sad walking animation specifically for walk-out
+    /// </summary>
+    protected virtual void PlaySadWalkOutAnimation()
+    {
+        if (animator != null)
+        {
+            // Set parameters for sad walking out
+            animator.SetInteger("CustomerState", 1); // 1 = Walking Out Sad  
+            animator.SetBool("IsHappy", false);
+            animator.Play(sadWalkOutState);
+            
+            Debug.Log($"{gameObject.name}: Playing sad walk out animation - {sadWalkOutState}");
+        }
+    }
+    
+    /// <summary>
+    /// MODIFIED: Wait for walk out complete (for happy customers)
+    /// </summary>
     protected virtual IEnumerator WaitForWalkOutComplete()
     {
         isWalkingOut = true;
         
-        // Wait for walk-out animation to complete
-        string walkOutAnim = animator != null && animator.GetBool("IsHappy") ? happyWalkOutState : sadWalkOutState;
+        // Wait for walk-out animation to complete (for happy customers)
+        string walkOutAnim = happyWalkOutState;
         float walkOutDuration = GetAnimationLength(walkOutAnim);
         if (walkOutDuration <= 0) walkOutDuration = 2.0f;
         
+        Debug.Log($"{gameObject.name}: Waiting {walkOutDuration}s for happy walk out to complete");
         yield return new WaitForSeconds(walkOutDuration);
         
         OnReachedExit();
@@ -288,23 +359,25 @@ public abstract class CustomerController : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// MODIFIED: Happy walk out (can keep original behavior or modify)
+    /// </summary>
     public virtual void PlayWalkOutAnimation(bool happy)
     {
         if (animator != null)
         {
             if (happy)
             {
-                animator.SetInteger("CustomerState", 2);
+                // Happy walk out - could walk to left, right, or fade out
+                animator.SetInteger("CustomerState", 2); // 2 = Walking Out Happy
                 animator.SetBool("IsHappy", true);
                 animator.Play(happyWalkOutState);
                 Debug.Log($"{gameObject.name} playing happy walk out: {happyWalkOutState}");
             }
             else
             {
-                animator.SetInteger("CustomerState", 1);
-                animator.SetBool("IsHappy", false);
-                animator.Play(sadWalkOutState);
-                Debug.Log($"{gameObject.name} playing sad walk out: {sadWalkOutState}");
+                // This is now handled by PlaySadWalkOutAnimation()
+                PlaySadWalkOutAnimation();
             }
         }
     }
@@ -327,5 +400,34 @@ public abstract class CustomerController : MonoBehaviour
     public bool IsWalkingOut()
     {
         return isWalkingOut;
+    }
+    
+    // Debug methods for testing
+    [ContextMenu("Test Perfect Order Animation")]
+    public void TestPerfectOrderAnimation()
+    {
+        if (Application.isPlaying)
+        {
+            Debug.Log($"🧪 Testing perfect order animation for {gameObject.name}");
+            OnOrderServed(true);
+        }
+        else
+        {
+            Debug.LogWarning("Can only test animations in Play Mode!");
+        }
+    }
+    
+    [ContextMenu("Test Wrong Order Animation")]
+    public void TestWrongOrderAnimation()
+    {
+        if (Application.isPlaying)
+        {
+            Debug.Log($"🧪 Testing wrong order animation for {gameObject.name}");
+            OnOrderServed(false);
+        }
+        else
+        {
+            Debug.LogWarning("Can only test animations in Play Mode!");
+        }
     }
 }
