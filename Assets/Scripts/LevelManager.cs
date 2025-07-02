@@ -262,6 +262,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    // FIXED: Proper flow control for starting levels
     void StartLevel()
     {
         Debug.Log($"Starting {currentLevelData.levelName}");
@@ -271,15 +272,19 @@ public class LevelManager : MonoBehaviour
         {
             orderSystem.gameObject.SetActive(true);
 
-            // Only start order cycle if no customer manager, otherwise customer manager controls this
-            if (customerManager == null)
+            // CRITICAL FIX: Determine flow type and start appropriately
+            if (customerManager != null)
             {
-                Debug.Log("No CustomerManager - starting original order flow");
-                orderSystem.StartOrderCycle();
+                Debug.Log("CustomerManager present - using customer-integrated flow");
+                // Initialize order system but don't start cycle yet
+                orderSystem.InitializeForCustomerFlow();
+                // Start the first customer spawn
+                customerManager.SpawnCustomerForCurrentLevel();
             }
             else
             {
-                Debug.Log("CustomerManager present - order system will be controlled by customer flow");
+                Debug.Log("No CustomerManager - using original order flow");
+                orderSystem.StartOrderCycle();
             }
         }
 
@@ -287,8 +292,6 @@ public class LevelManager : MonoBehaviour
         {
             scoreManager.ResetScore();
         }
-
-        // Activate food trays based on level (already done in ApplyLevelSettings)
 
         Debug.Log($"Level {currentLevelData.levelNumber} started!");
     }
@@ -432,7 +435,6 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-  
     /// <summary>
     /// NEW: Public method for CustomerManager to get current level index
     /// </summary>
@@ -471,4 +473,3 @@ public class LevelManager : MonoBehaviour
         return activeTrays;
     }
 }
-    

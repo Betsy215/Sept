@@ -23,7 +23,11 @@ public class ToadCustomer : CustomerController
         happyWalkOutState = "happy_toad_walking";
         sadWalkOutState = "Sad_Toad_Walking";
         
-        Debug.Log($"ToadCustomer initialized with OrderDelay: {OrderDelay}s");
+        // CUSTOMIZE: Set timing for Toad customer
+        fallbackWalkInDuration = 2.0f; // If animation detection fails
+        servicePointDelay = 1.0f; // Extra delay after reaching service point
+        
+        Debug.Log($"ToadCustomer initialized with OrderDelay: {OrderDelay}s, ServicePointDelay: {servicePointDelay}s");
     }
     
     public override void OnOrderGenerated()
