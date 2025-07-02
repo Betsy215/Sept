@@ -10,6 +10,12 @@ public abstract class CustomerController : MonoBehaviour
     public string happyWalkOutState = "happy_toad_walking";
     public string sadWalkOutState = "Sad_Toad_Walking";
     
+    [Header("Timing Settings")]
+    [Tooltip("Fallback duration if animation length detection fails")]
+    public float fallbackWalkInDuration = 2.0f;
+    [Tooltip("Additional delay after reaching service point before order generation")]
+    public float servicePointDelay = 1.0f;
+    
     // Core components
     protected Animator animator;
     protected CustomerManager customerManager;
@@ -47,33 +53,103 @@ public abstract class CustomerController : MonoBehaviour
         isWalkingIn = true;
         PlayWalkInAnimation();
         
-        // Use animation events or coroutine to detect when walk-in animation completes
-        StartCoroutine(WaitForWalkInComplete());
+        // FIXED: Use proper animation state detection instead of timing
+        StartCoroutine(WaitForWalkInAnimationComplete());
     }
     
-    protected virtual IEnumerator WaitForWalkInComplete()
+    /// <summary>
+    /// FIXED: Properly detect when walk-in animation completes using animation state monitoring
+    /// </summary>
+    protected virtual IEnumerator WaitForWalkInAnimationComplete()
     {
-        // Wait for the walk-in animation to complete
-        // This timing should match your animation length
-        float walkInDuration = GetAnimationLength(walkInAnimationState);
-        yield return new WaitForSeconds(walkInDuration);
+        if (animator == null)
+        {
+            Debug.LogWarning($"{gameObject.name}: No animator found, using fallback timing");
+            yield return new WaitForSeconds(fallbackWalkInDuration);
+            OnReachedServicePoint();
+            yield break;
+        }
         
+        // Wait one frame for animation to start
+        yield return null;
+        
+        // Method 1: Wait for animation state to finish (most reliable)
+        bool useStateMonitoring = true;
+        
+        if (useStateMonitoring)
+        {
+            // Wait for the walk-in animation state to start
+            float timeout = 5.0f; // Safety timeout
+            float elapsed = 0f;
+            
+            while (elapsed < timeout)
+            {
+                AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+                
+                // Check if we're in the walk-in animation
+                if (stateInfo.IsName(walkInAnimationState))
+                {
+                    Debug.Log($"{gameObject.name}: Walk-in animation detected, waiting for completion...");
+                    
+                    // Now wait for the animation to complete
+                    while (stateInfo.normalizedTime < 1.0f)
+                    {
+                        yield return null;
+                        stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+                        
+                        // Safety check - if we're no longer in the walk-in state, break
+                        if (!stateInfo.IsName(walkInAnimationState))
+                            break;
+                    }
+                    
+                    Debug.Log($"{gameObject.name}: Walk-in animation completed");
+                    break;
+                }
+                
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            
+            if (elapsed >= timeout)
+            {
+                Debug.LogWarning($"{gameObject.name}: Animation detection timed out, proceeding anyway");
+            }
+        }
+        else
+        {
+            // Method 2: Fallback to duration-based timing
+            float walkInDuration = GetAnimationLength(walkInAnimationState);
+            if (walkInDuration <= 0)
+                walkInDuration = fallbackWalkInDuration;
+                
+            Debug.Log($"{gameObject.name}: Using duration-based timing: {walkInDuration}s");
+            yield return new WaitForSeconds(walkInDuration);
+        }
+        
+        // Animation finished, customer has reached service point
         OnReachedServicePoint();
     }
     
+    /// <summary>
+    /// Fallback method to get animation length from clips
+    /// </summary>
     protected virtual float GetAnimationLength(string animationName)
     {
-        if (animator == null) return 1f;
+        if (animator == null || animator.runtimeAnimatorController == null) 
+            return fallbackWalkInDuration;
         
         AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
         foreach (AnimationClip clip in clips)
         {
-            if (clip.name == animationName)
+            if (clip.name == animationName || clip.name.Contains(animationName))
             {
+                Debug.Log($"{gameObject.name}: Found animation '{clip.name}' with length {clip.length}s");
                 return clip.length;
             }
         }
-        return 1f; // Default fallback
+        
+        Debug.LogWarning($"{gameObject.name}: Animation '{animationName}' not found, using fallback duration");
+        return fallbackWalkInDuration;
     }
     
     public virtual void OnReachedServicePoint()
@@ -82,13 +158,27 @@ public abstract class CustomerController : MonoBehaviour
         isWaitingForOrder = true;
         isWalkingIn = false;
         
-        // Notify customer manager to start order delay
+        Debug.Log($"{gameObject.name} reached service point. Starting {servicePointDelay}s delay before order generation");
+        
+        // FIXED: Add configurable delay at service point before order generation
+        StartCoroutine(ServicePointDelay());
+    }
+    
+    /// <summary>
+    /// NEW: Configurable delay after reaching service point before order generation
+    /// </summary>
+    protected virtual IEnumerator ServicePointDelay()
+    {
+        // Wait the specified delay at service point
+        yield return new WaitForSeconds(servicePointDelay);
+        
+        // Now notify customer manager to start order delay
         if (customerManager != null)
         {
             customerManager.OnCustomerReachedService(this);
         }
         
-        Debug.Log($"{gameObject.name} reached service point. Order delay: {OrderDelay}s");
+        Debug.Log($"{gameObject.name} service point delay complete. Order delay: {OrderDelay}s");
     }
     
     public virtual void OnOrderGenerated()
@@ -128,6 +218,7 @@ public abstract class CustomerController : MonoBehaviour
         if (happy)
         {
             float reactionDuration = GetAnimationLength(perfectReactionState);
+            if (reactionDuration <= 0) reactionDuration = 1.0f;
             yield return new WaitForSeconds(reactionDuration);
         }
         else
@@ -144,8 +235,10 @@ public abstract class CustomerController : MonoBehaviour
         isWalkingOut = true;
         
         // Wait for walk-out animation to complete
-        string walkOutAnim = animator.GetBool("IsHappy") ? happyWalkOutState : sadWalkOutState;
+        string walkOutAnim = animator != null && animator.GetBool("IsHappy") ? happyWalkOutState : sadWalkOutState;
         float walkOutDuration = GetAnimationLength(walkOutAnim);
+        if (walkOutDuration <= 0) walkOutDuration = 2.0f;
+        
         yield return new WaitForSeconds(walkOutDuration);
         
         OnReachedExit();

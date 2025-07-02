@@ -1835,7 +1835,7 @@ MonoBehaviour:
   - {fileID: 2001225746}
   servePlate: {fileID: 2099376076}
   scoreManager: {fileID: 1415756604}
-  customerManager: {fileID: 0}
+  customerManager: {fileID: 742151245}
   backgroundRenderer: {fileID: 0}
   mainCamera: {fileID: 199596645}
   levelInfoText: {fileID: 268141638}
@@ -3956,6 +3956,7 @@ MonoBehaviour:
   scoreManager: {fileID: 1415756604}
   levelManager: {fileID: 905501929}
   customerManager: {fileID: 742151245}
+  enableDebugLogs: 1
 --- !u!1 &2001225745
 GameObject:
   m_ObjectHideFlags: 0

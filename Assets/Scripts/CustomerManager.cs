@@ -24,6 +24,9 @@ public class CustomerManager : MonoBehaviour
     private bool isProcessingCustomer = false;
     private int currentLevelIndex = 0;
     
+    // CRITICAL: Prevent duplicate order generation
+    private bool hasOrderBeenGenerated = false;
+    
     // Events for integration
     public System.Action<CustomerController> OnCustomerSpawned;
     public System.Action<CustomerController> OnCustomerCompleted;
@@ -57,6 +60,10 @@ public class CustomerManager : MonoBehaviour
             Destroy(currentCustomer.gameObject);
             currentCustomer = null;
         }
+        
+        // Reset state
+        isProcessingCustomer = false;
+        hasOrderBeenGenerated = false;
     }
     
     public void SpawnCustomerForCurrentLevel()
@@ -115,6 +122,7 @@ public class CustomerManager : MonoBehaviour
         }
         
         isProcessingCustomer = false;
+        hasOrderBeenGenerated = false;
         DebugLog($"CustomerManager ready for level {levelIndex + 1}");
     }
     
@@ -125,6 +133,10 @@ public class CustomerManager : MonoBehaviour
             DebugLog($"{customer.name} reached service point, starting order delay");
             StartCoroutine(HandleCustomerOrderDelay(customer));
         }
+        else
+        {
+            DebugLog($"Customer {customer.name} reached service but is not current customer - ignoring");
+        }
     }
     
     public void OnCustomerExited(CustomerController customer)
@@ -134,9 +146,14 @@ public class CustomerManager : MonoBehaviour
             DebugLog($"{customer.name} has exited");
             currentCustomer = null;
             isProcessingCustomer = false;
+            hasOrderBeenGenerated = false; // Reset for next customer
             
             OnCustomerCompleted?.Invoke(customer);
             DebugLog("Ready for next customer");
+        }
+        else
+        {
+            DebugLog($"Customer {customer.name} exited but was not current customer");
         }
     }
     
@@ -175,6 +192,7 @@ public class CustomerManager : MonoBehaviour
         
         currentCustomer = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation);
         isProcessingCustomer = true;
+        hasOrderBeenGenerated = false; // Reset for new customer
         
         DebugLog($"Spawned {currentCustomer.name} at {spawnPoint.position}");
         OnCustomerSpawned?.Invoke(currentCustomer);
@@ -182,10 +200,34 @@ public class CustomerManager : MonoBehaviour
     
     private IEnumerator HandleCustomerOrderDelay(CustomerController customer)
     {
+        // CRITICAL FIX: Check if order already generated to prevent duplicates
+        if (hasOrderBeenGenerated)
+        {
+            DebugLog($"Order already generated for {customer.name} - skipping duplicate generation", true);
+            yield break;
+        }
+        
         float delay = customer.OrderDelay;
         DebugLog($"Waiting {delay}s before generating order for {customer.name}");
         
         yield return new WaitForSeconds(delay);
+        
+        // CRITICAL FIX: Double-check before generating order
+        if (hasOrderBeenGenerated)
+        {
+            DebugLog($"Order was generated while waiting for {customer.name} - aborting", true);
+            yield break;
+        }
+        
+        // Check if customer is still current and valid
+        if (customer != currentCustomer || currentCustomer == null)
+        {
+            DebugLog($"Customer {customer.name} is no longer current customer - aborting order generation");
+            yield break;
+        }
+        
+        // Set flag to prevent duplicate generation
+        hasOrderBeenGenerated = true;
         
         if (orderSystem != null)
         {
@@ -196,6 +238,7 @@ public class CustomerManager : MonoBehaviour
         else
         {
             Debug.LogError("OrderSystem reference missing!");
+            hasOrderBeenGenerated = false; // Reset flag on error
         }
     }
     
@@ -231,14 +274,23 @@ public class CustomerManager : MonoBehaviour
         }
     }
     
-    private void DebugLog(string message)
+    private void DebugLog(string message, bool isWarning = false)
     {
         if (enableDebugLogs)
         {
-            Debug.Log($"[CustomerManager] {message}");
+            string formattedMessage = $"[CustomerManager] {message}";
+            if (isWarning)
+            {
+                Debug.LogWarning(formattedMessage);
+            }
+            else
+            {
+                Debug.Log(formattedMessage);
+            }
         }
     }
     
+    // FIXED: Additional state validation
     public CustomerController GetCurrentCustomer()
     {
         return currentCustomer;
@@ -246,11 +298,34 @@ public class CustomerManager : MonoBehaviour
     
     public bool IsProcessingCustomer()
     {
-        return isProcessingCustomer;
+        return isProcessingCustomer && currentCustomer != null;
     }
     
     public bool HasCustomerAtService()
     {
         return currentCustomer != null && currentCustomer.HasReachedServicePoint();
+    }
+    
+    // NEW: Check if order has been generated for current customer
+    public bool HasOrderBeenGenerated()
+    {
+        return hasOrderBeenGenerated;
+    }
+    
+    // NEW: Debug method to check state
+    [ContextMenu("Debug Customer Manager State")]
+    public void DebugCustomerManagerState()
+    {
+        Debug.Log($"=== CUSTOMER MANAGER STATE ===");
+        Debug.Log($"Current Customer: {(currentCustomer != null ? currentCustomer.name : "None")}");
+        Debug.Log($"Is Processing: {isProcessingCustomer}");
+        Debug.Log($"Order Generated: {hasOrderBeenGenerated}");
+        Debug.Log($"Current Level: {currentLevelIndex + 1}");
+        if (currentCustomer != null)
+        {
+            Debug.Log($"Customer at Service: {currentCustomer.HasReachedServicePoint()}");
+            Debug.Log($"Customer Waiting: {currentCustomer.IsWaitingForOrder()}");
+        }
+        Debug.Log($"=============================");
     }
 }
