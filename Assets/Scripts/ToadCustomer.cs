@@ -137,13 +137,14 @@ public class ToadCustomer : CustomerController
         {
             if (perfect)
             {
+                SetSpriteState(true);
                 // Set parameters for perfect reaction
                 animator.SetBool("IsHappy", true);
                 animator.SetTrigger("TriggerReaction");
                 Debug.Log("Toad: *happy croaking* Ribbit! Perfect meal! Playing perfect reaction");
             }
             else
-            {
+            {SetSpriteState(false);
                 // Set parameters for disappointed reaction (stays sad)
                 animator.SetBool("IsHappy", false);
                 animator.SetTrigger("TriggerReaction");

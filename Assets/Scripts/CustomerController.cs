@@ -21,7 +21,11 @@ public abstract class CustomerController : MonoBehaviour
     public float sadWalkDistance = 5.0f;
     [Tooltip("Duration for sad customers to walk to the right")]
     public float sadWalkDuration = 3.0f;
-    
+    [Header("Sprite Management")]
+    [Tooltip("SpriteRenderer for sad/default state")]
+    public SpriteRenderer sadSpriteRenderer;
+    [Tooltip("SpriteRenderer for happy state")]  
+    public SpriteRenderer happySpriteRenderer;
     // Core components
     protected Animator animator;
     protected CustomerManager customerManager;
@@ -37,15 +41,67 @@ public abstract class CustomerController : MonoBehaviour
     public abstract string[] PreferredFoods { get; }
     public abstract float OrderDelay { get; }
     
+    public virtual void SetSpriteState(bool isHappy)
+    {
+        Debug.Log($"{gameObject.name}: SetSpriteState called with isHappy={isHappy}");
+        Debug.Log($"BEFORE: Sad={sadSpriteRenderer?.enabled}, Happy={happySpriteRenderer?.enabled}");
+    
+        if (sadSpriteRenderer != null)
+            sadSpriteRenderer.enabled = !isHappy;
+        else
+            Debug.LogError($"{gameObject.name}: sadSpriteRenderer is NULL!");
+        
+        if (happySpriteRenderer != null)
+            happySpriteRenderer.enabled = isHappy;
+        else
+            Debug.LogError($"{gameObject.name}: happySpriteRenderer is NULL!");
+        
+        Debug.Log($"AFTER: Sad={sadSpriteRenderer?.enabled}, Happy={happySpriteRenderer?.enabled}");
+        Debug.Log($"{gameObject.name}: Sprite state set to {(isHappy ? "Happy" : "Sad")}");
+    }
     protected virtual void Awake()
     {
+        Debug.Log($"{gameObject.name}: Starting Awake()");
+    
         animator = GetComponent<Animator>();
         customerManager = FindObjectOfType<CustomerManager>();
+    
+        Debug.Log($"{gameObject.name}: Animator found: {animator != null}");
+        Debug.Log($"{gameObject.name}: CustomerManager found: {customerManager != null}");
+    
+        // Auto-find sprite renderers if not assigned
+        if (sadSpriteRenderer == null)
+        {
+            sadSpriteRenderer = GetComponent<SpriteRenderer>(); // Main sprite renderer
+            Debug.Log($"{gameObject.name}: Sad sprite renderer found: {sadSpriteRenderer != null}");
+        }
         
+        if (happySpriteRenderer == null)
+        {
+            // Look for sprite renderer on child named "HappySprite"
+            Transform happyChild = transform.Find("HappySprite");
+            Debug.Log($"{gameObject.name}: HappySprite child found: {happyChild != null}");
+        
+            if (happyChild != null)
+            {
+                happySpriteRenderer = happyChild.GetComponent<SpriteRenderer>();
+                Debug.Log($"{gameObject.name}: Happy sprite renderer found: {happySpriteRenderer != null}");
+            }
+        }
+    
+        Debug.Log($"{gameObject.name}: About to call SetSpriteState(false)");
+    
+        // Start in sad state
+        SetSpriteState(false);
+    
+        Debug.Log($"{gameObject.name}: SetSpriteState(false) completed");
+    
         if (animator == null)
         {
             Debug.LogError($"No Animator component found on {gameObject.name}");
         }
+    
+        Debug.Log($"{gameObject.name}: Awake() completed successfully");
     }
     
     protected virtual void Start()
@@ -346,17 +402,35 @@ public abstract class CustomerController : MonoBehaviour
         {
             if (perfect)
             {
-                animator.SetBool("IsHappy", true);
-                animator.SetTrigger("TriggerReaction");
-                Debug.Log($"{gameObject.name} playing perfect reaction: {perfectReactionState}");
+                // SWITCH TO HAPPY SPRITE FIRST, BEFORE ANIMATION
+                SetSpriteState(true);
+            
+                // Small delay to ensure sprite swap completes
+                StartCoroutine(DelayedPerfectAnimation());
             }
             else
             {
+                // For wrong orders: Keep sad sprite
+                SetSpriteState(false);
                 animator.SetBool("IsHappy", false);
                 animator.SetTrigger("TriggerReaction");
                 Debug.Log($"{gameObject.name} staying sad for wrong order");
             }
         }
+    }
+
+    /// <summary>
+    /// Play perfect animation after sprite swap
+    /// </summary>
+    private IEnumerator DelayedPerfectAnimation()
+    {
+        // Wait one frame to ensure sprite swap is complete
+        yield return null;
+    
+        // Now play the animation on the happy sprite
+        animator.SetBool("IsHappy", true);
+        animator.SetTrigger("TriggerReaction");
+        Debug.Log($"{gameObject.name} playing perfect reaction: {perfectReactionState}");
     }
     
     /// <summary>
@@ -368,7 +442,10 @@ public abstract class CustomerController : MonoBehaviour
         {
             if (happy)
             {
-                // Happy walk out - could walk to left, right, or fade out
+                // Switch to happy sprite immediately for happy walk out
+                SetSpriteState(true);
+            
+                // Play happy walk animation (it will animate the sad sprite, but it's hidden)
                 animator.SetInteger("CustomerState", 2); // 2 = Walking Out Happy
                 animator.SetBool("IsHappy", true);
                 animator.Play(happyWalkOutState);
@@ -376,7 +453,8 @@ public abstract class CustomerController : MonoBehaviour
             }
             else
             {
-                // This is now handled by PlaySadWalkOutAnimation()
+                // Keep sad sprite for sad walk out
+                SetSpriteState(false);
                 PlaySadWalkOutAnimation();
             }
         }
