@@ -5,29 +5,36 @@ using TMPro;
 
 public class LevelManager : MonoBehaviour
 {
-    [Header("Level Data")] public LevelData[] allLevels;
+    [Header("Level Data")] 
+    public LevelData[] allLevels;
 
-    [Header("Game Components")] public OrderSystem orderSystem;
+    [Header("Game Components")] 
+    public OrderSystem orderSystem;
     public FoodTray[] foodTrays;
-    public ServePlate servePlate;
+    // REMOVED: public ServePlate servePlate; - No longer needed
     public ScoreManager scoreManager;
-    public CustomerManager customerManager; // NEW: Customer Manager integration
+    public CustomerManager customerManager; // Customer Manager integration
 
-    [Header("Visual Elements")] public SpriteRenderer backgroundRenderer;
+    [Header("Visual Elements")] 
+    public SpriteRenderer backgroundRenderer;
     public Camera mainCamera;
 
-    [Header("UI Elements")] public TextMeshProUGUI levelInfoText;
+    [Header("UI Elements")] 
+    public TextMeshProUGUI levelInfoText;
 
-    [Header("Scene Management")] public string mainMenuSceneName = "MainMenu";
+    [Header("Scene Management")] 
+    public string mainMenuSceneName = "MainMenu";
 
-    [Header("Level Complete UI")] public GameObject popupCanvas;
+    [Header("Level Complete UI")] 
+    public GameObject popupCanvas;
     public GameObject levelCompletePanel;
     public TextMeshProUGUI finalScoreText;
     public TextMeshProUGUI totalScoreText;
     public Button nextLevelButton;
     public Button mainMenuButton;
 
-    [Header("Audio Setup")] public GameObject audioManagerPrefab; // Assign the AudioManager prefab here
+    [Header("Audio Setup")] 
+    public GameObject audioManagerPrefab; // Assign the AudioManager prefab here
 
     // Current level tracking
     private int currentLevelIndex = 0;
@@ -102,17 +109,8 @@ public class LevelManager : MonoBehaviour
         {
             Debug.Log("LevelManager: AudioManager exists (carried over from Main Menu)");
         }
-    }
 
-    void StartGameplayMusic()
-    {
-        // Start gameplay background music
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlayGameplayMusic();
-            Debug.Log("LevelManager: Started gameplay music");
-        }
-        else
+        if (AudioManager.Instance == null)
         {
             Debug.LogWarning("LevelManager: AudioManager still not found after creation attempt");
         }
@@ -181,10 +179,11 @@ public class LevelManager : MonoBehaviour
             ApplyTraySettings();
         }
 
-        if (servePlate != null)
-        {
-            servePlate.maxCapacity = currentLevelData.plateMaxCapacity;
-        }
+        // REMOVED: ServePlate settings - no longer needed
+        // if (servePlate != null)
+        // {
+        //     servePlate.maxCapacity = currentLevelData.plateMaxCapacity;
+        // }
 
         if (scoreManager != null)
         {
@@ -195,14 +194,14 @@ public class LevelManager : MonoBehaviour
             );
         }
 
-        // NEW: Customer Manager Integration
+        // Customer Manager Integration
         if (customerManager != null)
         {
             customerManager.OnLevelLoaded(currentLevelIndex);
             Debug.Log($"CustomerManager notified of level {currentLevelIndex + 1}");
         }
 
-        // Visual settings
+        // Apply visual settings
         ApplyVisualSettings();
 
         // Update level info display
@@ -262,7 +261,6 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    // FIXED: Proper flow control for starting levels
     void StartLevel()
     {
         Debug.Log($"Starting {currentLevelData.levelName}");
@@ -272,7 +270,7 @@ public class LevelManager : MonoBehaviour
         {
             orderSystem.gameObject.SetActive(true);
 
-            // CRITICAL FIX: Determine flow type and start appropriately
+            // Determine flow type and start appropriately
             if (customerManager != null)
             {
                 Debug.Log("CustomerManager present - using customer-integrated flow");
@@ -407,6 +405,20 @@ public class LevelManager : MonoBehaviour
         Debug.Log("Session completed event received!");
     }
 
+    void StartGameplayMusic()
+    {
+        // Start gameplay background music
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayGameplayMusic();
+            Debug.Log("LevelManager: Started gameplay music");
+        }
+        else
+        {
+            Debug.LogWarning("LevelManager: AudioManager still not found after creation attempt");
+        }
+    }
+
     void GoToMainMenu()
     {
         Debug.Log("Going to Main Menu...");
@@ -435,9 +447,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// NEW: Public method for CustomerManager to get current level index
-    /// </summary>
+    // Public getters for other scripts
     public int GetCurrentLevelIndex()
     {
         return currentLevelIndex;

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections;
 using TMPro;
 using System.Linq;
 
@@ -38,19 +38,23 @@ public class OrderSystem : MonoBehaviour
     public Vector3 startPosition = Vector3.zero; // Starting position for first item
     
     [Header("References")]
-    public ServePlate servePlate; // Reference to check served items
     public ScoreManager scoreManager; // Reference to get the final score
     public LevelManager levelManager; // Reference to level manager
     
     [Header("Customer Integration")]
     public CustomerManager customerManager; // Reference to customer manager
     
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip orderCompleteSound;
+    public AudioClip itemServedSound;
+    
     [Header("Debug Settings")]
     public bool enableDebugLogs = true;
     
-    // Private variables
-    private List<string> currentOrder = new List<string>();
-    private List<GameObject> orderDisplayItems = new List<GameObject>();
+    // Private variables - NEW SYSTEM: Individual item tracking
+    private List<OrderItemInstance> currentOrderItems = new List<OrderItemInstance>();
+    private List<GameObject> orderDisplayObjects = new List<GameObject>();
     private bool orderActive = false;
     private float orderTimer = 0f;
     private Coroutine orderCycleCoroutine;
@@ -59,12 +63,26 @@ public class OrderSystem : MonoBehaviour
     // Cache for active food types
     private List<string> activeFoodTypes = new List<string>();
     
-    // NEW: Flow control variables
+    // Flow control variables
     private bool isUsingCustomerFlow = false;
     private bool isInitialized = false;
-    
-    // CRITICAL: Prevent duplicate order generation
     private bool isProcessingCustomerOrder = false;
+    
+    // NEW: Class to track individual order items (for multiple quantities)
+    [System.Serializable]
+    public class OrderItemInstance
+    {
+        public string foodType;
+        public GameObject displayObject;
+        public bool isServed = false;
+        
+        public OrderItemInstance(string type, GameObject display)
+        {
+            foodType = type;
+            displayObject = display;
+            isServed = false;
+        }
+    }
     
     void Start()
     {
@@ -150,277 +168,60 @@ public class OrderSystem : MonoBehaviour
             item != null && item.foodType == foodType);
     }
     
-    void UpdateOrderProgress()
+    void Update()
     {
-        if (orderProgressText != null)
-            orderProgressText.text = $"{ordersCompleted}/{ordersPerLevel}";
-    }
-    
-    #region FIXED: Order Cycle Management
-    
-    public void StartOrderCycle()
-    {
-        if (!isInitialized)
-        {
-            DebugLog("OrderSystem not initialized yet, deferring start", true);
-            StartCoroutine(DeferredStartOrderCycle());
-            return;
-        }
-        
-        if (orderCycleCoroutine != null)
-        {
-            StopCoroutine(orderCycleCoroutine);
-        }
-        
-        DebugLog($"Starting order cycle. Flow type: {(isUsingCustomerFlow ? "Customer-Integrated" : "Original")}");
-        orderCycleCoroutine = StartCoroutine(OrderCycleCoroutine());
-    }
-    
-    IEnumerator DeferredStartOrderCycle()
-    {
-        yield return new WaitForEndOfFrame();
-        StartOrderCycle();
-    }
-    
-    IEnumerator OrderCycleCoroutine()
-    {
-        DebugLog($"Order cycle started - Target orders: {ordersPerLevel}");
-        
-        if (isUsingCustomerFlow)
-        {
-            // FIXED: Customer-integrated flow - don't spawn customers here
-            // LevelManager will spawn the first customer directly
-            DebugLog("Using customer-integrated flow - waiting for LevelManager to spawn first customer");
-        }
-        else
-        {
-            // Original flow for backwards compatibility (no customer manager)
-            DebugLog("Using original order flow (no customer manager)");
-            
-            while (ordersCompleted < ordersPerLevel)
-            {
-                // Update active food types each time
-                UpdateActiveFoodTypes();
-                
-                // Generate and display new order
-                GenerateNewOrder();
-                DisplayOrder();
-            
-                // Wait for order duration
-                orderTimer = orderDisplayTime;
-                orderActive = true;
-            
-                // Update timer every frame
-                while (orderTimer > 0 && orderActive)
-                {
-                    orderTimer -= Time.deltaTime;
-                    UpdateTimerDisplay();
-                
-                    // Order completion is handled by ServePlate calling CompleteCurrentOrder()
-                    yield return null;
-                }
-            
-                // Order expired if we get here
-                if (orderActive)
-                {
-                    OnOrderExpired();
-                }
-            
-                // Hide order and wait before next one
-                HideOrder();
-            
-                // Check if level complete before waiting
-                if (ordersCompleted >= ordersPerLevel)
-                {
-                    break;
-                }
-            
-                yield return new WaitForSeconds(timeBetweenOrders);
-            }
-            
-            // Level is complete
-            EndLevel();
-        }
-    }
-    
-    #endregion
-    
-    #region FIXED: Customer Integration Methods
-    
-    /// <summary>
-    /// FIXED: Called by CustomerManager after customer delay to start the order
-    /// Added protection against duplicate calls
-    /// </summary>
-    public void StartOrderCycleForCustomer()
-    {
-        if (!isUsingCustomerFlow)
-        {
-            DebugLog("StartOrderCycleForCustomer called but not using customer flow!", true);
-            return;
-        }
-        
-        // CRITICAL FIX: Prevent duplicate order generation
-        if (isProcessingCustomerOrder)
-        {
-            DebugLog("Already processing customer order - ignoring duplicate call", true);
-            return;
-        }
-        
         if (orderActive)
         {
-            DebugLog("Order already active - ignoring duplicate call", true);
-            return;
-        }
-        
-        // Set flag to prevent duplicate processing
-        isProcessingCustomerOrder = true;
-        
-        DebugLog($"Starting order cycle for customer #{ordersCompleted + 1}");
-        
-        // Update active food types
-        UpdateActiveFoodTypes();
-        
-        // Generate and display new order
-        GenerateNewOrder();
-        DisplayOrder();
-
-        // Start order timer
-        orderTimer = orderDisplayTime;
-        orderActive = true;
-        
-        // Start timer coroutine
-        if (orderTimerCoroutine != null)
-            StopCoroutine(orderTimerCoroutine);
-            
-        orderTimerCoroutine = StartCoroutine(OrderTimerCoroutine());
-    }
-    
-    IEnumerator OrderTimerCoroutine()
-    {
-        DebugLog($"Order timer started - Duration: {orderDisplayTime}s");
-        
-        // Update timer every frame
-        while (orderTimer > 0 && orderActive)
-        {
-            orderTimer -= Time.deltaTime;
-            UpdateTimerDisplay();
-        
-            // Order completion is handled by ServePlate calling CompleteCurrentOrder()
-            yield return null;
-        }
-
-        // Order expired if we get here and still active
-        if (orderActive)
-        {
-            DebugLog("Order timer expired");
-            OnOrderExpired();
-        }
-
-        // Hide order 
-        HideOrder();
-
-        // Reset processing flag
-        isProcessingCustomerOrder = false;
-
-        // FIXED: Proper level completion and next customer handling
-        if (ordersCompleted >= ordersPerLevel)
-        {
-            DebugLog("All orders completed - ending level");
-            EndLevel();
-        }
-        else
-        {
-            // Wait before allowing next customer
-            DebugLog($"Waiting {timeBetweenOrders}s before next customer");
-            yield return new WaitForSeconds(timeBetweenOrders);
-            
-            // Spawn next customer
-            SpawnNextCustomer();
+            UpdateOrderTimer();
         }
     }
     
-    /// <summary>
-    /// FIXED: Centralized method to spawn next customer
-    /// </summary>
-    void SpawnNextCustomer()
+    void UpdateOrderTimer()
     {
-        if (customerManager != null)
+        orderTimer -= Time.deltaTime;
+        
+        if (orderTimerText != null)
         {
-            DebugLog($"Spawning customer for order {ordersCompleted + 1}/{ordersPerLevel}");
-            customerManager.SpawnCustomerForCurrentLevel();
+            orderTimerText.text = "Time: " + Mathf.Ceil(orderTimer).ToString();
         }
-        else
+        
+        if (orderTimer <= 0)
         {
-            DebugLog("Cannot spawn customer - CustomerManager is null!", true);
+            ExpireOrder();
         }
     }
     
-    #endregion
-    
-    void GenerateNewOrder()
+    public void GenerateNewOrder()
     {
-        currentOrder.Clear();
+        if (orderActive) return;
         
-        // Make sure we have active food types
-        if (activeFoodTypes.Count == 0)
-        {
-            DebugLog("No active food types available for order generation!", true);
-            return;
-        }
-        
-        // Clamp order size to not exceed available food types
-        int maxPossibleItems = Mathf.Min(maxOrderItems, activeFoodTypes.Count);
-        int adjustedMinItems = Mathf.Min(minOrderItems, maxPossibleItems);
-        
-        // Random number of items based on level settings and available foods
-        int orderSize = Random.Range(adjustedMinItems, maxPossibleItems + 1);
-        
-        // Create a list of available foods for this order (to avoid duplicates)
-        List<string> availableForSelection = new List<string>(activeFoodTypes);
-        
-        // Generate random food items from active food types
-        for (int i = 0; i < orderSize && availableForSelection.Count > 0; i++)
-        {
-            int randomIndex = Random.Range(0, availableForSelection.Count);
-            string selectedFood = availableForSelection[randomIndex];
-            
-            currentOrder.Add(selectedFood);
-            
-            // Remove from available list to prevent duplicates in same order
-            availableForSelection.RemoveAt(randomIndex);
-        }
-        
-        DebugLog($"Generated order #{ordersCompleted + 1}: [{string.Join(", ", currentOrder)}]");
-    }
-    
-    void DisplayOrder()
-    {
-        // Clear previous order display
+        // Clear previous order
         ClearOrderDisplay();
         
-        // Show order panel
-        if (orderPanel != null)
-            orderPanel.SetActive(true);
+        // Generate random order items
+        int orderSize = Random.Range(minOrderItems, maxOrderItems + 1);
+        currentOrderItems.Clear();
         
-        // Update order title
-        if (orderTitleText != null)
-            orderTitleText.text = "Order:";
+        // Make sure we don't exceed available food types
+        orderSize = Mathf.Min(orderSize, activeFoodTypes.Count);
         
-        // Create visual items for the order
-        for (int i = 0; i < currentOrder.Count; i++)
+        for (int i = 0; i < orderSize; i++)
         {
-            CreateOrderDisplayItem(currentOrder[i], i);
+            // Select random food type
+            string randomFood = activeFoodTypes[Random.Range(0, activeFoodTypes.Count)];
+            
+            // Create order item instance
+            CreateOrderItemInstance(randomFood, i);
         }
         
-        orderActive = true;
-        orderTimer = orderDisplayTime;
+        DisplayOrder();
         
-        DebugLog($"Order displayed: {currentOrder.Count} items");
+        Debug.Log($"New order generated with {currentOrderItems.Count} items");
     }
     
-    void CreateOrderDisplayItem(string foodType, int index)
+    void CreateOrderItemInstance(string foodType, int index)
     {
-        // Find the matching food item from our OrderItem array
+        // Find the matching food item
         OrderItem orderItem = System.Array.Find(availableFoods, item => 
             item != null && item.foodType == foodType);
         
@@ -433,78 +234,197 @@ public class OrderSystem : MonoBehaviour
             GameObject displayItem = Instantiate(orderItem.displayPrefab, orderContainer);
             displayItem.transform.localPosition = itemPosition;
             
-            // Add to tracking list
-            orderDisplayItems.Add(displayItem);
-        }
-        else
-        {
-            DebugLog($"No display prefab found for food type: {foodType}", true);
+            // Add served item visual component for pop effect
+            ServedItemVisual servedVisual = displayItem.GetComponent<ServedItemVisual>();
+            if (servedVisual == null)
+                servedVisual = displayItem.AddComponent<ServedItemVisual>();
+            
+            // Create order item instance
+            OrderItemInstance orderInstance = new OrderItemInstance(foodType, displayItem);
+            currentOrderItems.Add(orderInstance);
+            orderDisplayObjects.Add(displayItem);
         }
     }
     
     Vector3 CalculateOrderItemPosition(int index)
     {
-        // Arrange items left to right, similar to serve plate
         float x = startPosition.x + (index * itemSpacing);
         return new Vector3(x, startPosition.y, startPosition.z);
     }
     
-    void ClearOrderDisplay()
+    void DisplayOrder()
     {
-        // Destroy all current order display items
-        foreach (GameObject item in orderDisplayItems)
-        {
-            if (item != null)
-                Destroy(item);
-        }
-        orderDisplayItems.Clear();
+        if (orderPanel != null)
+            orderPanel.SetActive(true);
+            
+        if (orderTitleText != null)
+            orderTitleText.text = "Order:";
+        
+        orderActive = true;
+        orderTimer = orderDisplayTime;
+        
+        Debug.Log($"Order displayed: {currentOrderItems.Count} items");
     }
     
-    void UpdateTimerDisplay()
+    // NEW: Called by FoodTray when an item is clicked
+    public bool TryServeItem(string foodType)
     {
-        if (orderTimerText != null)
+        if (!orderActive) return false;
+        
+        // Find the first unserved item of this type
+        OrderItemInstance itemToServe = currentOrderItems.Find(item => 
+            item.foodType == foodType && !item.isServed);
+        
+        if (itemToServe != null)
         {
-            int seconds = Mathf.CeilToInt(orderTimer);
-            orderTimerText.text = $"Time: {seconds}s";
+            // Mark as served
+            itemToServe.isServed = true;
+            
+            // Play served item visual effect and remove
+            StartCoroutine(ServeItemWithEffect(itemToServe));
+            
+            // Award points for this item
+            if (scoreManager != null)
+            {
+                scoreManager.AwardItemPoints(foodType);
+            }
+            
+            // Play item served sound
+            PlayItemServedSound();
+            
+            // Check if order is complete
+            CheckOrderCompletion();
+            
+            Debug.Log($"Served {foodType}. Remaining items: {GetRemainingItemsCount()}");
+            return true;
+        }
+        
+        Debug.Log($"No {foodType} needed in current order");
+        return false;
+    }
+    
+    IEnumerator ServeItemWithEffect(OrderItemInstance item)
+    {
+        if (item.displayObject != null)
+        {
+            // Get the visual component and play pop effect
+            ServedItemVisual visual = item.displayObject.GetComponent<ServedItemVisual>();
+            if (visual != null)
+            {
+                yield return StartCoroutine(visual.PlayServedEffect());
+            }
+            
+            // Destroy the display object
+            Destroy(item.displayObject);
         }
     }
     
-    #region Event Handlers
-    
-    void OnOrderServed()
+    void CheckOrderCompletion()
     {
-        if (!orderActive)
+        // Check if all items are served
+        bool allServed = true;
+        foreach (var item in currentOrderItems)
         {
-            DebugLog("OnOrderServed called but order not active", true);
-            return;
+            if (!item.isServed)
+            {
+                allServed = false;
+                break;
+            }
         }
         
-        orderActive = false;
+        if (allServed)
+        {
+            CompleteOrder();
+        }
+    }
+    
+    int GetRemainingItemsCount()
+    {
+        int count = 0;
+        foreach (var item in currentOrderItems)
+        {
+            if (!item.isServed) count++;
+        }
+        return count;
+    }
+    
+    void CompleteOrder()
+    {
+        Debug.Log("Order completed!");
         
-        DebugLog($"Order #{ordersCompleted + 1} served successfully");
+        // Award completion bonus
+        if (scoreManager != null)
+        {
+            float remainingTime = orderTimer;
+            scoreManager.AwardOrderCompletionBonus(remainingTime);
+        }
+        
+        // Play order complete sound
+        PlayOrderCompleteSound();
+        
+        // Count as completed
+        ordersCompleted++;
+        UpdateOrderProgress();
         
         // CUSTOMER INTEGRATION: Notify customer manager
         if (isUsingCustomerFlow && customerManager != null)
         {
-            bool isPerfect = CheckIfOrderPerfect();
-            customerManager.HandleOrderServed(isPerfect);
-            DebugLog($"Notified CustomerManager - Perfect order: {isPerfect}");
+            customerManager.HandleOrderServed(true); // Always perfect in new system
+            DebugLog("Notified CustomerManager - Order completed");
         }
         
-        // Scoring is handled by ScoreManager when ServePlate.Serve() is called
+        // Hide order and prepare for next one
+        orderActive = false;
+        
+        if (orderPanel != null)
+            orderPanel.SetActive(false);
+        
+        // Check if level is complete
+        if (ordersCompleted >= ordersPerLevel)
+        {
+            DebugLog("All orders completed for this level!");
+            
+            if (levelManager != null)
+            {
+                levelManager.OnLevelComplete();
+            }
+        }
+        else
+        {
+            // CUSTOMER FLOW: Wait for customer to leave, then spawn next customer
+            if (isUsingCustomerFlow && customerManager != null)
+            {
+                DebugLog("Waiting for customer to leave before spawning next customer");
+                // Customer will leave automatically, and when OnCustomerExited is called,
+                // the CustomerManager will be ready for the next customer
+                // We don't automatically generate the next order here
+            }
+            else
+            {
+                // ORIGINAL FLOW: Generate next order after delay
+                Invoke("GenerateNewOrder", timeBetweenOrders);
+            }
+        }
     }
     
-    void OnOrderExpired()
+    void ExpireOrder()
     {
-        if (!orderActive)
-        {
-            DebugLog("OnOrderExpired called but order not active");
-            return;
-        }
+        Debug.Log("Order expired!");
         
         orderActive = false;
         
-        DebugLog($"Order #{ordersCompleted + 1} expired!");
+        if (orderPanel != null)
+            orderPanel.SetActive(false);
+        
+        // Penalize for expired order
+        if (scoreManager != null)
+        {
+            scoreManager.ApplyOrderExpiredPenalty();
+        }
+        
+        // Count as completed (even if expired)
+        ordersCompleted++;
+        UpdateOrderProgress();
         
         // CUSTOMER INTEGRATION: Notify customer manager
         if (isUsingCustomerFlow && customerManager != null)
@@ -513,120 +433,129 @@ public class OrderSystem : MonoBehaviour
             DebugLog("Notified CustomerManager of expired order");
         }
         
-        // Count expired orders as completed
-        ordersCompleted++;
-        UpdateOrderProgress();
-    }
-    
-    #endregion
-    
-    #region Order Validation
-    
-    bool CheckIfOrderPerfect()
-    {
-        if (servePlate == null)
+        // Check if level is complete
+        if (ordersCompleted >= ordersPerLevel)
         {
-            DebugLog("Cannot check order - ServePlate is null", true);
-            return false;
-        }
+            DebugLog("All orders processed for this level!");
             
-        List<string> servedItems = servePlate.GetServedItemTypes();
-        
-        // Check if served items exactly match current order
-        if (servedItems.Count != currentOrder.Count)
-        {
-            DebugLog($"Order not perfect - Count mismatch. Served: {servedItems.Count}, Ordered: {currentOrder.Count}");
-            return false;
-        }
-            
-        // Create sorted copies for comparison
-        List<string> sortedServed = new List<string>(servedItems);
-        List<string> sortedOrder = new List<string>(currentOrder);
-        sortedServed.Sort();
-        sortedOrder.Sort();
-        
-        for (int i = 0; i < sortedServed.Count; i++)
-        {
-            if (sortedServed[i] != sortedOrder[i])
+            if (levelManager != null)
             {
-                DebugLog($"Order not perfect - Item mismatch at index {i}. Served: {sortedServed[i]}, Ordered: {sortedOrder[i]}");
-                return false;
+                levelManager.OnLevelComplete();
             }
         }
-        
-        DebugLog("Order is perfect!");
-        return true;
+        else
+        {
+            // CUSTOMER FLOW: Wait for customer to leave, then spawn next customer
+            if (isUsingCustomerFlow && customerManager != null)
+            {
+                DebugLog("Waiting for customer to leave before spawning next customer");
+                // Customer will leave automatically after expiring
+            }
+            else
+            {
+                // ORIGINAL FLOW: Generate next order after delay
+                Invoke("GenerateNewOrder", timeBetweenOrders);
+            }
+        }
     }
     
-    #endregion
+    void ClearOrderDisplay()
+    {
+        // Destroy all display objects
+        foreach (GameObject displayObj in orderDisplayObjects)
+        {
+            if (displayObj != null)
+                Destroy(displayObj);
+        }
+        
+        orderDisplayObjects.Clear();
+        currentOrderItems.Clear();
+    }
+    
+    void UpdateOrderProgress()
+    {
+        if (orderProgressText != null)
+            orderProgressText.text = $"{ordersCompleted}/{ordersPerLevel}";
+    }
     
     void HideOrder()
     {
-        // Hide order panel
         if (orderPanel != null)
             orderPanel.SetActive(false);
-        
-        // Clear display items
-        ClearOrderDisplay();
-        
-        orderActive = false;
-        DebugLog("Order hidden");
     }
     
-    /// <summary>
-    /// FIXED: Called by ServePlate when serve button is pressed
-    /// </summary>
-    public void CompleteCurrentOrder()
+    void PlayItemServedSound()
     {
-        if (!orderActive)
+        if (audioSource != null && itemServedSound != null)
         {
-            DebugLog("CompleteCurrentOrder called but no active order");
-            return;
+            audioSource.PlayOneShot(itemServedSound);
         }
-        
-        DebugLog($"Completing order #{ordersCompleted + 1}");
-        
-        ordersCompleted++;
-        UpdateOrderProgress();
-        OnOrderServed();
-        
-        // Stop the timer coroutine since order was manually completed
-        if (orderTimerCoroutine != null)
+        else if (AudioManager.Instance != null)
         {
-            StopCoroutine(orderTimerCoroutine);
-            orderTimerCoroutine = null;
+            AudioManager.Instance.PlayItemPickup();
         }
-        
-        // Reset processing flag
-        isProcessingCustomerOrder = false;
-        
-        // Hide the order immediately
-        HideOrder();
-        
-        // Check for level completion
-        if (ordersCompleted >= ordersPerLevel)
-        {
-            DebugLog("All orders completed via serve button - ending level");
-            EndLevel();
-        }
-        else if (isUsingCustomerFlow)
-        {
-            // In customer flow, wait then spawn next customer
-            StartCoroutine(DelayedNextCustomer());
-        }
-        // In original flow, the main cycle will handle the next order
     }
     
-    /// <summary>
-    /// NEW: Handle delayed next customer spawn
-    /// </summary>
-    IEnumerator DelayedNextCustomer()
+    void PlayOrderCompleteSound()
     {
-        DebugLog($"Waiting {timeBetweenOrders}s before next customer");
-        yield return new WaitForSeconds(timeBetweenOrders);
-        SpawnNextCustomer();
+        if (audioSource != null && orderCompleteSound != null)
+        {
+            audioSource.PlayOneShot(orderCompleteSound);
+        }
+        else if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayOrderComplete();
+        }
     }
-
+    
+    // Debug logging
+    void DebugLog(string message, bool isWarning = false)
+    {
+        if (enableDebugLogs)
+        {
+            if (isWarning)
+                Debug.LogWarning($"[OrderSystem] {message}");
+            else
+                Debug.Log($"[OrderSystem] {message}");
+        }
+    }
+    
+    #region Public API - Compatibility with existing scripts
+    
+    // For compatibility with existing code
+    public bool IsOrderActive()
+    {
+        return orderActive;
+    }
+    
+    public float GetRemainingTime()
+    {
+        return orderTimer;
+    }
+    
+    public List<string> GetCurrentOrderTypes()
+    {
+        List<string> types = new List<string>();
+        foreach (var item in currentOrderItems)
+        {
+            if (!item.isServed)
+                types.Add(item.foodType);
+        }
+        return types;
+    }
+    
+    // For compatibility with ScoreManager and other existing scripts
+    public List<string> GetCurrentOrder()
+    {
+        return GetCurrentOrderTypes();
+    }
+    
+    // For compatibility with LevelManager
+    public void CompleteLevel()
+    {
+        EndLevel();
+    }
+    
     void EndLevel()
     {
         DebugLog("Ending level - stopping order system");
@@ -639,24 +568,6 @@ public class OrderSystem : MonoBehaviour
         {
             levelManager.OnLevelComplete();
         }
-    }
-    
-    #region Public API
-    
-    // Public methods for external access
-    public List<string> GetCurrentOrder()
-    {
-        return new List<string>(currentOrder); // Return a copy
-    }
-    
-    public bool IsOrderActive()
-    {
-        return orderActive;
-    }
-    
-    public float GetRemainingTime()
-    {
-        return orderTimer;
     }
     
     public void StopOrderSystem()
@@ -678,79 +589,221 @@ public class OrderSystem : MonoBehaviour
         // Reset processing flag
         isProcessingCustomerOrder = false;
         
+        orderActive = false;
         HideOrder();
     }
     
-    // Public method to get currently active food types
-    public List<string> GetActiveFoodTypes()
+    #endregion
+    
+    #region CUSTOMER FLOW METHODS - For CustomerManager integration
+    
+    public void GenerateCustomerOrder()
     {
-        return new List<string>(activeFoodTypes);
+        if (isProcessingCustomerOrder)
+        {
+            DebugLog("Already processing customer order, ignoring new request");
+            return;
+        }
+        
+        isProcessingCustomerOrder = true;
+        DebugLog("Generating order for customer");
+        GenerateNewOrder();
     }
     
-    // Public method to manually refresh active food types (useful for debugging)
-    public void RefreshActiveFoodTypes()
+    public void StartOrderCycle()
     {
-        UpdateActiveFoodTypes();
+        if (!isInitialized)
+        {
+            DebugLog("OrderSystem not initialized yet, deferring start", true);
+            StartCoroutine(DeferredStartOrderCycle());
+            return;
+        }
+        
+        if (orderCycleCoroutine != null)
+        {
+            StopCoroutine(orderCycleCoroutine);
+        }
+        
+        DebugLog($"Starting order cycle. Flow type: {(isUsingCustomerFlow ? "Customer-Integrated" : "Original")}");
+        
+        if (isUsingCustomerFlow)
+        {
+            // Customer flow: wait for customer manager to generate orders
+            DebugLog("Using customer flow - waiting for CustomerManager");
+        }
+        else
+        {
+            // Original flow: generate orders automatically
+            orderCycleCoroutine = StartCoroutine(OrderCycleCoroutine());
+        }
     }
     
-    /// <summary>
-    /// NEW: Get current order progress info
-    /// </summary>
-    public void GetOrderProgress(out int completed, out int total)
+    IEnumerator DeferredStartOrderCycle()
     {
-        completed = ordersCompleted;
-        total = ordersPerLevel;
+        yield return new WaitForSeconds(0.1f);
+        if (isInitialized)
+        {
+            StartOrderCycle();
+        }
+        else
+        {
+            DebugLog("OrderSystem still not initialized after delay", true);
+        }
     }
     
-    /// <summary>
-    /// NEW: Check if using customer flow
-    /// </summary>
-    public bool IsUsingCustomerFlow()
+    IEnumerator OrderCycleCoroutine()
     {
-        return isUsingCustomerFlow;
+        DebugLog("Order cycle started");
+        
+        for (int i = 0; i < ordersPerLevel; i++)
+        {
+            DebugLog($"Generating order {i + 1}/{ordersPerLevel}");
+            GenerateNewOrder();
+            
+            // Wait until order is completed or expired
+            yield return new WaitUntil(() => !orderActive);
+            
+            // Wait between orders (except for the last one)
+            if (i < ordersPerLevel - 1)
+            {
+                DebugLog($"Waiting {timeBetweenOrders}s before next order");
+                yield return new WaitForSeconds(timeBetweenOrders);
+            }
+        }
+        
+        DebugLog("All orders completed! Notifying LevelManager");
+        
+        if (levelManager != null)
+        {
+            levelManager.OnLevelComplete();
+        }
+    }
+    
+    // Called by CustomerManager after customer delay to start the order
+    public void StartOrderCycleForCustomer()
+    {
+        if (!isUsingCustomerFlow)
+        {
+            DebugLog("StartOrderCycleForCustomer called but not using customer flow!", true);
+            return;
+        }
+        
+        if (isProcessingCustomerOrder)
+        {
+            DebugLog("Already processing customer order - ignoring StartOrderCycleForCustomer");
+            return;
+        }
+        
+        DebugLog("Starting order cycle for customer");
+        GenerateCustomerOrder();
+    }
+    
+    // Called when customer spawns next customer
+    void SpawnNextCustomer()
+    {
+        if (isUsingCustomerFlow && customerManager != null)
+        {
+            customerManager.SpawnCustomerForCurrentLevel();
+        }
+    }
+    
+    // Handle delayed next customer spawn
+    IEnumerator DelayedNextCustomer()
+    {
+        DebugLog($"Waiting {timeBetweenOrders}s before next customer");
+        yield return new WaitForSeconds(timeBetweenOrders);
+        SpawnNextCustomer();
     }
     
     #endregion
     
-    #region Debug Utilities
+    #region LEGACY COMPATIBILITY METHODS - For old scripts that expect these
     
-    void DebugLog(string message, bool isWarning = false)
+    // Called by old ServePlate.Serve() method if it still exists
+    public void CompleteCurrentOrder()
     {
-        if (enableDebugLogs)
+        if (!orderActive)
         {
-            string formattedMessage = $"[OrderSystem] {message}";
-            if (isWarning)
-            {
-                Debug.LogWarning(formattedMessage);
-            }
-            else
-            {
-                Debug.Log(formattedMessage);
-            }
+            DebugLog("CompleteCurrentOrder called but no active order");
+            return;
         }
-    }
-    
-    /// <summary>
-    /// NEW: Debug method to validate current state
-    /// </summary>
-    [ContextMenu("Debug Order State")]
-    public void DebugOrderState()
-    {
-        Debug.Log($"=== ORDER SYSTEM STATE ===");
-        Debug.Log($"Flow Type: {(isUsingCustomerFlow ? "Customer-Integrated" : "Original")}");
-        Debug.Log($"Orders: {ordersCompleted}/{ordersPerLevel}");
-        Debug.Log($"Order Active: {orderActive}");
-        Debug.Log($"Processing Customer Order: {isProcessingCustomerOrder}");
-        Debug.Log($"Current Order: [{string.Join(", ", currentOrder)}]");
-        Debug.Log($"Active Food Types: [{string.Join(", ", activeFoodTypes)}]");
-        Debug.Log($"Timer Remaining: {orderTimer:F1}s");
-        Debug.Log($"Customer Manager: {(customerManager != null ? "Present" : "Missing")}");
-        if (customerManager != null)
+        
+        DebugLog($"Completing order #{ordersCompleted + 1} (legacy method)");
+        
+        ordersCompleted++;
+        UpdateOrderProgress();
+        
+        // Stop the timer coroutine since order was manually completed
+        if (orderTimerCoroutine != null)
         {
-            Debug.Log($"Customer Processing: {customerManager.IsProcessingCustomer()}");
+            StopCoroutine(orderTimerCoroutine);
+            orderTimerCoroutine = null;
         }
-        Debug.Log($"=========================");
+        
+        // Reset processing flag
+        isProcessingCustomerOrder = false;
+        
+        // Hide the order immediately
+        HideOrder();
+        orderActive = false;
+        
+        // Check for level completion
+        if (ordersCompleted >= ordersPerLevel)
+        {
+            DebugLog("All orders completed via legacy method - ending level");
+            EndLevel();
+        }
+        else if (isUsingCustomerFlow)
+        {
+            // In customer flow, wait then spawn next customer
+            StartCoroutine(DelayedNextCustomer());
+        }
+        // In original flow, the main cycle will handle the next order
     }
     
     #endregion
+}
+
+// NEW: Add this component to order display items for visual effects
+public class ServedItemVisual : MonoBehaviour
+{
+    [Header("Pop Effect Settings")]
+    public float popScale = 1.3f;
+    public float popDuration = 0.2f;
+    public float fadeDuration = 0.3f;
+    
+    public IEnumerator PlayServedEffect()
+    {
+        Vector3 originalScale = transform.localScale;
+        
+        // Pop effect - scale up quickly
+        float elapsed = 0f;
+        while (elapsed < popDuration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = elapsed / popDuration;
+            
+            float currentScale = Mathf.Lerp(1f, popScale, progress);
+            transform.localScale = originalScale * currentScale;
+            
+            yield return null;
+        }
+        
+        // Fade out effect
+        CanvasGroup canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        
+        elapsed = 0f;
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = elapsed / fadeDuration;
+            
+            canvasGroup.alpha = Mathf.Lerp(1f, 0f, progress);
+            transform.localScale = Vector3.Lerp(originalScale * popScale, originalScale * 0.5f, progress);
+            
+            yield return null;
+        }
+    }
 }

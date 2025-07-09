@@ -149,11 +149,46 @@ public class CustomerManager : MonoBehaviour
             hasOrderBeenGenerated = false; // Reset for next customer
             
             OnCustomerCompleted?.Invoke(customer);
-            DebugLog("Ready for next customer");
+            DebugLog("Customer exited - checking if we should spawn next customer");
+            
+            // FIXED: Check if we need to spawn the next customer
+            CheckForNextCustomer();
         }
         else
         {
             DebugLog($"Customer {customer.name} exited but was not current customer");
+        }
+    }
+    
+    // NEW: Check if we should spawn the next customer
+    void CheckForNextCustomer()
+    {
+        if (orderSystem == null)
+        {
+            Debug.LogError("OrderSystem reference missing!");
+            return;
+        }
+        
+        // Wait a bit, then spawn next customer
+        DebugLog("Waiting before spawning next customer");
+        StartCoroutine(DelayedNextCustomerSpawn());
+    }
+    
+    // NEW: Delayed spawning of next customer
+    IEnumerator DelayedNextCustomerSpawn()
+    {
+        // Wait 2 seconds before spawning next customer
+        yield return new WaitForSeconds(2f);
+        
+        // Check if we should still spawn (no current customer)
+        if (currentCustomer == null)
+        {
+            DebugLog("Spawning next customer after delay");
+            SpawnCustomerForCurrentLevel();
+        }
+        else
+        {
+            DebugLog("Not spawning next customer - customer already exists");
         }
     }
     
@@ -290,7 +325,7 @@ public class CustomerManager : MonoBehaviour
         }
     }
     
-    // FIXED: Additional state validation
+    // Public getters for debugging
     public CustomerController GetCurrentCustomer()
     {
         return currentCustomer;
@@ -306,13 +341,11 @@ public class CustomerManager : MonoBehaviour
         return currentCustomer != null && currentCustomer.HasReachedServicePoint();
     }
     
-    // NEW: Check if order has been generated for current customer
     public bool HasOrderBeenGenerated()
     {
         return hasOrderBeenGenerated;
     }
     
-    // NEW: Debug method to check state
     [ContextMenu("Debug Customer Manager State")]
     public void DebugCustomerManagerState()
     {

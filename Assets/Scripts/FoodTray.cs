@@ -18,16 +18,22 @@ public class FoodTray : MonoBehaviour
     public Vector2 gridSize = new Vector2(5, 1); // Grid layout (width x height)
     public float itemSpacing = 1f; // Space between items
     
-    [Header("Serve Plate Reference")]
-    public ServePlate servePlate; // Reference to the serve plate
+    [Header("NEW: Order System Reference")]
+    public OrderSystem orderSystem; // Reference to the order system for direct serving
+    
+    [Header("Visual Feedback")]
+    public GameObject popupCanvas; // For UI popup detection
     
     // Private variables
     private int currentItems;
     private GameObject[] itemObjects;
-    public GameObject popupCanvas;
 
     void Start()
     {
+        // Find order system if not assigned
+        if (orderSystem == null)
+            orderSystem = FindObjectOfType<OrderSystem>();
+            
         InitializeTray();
         SetupTrayCollider();
         
@@ -47,9 +53,9 @@ public class FoodTray : MonoBehaviour
             // Add a box collider that covers the entire tray area
             BoxCollider boxCollider = gameObject.AddComponent<BoxCollider>();
             
-            // Calculate tray size based on grid layout (reduced padding to prevent overlap)
-            float trayWidth = gridSize.x * itemSpacing; // Removed extra padding
-            float trayHeight = gridSize.y * itemSpacing; // Removed extra padding
+            // Calculate tray size based on grid layout
+            float trayWidth = gridSize.x * itemSpacing;
+            float trayHeight = gridSize.y * itemSpacing;
             
             boxCollider.size = new Vector3(trayWidth, trayHeight, 0.5f);
             boxCollider.isTrigger = false; // Make it solid for clicking
@@ -76,40 +82,42 @@ public class FoodTray : MonoBehaviour
         // Create new items in grid layout
         for (int i = 0; i < currentItems; i++)
         {
-            Vector3 position = CalculateItemPosition(i);
+            Vector3 itemPosition = CalculateItemPosition(i);
             GameObject newItem = Instantiate(itemPrefab, itemContainer);
-            newItem.transform.localPosition = position;
+            newItem.transform.localPosition = itemPosition;
             
-            // Add click functionality to each item
-            FoodItem foodItemScript = newItem.GetComponent<FoodItem>();
-            if (foodItemScript == null)
-                foodItemScript = newItem.AddComponent<FoodItem>();
-            
-            // Individual items no longer need click functionality
-            // since we're handling clicks on the tray level
-            foodItemScript.Initialize(this, foodType);
+            // Store reference
             itemObjects[i] = newItem;
+            
+            // Initialize food item component
+            FoodItem foodItem = newItem.GetComponent<FoodItem>();
+            if (foodItem == null)
+                foodItem = newItem.AddComponent<FoodItem>();
+            
+            foodItem.Initialize(this, foodType);
         }
     }
     
     Vector3 CalculateItemPosition(int index)
     {
-        int row = Mathf.FloorToInt(index / gridSize.x);
+        int row = index / (int)gridSize.x;
         int col = index % (int)gridSize.x;
         
-        float x = (col - (gridSize.x - 1) / 2f) * itemSpacing;
-        float y = (row - (gridSize.y - 1) / 2f) * itemSpacing;
+        float x = col * itemSpacing;
+        float y = -row * itemSpacing; // Negative for downward layout
         
         return new Vector3(x, y, 0);
     }
     
-    // Handle clicks on the tray itself
+    // Handle clicks on the tray itself - NEW DIRECT SERVING SYSTEM
     void OnMouseDown()
     {
-        bool overUI = EventSystem.current.IsPointerOverGameObject();
+        // Check if we're over UI elements
+        bool overUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
         bool popupActive = popupCanvas != null && popupCanvas.activeInHierarchy;
-
-        Debug.Log($"Tray clicked! Mouse over UI: {overUI}, Popup active: {popupActive}");
+        
+        Debug.Log($"Tray {foodType} clicked. Current items: {currentItems}");
+        Debug.Log($"Mouse over UI: {overUI}, Popup active: {popupActive}");
 
         // Only block if we're over UI AND the popup canvas is active
         if (overUI && popupActive) 
@@ -122,38 +130,79 @@ public class FoodTray : MonoBehaviour
         OnItemClicked();
     }
     
+    // NEW: Direct serving to customer orders
     public void OnItemClicked()
     {
-        if (currentItems > 0)
+        // Check if tray has items
+        if (currentItems <= 0)
         {
-            // Try to add item to serve plate first
-            if (servePlate != null && servePlate.AddItem(itemPrefab, foodType))
-            {
-                // Only remove from tray if successfully added to serve plate
-                RemoveItem();
-            }
-            else if (servePlate == null)
-            {
-                // If no serve plate reference, just remove item (original behavior)
-                RemoveItem();
-                
-            }
-            // If serve plate is full, item stays in tray (no removal)
+            Debug.Log($"{foodType} tray is empty!");
+            return;
+        }
+        
+        // Check if there's an active order
+        if (orderSystem == null || !orderSystem.IsOrderActive())
+        {
+            Debug.Log("No active order to serve!");
+            return;
+        }
+        
+        // Try to serve this item to the current order
+        bool itemServed = orderSystem.TryServeItem(foodType);
+        
+        if (itemServed)
+        {
+            // Remove item from tray
+            RemoveItem();
+            Debug.Log($"Successfully served {foodType}. Remaining in tray: {currentItems}");
+        }
+        else
+        {
+            Debug.Log($"{foodType} is not needed in the current order!");
+            // Show visual feedback for wrong item
+            StartCoroutine(ShowWrongItemFeedback());
         }
     }
     
     void RemoveItem()
     {
-        currentItems--;
-        
-        // Destroy the last item
-        if (itemObjects[currentItems] != null)
+        if (currentItems > 0)
         {
-            Destroy(itemObjects[currentItems]);
-            itemObjects[currentItems] = null;
+            currentItems--;
+            
+            // Destroy the last item
+            if (itemObjects[currentItems] != null)
+            {
+                Destroy(itemObjects[currentItems]);
+                itemObjects[currentItems] = null;
+            }
+            
+            UpdateUI();
+        }
+    }
+    
+    // Visual feedback for wrong item selection
+    System.Collections.IEnumerator ShowWrongItemFeedback()
+    {
+        // Simple shake effect for wrong item
+        Vector3 originalPosition = transform.position;
+        float shakeIntensity = 0.1f;
+        float shakeDuration = 0.3f;
+        
+        float elapsed = 0f;
+        while (elapsed < shakeDuration)
+        {
+            elapsed += Time.deltaTime;
+            
+            float x = originalPosition.x + Random.Range(-shakeIntensity, shakeIntensity);
+            float y = originalPosition.y + Random.Range(-shakeIntensity, shakeIntensity);
+            
+            transform.position = new Vector3(x, y, originalPosition.z);
+            
+            yield return null;
         }
         
-        UpdateUI();
+        transform.position = originalPosition;
     }
     
     public void CompleteRefill()
@@ -168,6 +217,8 @@ public class FoodTray : MonoBehaviour
     
         CreateItems();
         UpdateUI();
+        
+        Debug.Log($"{foodType} tray refilled to {maxItems} items");
     }
     
     void UpdateUI()
@@ -188,14 +239,20 @@ public class FoodTray : MonoBehaviour
         return currentItems > 0;
     }
     
-    // NEW: Public method to get food type - NEEDED FOR CUSTOMER INTEGRATION
+    // Public method to get food type - NEEDED FOR LEVEL MANAGER INTEGRATION
     public string GetFoodType()
     {
         return foodType;
     }
+    
+    // Public method to check if tray can serve (has items and order is active)
+    public bool CanServe()
+    {
+        return HasItems() && orderSystem != null && orderSystem.IsOrderActive();
+    }
 }
 
-// Separate script for individual food items
+// Separate script for individual food items (simplified for new system)
 public class FoodItem : MonoBehaviour
 {
     private FoodTray parentTray;

@@ -6,24 +6,46 @@ using TMPro;
 public class ScoreManager : MonoBehaviour
 {
     [Header("UI Elements")]
-    public TextMeshProUGUI inGameScoreText; // NEW: For in-game score display
-    public TextMeshProUGUI finalScoreText; // For level complete panel (your current scoreText)
+    public TextMeshProUGUI inGameScoreText; // For in-game score display
+    public TextMeshProUGUI finalScoreText; // For level complete panel
     public TextMeshProUGUI totalScoreText; // Session total score
-    public TextMeshProUGUI comboText;
+    public TextMeshProUGUI comboText; // For combo display
+    public TextMeshProUGUI feedbackText; // For showing "+10 points!" etc.
     
     [Header("Game References")]
-    public ServePlate servePlate;
-    public OrderSystem orderSystem;
-    public LevelManager levelManager;
+    public OrderSystem orderSystem; // Reference to order system
+    public LevelManager levelManager; // Reference to level manager
     
     [Header("Level Settings - Set by LevelManager")]
     [SerializeField] private int basePointsPerOrder = 100;
     [SerializeField] private int perfectOrderBonus = 50;
     [SerializeField] private int timeBonus = 10;
     
+    [Header("NEW: Per-Item Scoring Settings")]
+    public int pointsPerItem = 10; // Points for each correct item served
+    public int orderCompletionBonus = 50; // Bonus for completing an order
+    public int timeBonusMultiplier = 5; // Points per second remaining when order completed
+    public int expiredOrderPenalty = -25; // Penalty for expired orders
+    
+    [Header("Item-Specific Points")]
+    public ItemPointValues[] itemPoints; // Specific points for different items
+    
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip pointsSound;
+    public AudioClip bonusSound;
+    public AudioClip penaltySound;
+    
     // Score tracking
     private int currentScore = 0;
     private int consecutiveCorrectOrders = 0;
+    
+    [System.Serializable]
+    public class ItemPointValues
+    {
+        public string itemType;
+        public int points;
+    }
     
     void Start()
     {
@@ -94,99 +116,143 @@ public class ScoreManager : MonoBehaviour
         Debug.Log("Score reset for new level");
     }
     
-    public void CalculateAndAwardScore()
+    // NEW: Called when an individual item is served correctly
+    public void AwardItemPoints(string itemType)
     {
-        if (servePlate == null || orderSystem == null)
-        {
-            Debug.LogWarning("ServePlate or OrderSystem reference missing!");
-            return;
-        }
+        int points = GetPointsForItem(itemType);
         
-        // Get served items and current order
-        List<string> servedItems = servePlate.GetServedItemTypes();
-        List<string> currentOrder = orderSystem.GetCurrentOrder();
+        AddScore(points);
+        ShowFeedback($"+{points} points!");
+        PlayPointsSound();
         
-        // Calculate score based on order accuracy
-        int orderScore = CalculateOrderScore(servedItems, currentOrder);
-        
-        // Add time bonus
-        float remainingTime = orderSystem.GetRemainingTime();
-        int timeBonusPoints = Mathf.RoundToInt(remainingTime * timeBonus);
-        
-        // Apply combo multiplier for consecutive correct orders
-        int comboMultiplier = Mathf.Min(consecutiveCorrectOrders, 5); // Max 5x combo
-        int totalScore = (orderScore + timeBonusPoints) * (1 + comboMultiplier);
-        
-        // Update score
-        currentScore += totalScore;
-        
-        // Update combo counter
-        bool perfectOrder = IsOrderPerfect(servedItems, currentOrder);
-        if (perfectOrder)
-        {
-            consecutiveCorrectOrders++;
-        }
-        else
-        {
-            consecutiveCorrectOrders = 0;
-        }
-        
-        // Update UI immediately after scoring
-        UpdateScoreUI();
-        UpdateComboUI();
-        
-        Debug.Log($"Order Score: {orderScore}, Time Bonus: {timeBonusPoints}, Combo: {comboMultiplier}x, Total: {totalScore}");
-        Debug.Log($"Current Level Score: {currentScore}");
+        Debug.Log($"Awarded {points} points for serving {itemType}");
     }
     
-    int CalculateOrderScore(List<string> served, List<string> ordered)
+    // NEW: Called when an order is completed (all items served)
+    public void AwardOrderCompletionBonus(float remainingTime)
     {
-        if (ordered.Count == 0) return 0;
+        // Base completion bonus
+        int bonus = orderCompletionBonus;
         
-        // Check if order is perfect
-        if (IsOrderPerfect(served, ordered))
+        // Time bonus based on remaining time
+        int timeBonusPoints = Mathf.RoundToInt(remainingTime * timeBonusMultiplier);
+        
+        // Combo multiplier
+        int comboMultiplier = Mathf.Min(consecutiveCorrectOrders + 1, 5); // Max 5x combo
+        
+        int totalBonus = (bonus + timeBonusPoints) * comboMultiplier;
+        
+        AddScore(totalBonus);
+        ShowFeedback($"Order Complete! +{totalBonus} bonus!");
+        PlayBonusSound();
+        
+        // Increase combo counter
+        consecutiveCorrectOrders++;
+        UpdateComboUI();
+        
+        Debug.Log($"Order completion bonus: {bonus} + time bonus: {timeBonusPoints} x combo: {comboMultiplier} = {totalBonus}");
+    }
+    
+    // NEW: Called when an order expires
+    public void ApplyOrderExpiredPenalty()
+    {
+        AddScore(expiredOrderPenalty);
+        ShowFeedback($"Order Expired! {expiredOrderPenalty} points", Color.red);
+        PlayPenaltySound();
+        
+        // Reset combo
+        consecutiveCorrectOrders = 0;
+        UpdateComboUI();
+        
+        Debug.Log($"Order expired penalty: {expiredOrderPenalty}");
+    }
+    
+    // Helper method to get points for specific item types
+    int GetPointsForItem(string itemType)
+    {
+        // Check if there are specific points for this item type
+        foreach (var itemPoint in itemPoints)
         {
-            return basePointsPerOrder + perfectOrderBonus;
-        }
-        
-        // Calculate partial score based on correct items
-        int correctItems = 0;
-        List<string> orderedCopy = new List<string>(ordered);
-        
-        foreach (string servedItem in served)
-        {
-            if (orderedCopy.Contains(servedItem))
+            if (itemPoint.itemType == itemType)
             {
-                orderedCopy.Remove(servedItem);
-                correctItems++;
+                return itemPoint.points;
             }
         }
         
-        // Partial score: base points * (correct items / total ordered items)
-        float accuracy = (float)correctItems / ordered.Count;
-        return Mathf.RoundToInt(basePointsPerOrder * accuracy);
+        // Return default points if no specific value found
+        return pointsPerItem;
     }
     
-    bool IsOrderPerfect(List<string> served, List<string> ordered)
+    // Helper method to add score and update UI
+    void AddScore(int points)
     {
-        if (served.Count != ordered.Count) return false;
+        currentScore += points;
         
-        // Create copies to avoid modifying original lists
-        List<string> servedCopy = new List<string>(served);
-        List<string> orderedCopy = new List<string>(ordered);
+        // Prevent negative scores
+        if (currentScore < 0) currentScore = 0;
         
-        // Sort both lists to compare regardless of order
-        servedCopy.Sort();
-        orderedCopy.Sort();
+        UpdateScoreUI();
         
-        // Compare sorted lists
-        for (int i = 0; i < servedCopy.Count; i++)
+        // Note: Session total score is updated by LevelManager at level completion
+        // using SessionManager.AddLevelScore() with the final level score
+    }
+    
+    // Helper method to show feedback text
+    void ShowFeedback(string message, Color? color = null)
+    {
+        if (feedbackText != null)
         {
-            if (servedCopy[i] != orderedCopy[i])
-                return false;
+            feedbackText.text = message;
+            feedbackText.color = color ?? Color.green;
+            
+            // Auto-hide feedback after a delay
+            CancelInvoke("HideFeedback");
+            Invoke("HideFeedback", 2f);
         }
-        
-        return true;
+        else
+        {
+            // If no feedback text component, just log it
+            Debug.Log($"Score Feedback: {message}");
+        }
+    }
+    
+    void HideFeedback()
+    {
+        if (feedbackText != null)
+            feedbackText.text = "";
+    }
+    
+    // Audio methods
+    void PlayPointsSound()
+    {
+        if (audioSource != null && pointsSound != null)
+        {
+            audioSource.PlayOneShot(pointsSound);
+        }
+        else if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayItemPickup();
+        }
+    }
+    
+    void PlayBonusSound()
+    {
+        if (audioSource != null && bonusSound != null)
+        {
+            audioSource.PlayOneShot(bonusSound);
+        }
+        else if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayOrderComplete();
+        }
+    }
+    
+    void PlayPenaltySound()
+    {
+        if (audioSource != null && penaltySound != null)
+        {
+            audioSource.PlayOneShot(penaltySound);
+        }
     }
     
     void UpdateScoreUI()
@@ -207,7 +273,23 @@ public class ScoreManager : MonoBehaviour
         // Update final score display (for level complete panel)
         if (finalScoreText != null)
         {
-            finalScoreText.text = scoreDisplayText;
+            finalScoreText.text = "Final Score: " + currentScore;
+        }
+    }
+    
+    void UpdateComboUI()
+    {
+        if (comboText != null)
+        {
+            if (consecutiveCorrectOrders > 0)
+            {
+                comboText.text = "Combo: " + consecutiveCorrectOrders + "x";
+                comboText.color = Color.yellow;
+            }
+            else
+            {
+                comboText.text = "";
+            }
         }
     }
     
@@ -227,22 +309,6 @@ public class ScoreManager : MonoBehaviour
         if (totalScoreText != null)
         {
             totalScoreText.text = "Total Score: " + newTotalScore;
-        }
-    }
-    
-    void UpdateComboUI()
-    {
-        if (comboText != null)
-        {
-            if (consecutiveCorrectOrders > 0)
-            {
-                comboText.text = "Combo: " + consecutiveCorrectOrders + "x";
-                comboText.color = Color.yellow;
-            }
-            else
-            {
-                comboText.text = "";
-            }
         }
     }
     
