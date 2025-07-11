@@ -415,38 +415,41 @@ public class OrderSystem : MonoBehaviour
     void ExpireOrder()
     {
         Debug.Log("Order expired!");
-        
+    
+        // CRITICAL FIX: Clear all order display objects before marking order as inactive
+        ClearOrderDisplay();
+    
         orderActive = false;
-        
+    
         if (orderPanel != null)
             orderPanel.SetActive(false);
-        
+    
         // Penalize for expired order
         if (scoreManager != null)
         {
             scoreManager.ApplyOrderExpiredPenalty();
         }
-        
+    
         // Count as completed (even if expired)
         ordersCompleted++;
         UpdateOrderProgress();
-        
+    
         // CUSTOMER INTEGRATION: Notify customer manager
         if (isUsingCustomerFlow && customerManager != null)
         {
             customerManager.HandleOrderExpired();
             DebugLog("Notified CustomerManager of expired order");
-            
+        
             // CRITICAL FIX: Reset the processing flag to allow next customer orders  
             isProcessingCustomerOrder = false;
             DebugLog("Reset isProcessingCustomerOrder flag after expiry");
         }
-        
+    
         // Check if level is complete
         if (ordersCompleted >= ordersPerLevel)
         {
             DebugLog("All orders processed for this level!");
-            
+        
             if (levelManager != null)
             {
                 levelManager.OnLevelComplete();

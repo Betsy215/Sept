@@ -25,11 +25,13 @@ public abstract class CustomerController : MonoBehaviour
     public float sadWalkDistance = 5.0f;
     [Tooltip("Duration for sad customers to walk to the right")]
     public float sadWalkDuration = 3.0f;
+    
     [Header("Sprite Management")]
     [Tooltip("SpriteRenderer for sad/default state")]
     public SpriteRenderer sadSpriteRenderer;
     [Tooltip("SpriteRenderer for happy state")]  
     public SpriteRenderer happySpriteRenderer;
+    
     // Core components
     protected Animator animator;
     protected CustomerManager customerManager;
@@ -63,6 +65,7 @@ public abstract class CustomerController : MonoBehaviour
         Debug.Log($"AFTER: Sad={sadSpriteRenderer?.enabled}, Happy={happySpriteRenderer?.enabled}");
         Debug.Log($"{gameObject.name}: Sprite state set to {(isHappy ? "Happy" : "Sad")}");
     }
+    
     protected virtual void Awake()
     {
         Debug.Log($"{gameObject.name}: Starting Awake()");
@@ -270,20 +273,43 @@ public abstract class CustomerController : MonoBehaviour
         }
     }
     
+    // ENHANCED: OnOrderExpired method with reaction first
     public virtual void OnOrderExpired()
     {
         isWaitingForOrder = false;
-        Debug.Log($"{gameObject.name} is frustrated - order expired!");
+        Debug.Log($"🔥 {gameObject.name} is frustrated - order expired!");
+        Debug.Log($"🔥 Starting sad walk out sequence for expired order...");
         
-        StartCoroutine(DelayedWalkOut(false));
+        // CRITICAL: Play disappointed reaction FIRST before walking out
+        PlayOrderReaction(false);
+        
+        // Then start walk out after a brief delay to show the reaction
+        StartCoroutine(DelayedWalkOutAfterReaction(false));
     }
     
-    /// <summary>
-    /// MODIFIED: Different walk-out behavior based on customer satisfaction
-    /// </summary>
+    // NEW: Delayed walk out after showing reaction
+    protected virtual IEnumerator DelayedWalkOutAfterReaction(bool happy)
+    {
+        // Brief pause to show the disappointment reaction
+        yield return new WaitForSeconds(1.0f);
+        
+        // Now start the walk out
+        yield return StartCoroutine(DelayedWalkOut(happy));
+    }
+    
+    // ENHANCED: DelayedWalkOut method with better debugging
     protected virtual IEnumerator DelayedWalkOut(bool happy)
     {
-        Debug.Log($"{gameObject.name}: Starting walk out sequence - Happy: {happy}");
+        Debug.Log($"🚶 {gameObject.name}: Starting walk out sequence - Happy: {happy}");
+        
+        if (happy)
+        {
+            Debug.Log($"😊 {gameObject.name}: Customer is HAPPY - playing happy walk out");
+        }
+        else
+        {
+            Debug.Log($"😞 {gameObject.name}: Customer is SAD/DISAPPOINTED - playing sad walk out");
+        }
         
         // Brief pause before walking out 
         yield return new WaitForSeconds(walkOutPauseDelay);
@@ -297,29 +323,32 @@ public abstract class CustomerController : MonoBehaviour
         else
         {
             // SAD/DISAPPOINTED customers: walk from middle to right
-            Debug.Log($"{gameObject.name}: Customer is sad - walking from current position to right");
+            Debug.Log($"🔄 {gameObject.name}: Customer is sad - starting SadWalkOutToRight coroutine");
             yield return StartCoroutine(SadWalkOutToRight());
         }
     }
     
-    /// <summary>
-    /// NEW: Sad customers walk from middle (current position) to the right
-    /// </summary>
+    // ENHANCED: SadWalkOutToRight with detailed debugging
     protected virtual IEnumerator SadWalkOutToRight()
     {
+        Debug.Log($"💔 {gameObject.name}: STARTING SadWalkOutToRight coroutine");
+        
         isWalkingOut = true;
         
-        // Play sad walking animation
+        // CRITICAL: Play sad walking animation BEFORE starting movement
+        Debug.Log($"🎬 {gameObject.name}: Playing sad walking animation...");
         PlaySadWalkOutAnimation();
         
         // Get current position (should be at service point - middle of screen)
         Vector3 startPosition = transform.position;
         Vector3 endPosition = startPosition + new Vector3(sadWalkDistance, 0f, 0f); // Move right
         
+        Debug.Log($"📍 {gameObject.name}: Starting position: {startPosition}");
+        Debug.Log($"📍 {gameObject.name}: Target position: {endPosition}");
+        Debug.Log($"⏱️ {gameObject.name}: Walk duration: {sadWalkDuration}s");
+        
         // Walk to the right over time
         float elapsed = 0f;
-        
-        Debug.Log($"{gameObject.name}: Walking from {startPosition} to {endPosition} over {sadWalkDuration}s");
         
         while (elapsed < sadWalkDuration)
         {
@@ -327,7 +356,14 @@ public abstract class CustomerController : MonoBehaviour
             float progress = elapsed / sadWalkDuration;
             
             // Move smoothly from start to end position
-            transform.position = Vector3.Lerp(startPosition, endPosition, progress);
+            Vector3 currentPos = Vector3.Lerp(startPosition, endPosition, progress);
+            transform.position = currentPos;
+            
+            // Debug every 0.5 seconds
+            if (elapsed % 0.5f < Time.deltaTime)
+            {
+                Debug.Log($"🚶‍♂️ {gameObject.name}: Walking... Progress: {progress:F2}, Position: {currentPos}");
+            }
             
             yield return null;
         }
@@ -335,25 +371,57 @@ public abstract class CustomerController : MonoBehaviour
         // Ensure final position
         transform.position = endPosition;
         
-        Debug.Log($"{gameObject.name}: Reached exit position, removing customer");
+        Debug.Log($"✅ {gameObject.name}: Reached final exit position: {endPosition}");
+        Debug.Log($"🗑️ {gameObject.name}: Removing sad customer from scene");
         
         // Customer has exited
         OnReachedExit();
     }
     
-    /// <summary>
-    /// NEW: Play sad walking animation specifically for walk-out
-    /// </summary>
+    // ENHANCED: PlaySadWalkOutAnimation with detailed debugging
     protected virtual void PlaySadWalkOutAnimation()
     {
+        Debug.Log($"🎭 {gameObject.name}: PlaySadWalkOutAnimation called");
+        
         if (animator != null)
         {
+            Debug.Log($"🎬 {gameObject.name}: Animator found - setting up sad walk animation");
+            
+            // CRITICAL: Set sprite state to sad BEFORE animation
+            SetSpriteState(false);
+            Debug.Log($"😞 {gameObject.name}: Set sprite to SAD state");
+            
             // Set parameters for sad walking out
             animator.SetInteger("CustomerState", 1); // 1 = Walking Out Sad  
             animator.SetBool("IsHappy", false);
+            
+            Debug.Log($"🎛️ {gameObject.name}: Set CustomerState=1, IsHappy=false");
+            Debug.Log($"🎬 {gameObject.name}: Playing animation: {sadWalkOutState}");
+            
             animator.Play(sadWalkOutState);
             
-            Debug.Log($"{gameObject.name}: Playing sad walk out animation - {sadWalkOutState}");
+            // VERIFY: Check if animation is actually playing
+            StartCoroutine(VerifyAnimationPlaying());
+        }
+        else
+        {
+            Debug.LogError($"❌ {gameObject.name}: NO ANIMATOR FOUND! Cannot play sad walk animation!");
+        }
+    }
+    
+    // NEW: Verify that the animation is actually playing
+    protected virtual IEnumerator VerifyAnimationPlaying()
+    {
+        yield return new WaitForSeconds(0.1f); // Wait a frame for animation to start
+        
+        if (animator != null)
+        {
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+            Debug.Log($"🔍 {gameObject.name}: Current animation state: {stateInfo.fullPathHash}");
+            Debug.Log($"🔍 {gameObject.name}: Animation playing: {stateInfo.IsName(sadWalkOutState)}");
+            Debug.Log($"🔍 {gameObject.name}: Animation length: {stateInfo.length}s");
+            Debug.Log($"🔍 {gameObject.name}: CustomerState parameter: {animator.GetInteger("CustomerState")}");
+            Debug.Log($"🔍 {gameObject.name}: IsHappy parameter: {animator.GetBool("IsHappy")}");
         }
     }
     
@@ -400,12 +468,14 @@ public abstract class CustomerController : MonoBehaviour
         }
     }
     
+    // ENHANCED: PlayOrderReaction for better disappointment display
     public virtual void PlayOrderReaction(bool perfect)
     {
         if (animator != null)
         {
             if (perfect)
             {
+                Debug.Log($"😊 {gameObject.name}: Playing PERFECT order reaction");
                 // SWITCH TO HAPPY SPRITE FIRST, BEFORE ANIMATION
                 SetSpriteState(true);
             
@@ -414,12 +484,17 @@ public abstract class CustomerController : MonoBehaviour
             }
             else
             {
-                // For wrong orders: Keep sad sprite
+                Debug.Log($"😞 {gameObject.name}: Playing DISAPPOINTED order reaction");
+                // For wrong orders: Keep sad sprite and show disappointment
                 SetSpriteState(false);
                 animator.SetBool("IsHappy", false);
                 animator.SetTrigger("TriggerReaction");
-                Debug.Log($"{gameObject.name} staying sad for wrong order");
+                Debug.Log($"💔 {gameObject.name}: Triggered disappointment reaction");
             }
+        }
+        else
+        {
+            Debug.LogError($"❌ {gameObject.name}: No animator for order reaction!");
         }
     }
 
@@ -506,6 +581,20 @@ public abstract class CustomerController : MonoBehaviour
         {
             Debug.Log($"🧪 Testing wrong order animation for {gameObject.name}");
             OnOrderServed(false);
+        }
+        else
+        {
+            Debug.LogWarning("Can only test animations in Play Mode!");
+        }
+    }
+    
+    [ContextMenu("Test Order Expired Animation")]
+    public void TestOrderExpiredAnimation()
+    {
+        if (Application.isPlaying)
+        {
+            Debug.Log($"🧪 Testing order expired animation for {gameObject.name}");
+            OnOrderExpired();
         }
         else
         {

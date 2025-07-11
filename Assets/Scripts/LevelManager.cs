@@ -140,8 +140,25 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    // CRITICAL FIX: Helper method to hide level complete popup
+    void HideLevelCompletePopup()
+    {
+        if (levelCompletePanel != null)
+        {
+            levelCompletePanel.SetActive(false);
+        }
+        
+        if (popupCanvas != null)
+        {
+            popupCanvas.SetActive(false);
+        }
+    }
+
     public void LoadLevel(int levelIndex)
     {
+        // CRITICAL FIX: Ensure popup is hidden when loading any level
+        HideLevelCompletePopup();
+        
         if (levelIndex >= 0 && levelIndex < allLevels.Length)
         {
             currentLevelIndex = levelIndex;
@@ -365,6 +382,9 @@ public class LevelManager : MonoBehaviour
 
     public void LoadNextLevel()
     {
+        // CRITICAL FIX: Hide level complete popup before loading next level
+        HideLevelCompletePopup();
+        
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayGameplayMusic();
@@ -375,6 +395,9 @@ public class LevelManager : MonoBehaviour
 
     public void RestartLevel()
     {
+        // CRITICAL FIX: Hide level complete popup before restarting level
+        HideLevelCompletePopup();
+        
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayGameplayMusic();
