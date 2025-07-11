@@ -1259,6 +1259,7 @@ MonoBehaviour:
   customerUnlockLevels: 000000000200000004000000
   orderSystem: {fileID: 1998227852}
   levelManager: {fileID: 905501929}
+  nextCustomerSpawnDelay: 2
   enableDebugLogs: 1
 --- !u!4 &742151246
 Transform:
@@ -1480,7 +1481,6 @@ MonoBehaviour:
   - {fileID: 797004691}
   - {fileID: 1737456499}
   - {fileID: 2001225746}
-  servePlate: {fileID: 0}
   scoreManager: {fileID: 1415756604}
   customerManager: {fileID: 742151245}
   backgroundRenderer: {fileID: 0}
@@ -2357,7 +2357,7 @@ MonoBehaviour:
   finalScoreText: {fileID: 979542223}
   totalScoreText: {fileID: 1086603810}
   comboText: {fileID: 492118291}
-  servePlate: {fileID: 0}
+  feedbackText: {fileID: 0}
   orderSystem: {fileID: 1998227852}
   levelManager: {fileID: 905501929}
   basePointsPerOrder: 100
@@ -2989,7 +2989,7 @@ MonoBehaviour:
   maxItems: 6
   itemPrefab: {fileID: 7967219586748323803, guid: 9a4b59423ac3a4c9a9a770b467f6e795, type: 3}
   itemContainer: {fileID: 440178693}
-  refillButton: {fileID: 1850943418}
+  refillButton: {fileID: 0}
   itemCountText: {fileID: 0}
   gridSize: {x: 2, y: 3}
   itemSpacing: 0.6
@@ -3560,6 +3560,7 @@ MonoBehaviour:
   timeBetweenOrders: 5
   minOrderItems: 1
   maxOrderItems: 4
+  systemInitializationDelay: 0.1
   orderProgressText: {fileID: 1707346227}
   orderContainer: {fileID: 784244163}
   orderTitleText: {fileID: 0}

@@ -16,6 +16,10 @@ public class CustomerManager : MonoBehaviour
     public OrderSystem orderSystem;
     public LevelManager levelManager;
     
+    [Header("Timing Settings")]
+    [Tooltip("Delay between customer exit and spawning next customer")]
+    public float nextCustomerSpawnDelay = 2.0f;
+    
     [Header("Debug")]
     public bool enableDebugLogs = true;
     
@@ -178,7 +182,7 @@ public class CustomerManager : MonoBehaviour
     IEnumerator DelayedNextCustomerSpawn()
     {
         // Wait 2 seconds before spawning next customer
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(nextCustomerSpawnDelay);
         
         // Check if we should still spawn (no current customer)
         if (currentCustomer == null)

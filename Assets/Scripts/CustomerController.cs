@@ -15,6 +15,10 @@ public abstract class CustomerController : MonoBehaviour
     public float fallbackWalkInDuration = 2.0f;
     [Tooltip("Additional delay after reaching service point before order generation")]
     public float servicePointDelay = 1.0f;
+    [Tooltip("Pause before customer starts walking out after order completion")]
+    public float walkOutPauseDelay = 0.3f;
+    [Tooltip("Timeout for animation state detection (safety fallback)")]
+    public float animationDetectionTimeout = 5.0f;
     
     [Header("Walk-Out Settings")]
     [Tooltip("Distance sad customers walk to the right")]
@@ -141,7 +145,7 @@ public abstract class CustomerController : MonoBehaviour
         if (useStateMonitoring)
         {
             // Wait for the walk-in animation state to start
-            float timeout = 5.0f; // Safety timeout
+            float timeout = animationDetectionTimeout; // Safety timeout
             float elapsed = 0f;
             
             while (elapsed < timeout)
@@ -282,7 +286,7 @@ public abstract class CustomerController : MonoBehaviour
         Debug.Log($"{gameObject.name}: Starting walk out sequence - Happy: {happy}");
         
         // Brief pause before walking out 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(walkOutPauseDelay);
         
         if (happy)
         {

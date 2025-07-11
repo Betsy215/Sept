@@ -20,7 +20,8 @@ public class OrderSystem : MonoBehaviour
     public float timeBetweenOrders = 2f; // Time between orders
     public int minOrderItems = 1; // Minimum items in an order
     public int maxOrderItems = 4; // Maximum items in an order
-    
+    [Tooltip("Delay for deferred order system initialization")]
+    public float systemInitializationDelay = 0.1f;
     private int ordersCompleted = 0;
     
     [Header("Order Display UI")]
@@ -371,6 +372,10 @@ public class OrderSystem : MonoBehaviour
         {
             customerManager.HandleOrderServed(true); // Always perfect in new system
             DebugLog("Notified CustomerManager - Order completed");
+    
+            // CRITICAL FIX: Reset the processing flag to allow next customer orders
+            isProcessingCustomerOrder = false;
+            DebugLog("Reset isProcessingCustomerOrder flag for next customer");
         }
         
         // Hide order and prepare for next one
@@ -431,6 +436,10 @@ public class OrderSystem : MonoBehaviour
         {
             customerManager.HandleOrderExpired();
             DebugLog("Notified CustomerManager of expired order");
+            
+            // CRITICAL FIX: Reset the processing flag to allow next customer orders  
+            isProcessingCustomerOrder = false;
+            DebugLog("Reset isProcessingCustomerOrder flag after expiry");
         }
         
         // Check if level is complete
@@ -640,7 +649,7 @@ public class OrderSystem : MonoBehaviour
     
     IEnumerator DeferredStartOrderCycle()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(systemInitializationDelay);
         if (isInitialized)
         {
             StartOrderCycle();
