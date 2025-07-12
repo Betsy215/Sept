@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System.Collections.Generic;
 
 public class LevelManager : MonoBehaviour
 {
@@ -10,8 +11,7 @@ public class LevelManager : MonoBehaviour
 
     [Header("Game Components")] 
     public OrderSystem orderSystem;
-    public FoodTray[] foodTrays;
-    // REMOVED: public ServePlate servePlate; - No longer needed
+    public ServeableItem[] serveableItems; // CHANGED: Replace foodTrays with serveableItems
     public ScoreManager scoreManager;
     public CustomerManager customerManager; // Customer Manager integration
 
@@ -126,6 +126,7 @@ public class LevelManager : MonoBehaviour
 
     void SetupLevelCompleteUI()
     {
+        // CRITICAL FIX: Hide level complete popup before loading next level
         if (popupCanvas != null)
             popupCanvas.SetActive(false);
 
@@ -191,16 +192,11 @@ public class LevelManager : MonoBehaviour
             orderSystem.maxOrderItems = currentLevelData.maxOrderItems;
         }
 
-        if (foodTrays != null)
+        // CHANGED: Apply individual item settings instead of tray settings
+        if (serveableItems != null)
         {
-            ApplyTraySettings();
+            ApplyServeableItemSettings();
         }
-
-        // REMOVED: ServePlate settings - no longer needed
-        // if (servePlate != null)
-        // {
-        //     servePlate.maxCapacity = currentLevelData.plateMaxCapacity;
-        // }
 
         if (scoreManager != null)
         {
@@ -225,28 +221,32 @@ public class LevelManager : MonoBehaviour
         UpdateLevelInfoDisplay();
     }
 
-    void ApplyTraySettings()
+    // NEW: ApplyServeableItemSettings() method
+    void ApplyServeableItemSettings()
     {
-        // Activate only the required number of trays for this level
-        int activeTrayCount = Mathf.Clamp(currentLevelData.activeTrayCount, 1, foodTrays.Length);
+        // For now, activate all items. You can expand this later to control 
+        // which items are available per level using currentLevelData
+        
+        int activeItemCount = currentLevelData != null ? 
+            Mathf.Clamp(currentLevelData.activeItemCount, 1, serveableItems.Length) : 
+            serveableItems.Length;
 
-        for (int i = 0; i < foodTrays.Length; i++)
+        for (int i = 0; i < serveableItems.Length; i++)
         {
-            if (foodTrays[i] != null)
+            if (serveableItems[i] != null)
             {
-                bool shouldBeActive = i < activeTrayCount;
-                foodTrays[i].gameObject.SetActive(shouldBeActive);
-
+                bool shouldBeActive = i < activeItemCount;
+                serveableItems[i].gameObject.SetActive(shouldBeActive);
+                
                 if (shouldBeActive)
                 {
-                    // Apply tray-specific settings from level data
-                    foodTrays[i].maxItems = currentLevelData.maxItemsPerTray;
-                    foodTrays[i].CompleteRefill(); // Fill the tray
+                    Debug.Log($"Activated serveable item: {serveableItems[i].GetFoodType()}");
                 }
             }
         }
 
-        Debug.Log($"Activated {activeTrayCount} trays for level {currentLevelData.levelNumber}");
+        Debug.Log($"Activated {activeItemCount} serveable items for level {currentLevelData.levelNumber}");
+        
     }
 
     void ApplyVisualSettings()
@@ -486,23 +486,50 @@ public class LevelManager : MonoBehaviour
         return currentLevelIndex + 1;
     }
 
-    public int GetActiveTrayCount()
+    // CHANGED: Replace GetActiveTrays() with GetActiveServeableItems()
+    public ServeableItem[] GetActiveServeableItems()
     {
-        return currentLevelData != null ? currentLevelData.activeTrayCount : foodTrays.Length;
+        if (currentLevelData == null || serveableItems == null) 
+            return new ServeableItem[0];
+
+        // Return all active (enabled) items
+        List<ServeableItem> activeItems = new List<ServeableItem>();
+        
+        foreach (ServeableItem item in serveableItems)
+        {
+            if (item != null && item.gameObject.activeInHierarchy)
+            {
+                activeItems.Add(item);
+            }
+        }
+        
+        return activeItems.ToArray();
     }
 
-    public FoodTray[] GetActiveTrays()
+    // CHANGED: Replace GetActiveTrayCount() with GetActiveItemCount()
+    public int GetActiveItemCount()
     {
-        if (currentLevelData == null || foodTrays == null) return new FoodTray[0];
+        return serveableItems != null ? serveableItems.Length : 0;
+    }
 
-        int activeTrayCount = Mathf.Clamp(currentLevelData.activeTrayCount, 1, foodTrays.Length);
-        FoodTray[] activeTrays = new FoodTray[activeTrayCount];
+    // NEW: Helper methods for managing serveable items
+    public ServeableItem[] GetAllServeableItems()
+    {
+        return serveableItems != null ? serveableItems : new ServeableItem[0];
+    }
 
-        for (int i = 0; i < activeTrayCount; i++)
+    public ServeableItem FindServeableItem(string foodType)
+    {
+        if (serveableItems == null) return null;
+        
+        foreach (ServeableItem item in serveableItems)
         {
-            activeTrays[i] = foodTrays[i];
+            if (item != null && item.GetFoodType() == foodType)
+            {
+                return item;
+            }
         }
-
-        return activeTrays;
+        
+        return null;
     }
 }

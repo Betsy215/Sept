@@ -127,6 +127,8 @@ MonoBehaviour:
   sadWalkOutState: Sad_Walking
   fallbackWalkInDuration: 2
   servicePointDelay: 1
+  walkOutPauseDelay: 0.3
+  animationDetectionTimeout: 5
   sadWalkDistance: 5
   sadWalkDuration: 3
   sadSpriteRenderer: {fileID: -1553348195026608517}

@@ -127,25 +127,25 @@ public class OrderSystem : MonoBehaviour
     void UpdateActiveFoodTypes()
     {
         activeFoodTypes.Clear();
-        
+    
         if (levelManager != null)
         {
-            // Get only the active trays from LevelManager
-            FoodTray[] activeTrays = levelManager.GetActiveTrays();
-            
-            foreach (FoodTray tray in activeTrays)
+            // CHANGED: Get individual serveable items instead of trays
+            ServeableItem[] activeItems = levelManager.GetActiveServeableItems();
+        
+            foreach (ServeableItem item in activeItems)
             {
-                if (tray != null && !string.IsNullOrEmpty(tray.foodType))
+                if (item != null && !string.IsNullOrEmpty(item.GetFoodType()))
                 {
                     // Only add if we have a matching OrderItem for this food type
-                    if (HasOrderItemForFoodType(tray.foodType))
+                    if (HasOrderItemForFoodType(item.GetFoodType()))
                     {
-                        activeFoodTypes.Add(tray.foodType);
+                        activeFoodTypes.Add(item.GetFoodType());
                     }
                 }
             }
         }
-        
+    
         // Fallback: if no active food types found, use all available foods
         if (activeFoodTypes.Count == 0)
         {
@@ -158,7 +158,7 @@ public class OrderSystem : MonoBehaviour
                 }
             }
         }
-        
+    
         DebugLog($"Active food types for orders: {string.Join(", ", activeFoodTypes)}");
     }
     
@@ -267,39 +267,41 @@ public class OrderSystem : MonoBehaviour
         Debug.Log($"Order displayed: {currentOrderItems.Count} items");
     }
     
-    // NEW: Called by FoodTray when an item is clicked
     public bool TryServeItem(string foodType)
     {
+        // Method stays exactly the same - no changes needed!
+        // ServeableItem calls this method and it works perfectly
+    
         if (!orderActive) return false;
-        
+    
         // Find the first unserved item of this type
         OrderItemInstance itemToServe = currentOrderItems.Find(item => 
             item.foodType == foodType && !item.isServed);
-        
+    
         if (itemToServe != null)
         {
             // Mark as served
             itemToServe.isServed = true;
-            
+        
             // Play served item visual effect and remove
             StartCoroutine(ServeItemWithEffect(itemToServe));
-            
+        
             // Award points for this item
             if (scoreManager != null)
             {
                 scoreManager.AwardItemPoints(foodType);
             }
-            
+        
             // Play item served sound
             PlayItemServedSound();
-            
+        
             // Check if order is complete
             CheckOrderCompletion();
-            
+        
             Debug.Log($"Served {foodType}. Remaining items: {GetRemainingItemsCount()}");
             return true;
         }
-        
+    
         Debug.Log($"No {foodType} needed in current order");
         return false;
     }
