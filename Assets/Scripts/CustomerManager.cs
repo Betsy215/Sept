@@ -22,6 +22,8 @@ public class CustomerManager : MonoBehaviour
     
     [Header("Debug")]
     public bool enableDebugLogs = true;
+    [Header("Speech Bubble")]
+    public SpeechBubble speechBubble; 
     
     // Current state
     private CustomerController currentCustomer;
@@ -94,6 +96,10 @@ public class CustomerManager : MonoBehaviour
         if (currentCustomer != null)
         {
             DebugLog($"Order served - Perfect: {perfect}");
+            if (speechBubble != null)
+            {
+                speechBubble.HideCurrentCustomerOrder();
+            }
             currentCustomer.OnOrderServed(perfect);
         }
         else
@@ -147,6 +153,10 @@ public class CustomerManager : MonoBehaviour
     {
         if (customer == currentCustomer)
         {
+            if (speechBubble != null)
+            {
+                speechBubble.HideCurrentCustomerOrder();
+            }
             DebugLog($"{customer.name} has exited");
             currentCustomer = null;
             isProcessingCustomer = false;
@@ -273,6 +283,13 @@ public class CustomerManager : MonoBehaviour
             DebugLog("Customer delay complete - requesting order generation");
             orderSystem.StartOrderCycleForCustomer();
             customer.OnOrderGenerated();
+            
+            if (speechBubble != null)
+            {
+                // Wait a moment for order to be processed
+                yield return new WaitForSeconds(0.2f);
+                speechBubble.ShowCurrentCustomerOrder();
+            }
         }
         else
         {

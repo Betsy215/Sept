@@ -552,9 +552,14 @@ MonoBehaviour:
   foodItemSpacing: 0.8
   maxItemsPerRow: 3
   foodItemScale: {x: 0.6, y: 0.6}
-  bubbleSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  tailSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  autoSyncSpacing: 1
+  spacingMultiplier: 0.5
+  bubbleSprite: {fileID: 0}
+  tailSprite: {fileID: 0}
   bubbleColor: {r: 0.9019608, g: 0.9529412, b: 1, a: 1}
+  autoResizeBubble: 1
+  bubblePadding: {x: 0.5, y: 0.5}
+  minBubbleSize: {x: 1.5, y: 1}
 --- !u!1 &279741544
 GameObject:
   m_ObjectHideFlags: 0
@@ -1468,6 +1473,7 @@ MonoBehaviour:
   levelManager: {fileID: 905501929}
   nextCustomerSpawnDelay: 2
   enableDebugLogs: 1
+  speechBubble: {fileID: 278268117}
 --- !u!4 &742151246
 Transform:
   m_ObjectHideFlags: 0
@@ -4172,8 +4178,6 @@ MonoBehaviour:
   orderCompleteSound: {fileID: 0}
   itemServedSound: {fileID: 0}
   enableDebugLogs: 1
-  speechBubble: {fileID: 278268117}
-  useSpeechBubble: 0
 --- !u!1 &2001225745
 GameObject:
   m_ObjectHideFlags: 0
