@@ -18,6 +18,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip orderCompleteSFX;
     public AudioClip itemPickupSFX;
     public AudioClip levelWinSFX;
+    public AudioClip wrongItemSFX;
     
     [Header("Audio Settings")]
     [Range(0f, 1f)]
@@ -116,6 +117,11 @@ public class AudioManager : MonoBehaviour
         
         Debug.Log($"AudioManager: Playing SFX: {sfxClip.name}");
         sfxSource.PlayOneShot(sfxClip);
+    }
+    
+    public void PlayWrongItemSFX()
+    {
+        PlaySFX(wrongItemSFX);
     }
     
     public void StopMusic()

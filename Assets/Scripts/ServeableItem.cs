@@ -15,10 +15,27 @@ public class ServeableItem : MonoBehaviour
     [Tooltip("Canvas used for UI popup detection")]
     public GameObject popupCanvas;
     
+    [Header("Audio Feedback")]
+    [Tooltip("Play rejection sound through AudioManager (recommended)")]
+    public bool useAudioManager = true;
+    
+    [Header("Animation Settings")]
+    [Tooltip("How intense the shake effect should be")]
+    public float shakeIntensity = 0.15f;
+    [Tooltip("How long the shake effect lasts")]
+    public float shakeDuration = 0.4f;
+    [Tooltip("How many times the item shakes")]
+    public int shakeCount = 3;
+    
     [Header("Debug")]
     public bool enableDebugLogs = true;
 
     void Start()
+    {
+        Initialize();
+    }
+
+    void Initialize()
     {
         // Auto-find OrderSystem if not assigned
         if (orderSystem == null)
@@ -27,12 +44,11 @@ public class ServeableItem : MonoBehaviour
             if (orderSystem == null)
             {
                 Debug.LogError($"ServeableItem {foodType}: OrderSystem not found in scene!");
+                return;
             }
         }
 
-        // Ensure we have a collider for click detection
-        SetupCollider();
-        
+        // Audio setup is handled by AudioManager - no individual AudioSource needed
         DebugLog($"ServeableItem {foodType} initialized successfully");
     }
 
@@ -129,44 +145,65 @@ public class ServeableItem : MonoBehaviour
     // Called when item was successfully served
     void OnItemServedSuccessfully()
     {
-        // TODO: Add success animation/feedback here later
-        // For now, just log success
-        DebugLog($"{foodType}: Item served successfully");
+        // ✅ SUCCESS FEEDBACK: Order items already pop and disappear via ServedItemVisual
+        // The visual feedback happens on the order display items, not on the serveable item
+        // This is correct behavior - player sees the order item disappear with pop effect
+        
+        DebugLog($"{foodType}: Item served successfully - order item will pop and disappear");
+        
+        // Optional: Could add subtle success effect on the serveable item here
+        // For now, keeping it clean since the main feedback is on the order
     }
 
     // Called when item was not needed for current order
     void OnItemRejected()
     {
-        // TODO: Add rejection animation/feedback here later
-        // For now, just log rejection
-        DebugLog($"{foodType}: Item rejected - not needed");
+        // ❌ REJECTION FEEDBACK: Shake the item and play rejection sound
+        DebugLog($"{foodType}: Item rejected - playing shake and sound feedback");
         
-        // Optional: Add shake effect or other visual feedback
-        StartCoroutine(ShakeEffect());
+        // Start shake animation
+        StartCoroutine(ShakeWithSound());
     }
 
-    // Simple shake effect for wrong item clicks
-    System.Collections.IEnumerator ShakeEffect()
+    // Enhanced shake effect with sound for wrong item clicks
+    System.Collections.IEnumerator ShakeWithSound()
     {
-        Vector3 originalPosition = transform.position;
-        float shakeIntensity = 0.1f;
-        float shakeDuration = 0.3f;
+        // Play rejection sound immediately
+        PlayRejectionSound();
         
-        float elapsed = 0f;
-        while (elapsed < shakeDuration)
+        Vector3 originalPosition = transform.position;
+        float shakeDelay = shakeDuration / (shakeCount * 2); // Time for each shake direction
+        
+        for (int i = 0; i < shakeCount; i++)
         {
-            elapsed += Time.deltaTime;
+            // Shake right
+            transform.position = originalPosition + new Vector3(shakeIntensity, 0, 0);
+            yield return new WaitForSeconds(shakeDelay);
             
-            float x = originalPosition.x + Random.Range(-shakeIntensity, shakeIntensity);
-            float y = originalPosition.y + Random.Range(-shakeIntensity, shakeIntensity);
-            
-            transform.position = new Vector3(x, y, originalPosition.z);
-            
-            yield return null;
+            // Shake left
+            transform.position = originalPosition + new Vector3(-shakeIntensity, 0, 0);
+            yield return new WaitForSeconds(shakeDelay);
         }
         
         // Return to original position
         transform.position = originalPosition;
+        
+        DebugLog($"{foodType}: Shake effect completed");
+    }
+
+    // Play rejection sound effect through AudioManager
+    void PlayRejectionSound()
+    {
+        if (useAudioManager && AudioManager.Instance != null)
+        {
+            // Use the centralized AudioManager for consistent audio control
+            AudioManager.Instance.PlayWrongItemSFX();
+            DebugLog($"{foodType}: Played rejection sound via AudioManager");
+        }
+        else
+        {
+            DebugLog($"{foodType}: AudioManager not available for rejection sound");
+        }
     }
 
     // Debug logging helper
@@ -200,6 +237,20 @@ public class ServeableItem : MonoBehaviour
         else
         {
             Debug.LogWarning("Can only test serving in Play Mode!");
+        }
+    }
+
+    // Context menu to test rejection feedback
+    [ContextMenu("Test Rejection Feedback")]
+    void TestRejectionFeedback()
+    {
+        if (Application.isPlaying)
+        {
+            OnItemRejected();
+        }
+        else
+        {
+            Debug.LogWarning("Can only test rejection in Play Mode!");
         }
     }
 
