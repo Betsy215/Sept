@@ -253,8 +253,7 @@ public class ServeableItem : MonoBehaviour
             Debug.LogWarning("Can only test rejection in Play Mode!");
         }
     }
-
-    // Context menu to recalculate collider
+    
     [ContextMenu("Recalculate Collider")]
     void RecalculateCollider()
     {
