@@ -69,6 +69,9 @@ public class OrderSystem : MonoBehaviour
     private bool isInitialized = false;
     private bool isProcessingCustomerOrder = false;
     
+    [Header("Speech Bubble")]
+    public GameObject speechBubble; 
+    
     // NEW: Class to track individual order items (for multiple quantities)
     [System.Serializable]
     public class OrderItemInstance
@@ -255,9 +258,7 @@ public class OrderSystem : MonoBehaviour
     
     void DisplayOrder()
     {
-        if (orderPanel != null)
-            orderPanel.SetActive(true);
-            
+        speechBubble.SetActive(true);
         if (orderTitleText != null)
             orderTitleText.text = "Order:";
         
@@ -382,10 +383,13 @@ public class OrderSystem : MonoBehaviour
         
         // Hide order and prepare for next one
         orderActive = false;
-        
+
         if (orderPanel != null)
+        {
             orderPanel.SetActive(false);
-        
+            speechBubble.SetActive(false);
+        }
+
         // Check if level is complete
         if (ordersCompleted >= ordersPerLevel)
         {
@@ -422,10 +426,12 @@ public class OrderSystem : MonoBehaviour
         ClearOrderDisplay();
     
         orderActive = false;
-    
+
         if (orderPanel != null)
+        { speechBubble.SetActive(false);
             orderPanel.SetActive(false);
-    
+        }
+
         // Penalize for expired order
         if (scoreManager != null)
         {
