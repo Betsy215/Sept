@@ -29,7 +29,6 @@ public class OrderSystem : MonoBehaviour
     public Transform orderContainer; // Parent object to hold order items
     public Text orderTitleText; // Text showing "Order:" or similar
     public Text orderTimerText; // Text showing remaining time
-    public GameObject orderPanel; // Panel containing the entire order display
     
     [Header("Available Food Items")]
     public OrderItem[] availableFoods = new OrderItem[4]; // Burger, Fries, Drink, Dessert
@@ -68,6 +67,12 @@ public class OrderSystem : MonoBehaviour
     private bool isUsingCustomerFlow = false;
     private bool isInitialized = false;
     private bool isProcessingCustomerOrder = false;
+    
+    [Header("Speech Bubble Sizing")]
+    [Tooltip("Extra padding around order items inside the bubble")]
+    public Vector2 bubblePadding = new Vector2(1f, 0.5f);
+    [Tooltip("Minimum bubble size")]
+    public Vector2 minBubbleSize = new Vector2(2f, 1.5f);
     
     [Header("Speech Bubble")]
     public GameObject speechBubble; 
@@ -109,8 +114,6 @@ public class OrderSystem : MonoBehaviour
         // Update active food types based on current level
         UpdateActiveFoodTypes();
         
-        // Hide order panel initially
-        HideOrder();
         
         // Update order progress display
         UpdateOrderProgress();
@@ -259,6 +262,7 @@ public class OrderSystem : MonoBehaviour
     void DisplayOrder()
     {
         speechBubble.SetActive(true);
+        ResizeBubbleToFitItems();
         if (orderTitleText != null)
             orderTitleText.text = "Order:";
         
@@ -267,7 +271,46 @@ public class OrderSystem : MonoBehaviour
         
         Debug.Log($"Order displayed: {currentOrderItems.Count} items");
     }
+    void ResizeBubbleToFitItems()
+    {
+        // Calculate bounds of all order items
+        Bounds totalBounds = new Bounds();
+        bool boundsSet = false;
     
+        foreach(var item in currentOrderItems)
+        {
+            if(item.displayObject != null)
+            {
+                Renderer renderer = item.displayObject.GetComponent<Renderer>();
+                if(renderer != null)
+                {
+                    if(!boundsSet)
+                    {
+                        totalBounds = renderer.bounds;
+                        boundsSet = true;
+                    }
+                    else
+                    {
+                        totalBounds.Encapsulate(renderer.bounds);
+                    }
+                }
+            }
+        }
+    
+        if(boundsSet)
+        {
+            float finalWidth = Mathf.Max(totalBounds.size.x + bubblePadding.x, minBubbleSize.x);
+            float finalHeight = Mathf.Max(totalBounds.size.y + bubblePadding.y, minBubbleSize.y);
+        
+            speechBubble.transform.localScale = new Vector3(finalWidth, finalHeight, 1f);
+            Debug.Log($"Speech bubble resized immediately to: {finalWidth:F2} x {finalHeight:F2}");
+        }
+        else
+        {
+            speechBubble.transform.localScale = new Vector3(minBubbleSize.x, minBubbleSize.y, 1f);
+            Debug.LogWarning("No bounds found, using minimum size");
+        }
+    }
     public bool TryServeItem(string foodType)
     {
         // Method stays exactly the same - no changes needed!
@@ -383,12 +426,9 @@ public class OrderSystem : MonoBehaviour
         
         // Hide order and prepare for next one
         orderActive = false;
-
-        if (orderPanel != null)
-        {
-            orderPanel.SetActive(false);
+        
             speechBubble.SetActive(false);
-        }
+ 
 
         // Check if level is complete
         if (ordersCompleted >= ordersPerLevel)
@@ -427,10 +467,9 @@ public class OrderSystem : MonoBehaviour
     
         orderActive = false;
 
-        if (orderPanel != null)
-        { speechBubble.SetActive(false);
-            orderPanel.SetActive(false);
-        }
+
+         speechBubble.SetActive(false);
+
 
         // Penalize for expired order
         if (scoreManager != null)
@@ -496,12 +535,6 @@ public class OrderSystem : MonoBehaviour
     {
         if (orderProgressText != null)
             orderProgressText.text = $"{ordersCompleted}/{ordersPerLevel}";
-    }
-    
-    void HideOrder()
-    {
-        if (orderPanel != null)
-            orderPanel.SetActive(false);
     }
     
     void PlayItemServedSound()
@@ -610,7 +643,6 @@ public class OrderSystem : MonoBehaviour
         isProcessingCustomerOrder = false;
         
         orderActive = false;
-        HideOrder();
     }
     
     #endregion
@@ -764,7 +796,6 @@ public class OrderSystem : MonoBehaviour
         isProcessingCustomerOrder = false;
         
         // Hide the order immediately
-        HideOrder();
         orderActive = false;
         
         // Check for level completion

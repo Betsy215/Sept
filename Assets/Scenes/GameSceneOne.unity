@@ -491,7 +491,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &278268116
 Transform:
   m_ObjectHideFlags: 0
@@ -501,8 +501,8 @@ Transform:
   m_GameObject: {fileID: 278268114}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.65, y: 0.79, z: 0}
-  m_LocalScale: {x: 30, y: 10, z: 1}
+  m_LocalPosition: {x: -1, y: 1.97, z: 0}
+  m_LocalScale: {x: 0.8, y: 0.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -548,9 +548,9 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 39073afe1962d49b68968b2fd684ad10, type: 3}
   m_Color: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 0.2, y: 0.2}
@@ -1591,7 +1591,7 @@ Transform:
   m_GameObject: {fileID: 784244162}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.45, y: 0, z: 0}
+  m_LocalPosition: {x: -1.45, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3321,7 +3321,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 386, y: -636}
+  m_AnchoredPosition: {x: 393, y: -522}
   m_SizeDelta: {x: 700, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1715448386
@@ -4157,7 +4157,6 @@ MonoBehaviour:
   orderContainer: {fileID: 784244163}
   orderTitleText: {fileID: 0}
   orderTimerText: {fileID: 0}
-  orderPanel: {fileID: 0}
   availableFoods:
   - foodType: Bread
     displayPrefab: {fileID: 8878342301148696013, guid: 9ca22cca6b5fc4edaa744a554c23e1e9, type: 3}
@@ -4167,7 +4166,7 @@ MonoBehaviour:
     displayPrefab: {fileID: 7967219586748323803, guid: 9a4b59423ac3a4c9a9a770b467f6e795, type: 3}
   - foodType: Burger
     displayPrefab: {fileID: 7967219586748323803, guid: 90183fe8ad12a4166924a80c36de4969, type: 3}
-  itemSpacing: 0.6
+  itemSpacing: 1
   startPosition: {x: -2, y: 0, z: 0}
   scoreManager: {fileID: 1415756604}
   levelManager: {fileID: 905501929}
