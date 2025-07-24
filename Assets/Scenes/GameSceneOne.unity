@@ -512,7 +512,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &278268116
 Transform:
   m_ObjectHideFlags: 0
@@ -1487,8 +1487,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   customerPrefabs:
   - {fileID: -7655600882293471894, guid: 480e6c6abf9c641ceb659ed07c359013, type: 3}
+  - {fileID: 6078073404647016362, guid: d3f41be60a84743a28fa235f67a87645, type: 3}
   spawnPoint: {fileID: 1787719493}
-  customerUnlockLevels: 000000000200000004000000
+  customerUnlockLevels: 000000000000000000000000
   orderSystem: {fileID: 1998227852}
   levelManager: {fileID: 905501929}
   nextCustomerSpawnDelay: 2
