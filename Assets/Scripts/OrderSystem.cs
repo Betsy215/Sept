@@ -60,6 +60,17 @@ public class OrderSystem : MonoBehaviour
     private Coroutine orderCycleCoroutine;
     private Coroutine orderTimerCoroutine;
     
+    // ADD THESE LINES:
+    [Header("Speech Bubbles - Different Sizes")]
+    [Tooltip("Speech bubble for 1 item orders")]
+    public GameObject speechBubble1;
+    [Tooltip("Speech bubble for 2 item orders")]
+    public GameObject speechBubble2;
+    [Tooltip("Speech bubble for 3 item orders")]
+    public GameObject speechBubble3;
+    [Tooltip("Speech bubble for 4 item orders")]
+    public GameObject speechBubble4;
+    
     // Cache for active food types
     private List<string> activeFoodTypes = new List<string>();
     
@@ -68,14 +79,6 @@ public class OrderSystem : MonoBehaviour
     private bool isInitialized = false;
     private bool isProcessingCustomerOrder = false;
     
-    [Header("Speech Bubble Sizing")]
-    [Tooltip("Extra padding around order items inside the bubble")]
-    public Vector2 bubblePadding = new Vector2(1f, 0.5f);
-    [Tooltip("Minimum bubble size")]
-    public Vector2 minBubbleSize = new Vector2(2f, 1.5f);
-    
-    [Header("Speech Bubble")]
-    public GameObject speechBubble; 
     
     // NEW: Class to track individual order items (for multiple quantities)
     [System.Serializable]
@@ -129,7 +132,37 @@ public class OrderSystem : MonoBehaviour
         DebugLog("Initializing OrderSystem for customer flow");
         InitializeOrderSystem();
     }
+    // ADD THIS NEW METHOD:
+    void ActivateSpeechBubbleForOrderSize(int itemCount)
+    {
+        // Deactivate all bubbles first
+        if (speechBubble1 != null) speechBubble1.SetActive(false);
+        if (speechBubble2 != null) speechBubble2.SetActive(false);
+        if (speechBubble3 != null) speechBubble3.SetActive(false);
+        if (speechBubble4 != null) speechBubble4.SetActive(false);
     
+        // Activate the appropriate bubble based on item count
+        switch(itemCount)
+        {
+            case 1:
+                if (speechBubble1 != null) speechBubble1.SetActive(true);
+                break;
+            case 2:
+                if (speechBubble2 != null) speechBubble2.SetActive(true);
+                break;
+            case 3:
+                if (speechBubble3 != null) speechBubble3.SetActive(true);
+                break;
+            case 4:
+                if (speechBubble4 != null) speechBubble4.SetActive(true);
+                break;
+            default:
+                // Fallback: use the largest bubble if order size exceeds 4
+                if (speechBubble4 != null) speechBubble4.SetActive(true);
+                Debug.LogWarning($"Order size {itemCount} exceeds available bubbles, using bubble4");
+                break;
+        }
+    }
     void UpdateActiveFoodTypes()
     {
         activeFoodTypes.Clear();
@@ -255,61 +288,22 @@ public class OrderSystem : MonoBehaviour
     
     Vector3 CalculateOrderItemPosition(int index)
     {
-        float x = startPosition.x + (index * itemSpacing);
-        return new Vector3(x, startPosition.y, startPosition.z);
+        // VERTICAL LAYOUT: Items are stacked vertically (downward)
+        float y = startPosition.y - (index * itemSpacing); // Negative to go downward
+        return new Vector3(startPosition.x, y, startPosition.z);
     }
-    
+
     void DisplayOrder()
     {
-        speechBubble.SetActive(true);
-        ResizeBubbleToFitItems();
+        // Select and activate the appropriate speech bubble based on order size
+        ActivateSpeechBubbleForOrderSize(currentOrderItems.Count);
         if (orderTitleText != null)
             orderTitleText.text = "Order:";
-        
+    
         orderActive = true;
         orderTimer = orderDisplayTime;
-        
-        Debug.Log($"Order displayed: {currentOrderItems.Count} items");
-    }
-    void ResizeBubbleToFitItems()
-    {
-        // Calculate bounds of all order items
-        Bounds totalBounds = new Bounds();
-        bool boundsSet = false;
     
-        foreach(var item in currentOrderItems)
-        {
-            if(item.displayObject != null)
-            {
-                Renderer renderer = item.displayObject.GetComponent<Renderer>();
-                if(renderer != null)
-                {
-                    if(!boundsSet)
-                    {
-                        totalBounds = renderer.bounds;
-                        boundsSet = true;
-                    }
-                    else
-                    {
-                        totalBounds.Encapsulate(renderer.bounds);
-                    }
-                }
-            }
-        }
-    
-        if(boundsSet)
-        {
-            float finalWidth = Mathf.Max(totalBounds.size.x + bubblePadding.x, minBubbleSize.x);
-            float finalHeight = Mathf.Max(totalBounds.size.y + bubblePadding.y, minBubbleSize.y);
-        
-            speechBubble.transform.localScale = new Vector3(finalWidth, finalHeight, 1f);
-            Debug.Log($"Speech bubble resized immediately to: {finalWidth:F2} x {finalHeight:F2}");
-        }
-        else
-        {
-            speechBubble.transform.localScale = new Vector3(minBubbleSize.x, minBubbleSize.y, 1f);
-            Debug.LogWarning("No bounds found, using minimum size");
-        }
+        Debug.Log($"Order displayed: {currentOrderItems.Count} items using bubble{currentOrderItems.Count}");
     }
     public bool TryServeItem(string foodType)
     {
@@ -426,9 +420,10 @@ public class OrderSystem : MonoBehaviour
         
         // Hide order and prepare for next one
         orderActive = false;
-        
-            speechBubble.SetActive(false);
- 
+        if (speechBubble1 != null) speechBubble1.SetActive(false);
+        if (speechBubble2 != null) speechBubble2.SetActive(false);
+        if (speechBubble3 != null) speechBubble3.SetActive(false);
+        if (speechBubble4 != null) speechBubble4.SetActive(false);
 
         // Check if level is complete
         if (ordersCompleted >= ordersPerLevel)
@@ -466,10 +461,10 @@ public class OrderSystem : MonoBehaviour
         ClearOrderDisplay();
     
         orderActive = false;
-
-
-         speechBubble.SetActive(false);
-
+        if (speechBubble1 != null) speechBubble1.SetActive(false);
+        if (speechBubble2 != null) speechBubble2.SetActive(false);
+        if (speechBubble3 != null) speechBubble3.SetActive(false);
+        if (speechBubble4 != null) speechBubble4.SetActive(false);
 
         // Penalize for expired order
         if (scoreManager != null)

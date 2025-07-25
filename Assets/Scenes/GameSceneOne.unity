@@ -569,12 +569,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 39073afe1962d49b68968b2fd684ad10, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1559598a96ab84942ac7377312bbf4ab, type: 3}
   m_Color: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.2, y: 0.2}
+  m_Size: {x: 5, y: 5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -4213,9 +4213,10 @@ MonoBehaviour:
   orderCompleteSound: {fileID: 0}
   itemServedSound: {fileID: 0}
   enableDebugLogs: 1
-  bubblePadding: {x: 1, y: 0.5}
-  minBubbleSize: {x: 2, y: 1.5}
-  speechBubble: {fileID: 278268114}
+  speechBubble1: {fileID: 278268114}
+  speechBubble2: {fileID: 0}
+  speechBubble3: {fileID: 0}
+  speechBubble4: {fileID: 0}
 --- !u!1 &2001225745
 GameObject:
   m_ObjectHideFlags: 0
