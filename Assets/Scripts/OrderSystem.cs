@@ -135,30 +135,26 @@ public class OrderSystem : MonoBehaviour
     // ADD THIS NEW METHOD:
     void ActivateSpeechBubbleForOrderSize(int itemCount)
     {
-        // Deactivate all bubbles first
-        if (speechBubble1 != null) speechBubble1.SetActive(false);
-        if (speechBubble2 != null) speechBubble2.SetActive(false);
-        if (speechBubble3 != null) speechBubble3.SetActive(false);
-        if (speechBubble4 != null) speechBubble4.SetActive(false);
+        
     
         // Activate the appropriate bubble based on item count
         switch(itemCount)
         {
             case 1:
-                if (speechBubble1 != null) speechBubble1.SetActive(true);
+                speechBubble1.SetActive(true);
                 break;
             case 2:
-                if (speechBubble2 != null) speechBubble2.SetActive(true);
+               speechBubble2.SetActive(true);
                 break;
             case 3:
-                if (speechBubble3 != null) speechBubble3.SetActive(true);
+               speechBubble3.SetActive(true);
                 break;
             case 4:
-                if (speechBubble4 != null) speechBubble4.SetActive(true);
+               speechBubble4.SetActive(true);
                 break;
             default:
                 // Fallback: use the largest bubble if order size exceeds 4
-                if (speechBubble4 != null) speechBubble4.SetActive(true);
+              speechBubble4.SetActive(true);
                 Debug.LogWarning($"Order size {itemCount} exceeds available bubbles, using bubble4");
                 break;
         }
