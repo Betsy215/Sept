@@ -19,14 +19,14 @@ MonoBehaviour:
   timeBetweenOrders: 5
   minOrderItems: 1
   maxOrderItems: 4
-  activeItemCount: 4
+  activeItemCount: 5
   availableFoodTypes:
   - Bread
   - Apple
   - Juice
   - Burger
   - Melon
-  maxAvailableItems: 4
+  maxAvailableItems: 5
   basePointsPerOrder: 100
   perfectOrderBonus: 50
   timeBonus: 10

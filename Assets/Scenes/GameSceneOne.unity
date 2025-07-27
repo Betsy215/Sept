@@ -1187,7 +1187,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 10.88, y: 7.18, z: 0.2}
+  m_Size: {x: 2.1, y: 1.3, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &593318280
 GameObject:
@@ -1796,7 +1796,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.56, y: 2.56, z: 0.2}
+  m_Size: {x: 11, y: 10, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!212 &848596947
 SpriteRenderer:
@@ -1862,7 +1862,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6fc7fc24e8f47b79e69a5e11358a2af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodType: Burger
+  foodType: Melon
   orderSystem: {fileID: 1998227852}
   popupCanvas: {fileID: 0}
   useAudioManager: 1
@@ -1975,7 +1975,7 @@ MonoBehaviour:
   shakeIntensity: 0.15
   shakeDuration: 0.4
   shakeCount: 3
-  enableDebugLogs: 1
+  enableDebugLogs: 0
 --- !u!4 &857287322
 Transform:
   m_ObjectHideFlags: 0
@@ -2010,7 +2010,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.5600002, y: 2.5599997, z: 0.2}
+  m_Size: {x: 2.5600002, y: 2.5599997, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &905501928
 GameObject:
@@ -2052,6 +2052,7 @@ MonoBehaviour:
   - {fileID: 1420048312}
   - {fileID: 857287321}
   - {fileID: 1820549556}
+  - {fileID: 848596948}
   scoreManager: {fileID: 1415756604}
   customerManager: {fileID: 742151245}
   backgroundRenderer: {fileID: 0}
@@ -3167,7 +3168,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.56, y: 2.56, z: 0.2}
+  m_Size: {x: 2, y: 2, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1446788112
 GameObject:
@@ -4195,7 +4196,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.56, y: 2.56, z: 0.2}
+  m_Size: {x: 1.5, y: 1, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1850943416
 GameObject:
@@ -4569,7 +4570,7 @@ MonoBehaviour:
   timeBetweenOrders: 5
   minOrderItems: 1
   maxOrderItems: 4
-  systemInitializationDelay: 0.1
+  systemInitializationDelay: 0
   orderProgressText: {fileID: 1707346227}
   orderContainer: {fileID: 784244163}
   orderTitleText: {fileID: 0}
@@ -4596,8 +4597,8 @@ MonoBehaviour:
   enableDebugLogs: 1
   speechBubble1: {fileID: 278268114}
   speechBubble2: {fileID: 593318280}
-  speechBubble3: {fileID: 0}
-  speechBubble4: {fileID: 0}
+  speechBubble3: {fileID: 1185790905}
+  speechBubble4: {fileID: 1581722771}
 --- !u!1 &2001225745
 GameObject:
   m_ObjectHideFlags: 0
