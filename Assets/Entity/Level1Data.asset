@@ -19,11 +19,18 @@ MonoBehaviour:
   timeBetweenOrders: 5
   minOrderItems: 1
   maxOrderItems: 4
-  maxItemsPerTray: 6
-  activeTrayCount: 3
-  plateMaxCapacity: 4
+  activeItemCount: 4
+  availableFoodTypes:
+  - Bread
+  - Apple
+  - Juice
+  - Burger
+  - Melon
+  maxAvailableItems: 4
   basePointsPerOrder: 100
   perfectOrderBonus: 50
   timeBonus: 10
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   backgroundSprite: {fileID: 0}
+  useSpecificFoodTypes: 0
+  difficultyMultiplier: 1
