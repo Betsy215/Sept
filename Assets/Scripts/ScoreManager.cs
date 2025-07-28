@@ -25,7 +25,6 @@ public class ScoreManager : MonoBehaviour
     public int pointsPerItem = 10; // Points for each correct item served
     public int orderCompletionBonus = 50; // Bonus for completing an order
     public int timeBonusMultiplier = 5; // Points per second remaining when order completed
-    public int expiredOrderPenalty = -25; // Penalty for expired orders
     
     [Header("Item-Specific Points")]
     public ItemPointValues[] itemPoints; // Specific points for different items
@@ -156,15 +155,16 @@ public class ScoreManager : MonoBehaviour
     // NEW: Called when an order expires
     public void ApplyOrderExpiredPenalty()
     {
-        AddScore(expiredOrderPenalty);
-        ShowFeedback($"Order Expired! {expiredOrderPenalty} points", Color.red);
-        PlayPenaltySound();
-        
-        // Reset combo
+
+        // ✅ KEEP: All feedback effects
+        ShowFeedback("Order Expired!", Color.red); // Red warning text
+        PlayPenaltySound(); // Penalty sound effect
+    
+        // ✅ CONSEQUENCE: Reset combo streak
         consecutiveCorrectOrders = 0;
         UpdateComboUI();
-        
-        Debug.Log($"Order expired penalty: {expiredOrderPenalty}");
+    
+        Debug.Log("Order expired - combo reset but no points lost");
     }
     
     // Helper method to get points for specific item types
@@ -187,9 +187,6 @@ public class ScoreManager : MonoBehaviour
     void AddScore(int points)
     {
         currentScore += points;
-        
-        // Prevent negative scores
-        if (currentScore < 0) currentScore = 0;
         
         UpdateScoreUI();
         

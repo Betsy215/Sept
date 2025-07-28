@@ -1,0 +1,347 @@
+using UnityEngine;
+using TMPro;
+using System.Collections;
+
+public class StarProgressBar : MonoBehaviour
+{
+    [Header("Progress Bar GameObjects")]
+    public Transform progressBarBackground;
+    public Transform progressBarFill;
+    public SpriteRenderer progressBarFillRenderer;
+    
+    [Header("Star GameObjects")]
+    public Transform star1;
+    public Transform star2;
+    public Transform star3;
+    
+    [Header("Star Sprite Renderers")]
+    public SpriteRenderer star1Renderer;
+    public SpriteRenderer star2Renderer;
+    public SpriteRenderer star3Renderer;
+    
+    [Header("Star Sprites")]
+    public Sprite starFilledSprite;
+    public Sprite starUnfilledSprite;
+    
+    [Header("Optional Text Displays")]
+    public TextMeshProUGUI currentScoreText;
+    public TextMeshProUGUI nextStarText;
+    public TextMeshProUGUI performanceText;
+    
+    [Header("Animation Settings")]
+    public bool useAnimations = true;
+    public float animationSpeed = 2f;
+    public float progressBarMaxWidth = 3.8f;
+    
+    [Header("Level Data")]
+    public LevelData currentLevelData;
+    
+    private int lastDisplayedScore = -1;
+    private float targetProgress = 0f;
+    private float currentProgress = 0f;
+    private bool[] starStates = new bool[3];
+    private Vector3[] originalStarScales = new Vector3[3];
+    
+    void Start()
+    {
+        InitializeProgressBar();
+        StoreOriginalStarScales();
+        AutoFindComponents();
+    }
+    
+    void Update()
+    {
+        if (useAnimations && Mathf.Abs(currentProgress - targetProgress) > 0.01f)
+        {
+            AnimateProgress();
+        }
+    }
+    
+    void AutoFindComponents()
+    {
+        if (progressBarFill != null && progressBarFillRenderer == null)
+            progressBarFillRenderer = progressBarFill.GetComponent<SpriteRenderer>();
+            
+        if (star1 != null && star1Renderer == null)
+            star1Renderer = star1.GetComponent<SpriteRenderer>();
+            
+        if (star2 != null && star2Renderer == null)
+            star2Renderer = star2.GetComponent<SpriteRenderer>();
+            
+        if (star3 != null && star3Renderer == null)
+            star3Renderer = star3.GetComponent<SpriteRenderer>();
+    }
+    
+    public void Initialize(LevelData levelData)
+    {
+        currentLevelData = levelData;
+        InitializeProgressBar();
+        UpdateDisplay(0);
+    }
+    
+    void InitializeProgressBar()
+    {
+        SetAllStarsUnfilled();
+        SetProgressValue(0f);
+    }
+    
+    void StoreOriginalStarScales()
+    {
+        originalStarScales[0] = star1 != null ? star1.localScale : Vector3.one;
+        originalStarScales[1] = star2 != null ? star2.localScale : Vector3.one;
+        originalStarScales[2] = star3 != null ? star3.localScale : Vector3.one;
+    }
+    
+    public void UpdateDisplay(int currentScore)
+    {
+        if (currentLevelData == null) return;
+        if (lastDisplayedScore == currentScore) return;
+        
+        lastDisplayedScore = currentScore;
+        
+        UpdateProgressBar(currentScore);
+        UpdateStars(currentScore);
+        UpdateTexts(currentScore);
+    }
+    
+    void UpdateProgressBar(int currentScore)
+    {
+        if (progressBarFill == null) return;
+        
+        float newProgress = currentLevelData.GetProgressPercentage(currentScore);
+        
+        if (useAnimations)
+        {
+            targetProgress = newProgress;
+        }
+        else
+        {
+            SetProgressValue(newProgress);
+        }
+    }
+    
+    void AnimateProgress()
+    {
+        currentProgress = Mathf.MoveTowards(currentProgress, targetProgress, animationSpeed * Time.deltaTime);
+        SetProgressValue(currentProgress);
+    }
+    
+    void SetProgressValue(float value)
+    {
+        if (progressBarFill != null)
+        {
+            Vector3 scale = progressBarFill.localScale;
+            scale.x = value * progressBarMaxWidth;
+            progressBarFill.localScale = scale;
+        }
+    }
+    
+    void UpdateStars(int currentScore)
+    {
+        if (currentLevelData == null) return;
+        
+        bool[] newStarStates = {
+            currentLevelData.HasEarnedStar(currentScore, 1),
+            currentLevelData.HasEarnedStar(currentScore, 2),
+            currentLevelData.HasEarnedStar(currentScore, 3)
+        };
+        
+        for (int i = 0; i < 3; i++)
+        {
+            if (newStarStates[i] != starStates[i])
+            {
+                starStates[i] = newStarStates[i];
+                UpdateStarVisual(i, newStarStates[i]);
+                
+                if (newStarStates[i] && useAnimations)
+                {
+                    StartCoroutine(AnimateStarEarned(i));
+                }
+            }
+        }
+    }
+    
+    void UpdateStarVisual(int starIndex, bool isEarned)
+    {
+        SpriteRenderer starRenderer = GetStarRenderer(starIndex);
+        if (starRenderer == null) return;
+        
+        if (starFilledSprite != null && starUnfilledSprite != null)
+        {
+            starRenderer.sprite = isEarned ? starFilledSprite : starUnfilledSprite;
+        }
+    }
+    
+    IEnumerator AnimateStarEarned(int starIndex)
+    {
+        Transform starTransform = GetStarTransform(starIndex);
+        if (starTransform == null) yield break;
+        
+        Vector3 originalScale = originalStarScales[starIndex];
+        Vector3 targetScale = originalScale * 1.3f;
+        
+        float duration = 0.4f;
+        float elapsed = 0f;
+        
+        starTransform.localScale = originalScale * 0.7f;
+        
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = elapsed / duration;
+            
+            if (progress < 0.6f)
+            {
+                float scaleProgress = progress / 0.6f;
+                starTransform.localScale = Vector3.Lerp(originalScale * 0.7f, targetScale, scaleProgress);
+            }
+            else
+            {
+                float scaleProgress = (progress - 0.6f) / 0.4f;
+                starTransform.localScale = Vector3.Lerp(targetScale, originalScale, scaleProgress);
+            }
+            
+            yield return null;
+        }
+        
+        starTransform.localScale = originalScale;
+    }
+    
+    Transform GetStarTransform(int index)
+    {
+        switch (index)
+        {
+            case 0: return star1;
+            case 1: return star2;
+            case 2: return star3;
+            default: return null;
+        }
+    }
+    
+    SpriteRenderer GetStarRenderer(int index)
+    {
+        switch (index)
+        {
+            case 0: return star1Renderer;
+            case 1: return star2Renderer;
+            case 2: return star3Renderer;
+            default: return null;
+        }
+    }
+    
+    void UpdateTexts(int currentScore)
+    {
+        if (currentLevelData == null) return;
+        
+        if (currentScoreText != null)
+        {
+            currentScoreText.text = $"Score: {currentScore}";
+        }
+        
+        if (nextStarText != null)
+        {
+            int scoreToNext = currentLevelData.GetScoreToNextStar(currentScore);
+            if (scoreToNext > 0)
+            {
+                nextStarText.text = $"{scoreToNext} to next star";
+            }
+            else
+            {
+                nextStarText.text = "Max stars earned!";
+            }
+        }
+        
+        if (performanceText != null)
+        {
+            performanceText.text = currentLevelData.GetPerformanceDescription(currentScore);
+        }
+    }
+    
+    void SetAllStarsUnfilled()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            starStates[i] = false;
+            UpdateStarVisual(i, false);
+        }
+    }
+    
+    public void SetStarSprites(Sprite filled, Sprite unfilled)
+    {
+        starFilledSprite = filled;
+        starUnfilledSprite = unfilled;
+        
+        for (int i = 0; i < 3; i++)
+        {
+            UpdateStarVisual(i, starStates[i]);
+        }
+    }
+    
+    public int GetEarnedStarsCount()
+    {
+        int count = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            if (starStates[i]) count++;
+        }
+        return count;
+    }
+    
+    public float GetCurrentProgressPercentage()
+    {
+        return currentProgress;
+    }
+    
+    [ContextMenu("Test Progress")]
+    void TestProgress()
+    {
+        Debug.Log("=== CLEAN SPRITE-ONLY TEST ===");
+        
+        // Test progress bar scaling
+        if (progressBarFill != null)
+        {
+            Vector3 scale = progressBarFill.localScale;
+            scale.x = 0.6f * progressBarMaxWidth; // 60% progress
+            progressBarFill.localScale = scale;
+            Debug.Log("Progress bar scaled to 60%");
+        }
+        else
+        {
+            Debug.LogError("progressBarFill is NULL!");
+        }
+        
+        // Test sprite swapping only - no colors
+        if (star1Renderer != null && starFilledSprite != null)
+        {
+            star1Renderer.sprite = starFilledSprite; // Earned
+            Debug.Log("Star1 set to filled sprite");
+        }
+        else
+        {
+            Debug.LogError("star1Renderer or starFilledSprite is NULL!");
+        }
+        
+        if (star2Renderer != null && starFilledSprite != null)
+        {
+            star2Renderer.sprite = starFilledSprite; // Earned
+            Debug.Log("Star2 set to filled sprite");
+        }
+        else
+        {
+            Debug.LogError("star2Renderer or starFilledSprite is NULL!");
+        }
+        
+        if (star3Renderer != null && starUnfilledSprite != null)
+        {
+            star3Renderer.sprite = starUnfilledSprite; // Unearned
+            Debug.Log("Star3 set to unfilled sprite");
+        }
+        else
+        {
+            Debug.LogError("star3Renderer or starUnfilledSprite is NULL!");
+        }
+        
+        Debug.Log("=== CLEAN TEST COMPLETED ===");
+        Debug.Log("Check Scene view for visual changes!");
+    }
+}

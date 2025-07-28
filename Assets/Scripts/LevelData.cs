@@ -15,77 +15,127 @@ public class LevelData : ScriptableObject
     public int maxOrderItems = 4;
     
     [Header("Serveable Item Settings")]
-    [Tooltip("Number of serveable items to activate for this level")]
-    public int activeItemCount = 4; // ADDED: This replaces activeTrayCount
-    [Tooltip("Which specific food items are available this level (e.g., Bread, Apple, Juice)")]
+    public int activeItemCount = 4;
     public string[] availableFoodTypes = { "Bread", "Apple", "Juice", "Burger" };
-    [Tooltip("Maximum number of different items available in this level")]
     public int maxAvailableItems = 4;
-    
-    // REMOVED: Old tray-specific settings
-    // [Header("Food Tray Settings")]
-    // public int maxItemsPerTray = 5;
-    // public int activeTrayCount = 4;
-    
-    // REMOVED: Serve plate settings (no longer needed)
-    // [Header("Serve Plate Settings")]
-    // public int plateMaxCapacity = 4;
     
     [Header("Scoring")]
     public int basePointsPerOrder = 100;
     public int perfectOrderBonus = 50;
-    public int timeBonus = 10; // Points per second remaining
+    public int timeBonus = 10;
+    
+    [Header("⭐ Star Rating System")]
+    public int starThreshold1 = 10;
+    public int starThreshold2 = 20;
+    public int starThreshold3 = 30;
+    public int maxPossibleScore = 50;
+    
+    [Header("Star Visualization")]
+    public Color earnedStarColor = Color.yellow;
+    public Color unearnedStarColor = Color.gray;
     
     [Header("Visual Elements")]
     public Color backgroundColor = Color.white;
     public Sprite backgroundSprite;
     
-    [Header("Advanced Item Control (Optional)")]
-    [Tooltip("If true, only items in availableFoodTypes will be active")]
+    [Header("Advanced Item Control")]
     public bool useSpecificFoodTypes = false;
-    [Tooltip("Custom difficulty modifier for this level")]
     public float difficultyMultiplier = 1.0f;
+    
+    public int GetStarsEarned(int currentScore)
+    {
+        if (currentScore >= starThreshold3) return 3;
+        if (currentScore >= starThreshold2) return 2;
+        if (currentScore >= starThreshold1) return 1;
+        return 0;
+    }
+    
+    public float GetProgressPercentage(int currentScore)
+    {
+        return Mathf.Clamp01((float)currentScore / maxPossibleScore);
+    }
+    
+    public int GetNextStarThreshold(int currentScore)
+    {
+        if (currentScore < starThreshold1) return starThreshold1;
+        if (currentScore < starThreshold2) return starThreshold2;
+        if (currentScore < starThreshold3) return starThreshold3;
+        return starThreshold3;
+    }
+    
+    public float GetProgressToNextStar(int currentScore)
+    {
+        int nextThreshold = GetNextStarThreshold(currentScore);
+        int previousThreshold = 0;
+        
+        if (nextThreshold == starThreshold2) 
+            previousThreshold = starThreshold1;
+        else if (nextThreshold == starThreshold3) 
+            previousThreshold = starThreshold2;
+        
+        if (currentScore >= starThreshold3) 
+            return 1f;
+        
+        return Mathf.Clamp01((float)(currentScore - previousThreshold) / (nextThreshold - previousThreshold));
+    }
+    
+    public int GetScoreToNextStar(int currentScore)
+    {
+        int nextThreshold = GetNextStarThreshold(currentScore);
+        return Mathf.Max(0, nextThreshold - currentScore);
+    }
+    
+    public bool HasEarnedStar(int currentScore, int starLevel)
+    {
+        switch (starLevel)
+        {
+            case 1: return currentScore >= starThreshold1;
+            case 2: return currentScore >= starThreshold2;
+            case 3: return currentScore >= starThreshold3;
+            default: return false;
+        }
+    }
+    
+    public string GetPerformanceDescription(int currentScore)
+    {
+        int stars = GetStarsEarned(currentScore);
+        switch (stars)
+        {
+            case 0: return "Keep trying!";
+            case 1: return "Good job!";
+            case 2: return "Great work!";
+            case 3: return "Perfect!";
+            default: return "Amazing!";
+        }
+    }
+    
+    public bool ValidateStarThresholds()
+    {
+        bool isValid = starThreshold1 > 0 && 
+                      starThreshold2 > starThreshold1 && 
+                      starThreshold3 > starThreshold2 &&
+                      maxPossibleScore >= starThreshold3;
+        
+        if (!isValid)
+        {
+            Debug.LogWarning($"Invalid star thresholds in {levelName}!");
+        }
+        
+        return isValid;
+    }
+    
+    public void SetRecommendedStarThresholds()
+    {
+        int estimatedMaxScore = ordersPerLevel * (basePointsPerOrder + perfectOrderBonus + (int)(orderDisplayTime * timeBonus));
+        
+        starThreshold1 = Mathf.RoundToInt(estimatedMaxScore * 0.3f);
+        starThreshold2 = Mathf.RoundToInt(estimatedMaxScore * 0.6f);
+        starThreshold3 = Mathf.RoundToInt(estimatedMaxScore * 0.85f);
+        maxPossibleScore = estimatedMaxScore;
+    }
+    
+    public float GetEstimatedPlayTime()
+    {
+        return (ordersPerLevel * orderDisplayTime) + ((ordersPerLevel - 1) * timeBetweenOrders);
+    }
 }
-
-/* 
-🎯 CHANGES MADE TO LEVELDATA:
-
-✅ ADDED: Serveable Item Settings
-- availableFoodTypes: Array of food types available this level
-- maxAvailableItems: Control how many different items are active
-- useSpecificFoodTypes: Toggle for specific vs. all items
-
-✅ REMOVED: Tray-Specific Settings
-- maxItemsPerTray: No longer needed (unlimited items)
-- activeTrayCount: Replaced with item-based control
-
-✅ REMOVED: Serve Plate Settings  
-- plateMaxCapacity: No longer relevant
-
-✅ ADDED: Advanced Controls
-- difficultyMultiplier: For future expansion
-- More granular control over item availability
-
-🔧 HOW TO USE THE NEW SYSTEM:
-
-SIMPLE APPROACH (Current):
-- Leave useSpecificFoodTypes = false
-- All ServeableItems in scene will be active
-- Easy to set up and test
-
-ADVANCED APPROACH (Future):
-- Set useSpecificFoodTypes = true
-- Specify availableFoodTypes = ["Bread", "Apple", "Juice"]
-- Only those items will be active for that level
-
-📝 MIGRATION FROM OLD LEVELDATA:
-
-Old Settings → New Settings:
-- activeTrayCount: 3 → maxAvailableItems: 3
-- maxItemsPerTray: 6 → (not needed - items are unlimited)
-- availableFoodTypes: ["Red", "Blue", "Green"] (if specific control wanted)
-
-🚀 BACKWARD COMPATIBILITY:
-
-The old tray settings are commented out but preserved in case you want to reference them during migration. You can safely delete them once everything is working.
-*/
