@@ -14,22 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelNumber: 1
   levelName: Day1
-  ordersPerLevel: 3
-  orderDisplayTime: 3
-  timeBetweenOrders: 5
+  ordersPerLevel: 5
+  orderDisplayTime: 5
+  timeBetweenOrders: 3
   minOrderItems: 1
-  maxOrderItems: 4
-  activeItemCount: 5
+  maxOrderItems: 2
+  activeItemCount: 2
   availableFoodTypes:
   - Bread
   - Apple
-  - Juice
-  - Burger
-  - Melon
   maxAvailableItems: 5
   basePointsPerOrder: 100
   perfectOrderBonus: 50
   timeBonus: 10
+  starThreshold1: 300
+  starThreshold2: 600
+  starThreshold3: 900
+  maxPossibleScore: 1200
+  earnedStarColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  unearnedStarColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   backgroundSprite: {fileID: 0}
   useSpecificFoodTypes: 0

@@ -131,7 +131,7 @@ public class StarProgressBar : MonoBehaviour
         if (progressBarFill != null)
         {
             Vector3 scale = progressBarFill.localScale;
-            scale.x = value * progressBarMaxWidth;
+            scale.x = value * progressBarBackground.localScale.x; 
             progressBarFill.localScale = scale;
         }
     }

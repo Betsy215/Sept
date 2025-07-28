@@ -15,6 +15,7 @@ public class ScoreManager : MonoBehaviour
     [Header("Game References")]
     public OrderSystem orderSystem; // Reference to order system
     public LevelManager levelManager; // Reference to level manager
+    public StarProgressBar starProgressBar;
     
     [Header("Level Settings - Set by LevelManager")]
     [SerializeField] private int basePointsPerOrder = 100;
@@ -103,6 +104,13 @@ public class ScoreManager : MonoBehaviour
         perfectOrderBonus = perfectBonus;
         timeBonus = timeBonusPoints;
         
+        LevelData currentLevelData = levelManager.GetCurrentLevelData();
+        if (currentLevelData != null)
+        {
+            starProgressBar.Initialize(currentLevelData);
+            Debug.Log($"StarProgressBar initialized with {currentLevelData.levelName} data");
+        }
+        
         Debug.Log($"Score settings updated: Base={basePoints}, Perfect={perfectBonus}, Time={timeBonusPoints}");
     }
     
@@ -112,6 +120,7 @@ public class ScoreManager : MonoBehaviour
         consecutiveCorrectOrders = 0;
         UpdateScoreUI();
         UpdateComboUI();
+        starProgressBar.UpdateDisplay(0);
         Debug.Log("Score reset for new level");
     }
     
@@ -189,7 +198,8 @@ public class ScoreManager : MonoBehaviour
         currentScore += points;
         
         UpdateScoreUI();
-        
+        starProgressBar.UpdateDisplay(currentScore);
+
         // Note: Session total score is updated by LevelManager at level completion
         // using SessionManager.AddLevelScore() with the final level score
     }
