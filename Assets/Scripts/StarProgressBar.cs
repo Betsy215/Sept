@@ -1,12 +1,13 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.UI;
 
 public class StarProgressBar : MonoBehaviour
 {
     [Header("Progress Bar GameObjects")]
     public Transform progressBarBackground;
-    public Transform progressBarFill;
+    public Image progressBarFill;
     public SpriteRenderer progressBarFillRenderer;
     
     [Header("Star GameObjects")]
@@ -130,9 +131,10 @@ public class StarProgressBar : MonoBehaviour
     {
         if (progressBarFill != null)
         {
-            Vector3 scale = progressBarFill.localScale;
-            scale.x = value * progressBarBackground.localScale.x; 
-            progressBarFill.localScale = scale;
+            // UI Image magic - perfect rounded ends at any progress!
+            progressBarFill.fillAmount = value;
+        
+            Debug.Log($"Progress: {value:P0} - Fill amount: {value}");
         }
     }
     
@@ -292,56 +294,5 @@ public class StarProgressBar : MonoBehaviour
         return currentProgress;
     }
     
-    [ContextMenu("Test Progress")]
-    void TestProgress()
-    {
-        Debug.Log("=== CLEAN SPRITE-ONLY TEST ===");
-        
-        // Test progress bar scaling
-        if (progressBarFill != null)
-        {
-            Vector3 scale = progressBarFill.localScale;
-            scale.x = 0.6f * progressBarMaxWidth; // 60% progress
-            progressBarFill.localScale = scale;
-            Debug.Log("Progress bar scaled to 60%");
-        }
-        else
-        {
-            Debug.LogError("progressBarFill is NULL!");
-        }
-        
-        // Test sprite swapping only - no colors
-        if (star1Renderer != null && starFilledSprite != null)
-        {
-            star1Renderer.sprite = starFilledSprite; // Earned
-            Debug.Log("Star1 set to filled sprite");
-        }
-        else
-        {
-            Debug.LogError("star1Renderer or starFilledSprite is NULL!");
-        }
-        
-        if (star2Renderer != null && starFilledSprite != null)
-        {
-            star2Renderer.sprite = starFilledSprite; // Earned
-            Debug.Log("Star2 set to filled sprite");
-        }
-        else
-        {
-            Debug.LogError("star2Renderer or starFilledSprite is NULL!");
-        }
-        
-        if (star3Renderer != null && starUnfilledSprite != null)
-        {
-            star3Renderer.sprite = starUnfilledSprite; // Unearned
-            Debug.Log("Star3 set to unfilled sprite");
-        }
-        else
-        {
-            Debug.LogError("star3Renderer or starUnfilledSprite is NULL!");
-        }
-        
-        Debug.Log("=== CLEAN TEST COMPLETED ===");
-        Debug.Log("Check Scene view for visual changes!");
-    }
+  
 }
