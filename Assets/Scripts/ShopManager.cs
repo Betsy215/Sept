@@ -2,26 +2,37 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Collections.Generic;
 using TMPro;
 
 public class ShopManager : MonoBehaviour
 {
-    [Header("Shop Items")]
-    public List<ShopItem> availableItems = new List<ShopItem>();
-    
     [Header("UI References")]
     public GameObject shopPanel;           // The white sliding panel
     public GameObject itemContainer;       // Parent for shop item UI elements
-    public GameObject shopItemPrefab;      // Prefab for individual shop items
     
     [Header("Shop Controls")]
     public Button nextLevelButton;
     public Button mainMenuButton;
     public TextMeshProUGUI playerScoreText; 
+    
     [Header("Animation")]
     public float slideAnimationDuration = 1f;
     
+    [Header("Scroll Controls")]
+    public Button scrollUpButton;
+    public Button scrollDownButton;
+    public ScrollRect itemScrollRect;
+    public float scrollAmount = 800f; // Configurable scroll distance
+    public float scrollDuration = 1f; // Smooth scroll time
+    
+    [Header("Purchase Popup")]
+    public GameObject purchaseConfirmationPopup;
+    public Image popupItemIcon;
+    public TextMeshProUGUI popupItemInfo;
+    public Button confirmPurchaseButton;
+    public Button cancelPurchaseButton;
+
+    private ShopItemController currentPurchaseItem; // Changed type
     // Internal references
     private int playerScore;
     private const string SHOP_SAVE_KEY = "ShopData";
@@ -29,6 +40,101 @@ public class ShopManager : MonoBehaviour
     void Start()
     {
         InitializeShop();
+        SetupScrollButtons();
+        SetupPopupButtons();
+    }
+    
+    void SetupPopupButtons()
+    {
+        if (confirmPurchaseButton != null)
+            confirmPurchaseButton.onClick.AddListener(ConfirmPurchase);
+            
+        if (cancelPurchaseButton != null)
+            cancelPurchaseButton.onClick.AddListener(CancelPurchase);
+    }
+    
+    void SetupScrollButtons()
+    {
+        if (scrollUpButton != null)
+            scrollUpButton.onClick.AddListener(ScrollUp);
+        
+        if (scrollDownButton != null)
+            scrollDownButton.onClick.AddListener(ScrollDown);
+    }
+
+    public void ScrollUp()
+    {
+        if (itemScrollRect != null)
+        {
+            StartCoroutine(SmoothScroll(scrollAmount));
+        }
+    }
+
+    public void ScrollDown()
+    {
+        if (itemScrollRect != null)
+        {
+            StartCoroutine(SmoothScroll(-scrollAmount));
+        }
+    }
+    
+    IEnumerator SmoothScroll(float amount)
+    {
+        RectTransform content = itemScrollRect.content;
+        Vector2 startPos = content.anchoredPosition;
+        Vector2 endPos = startPos + new Vector2(0, amount);
+    
+        float elapsed = 0f;
+    
+        while (elapsed < scrollDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / scrollDuration;
+            t = Mathf.SmoothStep(0f, 1f, t); // Smooth easing
+        
+            content.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
+            yield return null;
+        }
+    
+        content.anchoredPosition = endPos;
+    }
+    
+    public void ShowPurchasePopup(ShopItemController item)
+    {
+        currentPurchaseItem = item;
+    
+        // Set popup content
+        if (popupItemIcon != null) 
+            popupItemIcon.sprite = item.itemIcon;
+        
+        if (popupItemInfo != null) 
+            popupItemInfo.text = item.popupInfoText;
+    
+        // Set button text with price
+        if (confirmPurchaseButton != null)
+        {
+            TextMeshProUGUI buttonText = confirmPurchaseButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (buttonText != null)
+                buttonText.text = item.purchaseButtonText;
+        }
+    
+        // Show popup
+        purchaseConfirmationPopup.SetActive(true);
+    }
+
+    public void ConfirmPurchase()
+    {
+        if (currentPurchaseItem != null)
+        {
+            PurchaseItem(currentPurchaseItem);
+            purchaseConfirmationPopup.SetActive(false);
+        }
+    }
+
+    public void CancelPurchase()
+    {
+        purchaseConfirmationPopup.SetActive(false);
+        currentPurchaseItem = null;
     }
     
     void InitializeShop()
@@ -45,9 +151,6 @@ public class ShopManager : MonoBehaviour
         // Load previously purchased items
         LoadShopData();
     
-        // Create the shop items (if using script)
-        // CreateShopItems();
-    
         // Start the slide-in animation
         StartShopAnimation();
     }
@@ -56,18 +159,13 @@ public class ShopManager : MonoBehaviour
     {
         if (playerScoreText != null)
         {
-            playerScoreText.text = $" {playerScore}";
+            playerScoreText.text = $"{playerScore}";
         }
     }
     
     void LoadShopData()
     {
         // TODO: Load purchased items from PlayerPrefs
-    }
-    
-    void CreateShopItems()
-    {
-        // TODO: Instantiate UI elements for each shop item
     }
     
     void StartShopAnimation()
@@ -105,9 +203,26 @@ public class ShopManager : MonoBehaviour
         panel.anchoredPosition = end;
     }
     
-    public void PurchaseItem(ShopItem item)
+    public void PurchaseItem(ShopItemController item)
     {
-        // TODO: Handle item purchase logic
+        // Check if player has enough score
+        if (playerScore >= item.price && !item.isPurchased)
+        {
+            // Deduct score
+            playerScore -= item.price;
+            
+            // Mark as purchased
+            item.MarkAsPurchased();
+            
+            // Update score display
+            UpdateScoreDisplay();
+            
+            Debug.Log($"Purchased {item.itemName} for {item.price} points!");
+        }
+        else
+        {
+            Debug.Log("Not enough points or item already purchased!");
+        }
     }
     
     public void OnNextLevelClicked()

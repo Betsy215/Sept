@@ -4,18 +4,22 @@ using UnityEngine;
 public class ShopItem
 {
     [Header("Item Info")]
-    public string itemName;           // e.g., "Bread"
-    public string description;        // e.g., "Unlock bread for your kitchen"
-    public Sprite itemIcon;           // The visual icon for this item
-    public int price;                 // Cost in score points
+    public string itemName;
+    public string description;        // Keep this for internal use
+    public Sprite itemIcon;
+    public int price;
+    
+    [Header("Popup Display")]
+    public string popupInfoText;      // Custom text for popup
+    public string purchaseButtonText; // Custom button text with price
     
     [Header("Game Integration")]
-    public ItemType itemType;         // Food or Customer
-    public GameObject itemPrefab;     // The actual food tray prefab or customer prefab
+    public ItemType itemType;
+    public GameObject itemPrefab;
     
     [Header("Shop State")]
-    public bool isPurchased;          // Has player bought this item?
-    public bool isAvailable;          // Is this item available for purchase?
+    public bool isPurchased;
+    public bool isAvailable;
     
     public ShopItem(string name, int cost, Sprite icon, ItemType type, GameObject prefab)
     {
