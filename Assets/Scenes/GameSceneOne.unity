@@ -821,7 +821,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &579974206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1186,7 +1186,6 @@ MonoBehaviour:
   - {fileID: -7655600882293471894, guid: 480e6c6abf9c641ceb659ed07c359013, type: 3}
   - {fileID: 6078073404647016362, guid: d3f41be60a84743a28fa235f67a87645, type: 3}
   spawnPoint: {fileID: 1787719493}
-  customerUnlockLevels: 000000000000000000000000
   orderSystem: {fileID: 1998227852}
   levelManager: {fileID: 905501929}
   nextCustomerSpawnDelay: 2
@@ -1430,7 +1429,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &848596946
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1557,7 +1556,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &857287320
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1972,11 +1971,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fdd3fe666cf7745039584c092d8d0d50, type: 2}
   orderSystem: {fileID: 1998227852}
   serveableItems:
-  - {fileID: 579974206}
   - {fileID: 1420048312}
-  - {fileID: 857287321}
-  - {fileID: 1820549556}
-  - {fileID: 848596948}
   scoreManager: {fileID: 1415756604}
   customerManager: {fileID: 742151245}
   backgroundRenderer: {fileID: 0}
@@ -4154,7 +4149,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1820549555
 SpriteRenderer:
   m_ObjectHideFlags: 0

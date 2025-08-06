@@ -14,11 +14,6 @@ public class LevelData : ScriptableObject
     public int minOrderItems = 1;
     public int maxOrderItems = 4;
     
-    [Header("Serveable Item Settings")]
-    public int activeItemCount = 4;
-    public string[] availableFoodTypes = { "Bread", "Apple", "Juice", "Burger" };
-    public int maxAvailableItems = 4;
-    
     [Header("Scoring")]
     public int basePointsPerOrder = 100;
     public int perfectOrderBonus = 50;

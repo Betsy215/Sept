@@ -8,10 +8,6 @@ public class CustomerManager : MonoBehaviour
     public CustomerController[] customerPrefabs;
     public Transform spawnPoint;
     
-    [Header("Level-Based Customer Selection")]
-    [Tooltip("Level index when each customer type unlocks (0-based)")]
-    public int[] customerUnlockLevels = { 0, 2, 4 };
-    
     [Header("References")]
     public OrderSystem orderSystem;
     public LevelManager levelManager;
@@ -199,26 +195,43 @@ public class CustomerManager : MonoBehaviour
     
     private CustomerController SelectCustomerForLevel(int levelIndex)
     {
-        List<CustomerController> availableCustomers = new List<CustomerController>();
-        
-        for (int i = 0; i < customerPrefabs.Length && i < customerUnlockLevels.Length; i++)
+        // Check if SessionManager is available
+        if (SessionManager.Instance == null || !SessionManager.Instance.HasActiveSession())
         {
-            if (levelIndex >= customerUnlockLevels[i])
+            // Fallback: return first customer if no session
+            Debug.LogWarning("No active session found, using first customer as fallback");
+            return customerPrefabs.Length > 0 ? customerPrefabs[0] : null;
+        }
+    
+        // Get purchased characters from session
+        List<string> purchasedCharacters = SessionManager.Instance.GetCurrentSession().purchasedCharacters;
+        List<CustomerController> availableCustomers = new List<CustomerController>();
+    
+        // Check each customer prefab against purchased characters
+        for (int i = 0; i < customerPrefabs.Length; i++)
+        {
+            if (customerPrefabs[i] != null)
             {
-                availableCustomers.Add(customerPrefabs[i]);
+                // Extract character name from prefab name (e.g., "CustomerGirl" -> "Girl")
+                string customerName = customerPrefabs[i].name.Replace("Customer", "").Replace("Prefab", "").Trim();
+            
+                if (purchasedCharacters.Contains(customerName))
+                {
+                    availableCustomers.Add(customerPrefabs[i]);
+                }
             }
         }
-        
+    
         if (availableCustomers.Count == 0)
         {
-            Debug.LogWarning($"No customers unlocked for level {levelIndex + 1}");
+            Debug.LogWarning($"No purchased customers available. Purchased: [{string.Join(", ", purchasedCharacters)}]");
             return null;
         }
-        
+    
         int randomIndex = Random.Range(0, availableCustomers.Count);
         CustomerController selected = availableCustomers[randomIndex];
-        
-        DebugLog($"Selected {selected.name} for level {levelIndex + 1} (from {availableCustomers.Count} available)");
+    
+        DebugLog($"Selected {selected.name} from {availableCustomers.Count} purchased customers: [{string.Join(", ", purchasedCharacters)}]");
         return selected;
     }
     

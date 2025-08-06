@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class SessionData
@@ -10,6 +11,9 @@ public class SessionData
     public DateTime sessionStartTime;
     public bool isActive;
     
+    public List<string> purchasedFoodItems;
+    public List<string> purchasedCharacters;
+    
     public SessionData()
     {
         totalScore = 0;
@@ -17,6 +21,9 @@ public class SessionData
         levelsCompleted = 0;
         sessionStartTime = DateTime.Now;
         isActive = true;
+        
+        purchasedFoodItems = new List<string> { "Apple" };
+        purchasedCharacters = new List<string> { "Girl" };
     }
 }
 
@@ -219,6 +226,15 @@ public class SessionManager : MonoBehaviour
             {
                 currentSession = JsonUtility.FromJson<SessionData>(jsonData);
                 Debug.Log("Session loaded successfully");
+                // Handle legacy sessions that don't have purchased items
+                if (currentSession.purchasedFoodItems == null)
+                {
+                    currentSession.purchasedFoodItems = new List<string> { "Apple" };
+                }
+                if (currentSession.purchasedCharacters == null)
+                {
+                    currentSession.purchasedCharacters = new List<string> { "Girl" };
+                }
             }
             catch (System.Exception e)
             {
@@ -237,6 +253,62 @@ public class SessionManager : MonoBehaviour
         PlayerPrefs.DeleteKey(SESSION_SAVE_KEY);
         currentSession = null;
         Debug.Log("Session deleted");
+    }
+    
+    #region SHOP SYSTEM METHODS
+
+// Purchase a food item
+    public bool PurchaseFoodItem(string foodType)
+    {
+        if (currentSession == null) return false;
+        
+        if (!currentSession.purchasedFoodItems.Contains(foodType))
+        {
+            currentSession.purchasedFoodItems.Add(foodType);
+            SaveSession();
+            Debug.Log($"Purchased food item: {foodType}");
+            return true;
+        }
+    
+        Debug.Log($"Food item already purchased: {foodType}");
+        return false;
+    }
+
+// Purchase a character
+    public bool PurchaseCharacter(string characterName)
+    {
+        if (currentSession == null) return false;
+        
+        if (!currentSession.purchasedCharacters.Contains(characterName))
+        {
+            currentSession.purchasedCharacters.Add(characterName);
+            SaveSession();
+            Debug.Log($"Purchased character: {characterName}");
+            return true;
+        }
+    
+        Debug.Log($"Character already purchased: {characterName}");
+        return false;
+    }
+
+    #endregion
+    
+    // Deduct score for purchases
+    public bool DeductScore(int amount)
+    {
+        if (currentSession == null) return false;
+    
+        if (currentSession.totalScore >= amount)
+        {
+            currentSession.totalScore -= amount;
+            SaveSession();
+            OnTotalScoreChanged?.Invoke(currentSession.totalScore);
+            Debug.Log($"Deducted {amount} points. New total: {currentSession.totalScore}");
+            return true;
+        }
+    
+        Debug.Log($"Cannot deduct {amount} points - insufficient score ({currentSession.totalScore})");
+        return false;
     }
     
     // Called when the application is paused/closed

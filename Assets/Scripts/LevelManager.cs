@@ -363,19 +363,39 @@ public class LevelManager : MonoBehaviour
 
     void ApplyServeableItemSettings()
     {
-        // Use activeItemCount from LevelData to control which items are available per level
-        int activeItemCount = currentLevelData != null ? currentLevelData.activeItemCount : serveableItems.Length;
-        
+        // Check if SessionManager is available
+        if (SessionManager.Instance == null || !SessionManager.Instance.HasActiveSession())
+        {
+            // Fallback: activate all items if no session
+            Debug.LogWarning("No active session found, activating all serveable items as fallback");
+            for (int i = 0; i < serveableItems.Length; i++)
+            {
+                if (serveableItems[i] != null)
+                {
+                    serveableItems[i].gameObject.SetActive(true);
+                }
+            }
+            return;
+        }
+    
+        // Get purchased food items from session
+        List<string> purchasedItems = SessionManager.Instance.GetCurrentSession().purchasedFoodItems;
+        int activatedCount = 0;
+    
+        // Activate only purchased items
         for (int i = 0; i < serveableItems.Length; i++)
         {
             if (serveableItems[i] != null)
             {
-                bool shouldBeActive = i < activeItemCount;
+                string itemFoodType = serveableItems[i].GetFoodType();
+                bool shouldBeActive = purchasedItems.Contains(itemFoodType);
                 serveableItems[i].gameObject.SetActive(shouldBeActive);
+            
+                if (shouldBeActive) activatedCount++;
             }
         }
-        
-        Debug.Log($"Level {currentLevelIndex + 1}: Activated {activeItemCount} out of {serveableItems.Length} serveable items");
+    
+        Debug.Log($"Level {currentLevelIndex + 1}: Activated {activatedCount} out of {serveableItems.Length} serveable items based on purchased items: [{string.Join(", ", purchasedItems)}]");
     }
 
     void ApplyVisualSettings()

@@ -36,5 +36,5 @@ public class ShopItem
 public enum ItemType
 {
     Food,
-    Customer
+    Character,
 }
