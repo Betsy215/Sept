@@ -61,11 +61,17 @@ public class LevelManager : MonoBehaviour
             SessionManager.Instance.RegisterLevelManager(this);
             SessionManager.Instance.FindGameReferences();
 
-            Debug.Log($"SessionManager found. Has active session: {SessionManager.Instance.HasActiveSession()}");
+                // Check if continuing from saved session
             if (SessionManager.Instance.HasActiveSession())
             {
-                Debug.Log($"Session total score: {SessionManager.Instance.GetTotalScore()}");
-                Debug.Log($"Session current level: {SessionManager.Instance.GetCurrentLevelIndex() + 1}");
+                int savedLevel = SessionManager.Instance.GetCurrentLevelIndex();
+                Debug.Log($"🔄 Continuing from saved session - Level {savedLevel + 1}");
+                LoadLevel(savedLevel);
+            }
+            else
+            {
+                Debug.Log("🆕 Starting new gameplay from Level 1");
+                LoadLevel(0);
             }
         }
         else
@@ -454,12 +460,34 @@ public class LevelManager : MonoBehaviour
             AudioManager.Instance.PlayLevelWin();
         }
 
-        if (SessionManager.Instance != null && scoreManager != null)
+        Debug.Log("=== LEVEL COMPLETE DEBUG ===");
+    
+        if (SessionManager.Instance == null)
         {
-            int levelScore = scoreManager.GetCurrentScore();
-            SessionManager.Instance.AddLevelScore(levelScore);
-            SessionManager.Instance.OnLevelCompleted(currentLevelIndex);
+            Debug.LogError("PROBLEM: SessionManager.Instance is NULL at level complete!");
+            ShowLevelCompletePopup();
+            return;
         }
+    
+        if (scoreManager == null)
+        {
+            Debug.LogError("PROBLEM: scoreManager is NULL at level complete!");
+            ShowLevelCompletePopup();
+            return;
+        }
+
+        int levelScore = scoreManager.GetCurrentScore();
+        int totalBefore = SessionManager.Instance.GetTotalScore();
+    
+        Debug.Log($"Current level score: {levelScore}");
+        Debug.Log($"Session total BEFORE adding: {totalBefore}");
+    
+        SessionManager.Instance.AddLevelScore(levelScore);
+        SessionManager.Instance.OnLevelCompleted(currentLevelIndex);
+    
+        int totalAfter = SessionManager.Instance.GetTotalScore();
+        Debug.Log($"Session total AFTER adding: {totalAfter}");
+        Debug.Log("=== END LEVEL COMPLETE DEBUG ===");
 
         ShowLevelCompletePopup();
     }
@@ -514,13 +542,13 @@ public class LevelManager : MonoBehaviour
     public void LoadNextLevel()
     {
         HideLevelCompletePopup();
-        
+    
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.PlayGameplayMusic();
+            AudioManager.Instance.StopMusic();
         }
 
-        LoadLevel(currentLevelIndex + 1);
+        SceneManager.LoadScene("Shop");
     }
 
     void OnAllLevelsComplete()

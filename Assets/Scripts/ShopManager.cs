@@ -47,6 +47,15 @@ public class ShopManager : MonoBehaviour
         InitializeShop();
         SetupScrollButtons();
         SetupPopupButtons();
+        SetupNextLevelButton();
+    }
+    
+    void SetupNextLevelButton()
+    {
+        if (nextLevelButton != null)
+        {
+            nextLevelButton.onClick.AddListener(LoadNextGameLevel);
+        }
     }
     
     void SetupPopupButtons()
@@ -144,18 +153,27 @@ public class ShopManager : MonoBehaviour
     
     void InitializeShop()
     {
-        // Get player's current score from SessionManager
-        if (SessionManager.Instance != null)
+        Debug.Log("=== SHOP INITIALIZE DEBUG ===");
+    
+        if (SessionManager.Instance == null)
+        {
+            Debug.LogError("PROBLEM: SessionManager.Instance is NULL when shop loads!");
+            playerScore = 0;
+        }
+        else
         {
             playerScore = SessionManager.Instance.GetTotalScore();
+            Debug.Log($"SessionManager exists. Total score from session: {playerScore}");
         }
+    
+        Debug.Log("=== END SHOP INITIALIZE DEBUG ===");
 
         // Update score display
         UpdateScoreDisplay();
 
         // Show initial available items
         RefreshShopDisplay();
-    
+
         // Check which items are already purchased and update UI
         UpdatePurchasedItemsUI();
 
@@ -294,6 +312,21 @@ public class ShopManager : MonoBehaviour
         // TODO: Save shop data and load next level
     }
     
+    public void LoadNextGameLevel()
+    {
+        if (SessionManager.Instance != null)
+        {
+            int nextLevelIndex = SessionManager.Instance.GetCurrentLevelIndex();
+            Debug.Log($"Shop: Loading next level {nextLevelIndex + 1}");
+        }
+    
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayGameplayMusic();
+        }
+    
+        SceneManager.LoadScene("GameSceneOne");
+    }
     public void OnMainMenuClicked()
     {
         // TODO: Save shop data and return to main menu

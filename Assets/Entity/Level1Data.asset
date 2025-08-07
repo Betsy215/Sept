@@ -14,16 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelNumber: 1
   levelName: Day1
-  ordersPerLevel: 5
+  ordersPerLevel: 3
   orderDisplayTime: 5
   timeBetweenOrders: 3
   minOrderItems: 1
   maxOrderItems: 2
-  activeItemCount: 2
-  availableFoodTypes:
-  - Bread
-  - Apple
-  maxAvailableItems: 5
   basePointsPerOrder: 100
   perfectOrderBonus: 50
   timeBonus: 10

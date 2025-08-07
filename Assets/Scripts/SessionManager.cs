@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class SessionData
@@ -45,15 +46,31 @@ public class SessionManager : MonoBehaviour
     
     void Awake()
     {
+        Debug.Log($"=== SessionManager Awake() in scene: {SceneManager.GetActiveScene().name} ===");
+    
         // Singleton pattern
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            Debug.Log("✅ SessionManager created and set to DontDestroyOnLoad");
+        
+            // Auto-load any existing session
             InitializeSession();
+        
+            // If we loaded an active session, log it
+            if (HasActiveSession())
+            {
+                Debug.Log($"📱 Loaded existing session - Score: {GetTotalScore()}, Level: {GetCurrentLevelIndex() + 1}");
+            }
+            else
+            {
+                Debug.Log("📱 No existing session found - ready for new session");
+            }
         }
         else
         {
+            Debug.Log("SessionManager already exists, destroying duplicate");
             Destroy(gameObject);
         }
     }
