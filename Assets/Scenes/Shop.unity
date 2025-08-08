@@ -835,7 +835,7 @@ PrefabInstance:
       objectReference: {fileID: 8878342301148696013, guid: 9ca22cca6b5fc4edaa744a554c23e1e9, type: 3}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: isAvailable
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
