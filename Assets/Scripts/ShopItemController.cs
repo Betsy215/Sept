@@ -47,11 +47,28 @@ public class ShopItemController : MonoBehaviour
         {
             shopManager.ShowPurchasePopup(this);
         }
+        else if (!isAvailable && !isPurchased)
+        {
+            Debug.Log($"{itemName} is not yet available for purchase!");
+            // Could add visual feedback here (shake, sound, etc.)
+        }
     }
     
     public void MarkAsPurchased()
     {
         isPurchased = true;
+        UpdateVisualState();
+    }
+    
+    // NEW: Public method to control availability from ShopManager
+    public void SetAvailable(bool available)
+    {
+        // Only update availability if item hasn't been purchased
+        // Purchased items should always stay in "purchased" state
+        if (!isPurchased)
+        {
+            isAvailable = available;
+        }
         UpdateVisualState();
     }
     
@@ -63,21 +80,21 @@ public class ShopItemController : MonoBehaviour
         
         if (isPurchased)
         {
-            // Item is purchased - show as owned
+            // Item is purchased - show as owned (green and non-clickable)
             if (iconButton != null) iconButton.interactable = false;
             if (iconImage != null) iconImage.color = Color.green;
         }
         else if (isAvailable)
         {
-            // Item is available for purchase
+            // Item is available for purchase (white and clickable)
             if (iconButton != null) iconButton.interactable = true;
             if (iconImage != null) iconImage.color = Color.white;
         }
         else
         {
-            // Item is not available - shouldn't happen with new system
+            // Item is not yet available - show as locked (grey and non-clickable)
             if (iconButton != null) iconButton.interactable = false;
-            if (iconImage != null) iconImage.color = Color.gray;
+            if (iconImage != null) iconImage.color = new Color(0.5f, 0.5f, 0.5f, 1f); // Grey
         }
     }
     

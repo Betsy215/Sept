@@ -16,7 +16,7 @@ MonoBehaviour:
   levelName: Day1
   ordersPerLevel: 3
   orderDisplayTime: 5
-  timeBetweenOrders: 3
+  timeBetweenOrders: 2
   minOrderItems: 1
   maxOrderItems: 2
   basePointsPerOrder: 100
