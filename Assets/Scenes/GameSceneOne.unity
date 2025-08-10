@@ -1229,6 +1229,7 @@ MonoBehaviour:
   customerPrefabs:
   - {fileID: -7655600882293471894, guid: 480e6c6abf9c641ceb659ed07c359013, type: 3}
   - {fileID: 6078073404647016362, guid: d3f41be60a84743a28fa235f67a87645, type: 3}
+  - {fileID: 7080979575534249089, guid: 071e0c6af32264758a61a2e46f2e0a47, type: 3}
   spawnPoint: {fileID: 1787719493}
   orderSystem: {fileID: 1998227852}
   levelManager: {fileID: 905501929}

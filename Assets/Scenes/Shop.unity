@@ -2320,7 +2320,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
-      value: $200
+      value: $50
       objectReference: {fileID: 0}
     - target: {fileID: 9095678449651516868, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Sprite

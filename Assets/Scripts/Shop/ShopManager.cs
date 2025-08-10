@@ -18,7 +18,7 @@ public class ShopManager : MonoBehaviour
     
     [Header("Shop Item Management")]
     // REMOVED: public ShopItemController[] allShopItems; // No longer needed!
-    private int availableItemCount = 3; // First 3 items available initially
+    private int availableItemCount = 6; // First 3 items available initially
     
     [Header("Animation")]
     public float slideAnimationDuration = 1f;
