@@ -22,13 +22,24 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private int perfectOrderBonus = 50;
     [SerializeField] private int timeBonus = 10;
     
-    [Header("NEW: Per-Item Scoring Settings")]
+    [Header("Per-Item Scoring Settings")]
     public int pointsPerItem = 10; // Points for each correct item served
     public int orderCompletionBonus = 50; // Bonus for completing an order
     public int timeBonusMultiplier = 5; // Points per second remaining when order completed
     
     [Header("Item-Specific Points")]
     public ItemPointValues[] itemPoints; // Specific points for different items
+    
+    [Header("Score Popup Settings")]
+    public bool enableScorePopups = true;
+    public Canvas gameCanvas; // Assign your main game Canvas
+    public Vector2 popupSpawnPosition = new Vector2(0, 100); // Where popups appear
+    public float popupRandomRange = 150f; // Random horizontal spread
+    
+    [Header("Popup Font Settings")]
+    public TMP_FontAsset popupFont; // Assign in Inspector
+    public float popupFontSize = 36f;
+    public FontStyles popupFontStyle = FontStyles.Bold;
     
     [Header("Audio")]
     public AudioSource audioSource;
@@ -76,6 +87,21 @@ public class ScoreManager : MonoBehaviour
             }
         }
         
+        // Auto-find game canvas if not assigned
+        if (gameCanvas == null)
+        {
+            gameCanvas = FindObjectOfType<Canvas>();
+            if (gameCanvas != null)
+            {
+                Debug.Log("ScoreManager: Auto-found Canvas for popups");
+            }
+            else
+            {
+                Debug.LogWarning("ScoreManager: No Canvas found! Score popups will be disabled.");
+                enableScorePopups = false;
+            }
+        }
+        
         UpdateScoreUI();
         UpdateComboUI();
         
@@ -85,7 +111,7 @@ public class ScoreManager : MonoBehaviour
         // Update total score display
         UpdateTotalScoreUI();
         
-        Debug.Log($"ScoreManager: Initialized - InGame: {(inGameScoreText != null ? "Found" : "Missing")}, Final: {(finalScoreText != null ? "Found" : "Missing")}");
+        Debug.Log($"ScoreManager: Initialized - InGame: {(inGameScoreText != null ? "Found" : "Missing")}, Final: {(finalScoreText != null ? "Found" : "Missing")}, Canvas: {(gameCanvas != null ? "Found" : "Missing")}");
     }
     
     void SetupSessionEvents()
@@ -124,7 +150,7 @@ public class ScoreManager : MonoBehaviour
         Debug.Log("Score reset for new level");
     }
     
-    // NEW: Called when an individual item is served correctly
+    // Called when an individual item is served correctly
     public void AwardItemPoints(string itemType)
     {
         int points = GetPointsForItem(itemType);
@@ -133,10 +159,16 @@ public class ScoreManager : MonoBehaviour
         ShowFeedback($"+{points} points!");
         PlayPointsSound();
         
+        // Show popup
+        if (enableScorePopups)
+        {
+            ShowScorePopup(points, false);
+        }
+        
         Debug.Log($"Awarded {points} points for serving {itemType}");
     }
     
-    // NEW: Called when an order is completed (all items served)
+    // Called when an order is completed (all items served)
     public void AwardOrderCompletionBonus(float remainingTime)
     {
         // Base completion bonus
@@ -154,6 +186,12 @@ public class ScoreManager : MonoBehaviour
         ShowFeedback($"Order Complete! +{totalBonus} bonus!");
         PlayBonusSound();
         
+        // Show bonus popup
+        if (enableScorePopups)
+        {
+            ShowScorePopup(totalBonus, true);
+        }
+        
         // Increase combo counter
         consecutiveCorrectOrders++;
         UpdateComboUI();
@@ -161,19 +199,48 @@ public class ScoreManager : MonoBehaviour
         Debug.Log($"Order completion bonus: {bonus} + time bonus: {timeBonusPoints} x combo: {comboMultiplier} = {totalBonus}");
     }
     
-    // NEW: Called when an order expires
+    // Called when an order expires
     public void ApplyOrderExpiredPenalty()
     {
-
-        // ✅ KEEP: All feedback effects
+        // Keep all feedback effects
         ShowFeedback("Order Expired!", Color.red); // Red warning text
         PlayPenaltySound(); // Penalty sound effect
     
-        // ✅ CONSEQUENCE: Reset combo streak
+        // Consequence: Reset combo streak
         consecutiveCorrectOrders = 0;
         UpdateComboUI();
     
         Debug.Log("Order expired - combo reset but no points lost");
+    }
+    
+    // Method to show score popup
+    private void ShowScorePopup(int points, bool isBonus)
+    {
+        if (gameCanvas == null)
+        {
+            // Try to auto-find canvas
+            gameCanvas = FindObjectOfType<Canvas>();
+            if (gameCanvas == null)
+            {
+                Debug.LogWarning("ScoreManager: No Canvas found for score popups!");
+                return;
+            }
+        }
+        
+        // Calculate popup position with some randomness
+        Vector2 spawnPos = popupSpawnPosition;
+        spawnPos.x += Random.Range(-popupRandomRange / 2, popupRandomRange / 2);
+        
+        // Create and show popup with custom font
+        SimpleScorePopup.CreatePopupWithFont(
+            gameCanvas.transform, 
+            points, 
+            isBonus, 
+            spawnPos,
+            popupFont,           // Custom font
+            popupFontSize,       // Custom size
+            popupFontStyle       // Custom style
+        );
     }
     
     // Helper method to get points for specific item types
@@ -264,7 +331,7 @@ public class ScoreManager : MonoBehaviour
     
     void UpdateScoreUI()
     {
-        string scoreDisplayText = "Level Score: " + currentScore;
+        string scoreDisplayText = "$ " + currentScore;
         
         // Update in-game score display
         if (inGameScoreText != null)
@@ -360,5 +427,16 @@ public class ScoreManager : MonoBehaviour
         currentScore += 100;
         UpdateScoreUI();
         Debug.Log("Test score update - added 100 points");
+    }
+    
+    // Test method for popup (for debugging)
+    [ContextMenu("Test Score Popup")]
+    public void TestScorePopup()
+    {
+        if (enableScorePopups)
+        {
+            ShowScorePopup(50, false);  // Test item popup
+            ShowScorePopup(150, true);  // Test bonus popup
+        }
     }
 }

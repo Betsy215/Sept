@@ -512,7 +512,7 @@ public class LevelManager : MonoBehaviour
         if (finalScoreText != null && scoreManager != null)
         {
             int finalScore = scoreManager.GetCurrentScore();
-            finalScoreText.text = $"Level Score: {finalScore}";
+            finalScoreText.text = $" {finalScore}";
         }
 
         if (totalScoreText != null && SessionManager.Instance != null)

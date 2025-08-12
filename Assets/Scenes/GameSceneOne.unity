@@ -361,8 +361,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -344, y: 191}
-  m_SizeDelta: {x: 600, y: 300}
+  m_AnchoredPosition: {x: -569, y: -51}
+  m_SizeDelta: {x: 400, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &268141638
 MonoBehaviour:
@@ -386,8 +386,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Day:'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0361640937a4447a09258110a454af31, type: 2}
+  m_sharedMaterial: {fileID: 2237076867088661884, guid: 0361640937a4447a09258110a454af31, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -418,8 +418,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -3146,6 +3146,13 @@ MonoBehaviour:
   orderCompletionBonus: 50
   timeBonusMultiplier: 5
   itemPoints: []
+  enableScorePopups: 1
+  gameCanvas: {fileID: 1907019807}
+  popupSpawnPosition: {x: -250, y: 100}
+  popupRandomRange: 150
+  popupFont: {fileID: 11400000, guid: 0361640937a4447a09258110a454af31, type: 2}
+  popupFontSize: 100
+  popupFontStyle: 0
   audioSource: {fileID: 0}
   pointsSound: {fileID: 0}
   bonusSound: {fileID: 0}
@@ -3599,85 +3606,6 @@ Canvas:
   m_SortingLayerID: -262186767
   m_SortingOrder: 1
   m_TargetDisplay: 0
---- !u!1 &1707346225
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1707346226}
-  - component: {fileID: 1707346228}
-  - component: {fileID: 1707346227}
-  m_Layer: 5
-  m_Name: OrderProgressText
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1707346226
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1707346225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1907019808}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -420, y: -280}
-  m_SizeDelta: {x: 600, y: 200}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1707346227
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1707346225}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.09121923, g: 0.9811321, b: 0.087931626, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 100
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 0
-    m_MaxSize: 300
-    m_Alignment: 0
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: 'order:'
---- !u!222 &1707346228
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1707346225}
-  m_CullTransparentMesh: 1
 --- !u!1 &1715448384
 GameObject:
   m_ObjectHideFlags: 0
@@ -3712,8 +3640,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 432, y: -1385}
-  m_SizeDelta: {x: 700, y: 300}
+  m_AnchoredPosition: {x: 1223, y: -342}
+  m_SizeDelta: {x: 400, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1715448386
 MonoBehaviour:
@@ -3735,17 +3663,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Score:'
+  m_text: $
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0361640937a4447a09258110a454af31, type: 2}
+  m_sharedMaterial: {fileID: 2237076867088661884, guid: 0361640937a4447a09258110a454af31, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4292727054
-  m_fontColor: {r: 0.05322181, g: 0.81859446, b: 0.8679245, a: 1}
+    rgba: 4280546047
+  m_fontColor: {r: 1, g: 0.94803184, b: 0.13679248, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3762,15 +3690,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 64
-  m_fontSizeBase: 64
+  m_fontSize: 100
+  m_fontSizeBase: 100
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -4543,7 +4471,6 @@ RectTransform:
   - {fileID: 447796176}
   - {fileID: 1803541624}
   - {fileID: 1715448385}
-  - {fileID: 1707346226}
   - {fileID: 268141637}
   - {fileID: 1880750277}
   m_Father: {fileID: 0}
@@ -4724,7 +4651,7 @@ MonoBehaviour:
   minOrderItems: 1
   maxOrderItems: 4
   systemInitializationDelay: 0
-  orderProgressText: {fileID: 1707346227}
+  orderProgressText: {fileID: 0}
   orderContainer: {fileID: 784244163}
   orderTitleText: {fileID: 0}
   orderTimerText: {fileID: 0}
