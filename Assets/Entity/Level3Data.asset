@@ -14,16 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelNumber: 3
   levelName: Day3
-  ordersPerLevel: 3
+  ordersPerLevel: 8
   orderDisplayTime: 2
   timeBetweenOrders: 1
   minOrderItems: 1
   maxOrderItems: 4
-  maxItemsPerTray: 6
-  activeTrayCount: 3
-  plateMaxCapacity: 4
   basePointsPerOrder: 100
   perfectOrderBonus: 50
   timeBonus: 10
+  starThreshold1: 10
+  starThreshold2: 20
+  starThreshold3: 30
+  maxPossibleScore: 50
+  earnedStarColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  unearnedStarColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   backgroundSprite: {fileID: 0}
+  useSpecificFoodTypes: 0
+  difficultyMultiplier: 1

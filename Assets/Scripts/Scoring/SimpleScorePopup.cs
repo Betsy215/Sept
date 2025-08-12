@@ -53,7 +53,7 @@ public class SimpleScorePopup : MonoBehaviour
         }
         
         // Store starting position
-        startPosition = isBonus? new Vector2(-100,100):rectTransform.anchoredPosition;
+        startPosition = isBonus? new Vector2(-460,100):rectTransform.anchoredPosition;
         
         
         // Start animation

@@ -12,6 +12,10 @@ public class ScoreManager : MonoBehaviour
     public TextMeshProUGUI comboText; // For combo display
     public TextMeshProUGUI feedbackText; // For showing "+10 points!" etc.
     
+    [Header("UI Overlay Elements")]
+    public TextMeshProUGUI overlayScoreText;  // Your new overlay score text
+    public TextMeshProUGUI overlayComboText;  // For combo display in overlay
+    
     [Header("Game References")]
     public OrderSystem orderSystem; // Reference to order system
     public LevelManager levelManager; // Reference to level manager
@@ -48,7 +52,7 @@ public class ScoreManager : MonoBehaviour
     public AudioClip penaltySound;
     
     // Score tracking
-    private int currentScore = 0;
+    private int currentScore = 0; // Level score (for star progress)
     private int consecutiveCorrectOrders = 0;
     
     [System.Serializable]
@@ -114,12 +118,17 @@ public class ScoreManager : MonoBehaviour
         Debug.Log($"ScoreManager: Initialized - InGame: {(inGameScoreText != null ? "Found" : "Missing")}, Final: {(finalScoreText != null ? "Found" : "Missing")}, Canvas: {(gameCanvas != null ? "Found" : "Missing")}");
     }
     
+    // UPDATED: Enhanced session event setup
     void SetupSessionEvents()
     {
-        // Subscribe to session total score changes
         if (SessionManager.Instance != null)
         {
+            // Remove old subscription to avoid duplicates
+            SessionManager.Instance.OnTotalScoreChanged -= UpdateTotalScoreDisplay;
+            // Subscribe to session total score changes
             SessionManager.Instance.OnTotalScoreChanged += UpdateTotalScoreDisplay;
+            
+            Debug.Log("ScoreManager: Subscribed to session total score changes");
         }
     }
     
@@ -259,16 +268,20 @@ public class ScoreManager : MonoBehaviour
         return pointsPerItem;
     }
     
-    // Helper method to add score and update UI
+    // UPDATED: Helper method to add score and update session total immediately
     void AddScore(int points)
     {
+        // Add to level score (for star progress and level completion)
         currentScore += points;
         
-        UpdateScoreUI();
-        starProgressBar.UpdateDisplay(currentScore);
-
-        // Note: Session total score is updated by LevelManager at level completion
-        // using SessionManager.AddLevelScore() with the final level score
+        // IMMEDIATELY add to session total score
+        if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
+        {
+            SessionManager.Instance.AddScoreImmediately(points);
+        }
+        
+        UpdateScoreUI(); // This will now show the updated session total
+        starProgressBar.UpdateDisplay(currentScore); // Star progress still uses level score
     }
     
     // Helper method to show feedback text
@@ -329,41 +342,54 @@ public class ScoreManager : MonoBehaviour
         }
     }
     
+    // UPDATED: Show session total score instead of level score
     void UpdateScoreUI()
     {
-        string scoreDisplayText = "$ " + currentScore;
+        // Get session total score instead of current level score
+        int displayScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : currentScore;
+        string scoreDisplayText = "$ " + displayScore;
         
-        // Update in-game score display
+        // Update in-game score display (now shows total score)
         if (inGameScoreText != null)
         {
             inGameScoreText.text = scoreDisplayText;
-            Debug.Log($"ScoreManager: Updated in-game score to '{scoreDisplayText}'");
+            Debug.Log($"ScoreManager: Updated in-game score to '{scoreDisplayText}' (Total Session Score)");
         }
         else
         {
             Debug.LogWarning("ScoreManager: inGameScoreText is null! Please assign it in the inspector.");
         }
         
-        // Update final score display (for level complete panel)
+        // Update final score display (for level complete panel - keep as level score)
         if (finalScoreText != null)
         {
-            finalScoreText.text = "Final Score: " + currentScore;
+            finalScoreText.text = "Level Score: " + currentScore;
+        }
+        
+        // Update overlay score text if you added one
+        if (overlayScoreText != null)
+        {
+            overlayScoreText.text = scoreDisplayText;
         }
     }
     
+    // UPDATED: Enhanced combo UI with overlay support
     void UpdateComboUI()
     {
+        string comboDisplay = consecutiveCorrectOrders > 0 ? $"Combo x{consecutiveCorrectOrders + 1}" : "";
+        
+        // Update existing combo text
         if (comboText != null)
         {
-            if (consecutiveCorrectOrders > 0)
-            {
-                comboText.text = "Combo: " + consecutiveCorrectOrders + "x";
-                comboText.color = Color.yellow;
-            }
-            else
-            {
-                comboText.text = "";
-            }
+            comboText.text = comboDisplay;
+            comboText.color = consecutiveCorrectOrders > 0 ? Color.yellow : Color.white;
+        }
+        
+        // Update overlay combo text
+        if (overlayComboText != null)
+        {
+            overlayComboText.text = comboDisplay;
+            overlayComboText.color = consecutiveCorrectOrders > 0 ? Color.yellow : Color.white;
         }
     }
     
@@ -377,13 +403,19 @@ public class ScoreManager : MonoBehaviour
         }
     }
     
-    // Callback for session total score changes
+    // UPDATED: Callback for session total score changes
     void UpdateTotalScoreDisplay(int newTotalScore)
     {
+        // Update main score UI when session total changes
+        UpdateScoreUI();
+        
+        // Update dedicated total score text if you have one
         if (totalScoreText != null)
         {
             totalScoreText.text = "Total Score: " + newTotalScore;
         }
+        
+        Debug.Log($"ScoreManager: Total score updated to {newTotalScore}");
     }
     
     // Clean up events when destroyed
@@ -409,8 +441,7 @@ public class ScoreManager : MonoBehaviour
     // Additional helper methods
     public void AddBonusPoints(int points)
     {
-        currentScore += points;
-        UpdateScoreUI();
+        AddScore(points); // Uses the updated AddScore method
         Debug.Log($"Bonus points added: {points}");
     }
     
@@ -424,8 +455,7 @@ public class ScoreManager : MonoBehaviour
     [ContextMenu("Test Score Update")]
     public void TestScoreUpdate()
     {
-        currentScore += 100;
-        UpdateScoreUI();
+        AddScore(100); // Uses the updated AddScore method
         Debug.Log("Test score update - added 100 points");
     }
     

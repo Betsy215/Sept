@@ -23,7 +23,7 @@ public class SessionData
         sessionStartTime = DateTime.Now;
         isActive = true;
         
-        purchasedFoodItems = new List<string> { "Apple" };
+        purchasedFoodItems = new List<string> { "Apple", "Bread" };
         purchasedCharacters = new List<string> { "Girl" };
     }
 }
@@ -148,16 +148,36 @@ public class SessionManager : MonoBehaviour
         }
     }
     
-    public void AddLevelScore(int levelScore)
+    // NEW: Method to immediately add points to session total (called during gameplay)
+    public void AddScoreImmediately(int points)
     {
         if (currentSession != null && currentSession.isActive)
         {
-            currentSession.totalScore += levelScore;
-            SaveSession();
+            currentSession.totalScore += points;
+            SaveSession(); // Save immediately to persist progress
             
-            Debug.Log($"Added {levelScore} to session total. New total: {currentSession.totalScore}");
+            Debug.Log($"Added {points} points immediately. New session total: {currentSession.totalScore}");
             
             // Notify UI of score change
+            OnTotalScoreChanged?.Invoke(currentSession.totalScore);
+        }
+    }
+    
+    // UPDATED: Modified to avoid double-adding scores
+    public void AddLevelScore(int levelScore)
+    {
+        // This method is now called only at level completion for summary/logging
+        // The actual score addition happens immediately during gameplay via AddScoreImmediately()
+        
+        if (currentSession != null && currentSession.isActive)
+        {
+            // Don't add to total score here anymore - it's already been added immediately
+            // Just save the session to ensure persistence
+            SaveSession();
+            
+            Debug.Log($"Level completed with score: {levelScore}. Session total: {currentSession.totalScore}");
+            
+            // Still notify UI in case it needs updating
             OnTotalScoreChanged?.Invoke(currentSession.totalScore);
         }
     }
@@ -234,6 +254,7 @@ public class SessionManager : MonoBehaviour
         }
     }
     
+    // UPDATED: Fixed to handle existing sessions without Bread
     void LoadSession()
     {
         if (PlayerPrefs.HasKey(SESSION_SAVE_KEY))
@@ -243,11 +264,23 @@ public class SessionManager : MonoBehaviour
             {
                 currentSession = JsonUtility.FromJson<SessionData>(jsonData);
                 Debug.Log("Session loaded successfully");
+                
                 // Handle legacy sessions that don't have purchased items
                 if (currentSession.purchasedFoodItems == null)
                 {
-                    currentSession.purchasedFoodItems = new List<string> { "Apple" };
+                    currentSession.purchasedFoodItems = new List<string> { "Apple", "Bread" };
                 }
+                else
+                {
+                    // NEW: Ensure Bread is in existing sessions
+                    if (!currentSession.purchasedFoodItems.Contains("Bread"))
+                    {
+                        currentSession.purchasedFoodItems.Add("Bread");
+                        Debug.Log("Added Bread to existing session");
+                        SaveSession(); // Save the updated session
+                    }
+                }
+                
                 if (currentSession.purchasedCharacters == null)
                 {
                     currentSession.purchasedCharacters = new List<string> { "Girl" };
@@ -274,7 +307,7 @@ public class SessionManager : MonoBehaviour
     
     #region SHOP SYSTEM METHODS
 
-// Purchase a food item
+    // Purchase a food item
     public bool PurchaseFoodItem(string foodType)
     {
         if (currentSession == null) return false;
@@ -291,7 +324,7 @@ public class SessionManager : MonoBehaviour
         return false;
     }
 
-// Purchase a character
+    // Purchase a character
     public bool PurchaseCharacter(string characterName)
     {
         if (currentSession == null) return false;

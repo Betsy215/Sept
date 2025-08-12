@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Level1Data
   m_EditorClassIdentifier: 
   levelNumber: 1
-  levelName: Day1
-  ordersPerLevel: 5
+  levelName: Day 1
+  ordersPerLevel: 4
   orderDisplayTime: 5
   timeBetweenOrders: 2
   minOrderItems: 1
   maxOrderItems: 2
-  basePointsPerOrder: 100
+  basePointsPerOrder: 10
   perfectOrderBonus: 50
   timeBonus: 10
   starThreshold1: 300
