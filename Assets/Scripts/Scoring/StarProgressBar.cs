@@ -1,15 +1,9 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
-using UnityEngine.UI;
 
 public class StarProgressBar : MonoBehaviour
 {
-    [Header("Progress Bar GameObjects")]
-    public Transform progressBarBackground;
-    public Image progressBarFill;
-    public SpriteRenderer progressBarFillRenderer;
-    
     [Header("Star GameObjects")]
     public Transform star1;
     public Transform star2;
@@ -31,38 +25,23 @@ public class StarProgressBar : MonoBehaviour
     
     [Header("Animation Settings")]
     public bool useAnimations = true;
-    public float animationSpeed = 2f;
-    public float progressBarMaxWidth = 3.8f;
     
     [Header("Level Data")]
     public LevelData currentLevelData;
     
     private int lastDisplayedScore = -1;
-    private float targetProgress = 0f;
-    private float currentProgress = 0f;
     private bool[] starStates = new bool[3];
     private Vector3[] originalStarScales = new Vector3[3];
     
     void Start()
     {
-        InitializeProgressBar();
         StoreOriginalStarScales();
         AutoFindComponents();
-    }
-    
-    void Update()
-    {
-        if (useAnimations && Mathf.Abs(currentProgress - targetProgress) > 0.01f)
-        {
-            AnimateProgress();
-        }
+        InitializeStars();
     }
     
     void AutoFindComponents()
     {
-        if (progressBarFill != null && progressBarFillRenderer == null)
-            progressBarFillRenderer = progressBarFill.GetComponent<SpriteRenderer>();
-            
         if (star1 != null && star1Renderer == null)
             star1Renderer = star1.GetComponent<SpriteRenderer>();
             
@@ -76,14 +55,13 @@ public class StarProgressBar : MonoBehaviour
     public void Initialize(LevelData levelData)
     {
         currentLevelData = levelData;
-        InitializeProgressBar();
+        InitializeStars();
         UpdateDisplay(0);
     }
     
-    void InitializeProgressBar()
+    void InitializeStars()
     {
         SetAllStarsUnfilled();
-        SetProgressValue(0f);
     }
     
     void StoreOriginalStarScales()
@@ -100,42 +78,8 @@ public class StarProgressBar : MonoBehaviour
         
         lastDisplayedScore = currentScore;
         
-        UpdateProgressBar(currentScore);
         UpdateStars(currentScore);
         UpdateTexts(currentScore);
-    }
-    
-    void UpdateProgressBar(int currentScore)
-    {
-        if (progressBarFill == null) return;
-        
-        float newProgress = currentLevelData.GetProgressPercentage(currentScore);
-        
-        if (useAnimations)
-        {
-            targetProgress = newProgress;
-        }
-        else
-        {
-            SetProgressValue(newProgress);
-        }
-    }
-    
-    void AnimateProgress()
-    {
-        currentProgress = Mathf.MoveTowards(currentProgress, targetProgress, animationSpeed * Time.deltaTime);
-        SetProgressValue(currentProgress);
-    }
-    
-    void SetProgressValue(float value)
-    {
-        if (progressBarFill != null)
-        {
-            // UI Image magic - perfect rounded ends at any progress!
-            progressBarFill.fillAmount = value;
-        
-            Debug.Log($"Progress: {value:P0} - Fill amount: {value}");
-        }
     }
     
     void UpdateStars(int currentScore)
@@ -288,11 +232,4 @@ public class StarProgressBar : MonoBehaviour
         }
         return count;
     }
-    
-    public float GetCurrentProgressPercentage()
-    {
-        return currentProgress;
-    }
-    
-  
 }
