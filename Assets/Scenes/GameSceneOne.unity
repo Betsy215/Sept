@@ -2945,6 +2945,7 @@ MonoBehaviour:
   feedbackText: {fileID: 0}
   overlayScoreText: {fileID: 0}
   overlayComboText: {fileID: 0}
+  popupFont: {fileID: 11400000, guid: 0361640937a4447a09258110a454af31, type: 2}
   orderSystem: {fileID: 1998227852}
   levelManager: {fileID: 905501929}
   starProgressBar: {fileID: 1383608619}
@@ -2957,13 +2958,8 @@ MonoBehaviour:
   itemPoints: []
   enableScorePopups: 1
   gameCanvas: {fileID: 1907019807}
-  popupSpawnPosition: {x: -250, y: 100}
-  popupRandomRange: 150
   clearPopupOnLevelEnd: 1
   clearPopupOnLevelStart: 1
-  popupFont: {fileID: 11400000, guid: 0361640937a4447a09258110a454af31, type: 2}
-  popupFontSize: 100
-  popupFontStyle: 0
   audioSource: {fileID: 0}
   pointsSound: {fileID: 0}
   bonusSound: {fileID: 0}

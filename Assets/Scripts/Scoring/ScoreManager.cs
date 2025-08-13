@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
+using System.Collections;
 using TMPro;
 
 public class ScoreManager : MonoBehaviour
@@ -35,19 +35,13 @@ public class ScoreManager : MonoBehaviour
     public ItemPointValues[] itemPoints; // Specific points for different items
     
     [Header("Score Popup Settings")]
-    public bool enableScorePopups = true;
+    public bool enableScorePopups = true; // Set to false temporarily if animation still delayed
     public Canvas gameCanvas; // Assign your main game Canvas
-    public Vector2 popupSpawnPosition = new Vector2(0, 100); // Where popups appear
-    public float popupRandomRange = 150f; // Random horizontal spread
+    public TMP_FontAsset popupFont; // FIXED: Assign Beachday SDF font here
     
     [Header("Popup Management")]
     public bool clearPopupOnLevelEnd = true; // Clear popup when level ends
     public bool clearPopupOnLevelStart = true; // Clear popup when level starts
-    
-    [Header("Popup Font Settings")]
-    public TMP_FontAsset popupFont; // Assign in Inspector
-    public float popupFontSize = 36f;
-    public FontStyles popupFontStyle = FontStyles.Bold;
     
     [Header("Audio")]
     public AudioSource audioSource;
@@ -177,19 +171,27 @@ public class ScoreManager : MonoBehaviour
         int points = GetPointsForItem(itemType);
         
         AddScore(points);
-        ShowFeedback($"+{points} points!");
-        PlayPointsSound();
+        ShowFeedback($"+{points} points!", Color.green);
         
-        // Show popup
-        if (enableScorePopups)
-        {
-            ShowScorePopup(points, false);
-        }
+        // DELAY the popup creation to allow served item animation to play first
+        StartCoroutine(DelayedItemPopup(points));
+        
+        PlayPointsSound();
         
         Debug.Log($"Awarded {points} points for serving {itemType}");
     }
     
-    // Called when an order is completed (all items served)
+    // NEW: Delay item popup creation to allow served item animation to play first
+    IEnumerator DelayedItemPopup(int points)
+    {
+        // Wait a tiny bit for the served item animation to start
+        yield return new WaitForSeconds(0.05f); // Very small delay
+        
+        // Now show the item points popup
+        ShowScorePopup(points, 0);
+    }
+    
+    // Called when an order is completed successfully - FIXED TO MATCH ORDERSYSTEM
     public void AwardOrderCompletionBonus(float remainingTime)
     {
         // Base completion bonus
@@ -204,23 +206,30 @@ public class ScoreManager : MonoBehaviour
         int totalBonus = (bonus + timeBonusPoints) * comboMultiplier;
         
         AddScore(totalBonus);
-        ShowFeedback($"Order Complete! +{totalBonus} bonus!");
-        PlayBonusSound();
-        
-        // Show bonus popup
-        if (enableScorePopups)
-        {
-            ShowScorePopup(totalBonus, true);
-        }
-        
-        // Increase combo counter
         consecutiveCorrectOrders++;
+        
+        // DELAY the popup creation to allow served item animation to play first
+        StartCoroutine(DelayedBonusPopup(totalBonus));
+        
         UpdateComboUI();
+        
+        ShowFeedback($"Order Complete! +{totalBonus} bonus!", Color.yellow);
+        PlayBonusSound();
         
         Debug.Log($"Order completion bonus: {bonus} + time bonus: {timeBonusPoints} x combo: {comboMultiplier} = {totalBonus}");
     }
     
-    // Called when an order expires
+    // NEW: Delay popup creation to allow served item animation to play first
+    IEnumerator DelayedBonusPopup(int bonusPoints)
+    {
+        // Wait for served item animation to start playing
+        yield return new WaitForSeconds(0.1f); // Small delay to let animation start
+        
+        // Now show the bonus popup
+        ShowScorePopup(0, bonusPoints);
+    }
+    
+    // Called when an order expires - FIXED TO MATCH ORDERSYSTEM
     public void ApplyOrderExpiredPenalty()
     {
         // Keep all feedback effects
@@ -234,37 +243,130 @@ public class ScoreManager : MonoBehaviour
         Debug.Log("Order expired - combo reset but no points lost");
     }
     
-    // UPDATED: Method to show score popup (now popups persist until next one)
-    private void ShowScorePopup(int points, bool isBonus)
+    // UPDATED: Show level score instead of session total score
+    void UpdateScoreUI()
     {
-        if (gameCanvas == null)
+        // Show current level score instead of session total score
+        string scoreDisplayText = "$ " + currentScore;
+        
+        // Update in-game score display (now shows level score only)
+        if (inGameScoreText != null)
         {
-            // Try to auto-find canvas
-            gameCanvas = FindObjectOfType<Canvas>();
-            if (gameCanvas == null)
-            {
-                Debug.LogWarning("ScoreManager: No Canvas found for score popups!");
-                return;
-            }
+            inGameScoreText.text = scoreDisplayText;
+            Debug.Log($"ScoreManager: Updated in-game score to '{scoreDisplayText}' (Level Score Only)");
+        }
+        else
+        {
+            Debug.LogWarning("ScoreManager: inGameScoreText is null! Please assign it in the inspector.");
         }
         
-        // Calculate popup position with some randomness
-        Vector2 spawnPos = popupSpawnPosition;
-        spawnPos.x += Random.Range(-popupRandomRange / 2, popupRandomRange / 2);
+        // Update final score display (for level complete panel - keep as level score)
+        if (finalScoreText != null)
+        {
+            finalScoreText.text = "Level Score: " + currentScore;
+        }
         
-        // Create and show popup with custom font
-        // Note: New popup will automatically destroy the previous one
-        SimpleScorePopup.CreatePopupWithFont(
-            gameCanvas.transform, 
-            points, 
-            isBonus, 
-            spawnPos,
-            popupFont,           // Custom font
-            popupFontSize,       // Custom size
-            popupFontStyle       // Custom style
+        // Update overlay score text if you added one
+        if (overlayScoreText != null)
+        {
+            overlayScoreText.text = scoreDisplayText;
+        }
+    }
+    
+    // UPDATED: Enhanced combo UI with overlay support
+    void UpdateComboUI()
+    {
+        string comboDisplay = consecutiveCorrectOrders > 0 ? $"Combo x{consecutiveCorrectOrders + 1}" : "";
+        
+        // Update existing combo text
+        if (comboText != null)
+        {
+            comboText.text = comboDisplay;
+            comboText.color = consecutiveCorrectOrders > 0 ? Color.yellow : Color.white;
+        }
+        
+        // Update overlay combo text
+        if (overlayComboText != null)
+        {
+            overlayComboText.text = comboDisplay;
+            overlayComboText.color = consecutiveCorrectOrders > 0 ? Color.yellow : Color.white;
+        }
+    }
+    
+    // Update total score UI
+    void UpdateTotalScoreUI()
+    {
+        if (totalScoreText != null && SessionManager.Instance != null)
+        {
+            int totalScore = SessionManager.Instance.GetTotalScore();
+            totalScoreText.text = "Total Score: " + totalScore;
+        }
+    }
+    
+    // UPDATED: Callback for session total score changes
+    void UpdateTotalScoreDisplay(int newTotalScore)
+    {
+        // Update dedicated total score text if you have one
+        if (totalScoreText != null)
+        {
+            totalScoreText.text = "Total Score: " + newTotalScore;
+        }
+        
+        Debug.Log($"ScoreManager: Total score updated to {newTotalScore}");
+    }
+    
+    // FIXED: Now properly passes the font from ScoreManager to SimpleScorePopup
+    void ShowScorePopup(int basePoints, int bonusPoints = 0)
+    {
+        if (!enableScorePopups)
+        {
+            Debug.Log("Score popups are disabled in settings");
+            return;
+        }
+        
+        if (gameCanvas == null)
+        {
+            Debug.LogError("gameCanvas is null! Cannot create popup.");
+            return;
+        }
+        
+        Debug.Log($"Creating popup: basePoints={basePoints}, bonusPoints={bonusPoints}, font={popupFont?.name ?? "default"}");
+        
+        // FIXED: Now properly passes the font to the popup
+        SimpleScorePopup popup = SimpleScorePopup.CreateCombinedPopupWithFont(
+            gameCanvas.transform,
+            basePoints,
+            bonusPoints,
+            popupFont  // ← THIS IS WHERE THE FONT IS PASSED
         );
         
-        Debug.Log($"Score popup created: {points} points (Bonus: {isBonus}). Previous popup automatically cleared.");
+        if (popup != null)
+        {
+            Debug.Log($"Popup created successfully with font: {(popupFont != null ? popupFont.name : "default")}");
+        }
+        else
+        {
+            Debug.LogError("Failed to create popup!");
+        }
+    }
+    
+    // For backwards compatibility, keep the old method but use the new combined one:
+    void ShowScorePopup(int points, bool isBonus)
+    {
+        if (isBonus)
+        {
+            ShowScorePopup(0, points); // Show as bonus only
+        }
+        else
+        {
+            ShowScorePopup(points, 0); // Show as base only
+        }
+    }
+    
+    // When you want to show combined points (call this instead of separate calls):
+    public void ShowCombinedPoints(int basePoints, int bonusPoints)
+    {
+        ShowScorePopup(basePoints, bonusPoints);
     }
     
     // NEW: Method to manually clear current popup
@@ -320,8 +422,8 @@ public class ScoreManager : MonoBehaviour
             SessionManager.Instance.AddScoreImmediately(points);
         }
         
-        UpdateScoreUI(); // This will now show the updated session total
-        starProgressBar.UpdateDisplay(currentScore); // Star progress still uses level score
+        UpdateScoreUI(); // This will now show the updated level score
+        starProgressBar.UpdateDisplay(currentScore); // Star progress uses level score
     }
     
     // Helper method to show feedback text
@@ -382,82 +484,6 @@ public class ScoreManager : MonoBehaviour
         }
     }
     
-    // UPDATED: Show session total score instead of level score
-    void UpdateScoreUI()
-    {
-        // Get session total score instead of current level score
-        int displayScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : currentScore;
-        string scoreDisplayText = "$ " + displayScore;
-        
-        // Update in-game score display (now shows total score)
-        if (inGameScoreText != null)
-        {
-            inGameScoreText.text = scoreDisplayText;
-            Debug.Log($"ScoreManager: Updated in-game score to '{scoreDisplayText}' (Total Session Score)");
-        }
-        else
-        {
-            Debug.LogWarning("ScoreManager: inGameScoreText is null! Please assign it in the inspector.");
-        }
-        
-        // Update final score display (for level complete panel - keep as level score)
-        if (finalScoreText != null)
-        {
-            finalScoreText.text = "Level Score: " + currentScore;
-        }
-        
-        // Update overlay score text if you added one
-        if (overlayScoreText != null)
-        {
-            overlayScoreText.text = scoreDisplayText;
-        }
-    }
-    
-    // UPDATED: Enhanced combo UI with overlay support
-    void UpdateComboUI()
-    {
-        string comboDisplay = consecutiveCorrectOrders > 0 ? $"Combo x{consecutiveCorrectOrders + 1}" : "";
-        
-        // Update existing combo text
-        if (comboText != null)
-        {
-            comboText.text = comboDisplay;
-            comboText.color = consecutiveCorrectOrders > 0 ? Color.yellow : Color.white;
-        }
-        
-        // Update overlay combo text
-        if (overlayComboText != null)
-        {
-            overlayComboText.text = comboDisplay;
-            overlayComboText.color = consecutiveCorrectOrders > 0 ? Color.yellow : Color.white;
-        }
-    }
-    
-    // Update total score UI
-    void UpdateTotalScoreUI()
-    {
-        if (totalScoreText != null && SessionManager.Instance != null)
-        {
-            int totalScore = SessionManager.Instance.GetTotalScore();
-            totalScoreText.text = "Total Score: " + totalScore;
-        }
-    }
-    
-    // UPDATED: Callback for session total score changes
-    void UpdateTotalScoreDisplay(int newTotalScore)
-    {
-        // Update main score UI when session total changes
-        UpdateScoreUI();
-        
-        // Update dedicated total score text if you have one
-        if (totalScoreText != null)
-        {
-            totalScoreText.text = "Total Score: " + newTotalScore;
-        }
-        
-        Debug.Log($"ScoreManager: Total score updated to {newTotalScore}");
-    }
-    
     // Clean up events when destroyed
     void OnDestroy()
     {
@@ -495,19 +521,32 @@ public class ScoreManager : MonoBehaviour
     [ContextMenu("Test Score Popup")]
     public void TestScorePopup()
     {
+        Debug.Log("Testing score popup...");
         if (enableScorePopups)
         {
-            ShowScorePopup(50, false);  // Test item popup
-            // Wait a moment then show bonus popup
-            StartCoroutine(TestBonusPopupDelay());
+            ShowCombinedPoints(50, 25);  // Test combined popup: +50\n+25 BONUS!
+        }
+        else
+        {
+            Debug.Log("Score popups disabled!");
         }
     }
     
-    // Helper for testing popups
-    private System.Collections.IEnumerator TestBonusPopupDelay()
+    // NEW: Simple test for just showing a basic popup
+    [ContextMenu("Test Simple Popup")]
+    public void TestSimplePopup()
     {
-        yield return new WaitForSeconds(2f);
-        ShowScorePopup(150, true);  // Test bonus popup (will replace the first one)
+        Debug.Log("Testing simple popup...");
+        ShowScorePopup(100, 0); // Just show +100
+    }
+    
+    // NEW: Test animation timing
+    [ContextMenu("Test Animation Timing")]
+    public void TestAnimationTiming()
+    {
+        Debug.Log("Testing animation timing - this should show popup immediately");
+        ShowScorePopup(50, 0);
+        Debug.Log("Popup creation completed");
     }
     
     // NEW: Context menu method to clear popup manually (for testing)
