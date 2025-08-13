@@ -5,7 +5,7 @@ using System.Collections;
 public class SimpleScorePopup : MonoBehaviour
 {
     [Header("Animation Settings")]
-    public float animationDuration = 3f;
+    public float initialAnimationDuration = 1f; // Initial pop-in animation
     public float moveUpDistance = 100f;
     public float startScale = 0.8f;
     public float endScale = 1.2f;
@@ -18,6 +18,10 @@ public class SimpleScorePopup : MonoBehaviour
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private Vector3 startPosition;
+    private bool isAnimationComplete = false;
+    
+    // Static reference to track current popup
+    private static SimpleScorePopup currentPopup;
     
     void Awake()
     {
@@ -39,6 +43,15 @@ public class SimpleScorePopup : MonoBehaviour
     /// <param name="isBonus">Is this a bonus popup?</param>
     public void ShowPopup(int points, bool isBonus = false)
     {
+        // Destroy previous popup if it exists
+        if (currentPopup != null && currentPopup != this)
+        {
+            Destroy(currentPopup.gameObject);
+        }
+        
+        // Set this as the current popup
+        currentPopup = this;
+        
         // Set text content
         string prefix = points > 0 ? "+" : "";
         textComponent.text = $"{prefix}{points}";
@@ -53,46 +66,85 @@ public class SimpleScorePopup : MonoBehaviour
         }
         
         // Store starting position
-        startPosition = isBonus? new Vector2(-460,100):rectTransform.anchoredPosition;
+        startPosition = isBonus ? new Vector2(-100, 100) : rectTransform.anchoredPosition;
         
-        
-        // Start animation
-        StartCoroutine(AnimatePopup());
+        // Start initial animation
+        StartCoroutine(InitialAnimation());
     }
     
     /// <summary>
-    /// Main popup animation
+    /// Initial popup animation - ends in visible state
     /// </summary>
-    IEnumerator AnimatePopup()
+    IEnumerator InitialAnimation()
     {
         float elapsedTime = 0f;
         Vector3 targetPosition = startPosition + Vector3.up * moveUpDistance;
         
         // Set initial state
         rectTransform.localScale = Vector3.one * startScale;
-        canvasGroup.alpha = 1f;
+        canvasGroup.alpha = 0f;
         
-        while (elapsedTime < animationDuration)
+        while (elapsedTime < initialAnimationDuration)
         {
-            float t = elapsedTime / animationDuration;
+            float t = elapsedTime / initialAnimationDuration;
             
             // Move upward with easing
             float easedT = EaseOutCubic(t);
             rectTransform.anchoredPosition = Vector3.Lerp(startPosition, targetPosition, easedT);
             
-            // Scale animation (grow then shrink slightly)
-            float scale = Mathf.Lerp(startScale, endScale, Mathf.Sin(t * Mathf.PI));
+            // Scale animation (grow to final size)
+            float scale = Mathf.Lerp(startScale, endScale, easedT);
             rectTransform.localScale = Vector3.one * scale;
             
-            // Fade out near the end
-            float alpha = t < 0.7f ? 1f : Mathf.Lerp(1f, 0f, (t - 0.7f) / 0.3f);
-            canvasGroup.alpha = alpha;
+            // Fade in
+            canvasGroup.alpha = Mathf.Lerp(0f, 1f, easedT);
             
             elapsedTime += Time.deltaTime;
             yield return null;
         }
         
-        // Animation complete - destroy popup
+        // Ensure final state
+        rectTransform.anchoredPosition = targetPosition;
+        rectTransform.localScale = Vector3.one * endScale;
+        canvasGroup.alpha = 1f;
+        isAnimationComplete = true;
+        
+        // Now stay visible until next popup or manual destruction
+        Debug.Log($"Score popup animation complete. Staying visible until next popup.");
+    }
+    
+    /// <summary>
+    /// Manually destroy this popup (called when a new one is created)
+    /// </summary>
+    public void DestroyPopup()
+    {
+        // Quick fade out before destroying
+        StartCoroutine(FadeOutAndDestroy());
+    }
+    
+    /// <summary>
+    /// Quick fade out animation before destruction
+    /// </summary>
+    IEnumerator FadeOutAndDestroy()
+    {
+        float fadeTime = 0.2f;
+        float startAlpha = canvasGroup.alpha;
+        float elapsedTime = 0f;
+        
+        while (elapsedTime < fadeTime)
+        {
+            float t = elapsedTime / fadeTime;
+            canvasGroup.alpha = Mathf.Lerp(startAlpha, 0f, t);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        
+        // Clear reference if this was the current popup
+        if (currentPopup == this)
+        {
+            currentPopup = null;
+        }
+        
         Destroy(gameObject);
     }
     
@@ -134,39 +186,66 @@ public class SimpleScorePopup : MonoBehaviour
         GameObject popupObj = new GameObject("ScorePopup");
         popupObj.transform.SetParent(parent, false);
         
-        // Add TextMeshPro component
-        TextMeshProUGUI textComp = popupObj.AddComponent<TextMeshProUGUI>();
-        textComp.text = $"+{points}";
-        textComp.fontSize = fontSize;
-        textComp.fontStyle = fontStyle;
-        textComp.alignment = TextAlignmentOptions.Center;
-        
-        // Set custom font if provided
-        if (font != null)
-        {
-            textComp.font = font;
-        }
-        
-        // Setup RectTransform
-        RectTransform rectTrans = popupObj.GetComponent<RectTransform>();
-        rectTrans.sizeDelta = new Vector2(800, 800);
+        // Add RectTransform
+        RectTransform rectTransform = popupObj.AddComponent<RectTransform>();
+        rectTransform.sizeDelta = new Vector2(200, 60);
         
         // Set position
         if (position.HasValue)
         {
-            rectTrans.anchoredPosition = position.Value;
+            rectTransform.anchoredPosition = position.Value;
         }
         else
         {
-            rectTrans.anchoredPosition = Vector2.zero; // Center of screen
+            rectTransform.anchoredPosition = Vector2.zero;
         }
         
-        // Add popup script
-        SimpleScorePopup popup = popupObj.AddComponent<SimpleScorePopup>();
+        // Add TextMeshPro component
+        TextMeshProUGUI textComponent = popupObj.AddComponent<TextMeshProUGUI>();
+        textComponent.text = points.ToString();
+        textComponent.fontSize = fontSize;
+        textComponent.fontStyle = fontStyle;
+        textComponent.alignment = TextAlignmentOptions.Center;
+        textComponent.color = isBonus ? Color.yellow : Color.green;
         
-        // Start the popup
+        // Set custom font if provided
+        if (font != null)
+        {
+            textComponent.font = font;
+        }
+        
+        // Add popup script and show
+        SimpleScorePopup popup = popupObj.AddComponent<SimpleScorePopup>();
         popup.ShowPopup(points, isBonus);
         
         return popup;
+    }
+    
+    /// <summary>
+    /// Static method to manually clear current popup
+    /// </summary>
+    public static void ClearCurrentPopup()
+    {
+        if (currentPopup != null)
+        {
+            currentPopup.DestroyPopup();
+        }
+    }
+    
+    /// <summary>
+    /// Check if there's currently a popup visible
+    /// </summary>
+    public static bool HasActivePopup()
+    {
+        return currentPopup != null;
+    }
+    
+    void OnDestroy()
+    {
+        // Clear reference if this was the current popup
+        if (currentPopup == this)
+        {
+            currentPopup = null;
+        }
     }
 }

@@ -40,6 +40,10 @@ public class ScoreManager : MonoBehaviour
     public Vector2 popupSpawnPosition = new Vector2(0, 100); // Where popups appear
     public float popupRandomRange = 150f; // Random horizontal spread
     
+    [Header("Popup Management")]
+    public bool clearPopupOnLevelEnd = true; // Clear popup when level ends
+    public bool clearPopupOnLevelStart = true; // Clear popup when level starts
+    
     [Header("Popup Font Settings")]
     public TMP_FontAsset popupFont; // Assign in Inspector
     public float popupFontSize = 36f;
@@ -149,10 +153,18 @@ public class ScoreManager : MonoBehaviour
         Debug.Log($"Score settings updated: Base={basePoints}, Perfect={perfectBonus}, Time={timeBonusPoints}");
     }
     
+    // UPDATED: Reset score method with popup clearing
     public void ResetScore()
     {
         currentScore = 0;
         consecutiveCorrectOrders = 0;
+        
+        // Clear popup when starting new level
+        if (clearPopupOnLevelStart)
+        {
+            ClearScorePopup();
+        }
+        
         UpdateScoreUI();
         UpdateComboUI();
         starProgressBar.UpdateDisplay(0);
@@ -222,7 +234,7 @@ public class ScoreManager : MonoBehaviour
         Debug.Log("Order expired - combo reset but no points lost");
     }
     
-    // Method to show score popup
+    // UPDATED: Method to show score popup (now popups persist until next one)
     private void ShowScorePopup(int points, bool isBonus)
     {
         if (gameCanvas == null)
@@ -241,6 +253,7 @@ public class ScoreManager : MonoBehaviour
         spawnPos.x += Random.Range(-popupRandomRange / 2, popupRandomRange / 2);
         
         // Create and show popup with custom font
+        // Note: New popup will automatically destroy the previous one
         SimpleScorePopup.CreatePopupWithFont(
             gameCanvas.transform, 
             points, 
@@ -250,6 +263,33 @@ public class ScoreManager : MonoBehaviour
             popupFontSize,       // Custom size
             popupFontStyle       // Custom style
         );
+        
+        Debug.Log($"Score popup created: {points} points (Bonus: {isBonus}). Previous popup automatically cleared.");
+    }
+    
+    // NEW: Method to manually clear current popup
+    public void ClearScorePopup()
+    {
+        SimpleScorePopup.ClearCurrentPopup();
+        Debug.Log("ScoreManager: Manually cleared current score popup");
+    }
+    
+    // NEW: Method called when level ends (call this from LevelManager)
+    public void OnLevelEnd()
+    {
+        // Clear popup when level ends if enabled
+        if (clearPopupOnLevelEnd)
+        {
+            ClearScorePopup();
+        }
+        
+        Debug.Log("ScoreManager: Level ended");
+    }
+    
+    // NEW: Method to check if popup is currently visible
+    public bool IsPopupVisible()
+    {
+        return SimpleScorePopup.HasActivePopup();
     }
     
     // Helper method to get points for specific item types
@@ -451,22 +491,37 @@ public class ScoreManager : MonoBehaviour
         UpdateComboUI();
     }
     
-    // Test method to manually update score (for debugging)
-    [ContextMenu("Test Score Update")]
-    public void TestScoreUpdate()
-    {
-        AddScore(100); // Uses the updated AddScore method
-        Debug.Log("Test score update - added 100 points");
-    }
-    
-    // Test method for popup (for debugging)
+    // UPDATED: Test method for popup (for debugging)
     [ContextMenu("Test Score Popup")]
     public void TestScorePopup()
     {
         if (enableScorePopups)
         {
             ShowScorePopup(50, false);  // Test item popup
-            ShowScorePopup(150, true);  // Test bonus popup
+            // Wait a moment then show bonus popup
+            StartCoroutine(TestBonusPopupDelay());
         }
+    }
+    
+    // Helper for testing popups
+    private System.Collections.IEnumerator TestBonusPopupDelay()
+    {
+        yield return new WaitForSeconds(2f);
+        ShowScorePopup(150, true);  // Test bonus popup (will replace the first one)
+    }
+    
+    // NEW: Context menu method to clear popup manually (for testing)
+    [ContextMenu("Clear Current Popup")]
+    public void TestClearPopup()
+    {
+        ClearScorePopup();
+    }
+    
+    // Test method to manually update score (for debugging)
+    [ContextMenu("Test Score Update")]
+    public void TestScoreUpdate()
+    {
+        AddScore(100); // Uses the updated AddScore method
+        Debug.Log("Test score update - added 100 points");
     }
 }

@@ -61,7 +61,7 @@ public class LevelManager : MonoBehaviour
             SessionManager.Instance.RegisterLevelManager(this);
             SessionManager.Instance.FindGameReferences();
 
-                // Check if continuing from saved session
+            // Check if continuing from saved session
             if (SessionManager.Instance.HasActiveSession())
             {
                 int savedLevel = SessionManager.Instance.GetCurrentLevelIndex();
@@ -77,19 +77,6 @@ public class LevelManager : MonoBehaviour
         else
         {
             Debug.LogError("SessionManager not found! Make sure it exists in the Main Menu scene.");
-        }
-
-        // Check if we should continue from a specific level
-        if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
-        {
-            int sessionLevel = SessionManager.Instance.GetCurrentLevelIndex();
-            Debug.Log($"Continuing from session level: {sessionLevel + 1}");
-            LoadLevel(sessionLevel);
-        }
-        else
-        {
-            Debug.Log("Starting from level 1 (no active session)");
-            LoadLevel(currentLevelIndex);
         }
 
         SetupLevelCompleteUI();
@@ -261,11 +248,15 @@ public class LevelManager : MonoBehaviour
         return false;
     }
 
+    // UPDATED: Restart level method with popup clearing
     public void RestartLevel()
     {
         // Universal restart method - handles both pause and level complete cases
         Time.timeScale = 1f;
         isPaused = false;
+        
+        // Clear score popup when restarting
+        ClearScorePopup();
         
         // Hide ALL popups (both pause and level complete)
         if (pausePanel != null) 
@@ -423,6 +414,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    // UPDATED: StartLevel method with popup clearing
     void StartLevel()
     {
         Debug.Log($"Starting level: {currentLevelData.levelName}");
@@ -447,10 +439,11 @@ public class LevelManager : MonoBehaviour
 
         if (scoreManager != null)
         {
-            scoreManager.ResetScore();
+            scoreManager.ResetScore(); // This will clear popup if enabled
         }
     }
 
+    // UPDATED: OnLevelComplete method with popup management
     public void OnLevelComplete()
     {
         Debug.Log($"Level {currentLevelData.levelNumber} completed!");
@@ -461,14 +454,20 @@ public class LevelManager : MonoBehaviour
         }
 
         Debug.Log("=== LEVEL COMPLETE DEBUG ===");
-    
+        
+        // Notify ScoreManager that level is ending (clears popup if enabled)
+        if (scoreManager != null)
+        {
+            scoreManager.OnLevelEnd();
+        }
+
         if (SessionManager.Instance == null)
         {
             Debug.LogError("PROBLEM: SessionManager.Instance is NULL at level complete!");
             ShowLevelCompletePopup();
             return;
         }
-    
+
         if (scoreManager == null)
         {
             Debug.LogError("PROBLEM: scoreManager is NULL at level complete!");
@@ -478,13 +477,13 @@ public class LevelManager : MonoBehaviour
 
         int levelScore = scoreManager.GetCurrentScore();
         int totalBefore = SessionManager.Instance.GetTotalScore();
-    
+
         Debug.Log($"Current level score: {levelScore}");
         Debug.Log($"Session total BEFORE adding: {totalBefore}");
-    
+
         SessionManager.Instance.AddLevelScore(levelScore);
         SessionManager.Instance.OnLevelCompleted(currentLevelIndex);
-    
+
         int totalAfter = SessionManager.Instance.GetTotalScore();
         Debug.Log($"Session total AFTER adding: {totalAfter}");
         Debug.Log("=== END LEVEL COMPLETE DEBUG ===");
@@ -590,6 +589,15 @@ public class LevelManager : MonoBehaviour
     void OnSessionCompleted()
     {
         Debug.Log("Session completed event received");
+    }
+
+    // NEW: Method to manually clear score popup (useful for pause/resume)
+    public void ClearScorePopup()
+    {
+        if (scoreManager != null)
+        {
+            scoreManager.ClearScorePopup();
+        }
     }
 
     #endregion
