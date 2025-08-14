@@ -14,11 +14,6 @@ public class LevelData : ScriptableObject
     public int minOrderItems = 1;
     public int maxOrderItems = 4;
     
-    [Header("Scoring")]
-    public int basePointsPerOrder = 100;
-    public int perfectOrderBonus = 50;
-    public int timeBonus = 10;
-    
     [Header("⭐ Star Rating System")]
     public int starThreshold1 = 10;
     public int starThreshold2 = 20;
@@ -117,16 +112,6 @@ public class LevelData : ScriptableObject
         }
         
         return isValid;
-    }
-    
-    public void SetRecommendedStarThresholds()
-    {
-        int estimatedMaxScore = ordersPerLevel * (basePointsPerOrder + perfectOrderBonus + (int)(orderDisplayTime * timeBonus));
-        
-        starThreshold1 = Mathf.RoundToInt(estimatedMaxScore * 0.3f);
-        starThreshold2 = Mathf.RoundToInt(estimatedMaxScore * 0.6f);
-        starThreshold3 = Mathf.RoundToInt(estimatedMaxScore * 0.85f);
-        maxPossibleScore = estimatedMaxScore;
     }
     
     public float GetEstimatedPlayTime()

@@ -3195,23 +3195,32 @@ MonoBehaviour:
   inGameScoreText: {fileID: 1715448386}
   finalScoreText: {fileID: 979542223}
   totalScoreText: {fileID: 1086603810}
-  comboText: {fileID: 492118291}
   feedbackText: {fileID: 0}
   overlayScoreText: {fileID: 0}
-  overlayComboText: {fileID: 0}
   orderSystem: {fileID: 1998227852}
   levelManager: {fileID: 905501929}
   starProgressBar: {fileID: 1383608619}
-  basePointsPerOrder: 100
-  perfectOrderBonus: 50
-  timeBonus: 10
-  pointsPerItem: 10
-  orderCompletionBonus: 50
-  timeBonusMultiplier: 5
-  itemPoints: []
+  pointsPerItem: 0
+  timeBonusMultiplier: 20
+  itemPoints:
+  - itemType: Bread
+    points: 30
+  - itemType: Apple
+    points: 20
+  - itemType: Juice
+    points: 50
+  - itemType: Melon
+    points: 80
+  - itemType: Pie
+    points: 100
+  - itemType: Mb
+    points: 180
+  - itemType: Log
+    points: 300
   enableScorePopups: 1
   gameCanvas: {fileID: 1907019807}
   popupFont: {fileID: 11400000, guid: 0361640937a4447a09258110a454af31, type: 2}
+  popupBackgroundSprite: {fileID: 21300000, guid: 0901eb8f12f8343538e6dc4c451ef3dd, type: 3}
   clearPopupOnLevelEnd: 1
   clearPopupOnLevelStart: 1
   audioSource: {fileID: 0}

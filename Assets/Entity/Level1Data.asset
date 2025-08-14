@@ -13,19 +13,16 @@ MonoBehaviour:
   m_Name: Level1Data
   m_EditorClassIdentifier: 
   levelNumber: 1
-  levelName: Day 1
+  levelName: Day  1
   ordersPerLevel: 4
   orderDisplayTime: 5
   timeBetweenOrders: 2
   minOrderItems: 1
   maxOrderItems: 2
-  basePointsPerOrder: 10
-  perfectOrderBonus: 50
-  timeBonus: 10
-  starThreshold1: 300
-  starThreshold2: 600
-  starThreshold3: 900
-  maxPossibleScore: 1200
+  starThreshold1: 100
+  starThreshold2: 200
+  starThreshold3: 300
+  maxPossibleScore: 300
   earnedStarColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   unearnedStarColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}

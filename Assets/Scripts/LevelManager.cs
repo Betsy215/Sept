@@ -339,15 +339,7 @@ public class LevelManager : MonoBehaviour
             ApplyServeableItemSettings();
         }
 
-        if (scoreManager != null)
-        {
-            scoreManager.SetLevelSettings(
-                currentLevelData.basePointsPerOrder,
-                currentLevelData.perfectOrderBonus,
-                currentLevelData.timeBonus
-            );
-        }
-
+       
         if (customerManager != null)
         {
             customerManager.OnLevelLoaded(currentLevelIndex);

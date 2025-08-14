@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.UI;
 
 public class SimpleScorePopup : MonoBehaviour
 {
@@ -26,8 +27,8 @@ public class SimpleScorePopup : MonoBehaviour
     
     [Header("Font Settings")]
     public TMP_FontAsset popupFont; // Custom font (leave null for default)
-    public float fontSize = 100f;
-    public FontStyles fontStyle = FontStyles.Bold;
+    public float fontSize = 80f;
+    public FontStyles fontStyle = FontStyles.Normal;
     
     [Header("Popup Size")]
     public Vector2 popupSize = new Vector2(800, 300); // Size of the popup RectTransform
@@ -43,22 +44,16 @@ public class SimpleScorePopup : MonoBehaviour
     
     void Awake()
     {
-        textComponent = GetComponent<TextMeshProUGUI>();
+        // Don't try to find text component here - it will be assigned manually
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
-        
-        // Add CanvasGroup if not present
+    
         if (canvasGroup == null)
         {
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
     }
     
-    /// <summary>
-    /// Show popup with combined base and bonus points
-    /// </summary>
-    /// <param name="basePoints">Base points to display</param>
-    /// <param name="bonusPoints">Bonus points to display (0 if no bonus)</param>
     public void ShowCombinedPopup(int basePoints, int bonusPoints = 0)
     {
         // Destroy previous popup if it exists
@@ -66,55 +61,52 @@ public class SimpleScorePopup : MonoBehaviour
         {
             Destroy(currentPopup.gameObject);
         }
-        
-        // Set this as the current popup
+    
         currentPopup = this;
-        
+    
+        // FIND TEXT COMPONENT IF NULL
+        if (textComponent == null)
+        {
+            textComponent = GetComponent<TextMeshProUGUI>();
+            Debug.Log($"Found text component: {textComponent != null}");
+        }
+    
+        // Check if text component exists
+        if (textComponent == null)
+        {
+            Debug.LogError("TextMeshProUGUI component not found!");
+            return;
+        }
+    
         // Create combined text
         string popupText = "";
         Color textColor = itemPointsColor;
-        
+    
         if (bonusPoints > 0)
         {
-            // Show both base and bonus points with line break, entire text in yellow
-            popupText = $"+{basePoints}\n+{bonusPoints} BONUS!";
-            textColor = Color.yellow; // Entire text is yellow when there's bonus
+            popupText = $"${basePoints}\n${bonusPoints} Bonus!";
+            textColor = Color.black;
         }
         else
         {
-            // Show only base points
-            string prefix = basePoints > 0 ? "+" : "";
-            popupText = $"{prefix}{basePoints}";
+            popupText = $"+{basePoints}";
             textColor = itemPointsColor;
         }
-        
+    
         // Set text content and color
         textComponent.text = popupText;
         textComponent.color = textColor;
-        
+    
+        Debug.Log($"Set text: '{popupText}' with color: {textColor}");
+    
         // Store starting position
         startPosition = rectTransform.anchoredPosition;
-        
+    
         // Start initial animation
         StartCoroutine(InitialAnimation());
     }
     
-    /// <summary>
-    /// Show popup with points (backwards compatibility)
-    /// </summary>
-    /// <param name="points">Points to display</param>
-    /// <param name="isBonus">Is this a bonus popup?</param>
-    public void ShowPopup(int points, bool isBonus = false)
-    {
-        if (isBonus)
-        {
-            ShowCombinedPopup(0, points);
-        }
-        else
-        {
-            ShowCombinedPopup(points, 0);
-        }
-    }
+
     
     /// <summary>
     /// Initial popup animation - ends in visible state
@@ -219,193 +211,79 @@ public class SimpleScorePopup : MonoBehaviour
         return 1f - Mathf.Pow(1f - t, 3f);
     }
     
-    /// <summary>
-    /// Static method to create combined popup using internal configuration
-    /// </summary>
-    /// <param name="parent">Canvas to spawn popup on</param>
-    /// <param name="basePoints">Base points to show</param>
-    /// <param name="bonusPoints">Bonus points to show (0 if none)</param>
-    /// <returns>Created popup</returns>
-    public static SimpleScorePopup CreateCombinedPopup(Transform parent, int basePoints, int bonusPoints = 0)
+   public static SimpleScorePopup CreateCombinedPopupWithFont(Transform parent, int basePoints, int bonusPoints = 0, TMP_FontAsset customFont = null, Sprite backgroundSprite = null)
+{
+    // Create PARENT container (no graphic components)
+    GameObject popupObj = new GameObject("ScorePopup");
+    popupObj.transform.SetParent(parent, false);
+    
+    RectTransform rectTransform = popupObj.AddComponent<RectTransform>();
+    rectTransform.sizeDelta = new Vector2(500, 300);
+    
+    // Add popup script to parent
+    SimpleScorePopup popup = popupObj.AddComponent<SimpleScorePopup>();
+    
+    // Set position
+    rectTransform.anchoredPosition = popup.defaultSpawnPosition + new Vector2(
+        Random.Range(-popup.randomRange / 2f, popup.randomRange / 2f),
+        Random.Range(-50f, 50f)
+    );
+    
+    // Create BACKGROUND child (separate GameObject)
+    if (backgroundSprite != null)
     {
-        // Create popup GameObject
-        GameObject popupObj = new GameObject("ScorePopup");
-        popupObj.transform.SetParent(parent, false);
+        GameObject bgObj = new GameObject("Background");
+        bgObj.transform.SetParent(popupObj.transform, false);
         
-        // Add RectTransform first
-        RectTransform rectTransform = popupObj.AddComponent<RectTransform>();
-        rectTransform.sizeDelta = new Vector2(800, 300); // Default size
+        RectTransform bgRect = bgObj.AddComponent<RectTransform>();
+        bgRect.anchorMin = Vector2.zero;
+        bgRect.anchorMax = Vector2.one;
+        bgRect.offsetMin = Vector2.zero;
+        bgRect.offsetMax = Vector2.zero;
         
-        // Calculate position with randomness using default settings
-        Vector2 defaultPos = new Vector2(0, 100); // Default spawn position
-        float randomRangeValue = 150f; // Default random range
+        Image bgImage = bgObj.AddComponent<Image>();
+        bgImage.sprite = backgroundSprite;
         
-        Vector2 randomOffset = new Vector2(
-            Random.Range(-randomRangeValue / 2f, randomRangeValue / 2f),
-            Random.Range(-50f, 50f)
-        );
-        rectTransform.anchoredPosition = defaultPos + randomOffset;
-        
-        // Add TextMeshPro component with default settings
-        TextMeshProUGUI textComponent = popupObj.AddComponent<TextMeshProUGUI>();
-        textComponent.fontSize = 36f; // Default font size
-        textComponent.fontStyle = FontStyles.Bold; // Default font style
-        textComponent.alignment = TextAlignmentOptions.Center;
-        
-        // Add popup script and configure
-        SimpleScorePopup popup = popupObj.AddComponent<SimpleScorePopup>();
-        
-        // Now override with the component's actual settings if different
-        rectTransform.sizeDelta = popup.popupSize;
-        rectTransform.anchoredPosition = popup.defaultSpawnPosition + new Vector2(
-            Random.Range(-popup.randomRange / 2f, popup.randomRange / 2f),
-            Random.Range(-50f, 50f)
-        );
-        textComponent.fontSize = popup.fontSize;
-        textComponent.fontStyle = popup.fontStyle;
-        
-        // Set custom font if specified
-        if (popup.popupFont != null)
-        {
-            textComponent.font = popup.popupFont;
-        }
-        
-        // Show the popup
-        popup.ShowCombinedPopup(basePoints, bonusPoints);
-        
-        Debug.Log($"Popup created at position: {rectTransform.anchoredPosition}");
-        
-        return popup;
+        Debug.Log($"Added background image: {backgroundSprite.name}");
     }
     
-    /// <summary>
-    /// Static method to create popup quickly (backward compatibility) - uses internal config
-    /// </summary>
-    /// <param name="parent">Canvas to spawn popup on</param>
-    /// <param name="points">Points to show</param>
-    /// <param name="isBonus">Is bonus popup?</param>
-    /// <param name="position">Override position (optional)</param>
-    /// <returns>Created popup</returns>
-    public static SimpleScorePopup CreatePopup(Transform parent, int points, bool isBonus = false, Vector2? position = null)
+    // Create TEXT child (separate GameObject)
+    GameObject textObj = new GameObject("Text");
+    textObj.transform.SetParent(popupObj.transform, false);
+    
+    RectTransform textRect = textObj.AddComponent<RectTransform>();
+    textRect.anchorMin = Vector2.zero;
+    textRect.anchorMax = Vector2.one;
+    textRect.offsetMin = Vector2.zero;
+    textRect.offsetMax = Vector2.zero;
+    
+    TextMeshProUGUI textComponent = textObj.AddComponent<TextMeshProUGUI>();
+    textComponent.fontSize = popup.fontSize;
+    textComponent.fontStyle = popup.fontStyle;
+    textComponent.alignment = TextAlignmentOptions.Center;
+    
+    if (customFont != null)
     {
-        // Create using the new combined method
-        SimpleScorePopup popup;
-        if (isBonus)
-        {
-            popup = CreateCombinedPopup(parent, 0, points);
-        }
-        else
-        {
-            popup = CreateCombinedPopup(parent, points, 0);
-        }
-        
-        // Override position if specified
-        if (position.HasValue)
-        {
-            popup.rectTransform.anchoredPosition = position.Value;
-        }
-        
-        return popup;
+        textComponent.font = customFont;
+    }
+    else if (popup.popupFont != null)
+    {
+        textComponent.font = popup.popupFont;
     }
     
-    /// <summary>
-    /// Static method to create combined popup with specified font
-    /// </summary>
-    /// <param name="parent">Canvas to spawn popup on</param>
-    /// <param name="basePoints">Base points to show</param>
-    /// <param name="bonusPoints">Bonus points to show (0 if none)</param>
-    /// <param name="customFont">Font to use (null for default)</param>
-    /// <returns>Created popup</returns>
-    public static SimpleScorePopup CreateCombinedPopupWithFont(Transform parent, int basePoints, int bonusPoints = 0, TMP_FontAsset customFont = null)
-    {
-        // Create popup GameObject
-        GameObject popupObj = new GameObject("ScorePopup");
-        popupObj.transform.SetParent(parent, false);
-        
-        // Add RectTransform first
-        RectTransform rectTransform = popupObj.AddComponent<RectTransform>();
-        rectTransform.sizeDelta = new Vector2(800, 300); // Default size
-        
-        // Calculate position with randomness using default settings
-        Vector2 defaultPos = new Vector2(0, 100); // Default spawn position
-        float randomRangeValue = 150f; // Default random range
-        
-        Vector2 randomOffset = new Vector2(
-            Random.Range(-randomRangeValue / 2f, randomRangeValue / 2f),
-            Random.Range(-50f, 50f)
-        );
-        rectTransform.anchoredPosition = defaultPos + randomOffset;
-        
-        // Add TextMeshPro component with default settings
-        TextMeshProUGUI textComponent = popupObj.AddComponent<TextMeshProUGUI>();
-        textComponent.fontSize = 36f; // Default font size
-        textComponent.fontStyle = FontStyles.Bold; // Default font style
-        textComponent.alignment = TextAlignmentOptions.Center;
-        
-        // Add popup script and configure
-        SimpleScorePopup popup = popupObj.AddComponent<SimpleScorePopup>();
-        
-        // Now override with the component's actual settings if different
-        rectTransform.sizeDelta = popup.popupSize;
-        rectTransform.anchoredPosition = popup.defaultSpawnPosition + new Vector2(
-            Random.Range(-popup.randomRange / 2f, popup.randomRange / 2f),
-            Random.Range(-50f, 50f)
-        );
-        textComponent.fontSize = popup.fontSize;
-        textComponent.fontStyle = popup.fontStyle;
-        
-        // Set font priority: customFont > popup.popupFont > default
-        if (customFont != null)
-        {
-            textComponent.font = customFont;
-            Debug.Log($"Using custom font: {customFont.name}");
-        }
-        else if (popup.popupFont != null)
-        {
-            textComponent.font = popup.popupFont;
-            Debug.Log($"Using popup component font: {popup.popupFont.name}");
-        }
-        else
-        {
-            Debug.Log("Using default font");
-        }
-        
-        Debug.Log($"Popup timing: Animation={popup.initialAnimationDuration}s, Stay={popup.stayDuration}s, AutoDisappear={popup.autoDisappear}");
-        
-        // Show the popup
-        popup.ShowCombinedPopup(basePoints, bonusPoints);
-        
-        Debug.Log($"Popup created at position: {rectTransform.anchoredPosition}");
-        
-        return popup;
-    }
+    // MANUALLY ASSIGN the text component to the popup script
+    popup.textComponent = textComponent;
+    Debug.Log($"Manually assigned text component: {textComponent != null}");
     
-    /// <summary>
-    /// LEGACY: Static method to create combined popup with custom font (for backwards compatibility)
-    /// </summary>
-    [System.Obsolete("Use CreateCombinedPopupWithFont(parent, basePoints, bonusPoints, font) instead")]
-    public static SimpleScorePopup CreateCombinedPopupWithFont(Transform parent, int basePoints, int bonusPoints, Vector2? position, TMP_FontAsset font, float fontSize, FontStyles fontStyle)
-    {
-        // Use the new method and ignore extra parameters
-        SimpleScorePopup popup = CreateCombinedPopupWithFont(parent, basePoints, bonusPoints, font);
-        
-        // Override position if specified
-        if (position.HasValue)
-        {
-            popup.rectTransform.anchoredPosition = position.Value;
-        }
-        
-        return popup;
-    }
+    // Show the popup
+    popup.ShowCombinedPopup(basePoints, bonusPoints);
     
-    /// <summary>
-    /// LEGACY: Static method to create popup with custom font (for backwards compatibility)
-    /// </summary>
-    [System.Obsolete("Use CreatePopup() instead - configuration is now handled internally")]
-    public static SimpleScorePopup CreatePopupWithFont(Transform parent, int points, bool isBonus = false, Vector2? position = null, TMP_FontAsset font = null, float fontSize = 36f, FontStyles fontStyle = FontStyles.Bold)
-    {
-        return CreatePopup(parent, points, isBonus, position);
-    }
+    return popup;
+}
+    
+    
+   
+    
     
     /// <summary>
     /// Static method to manually clear current popup

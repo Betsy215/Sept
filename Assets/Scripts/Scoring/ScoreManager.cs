@@ -9,26 +9,18 @@ public class ScoreManager : MonoBehaviour
     public TextMeshProUGUI inGameScoreText; // For in-game score display
     public TextMeshProUGUI finalScoreText; // For level complete panel
     public TextMeshProUGUI totalScoreText; // Session total score
-    public TextMeshProUGUI comboText; // For combo display
     public TextMeshProUGUI feedbackText; // For showing "+10 points!" etc.
     
     [Header("UI Overlay Elements")]
     public TextMeshProUGUI overlayScoreText;  // Your new overlay score text
-    public TextMeshProUGUI overlayComboText;  // For combo display in overlay
     
     [Header("Game References")]
     public OrderSystem orderSystem; // Reference to order system
     public LevelManager levelManager; // Reference to level manager
     public StarProgressBar starProgressBar;
     
-    [Header("Level Settings - Set by LevelManager")]
-    [SerializeField] private int basePointsPerOrder = 100;
-    [SerializeField] private int perfectOrderBonus = 50;
-    [SerializeField] private int timeBonus = 10;
-    
     [Header("Per-Item Scoring Settings")]
     public int pointsPerItem = 10; // Points for each correct item served
-    public int orderCompletionBonus = 50; // Bonus for completing an order
     public int timeBonusMultiplier = 5; // Points per second remaining when order completed
     
     [Header("Item-Specific Points")]
@@ -38,6 +30,7 @@ public class ScoreManager : MonoBehaviour
     public bool enableScorePopups = true; // Set to false temporarily if animation still delayed
     public Canvas gameCanvas; // Assign your main game Canvas
     public TMP_FontAsset popupFont; // FIXED: Assign Beachday SDF font here
+    public Sprite popupBackgroundSprite;
     
     [Header("Popup Management")]
     public bool clearPopupOnLevelEnd = true; // Clear popup when level ends
@@ -51,7 +44,7 @@ public class ScoreManager : MonoBehaviour
     
     // Score tracking
     private int currentScore = 0; // Level score (for star progress)
-    private int consecutiveCorrectOrders = 0;
+    private int currentOrderItemPoints = 0; // Track points for current order items
     
     [System.Serializable]
     public class ItemPointValues
@@ -105,7 +98,6 @@ public class ScoreManager : MonoBehaviour
         }
         
         UpdateScoreUI();
-        UpdateComboUI();
         
         // Subscribe to session events
         SetupSessionEvents();
@@ -130,28 +122,11 @@ public class ScoreManager : MonoBehaviour
         }
     }
     
-    // Called by LevelManager when level loads
-    public void SetLevelSettings(int basePoints, int perfectBonus, int timeBonusPoints)
-    {
-        basePointsPerOrder = basePoints;
-        perfectOrderBonus = perfectBonus;
-        timeBonus = timeBonusPoints;
-        
-        LevelData currentLevelData = levelManager.GetCurrentLevelData();
-        if (currentLevelData != null)
-        {
-            starProgressBar.Initialize(currentLevelData);
-            Debug.Log($"StarProgressBar initialized with {currentLevelData.levelName} data");
-        }
-        
-        Debug.Log($"Score settings updated: Base={basePoints}, Perfect={perfectBonus}, Time={timeBonusPoints}");
-    }
-    
     // UPDATED: Reset score method with popup clearing
     public void ResetScore()
     {
         currentScore = 0;
-        consecutiveCorrectOrders = 0;
+        currentOrderItemPoints = 0; // Reset current order tracking
         
         // Clear popup when starting new level
         if (clearPopupOnLevelStart)
@@ -160,87 +135,78 @@ public class ScoreManager : MonoBehaviour
         }
         
         UpdateScoreUI();
-        UpdateComboUI();
         starProgressBar.UpdateDisplay(0);
         Debug.Log("Score reset for new level");
     }
     
-    // Called when an individual item is served correctly
+    // Called when a new order starts
+    public void StartNewOrder()
+    {
+        currentOrderItemPoints = 0; // Reset for new order
+        Debug.Log("New order started - reset item points tracking");
+    }
+    
+    // UPDATED: Called when an individual item is served correctly - NO POPUP
     public void AwardItemPoints(string itemType)
     {
         int points = GetPointsForItem(itemType);
         
+        // Add to running totals
         AddScore(points);
+        currentOrderItemPoints += points; // Track for this order
+        
         ShowFeedback($"+{points} points!", Color.green);
-        
-        // DELAY the popup creation to allow served item animation to play first
-        StartCoroutine(DelayedItemPopup(points));
-        
         PlayPointsSound();
         
-        Debug.Log($"Awarded {points} points for serving {itemType}");
+        Debug.Log($"Awarded {points} points for serving {itemType} (Order total so far: {currentOrderItemPoints})");
+        // NO POPUP HERE - wait for order completion
     }
     
-    // NEW: Delay item popup creation to allow served item animation to play first
-    IEnumerator DelayedItemPopup(int points)
-    {
-        // Wait a tiny bit for the served item animation to start
-        yield return new WaitForSeconds(0.05f); // Very small delay
-        
-        // Now show the item points popup
-        ShowScorePopup(points, 0);
-    }
-    
-    // Called when an order is completed successfully - FIXED TO MATCH ORDERSYSTEM
+    // UPDATED: Called when an order is completed - shows combined popup
     public void AwardOrderCompletionBonus(float remainingTime)
     {
-        // Base completion bonus
-        int bonus = orderCompletionBonus;
-        
-        // Time bonus based on remaining time
+        // Calculate time bonus
         int timeBonusPoints = Mathf.RoundToInt(remainingTime * timeBonusMultiplier);
         
-        // Combo multiplier
-        int comboMultiplier = Mathf.Min(consecutiveCorrectOrders + 1, 5); // Max 5x combo
+        // Add time bonus to score if any
+        if (timeBonusPoints > 0)
+        {
+            AddScore(timeBonusPoints);
+        }
         
-        int totalBonus = (bonus + timeBonusPoints) * comboMultiplier;
+        // Show ONE combined popup with item points + time bonus
+        StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints, timeBonusPoints));
         
-        AddScore(totalBonus);
-        consecutiveCorrectOrders++;
-        
-        // DELAY the popup creation to allow served item animation to play first
-        StartCoroutine(DelayedBonusPopup(totalBonus));
-        
-        UpdateComboUI();
-        
-        ShowFeedback($"Order Complete! +{totalBonus} bonus!", Color.yellow);
+        ShowFeedback($"Order Complete! +{currentOrderItemPoints + timeBonusPoints} total!", Color.yellow);
         PlayBonusSound();
         
-        Debug.Log($"Order completion bonus: {bonus} + time bonus: {timeBonusPoints} x combo: {comboMultiplier} = {totalBonus}");
-    }
-    
-    // NEW: Delay popup creation to allow served item animation to play first
-    IEnumerator DelayedBonusPopup(int bonusPoints)
-    {
-        // Wait for served item animation to start playing
-        yield return new WaitForSeconds(0.1f); // Small delay to let animation start
+        Debug.Log($"Order completed - Items: {currentOrderItemPoints}, Time bonus: {timeBonusPoints}, Total: {currentOrderItemPoints + timeBonusPoints}");
         
-        // Now show the bonus popup
-        ShowScorePopup(0, bonusPoints);
+        // Reset for next order
+        currentOrderItemPoints = 0;
     }
     
-    // Called when an order expires - FIXED TO MATCH ORDERSYSTEM
+    // NEW: Show one combined popup after order completion
+    IEnumerator DelayedCombinedPopup(int itemPoints, int timeBonus)
+    {
+        // Wait for served item animation to finish
+        yield return new WaitForSeconds(0.2f);
+        
+        // Show combined popup
+        ShowScorePopup(itemPoints, timeBonus);
+    }
+    
+    // SIMPLIFIED: Called when an order expires - no penalties, just feedback
     public void ApplyOrderExpiredPenalty()
     {
-        // Keep all feedback effects
-        ShowFeedback("Order Expired!", Color.red); // Red warning text
-        PlayPenaltySound(); // Penalty sound effect
+        // Only provide feedback - no score penalties
+        ShowFeedback("Order Expired!", Color.red);
+        PlayPenaltySound();
+        
+        // Reset current order tracking since order is over
+        currentOrderItemPoints = 0;
     
-        // Consequence: Reset combo streak
-        consecutiveCorrectOrders = 0;
-        UpdateComboUI();
-    
-        Debug.Log("Order expired - combo reset but no points lost");
+        Debug.Log("Order expired - no score penalty applied");
     }
     
     // UPDATED: Show level score instead of session total score
@@ -253,7 +219,6 @@ public class ScoreManager : MonoBehaviour
         if (inGameScoreText != null)
         {
             inGameScoreText.text = scoreDisplayText;
-            Debug.Log($"ScoreManager: Updated in-game score to '{scoreDisplayText}' (Level Score Only)");
         }
         else
         {
@@ -270,26 +235,6 @@ public class ScoreManager : MonoBehaviour
         if (overlayScoreText != null)
         {
             overlayScoreText.text = scoreDisplayText;
-        }
-    }
-    
-    // UPDATED: Enhanced combo UI with overlay support
-    void UpdateComboUI()
-    {
-        string comboDisplay = consecutiveCorrectOrders > 0 ? $"Combo x{consecutiveCorrectOrders + 1}" : "";
-        
-        // Update existing combo text
-        if (comboText != null)
-        {
-            comboText.text = comboDisplay;
-            comboText.color = consecutiveCorrectOrders > 0 ? Color.yellow : Color.white;
-        }
-        
-        // Update overlay combo text
-        if (overlayComboText != null)
-        {
-            overlayComboText.text = comboDisplay;
-            overlayComboText.color = consecutiveCorrectOrders > 0 ? Color.yellow : Color.white;
         }
     }
     
@@ -315,7 +260,7 @@ public class ScoreManager : MonoBehaviour
         Debug.Log($"ScoreManager: Total score updated to {newTotalScore}");
     }
     
-    // FIXED: Now properly passes the font from ScoreManager to SimpleScorePopup
+    // UPDATED: Now shows combined popup only
     void ShowScorePopup(int basePoints, int bonusPoints = 0)
     {
         if (!enableScorePopups)
@@ -330,43 +275,25 @@ public class ScoreManager : MonoBehaviour
             return;
         }
         
-        Debug.Log($"Creating popup: basePoints={basePoints}, bonusPoints={bonusPoints}, font={popupFont?.name ?? "default"}");
+        Debug.Log($"Creating COMBINED popup: itemPoints={basePoints}, timeBonus={bonusPoints}");
         
-        // FIXED: Now properly passes the font to the popup
+        // Create one popup with combined points
         SimpleScorePopup popup = SimpleScorePopup.CreateCombinedPopupWithFont(
             gameCanvas.transform,
             basePoints,
             bonusPoints,
-            popupFont  // ← THIS IS WHERE THE FONT IS PASSED
+            popupFont,
+            popupBackgroundSprite
         );
         
         if (popup != null)
         {
-            Debug.Log($"Popup created successfully with font: {(popupFont != null ? popupFont.name : "default")}");
+            Debug.Log($"Combined popup created successfully");
         }
         else
         {
             Debug.LogError("Failed to create popup!");
         }
-    }
-    
-    // For backwards compatibility, keep the old method but use the new combined one:
-    void ShowScorePopup(int points, bool isBonus)
-    {
-        if (isBonus)
-        {
-            ShowScorePopup(0, points); // Show as bonus only
-        }
-        else
-        {
-            ShowScorePopup(points, 0); // Show as base only
-        }
-    }
-    
-    // When you want to show combined points (call this instead of separate calls):
-    public void ShowCombinedPoints(int basePoints, int bonusPoints)
-    {
-        ShowScorePopup(basePoints, bonusPoints);
     }
     
     // NEW: Method to manually clear current popup
@@ -497,70 +424,5 @@ public class ScoreManager : MonoBehaviour
     public int GetCurrentScore()
     {
         return currentScore;
-    }
-    
-    public int GetComboCount()
-    {
-        return consecutiveCorrectOrders;
-    }
-    
-    // Additional helper methods
-    public void AddBonusPoints(int points)
-    {
-        AddScore(points); // Uses the updated AddScore method
-        Debug.Log($"Bonus points added: {points}");
-    }
-    
-    public void ResetCombo()
-    {
-        consecutiveCorrectOrders = 0;
-        UpdateComboUI();
-    }
-    
-    // UPDATED: Test method for popup (for debugging)
-    [ContextMenu("Test Score Popup")]
-    public void TestScorePopup()
-    {
-        Debug.Log("Testing score popup...");
-        if (enableScorePopups)
-        {
-            ShowCombinedPoints(50, 25);  // Test combined popup: +50\n+25 BONUS!
-        }
-        else
-        {
-            Debug.Log("Score popups disabled!");
-        }
-    }
-    
-    // NEW: Simple test for just showing a basic popup
-    [ContextMenu("Test Simple Popup")]
-    public void TestSimplePopup()
-    {
-        Debug.Log("Testing simple popup...");
-        ShowScorePopup(100, 0); // Just show +100
-    }
-    
-    // NEW: Test animation timing
-    [ContextMenu("Test Animation Timing")]
-    public void TestAnimationTiming()
-    {
-        Debug.Log("Testing animation timing - this should show popup immediately");
-        ShowScorePopup(50, 0);
-        Debug.Log("Popup creation completed");
-    }
-    
-    // NEW: Context menu method to clear popup manually (for testing)
-    [ContextMenu("Clear Current Popup")]
-    public void TestClearPopup()
-    {
-        ClearScorePopup();
-    }
-    
-    // Test method to manually update score (for debugging)
-    [ContextMenu("Test Score Update")]
-    public void TestScoreUpdate()
-    {
-        AddScore(100); // Uses the updated AddScore method
-        Debug.Log("Test score update - added 100 points");
     }
 }
