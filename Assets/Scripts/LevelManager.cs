@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -453,19 +454,9 @@ public class LevelManager : MonoBehaviour
             scoreManager.OnLevelEnd();
         }
 
-        if (SessionManager.Instance == null)
-        {
-            Debug.LogError("PROBLEM: SessionManager.Instance is NULL at level complete!");
-            ShowLevelCompletePopup();
-            return;
-        }
+      
 
-        if (scoreManager == null)
-        {
-            Debug.LogError("PROBLEM: scoreManager is NULL at level complete!");
-            ShowLevelCompletePopup();
-            return;
-        }
+
 
         float levelScore = scoreManager.GetCurrentScore();
         float totalBefore = SessionManager.Instance.GetTotalScore();
@@ -480,11 +471,15 @@ public class LevelManager : MonoBehaviour
         Debug.Log($"Session total AFTER adding: {totalAfter}");
         Debug.Log("=== END LEVEL COMPLETE DEBUG ===");
 
-        ShowLevelCompletePopup();
+        customerManager.enabled = false; 
+        orderSystem.enabled = false;
+        StartCoroutine(ShowLevelCompletePopup());
     }
 
-    void ShowLevelCompletePopup()
+    IEnumerator ShowLevelCompletePopup()
     {
+        // Wait for the specified delay
+        yield return new WaitForSeconds(3f);
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayLevelCompleteMusic();
@@ -509,7 +504,7 @@ public class LevelManager : MonoBehaviour
         if (totalScoreText != null && SessionManager.Instance != null)
         {
             float totalScore = SessionManager.Instance.GetTotalScore();
-            totalScoreText.text = $"Total Score: {totalScore}";
+            totalScoreText.text = $"Earned: {totalScore}";
         }
 
         SetupLevelCompleteButtons();
@@ -551,7 +546,7 @@ public class LevelManager : MonoBehaviour
             SessionManager.Instance.CompleteSession();
         }
 
-        ShowLevelCompletePopup();
+        StartCoroutine(ShowLevelCompletePopup());
     }
 
     public void GoToMainMenu()

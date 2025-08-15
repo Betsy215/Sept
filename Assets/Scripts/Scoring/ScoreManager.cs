@@ -200,6 +200,11 @@ public class ScoreManager : MonoBehaviour
     // SIMPLIFIED: Called when an order expires - no penalties, just feedback
     public void ApplyOrderExpiredPenalty()
     {
+        if (currentOrderItemPoints > 0)
+        {
+            // Use existing delayed popup method with 0 bonus
+            StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints, 0f)); // 0f = no bonus
+        }
         // Only provide feedback - no score penalties
         ShowFeedback("Order Expired!", Color.red);
         PlayPenaltySound();

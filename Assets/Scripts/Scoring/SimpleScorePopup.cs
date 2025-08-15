@@ -83,13 +83,13 @@ public class SimpleScorePopup : MonoBehaviour
     
         if (bonusPoints > 0)
         {
-            popupText = $"Order Total:\n${basePoints}\nTime Bonus:\n${bonusPoints}";
+            popupText = $"${basePoints}\n Tips:\n${bonusPoints}!";
             textColor = Color.black;
         }
         else
         {
-            popupText = $"+{basePoints}";
-            textColor = itemPointsColor;
+            popupText = $"${basePoints}";
+            textColor = Color.black;
         }
     
         // Set text content and color
@@ -217,7 +217,7 @@ public class SimpleScorePopup : MonoBehaviour
     popupObj.transform.SetParent(parent, false);
     
     RectTransform rectTransform = popupObj.AddComponent<RectTransform>();
-    rectTransform.sizeDelta = new Vector2(500, 500);
+    rectTransform.sizeDelta = new Vector2(400, 500);
     
     // Add popup script to parent
     SimpleScorePopup popup = popupObj.AddComponent<SimpleScorePopup>();

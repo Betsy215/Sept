@@ -430,6 +430,8 @@ public class OrderSystem : MonoBehaviour
             {
                 levelManager.OnLevelComplete();
             }
+
+           
         }
         else
         {
@@ -760,50 +762,7 @@ public class OrderSystem : MonoBehaviour
     
     #endregion
     
-    #region LEGACY COMPATIBILITY METHODS - For old scripts that expect these
-    
-    // Called by old ServePlate.Serve() method if it still exists
-    public void CompleteCurrentOrder()
-    {
-        if (!orderActive)
-        {
-            DebugLog("CompleteCurrentOrder called but no active order");
-            return;
-        }
-        
-        DebugLog($"Completing order #{ordersCompleted + 1} (legacy method)");
-        
-        ordersCompleted++;
-        UpdateOrderProgress();
-        
-        // Stop the timer coroutine since order was manually completed
-        if (orderTimerCoroutine != null)
-        {
-            StopCoroutine(orderTimerCoroutine);
-            orderTimerCoroutine = null;
-        }
-        
-        // Reset processing flag
-        isProcessingCustomerOrder = false;
-        
-        // Hide the order immediately
-        orderActive = false;
-        
-        // Check for level completion
-        if (ordersCompleted >= ordersPerLevel)
-        {
-            DebugLog("All orders completed via legacy method - ending level");
-            EndLevel();
-        }
-        else if (isUsingCustomerFlow)
-        {
-            // In customer flow, wait then spawn next customer
-            StartCoroutine(DelayedNextCustomer());
-        }
-        // In original flow, the main cycle will handle the next order
-    }
-    
-    #endregion
+   
 }
 
 // NEW: Add this component to order display items for visual effects
