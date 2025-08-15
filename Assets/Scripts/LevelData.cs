@@ -32,7 +32,7 @@ public class LevelData : ScriptableObject
     public bool useSpecificFoodTypes = false;
     public float difficultyMultiplier = 1.0f;
     
-    public int GetStarsEarned(int currentScore)
+    public int GetStarsEarned(float currentScore)
     {
         if (currentScore >= starThreshold3) return 3;
         if (currentScore >= starThreshold2) return 2;
@@ -45,7 +45,7 @@ public class LevelData : ScriptableObject
         return Mathf.Clamp01((float)currentScore / maxPossibleScore);
     }
     
-    public int GetNextStarThreshold(int currentScore)
+    public int GetNextStarThreshold(float currentScore)
     {
         if (currentScore < starThreshold1) return starThreshold1;
         if (currentScore < starThreshold2) return starThreshold2;
@@ -69,13 +69,13 @@ public class LevelData : ScriptableObject
         return Mathf.Clamp01((float)(currentScore - previousThreshold) / (nextThreshold - previousThreshold));
     }
     
-    public int GetScoreToNextStar(int currentScore)
+    public float GetScoreToNextStar(float currentScore)
     {
         int nextThreshold = GetNextStarThreshold(currentScore);
         return Mathf.Max(0, nextThreshold - currentScore);
     }
     
-    public bool HasEarnedStar(int currentScore, int starLevel)
+    public bool HasEarnedStar(float currentScore, int starLevel)
     {
         switch (starLevel)
         {
@@ -86,7 +86,7 @@ public class LevelData : ScriptableObject
         }
     }
     
-    public string GetPerformanceDescription(int currentScore)
+    public string GetPerformanceDescription(float currentScore)
     {
         int stars = GetStarsEarned(currentScore);
         switch (stars)

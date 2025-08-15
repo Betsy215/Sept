@@ -12,7 +12,7 @@ public class SimpleScorePopup : MonoBehaviour
     public float endScale = 1.2f;
     
     [Header("Display Duration")]
-    public float stayDuration = 2f; // How long popup stays visible after animation
+    public float stayDuration = 4f; // How long popup stays visible after animation
     public bool autoDisappear = true; // Whether popup should disappear automatically
     public float fadeOutDuration = 0.5f; // How long fade out takes
     
@@ -22,16 +22,15 @@ public class SimpleScorePopup : MonoBehaviour
     public Color combinedColor = Color.yellow; // Color when showing both base + bonus
     
     [Header("Popup Positioning")]
-    public Vector2 defaultSpawnPosition = new Vector2(-280, 650); // Default spawn position
+    public Vector2 defaultSpawnPosition = new Vector2(-280, 200); // Default spawn position
     public float randomRange = 150f; // Random horizontal spread
     
     [Header("Font Settings")]
     public TMP_FontAsset popupFont; // Custom font (leave null for default)
-    public float fontSize = 80f;
+    public float fontSize = 60f;
     public FontStyles fontStyle = FontStyles.Normal;
     
-    [Header("Popup Size")]
-    public Vector2 popupSize = new Vector2(800, 300); // Size of the popup RectTransform
+   
     
     private TextMeshProUGUI textComponent;
     private RectTransform rectTransform;
@@ -54,7 +53,7 @@ public class SimpleScorePopup : MonoBehaviour
         }
     }
     
-    public void ShowCombinedPopup(int basePoints, int bonusPoints = 0)
+    public void ShowCombinedPopup(float basePoints, float bonusPoints = 0)
     {
         // Destroy previous popup if it exists
         if (currentPopup != null && currentPopup != this)
@@ -84,7 +83,7 @@ public class SimpleScorePopup : MonoBehaviour
     
         if (bonusPoints > 0)
         {
-            popupText = $"${basePoints}\n${bonusPoints} Bonus!";
+            popupText = $"Order Total:\n${basePoints}\nTime Bonus:\n${bonusPoints}";
             textColor = Color.black;
         }
         else
@@ -211,7 +210,7 @@ public class SimpleScorePopup : MonoBehaviour
         return 1f - Mathf.Pow(1f - t, 3f);
     }
     
-   public static SimpleScorePopup CreateCombinedPopupWithFont(Transform parent, int basePoints, int bonusPoints = 0, TMP_FontAsset customFont = null, Sprite backgroundSprite = null)
+   public static SimpleScorePopup CreateCombinedPopupWithFont(Transform parent, float basePoints, float bonusPoints = 0, TMP_FontAsset customFont = null, Sprite backgroundSprite = null)
 {
     // Create PARENT container (no graphic components)
     GameObject popupObj = new GameObject("ScorePopup");
@@ -262,6 +261,8 @@ public class SimpleScorePopup : MonoBehaviour
     textRect.anchorMax = Vector2.one;
     textRect.offsetMin = Vector2.zero;
     textRect.offsetMax = Vector2.zero;
+    
+    textRect.anchoredPosition = new Vector2(-5f, 20f); 
     
     TextMeshProUGUI textComponent = textObj.AddComponent<TextMeshProUGUI>();
     textComponent.fontSize = popup.fontSize;

@@ -467,8 +467,8 @@ public class LevelManager : MonoBehaviour
             return;
         }
 
-        int levelScore = scoreManager.GetCurrentScore();
-        int totalBefore = SessionManager.Instance.GetTotalScore();
+        float levelScore = scoreManager.GetCurrentScore();
+        float totalBefore = SessionManager.Instance.GetTotalScore();
 
         Debug.Log($"Current level score: {levelScore}");
         Debug.Log($"Session total BEFORE adding: {totalBefore}");
@@ -476,7 +476,7 @@ public class LevelManager : MonoBehaviour
         SessionManager.Instance.AddLevelScore(levelScore);
         SessionManager.Instance.OnLevelCompleted(currentLevelIndex);
 
-        int totalAfter = SessionManager.Instance.GetTotalScore();
+        float totalAfter = SessionManager.Instance.GetTotalScore();
         Debug.Log($"Session total AFTER adding: {totalAfter}");
         Debug.Log("=== END LEVEL COMPLETE DEBUG ===");
 
@@ -502,13 +502,13 @@ public class LevelManager : MonoBehaviour
 
         if (finalScoreText != null && scoreManager != null)
         {
-            int finalScore = scoreManager.GetCurrentScore();
+            float finalScore = scoreManager.GetCurrentScore();
             finalScoreText.text = $" {finalScore}";
         }
 
         if (totalScoreText != null && SessionManager.Instance != null)
         {
-            int totalScore = SessionManager.Instance.GetTotalScore();
+            float totalScore = SessionManager.Instance.GetTotalScore();
             totalScoreText.text = $"Total Score: {totalScore}";
         }
 

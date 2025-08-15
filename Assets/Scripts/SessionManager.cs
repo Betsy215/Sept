@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 [System.Serializable]
 public class SessionData
 {
-    public int totalScore;
+    public float totalScore;
     public int currentLevel;
     public int levelsCompleted;
     public DateTime sessionStartTime;
@@ -41,7 +41,7 @@ public class SessionManager : MonoBehaviour
     private const string SESSION_SAVE_KEY = "FoodTruckSession";
     
     // Events for UI updates
-    public System.Action<int> OnTotalScoreChanged;
+    public Action<float> OnTotalScoreChanged;
     public System.Action OnSessionCompleted;
     
     void Awake()
@@ -149,7 +149,7 @@ public class SessionManager : MonoBehaviour
     }
     
     // NEW: Method to immediately add points to session total (called during gameplay)
-    public void AddScoreImmediately(int points)
+    public void AddScoreImmediately(float points)
     {
         if (currentSession != null && currentSession.isActive)
         {
@@ -164,7 +164,7 @@ public class SessionManager : MonoBehaviour
     }
     
     // UPDATED: Modified to avoid double-adding scores
-    public void AddLevelScore(int levelScore)
+    public void AddLevelScore(float levelScore)
     {
         // This method is now called only at level completion for summary/logging
         // The actual score addition happens immediately during gameplay via AddScoreImmediately()
@@ -213,7 +213,7 @@ public class SessionManager : MonoBehaviour
         return currentSession != null && currentSession.isActive;
     }
     
-    public int GetTotalScore()
+    public float GetTotalScore()
     {
         return currentSession != null ? currentSession.totalScore : 0;
     }

@@ -43,8 +43,8 @@ public class ScoreManager : MonoBehaviour
     public AudioClip penaltySound;
     
     // Score tracking
-    private int currentScore = 0; // Level score (for star progress)
-    private int currentOrderItemPoints = 0; // Track points for current order items
+    private float currentScore = 0; // Level score (for star progress)
+    private float currentOrderItemPoints = 0; // Track points for current order items
     
     [System.Serializable]
     public class ItemPointValues
@@ -166,7 +166,8 @@ public class ScoreManager : MonoBehaviour
     public void AwardOrderCompletionBonus(float remainingTime)
     {
         // Calculate time bonus
-        int timeBonusPoints = Mathf.RoundToInt(remainingTime * timeBonusMultiplier);
+        float timeBonusPoints = remainingTime * timeBonusMultiplier;
+        timeBonusPoints = Mathf.Round(timeBonusPoints * 100f) / 100f;
         
         // Add time bonus to score if any
         if (timeBonusPoints > 0)
@@ -187,7 +188,7 @@ public class ScoreManager : MonoBehaviour
     }
     
     // NEW: Show one combined popup after order completion
-    IEnumerator DelayedCombinedPopup(int itemPoints, int timeBonus)
+    IEnumerator DelayedCombinedPopup(float itemPoints, float timeBonus)
     {
         // Wait for served item animation to finish
         yield return new WaitForSeconds(0.2f);
@@ -243,25 +244,25 @@ public class ScoreManager : MonoBehaviour
     {
         if (totalScoreText != null && SessionManager.Instance != null)
         {
-            int totalScore = SessionManager.Instance.GetTotalScore();
+            float totalScore = SessionManager.Instance.GetTotalScore();
             totalScoreText.text = "Total Score: " + totalScore;
         }
     }
     
     // UPDATED: Callback for session total score changes
-    void UpdateTotalScoreDisplay(int newTotalScore)
+    void UpdateTotalScoreDisplay(float f)
     {
         // Update dedicated total score text if you have one
         if (totalScoreText != null)
         {
-            totalScoreText.text = "Total Score: " + newTotalScore;
+            totalScoreText.text = "Total Score: " + f;
         }
         
-        Debug.Log($"ScoreManager: Total score updated to {newTotalScore}");
+        Debug.Log($"ScoreManager: Total score updated to {f}");
     }
     
     // UPDATED: Now shows combined popup only
-    void ShowScorePopup(int basePoints, int bonusPoints = 0)
+    void ShowScorePopup(float basePoints, float bonusPoints = 0)
     {
         if (!enableScorePopups)
         {
@@ -285,22 +286,13 @@ public class ScoreManager : MonoBehaviour
             popupFont,
             popupBackgroundSprite
         );
-        
-        if (popup != null)
-        {
-            Debug.Log($"Combined popup created successfully");
-        }
-        else
-        {
-            Debug.LogError("Failed to create popup!");
-        }
     }
     
     // NEW: Method to manually clear current popup
     public void ClearScorePopup()
     {
         SimpleScorePopup.ClearCurrentPopup();
-        Debug.Log("ScoreManager: Manually cleared current score popup");
+       
     }
     
     // NEW: Method called when level ends (call this from LevelManager)
@@ -338,7 +330,7 @@ public class ScoreManager : MonoBehaviour
     }
     
     // UPDATED: Helper method to add score and update session total immediately
-    void AddScore(int points)
+    void AddScore(float points)
     {
         // Add to level score (for star progress and level completion)
         currentScore += points;
@@ -421,7 +413,7 @@ public class ScoreManager : MonoBehaviour
     }
     
     // Public getters
-    public int GetCurrentScore()
+    public float GetCurrentScore()
     {
         return currentScore;
     }

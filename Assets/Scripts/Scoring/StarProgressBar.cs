@@ -29,7 +29,7 @@ public class StarProgressBar : MonoBehaviour
     [Header("Level Data")]
     public LevelData currentLevelData;
     
-    private int lastDisplayedScore = -1;
+    private float lastDisplayedScore = -1;
     private bool[] starStates = new bool[3];
     private Vector3[] originalStarScales = new Vector3[3];
     
@@ -71,7 +71,7 @@ public class StarProgressBar : MonoBehaviour
         originalStarScales[2] = star3 != null ? star3.localScale : Vector3.one;
     }
     
-    public void UpdateDisplay(int currentScore)
+    public void UpdateDisplay(float currentScore)
     {
         if (currentLevelData == null) return;
         if (lastDisplayedScore == currentScore) return;
@@ -82,7 +82,7 @@ public class StarProgressBar : MonoBehaviour
         UpdateTexts(currentScore);
     }
     
-    void UpdateStars(int currentScore)
+    void UpdateStars(float currentScore)
     {
         if (currentLevelData == null) return;
         
@@ -175,7 +175,7 @@ public class StarProgressBar : MonoBehaviour
         }
     }
     
-    void UpdateTexts(int currentScore)
+    void UpdateTexts(float currentScore)
     {
         if (currentLevelData == null) return;
         
@@ -186,7 +186,7 @@ public class StarProgressBar : MonoBehaviour
         
         if (nextStarText != null)
         {
-            int scoreToNext = currentLevelData.GetScoreToNextStar(currentScore);
+            float scoreToNext = currentLevelData.GetScoreToNextStar(currentScore);
             if (scoreToNext > 0)
             {
                 nextStarText.text = $"{scoreToNext} to next star";

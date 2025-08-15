@@ -40,7 +40,7 @@ public class ShopManager : MonoBehaviour
     private ShopItemController currentPurchaseItem;
     
     // Internal references
-    private int playerScore;
+    private float playerScore;
     private const string SHOP_SAVE_KEY = "ShopData";
     
     void Start()
