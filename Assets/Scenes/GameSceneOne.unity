@@ -3220,7 +3220,7 @@ MonoBehaviour:
   enableScorePopups: 1
   gameCanvas: {fileID: 1907019807}
   popupFont: {fileID: 11400000, guid: 0361640937a4447a09258110a454af31, type: 2}
-  popupBackgroundSprite: {fileID: 21300000, guid: 0901eb8f12f8343538e6dc4c451ef3dd, type: 3}
+  popupBackgroundSprite: {fileID: 21300000, guid: 9c7a3a412a6834146af98e56f5164110, type: 3}
   clearPopupOnLevelEnd: 1
   clearPopupOnLevelStart: 1
   audioSource: {fileID: 0}

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class SimpleScorePopup : MonoBehaviour
 {
     [Header("Animation Settings")]
-    public float initialAnimationDuration = 3f;
+    public float initialAnimationDuration = 1f;
     public float moveUpDistance = 100f;
     public float startScale = 0.8f;
     public float endScale = 1.2f;
@@ -218,7 +218,7 @@ public class SimpleScorePopup : MonoBehaviour
     popupObj.transform.SetParent(parent, false);
     
     RectTransform rectTransform = popupObj.AddComponent<RectTransform>();
-    rectTransform.sizeDelta = new Vector2(500, 300);
+    rectTransform.sizeDelta = new Vector2(500, 500);
     
     // Add popup script to parent
     SimpleScorePopup popup = popupObj.AddComponent<SimpleScorePopup>();
@@ -243,6 +243,12 @@ public class SimpleScorePopup : MonoBehaviour
         
         Image bgImage = bgObj.AddComponent<Image>();
         bgImage.sprite = backgroundSprite;
+        
+        // ADD SHADOW COMPONENT
+        Shadow shadow = bgObj.AddComponent<Shadow>();
+        shadow.effectColor = new Color(0f, 0f, 0f, 0.5f); // Semi-transparent black
+        shadow.effectDistance = new Vector2(15f, -15f); // Offset: right 5, down 5
+        shadow.useGraphicAlpha = true; // Respect the image's alpha
         
         Debug.Log($"Added background image: {backgroundSprite.name}");
     }
