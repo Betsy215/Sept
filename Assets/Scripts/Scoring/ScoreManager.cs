@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -44,7 +45,7 @@ public class ScoreManager : MonoBehaviour
     
     // Score tracking
     private float currentScore = 0; // Level score (for star progress)
-    private float currentOrderItemPoints = 0; // Track points for current order items
+    public float currentOrderItemPoints = 0; // Track points for current order items
     
     [System.Serializable]
     public class ItemPointValues
@@ -105,7 +106,7 @@ public class ScoreManager : MonoBehaviour
         // Update total score display
         UpdateTotalScoreUI();
         
-        Debug.Log($"ScoreManager: Initialized - InGame: {(inGameScoreText != null ? "Found" : "Missing")}, Final: {(finalScoreText != null ? "Found" : "Missing")}, Canvas: {(gameCanvas != null ? "Found" : "Missing")}");
+      
     }
     
     // UPDATED: Enhanced session event setup
@@ -139,12 +140,6 @@ public class ScoreManager : MonoBehaviour
         Debug.Log("Score reset for new level");
     }
     
-    // Called when a new order starts
-    public void StartNewOrder()
-    {
-        currentOrderItemPoints = 0; // Reset for new order
-        Debug.Log("New order started - reset item points tracking");
-    }
     
     // UPDATED: Called when an individual item is served correctly - NO POPUP
     public void AwardItemPoints(string itemType)
@@ -155,33 +150,30 @@ public class ScoreManager : MonoBehaviour
         AddScore(points);
         currentOrderItemPoints += points; // Track for this order
         
-        ShowFeedback($"+{points} points!", Color.green);
         PlayPointsSound();
-        
-        Debug.Log($"Awarded {points} points for serving {itemType} (Order total so far: {currentOrderItemPoints})");
-        // NO POPUP HERE - wait for order completion
     }
     
     // UPDATED: Called when an order is completed - shows combined popup
-    public void AwardOrderCompletionBonus(float remainingTime)
+    public void AwardOrderCompletionBonus(float remainingTime, float basepoints)
     {
         // Calculate time bonus
         float timeBonusPoints = remainingTime * timeBonusMultiplier;
         timeBonusPoints = Mathf.Round(timeBonusPoints * 100f) / 100f;
-        
+        float tip = basepoints * timeBonusPoints / 100;
+        Debug.Log($"remaining time: {remainingTime}");
+        Debug.Log($"bonus :  {timeBonusPoints}");
+        Debug.Log($"base : { basepoints}");
+        Debug.Log($"tips: : { tip}");
         // Add time bonus to score if any
-        if (timeBonusPoints > 0)
+        if (tip > 0)
         {
-            AddScore(timeBonusPoints);
+            AddScore(tip);
         }
         
         // Show ONE combined popup with item points + time bonus
-        StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints, timeBonusPoints));
+        StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints, tip));
         
-        ShowFeedback($"Order Complete! +{currentOrderItemPoints + timeBonusPoints} total!", Color.yellow);
         PlayBonusSound();
-        
-        Debug.Log($"Order completed - Items: {currentOrderItemPoints}, Time bonus: {timeBonusPoints}, Total: {currentOrderItemPoints + timeBonusPoints}");
         
         // Reset for next order
         currentOrderItemPoints = 0;

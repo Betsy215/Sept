@@ -393,7 +393,8 @@ public class OrderSystem : MonoBehaviour
         if (scoreManager != null)
         {
             float remainingTime = orderTimer;
-            scoreManager.AwardOrderCompletionBonus(remainingTime);
+            float orderBasePoints = scoreManager.currentOrderItemPoints;
+            scoreManager.AwardOrderCompletionBonus(remainingTime, orderBasePoints);
         }
         
         // Play order complete sound

@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelNumber: 1
   levelName: Day  1
-  ordersPerLevel: 1
+  ordersPerLevel: 5
   orderDisplayTime: 5
   timeBetweenOrders: 2
   minOrderItems: 1
-  maxOrderItems: 2
-  starThreshold1: 80
-  starThreshold2: 200
-  starThreshold3: 250
-  maxPossibleScore: 300
+  maxOrderItems: 3
+  starThreshold1: 50
+  starThreshold2: 100
+  starThreshold3: 150
+  maxPossibleScore: 0
   earnedStarColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   unearnedStarColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
