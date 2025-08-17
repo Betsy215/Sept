@@ -6,7 +6,6 @@ public class ShopItemController : MonoBehaviour
 {
     [Header("Item Info")]
     public string itemName = "Bread";
-    public Sprite itemIcon;
     public int price = 50;
     public ItemType itemType = ItemType.Food;
     

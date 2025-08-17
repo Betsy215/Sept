@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
+using Unity.VisualScripting;
 
 public class ShopManager : MonoBehaviour
 {
@@ -323,11 +324,16 @@ public class ShopManager : MonoBehaviour
     public void ShowPurchasePopup(ShopItemController item)
     {
         currentPurchaseItem = item;
-
-        // Set popup content
-        if (popupItemIcon != null) 
-            popupItemIcon.sprite = item.itemIcon;
+        Transform iconTransform = item.transform.Find("ItemIcon");
+        Image iconImage = iconTransform.GetComponent<Image>();
+        popupItemIcon.sprite = iconImage.sprite;
+        RectTransform iconRect = iconTransform.GetComponent<RectTransform>();
+        Vector2 iconSize = iconRect.sizeDelta;
         
+            
+        // Apply to popup icon
+        RectTransform popupIconRect = popupItemIcon.rectTransform;
+        popupIconRect.sizeDelta = iconSize;
         if (popupItemInfo != null) 
             popupItemInfo.text = item.popupInfoText;
 
