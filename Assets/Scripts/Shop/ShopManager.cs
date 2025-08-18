@@ -47,6 +47,7 @@ public class ShopManager : MonoBehaviour
     void Start()
     {
         InitializeShop();
+        AudioManager.Instance.PlayShopMusic();
         SetupButtonListeners();
         StartCoroutine(DelayedScrollButtonUpdate()); // Initialize scroll button states
     }

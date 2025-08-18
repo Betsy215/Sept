@@ -12,6 +12,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip mainMenuMusic;
     public AudioClip gameplayMusic;
     public AudioClip levelCompleteMusic;
+    public AudioClip shopMusic;
     
     [Header("Sound Effects")]
     public AudioClip buttonClickSFX;
@@ -122,6 +123,10 @@ public class AudioManager : MonoBehaviour
         sfxSource.PlayOneShot(sfxClip);
     }
     
+    public void PlayShopMusic()
+    {
+        PlayMusic(shopMusic, true); // Loop shop music
+    }
     public void PlayWrongItemSFX()
     {
         PlaySFX(wrongItemSFX);

@@ -46,7 +46,6 @@ public class OrderSystem : MonoBehaviour
     
     [Header("Audio")]
     public AudioSource audioSource;
-    public AudioClip orderCompleteSound;
     public AudioClip itemServedSound;
     
     [Header("Debug Settings")]
@@ -545,7 +544,6 @@ public class OrderSystem : MonoBehaviour
     
     void PlayOrderCompleteSound()
     {
-        
             AudioManager.Instance.PlayOrderComplete();
         
     }

@@ -1343,13 +1343,37 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
+      propertyPath: shopMusic
+      value: 
+      objectReference: {fileID: 8300000, guid: 4e68af47cdf714c9da1604968637a240, type: 3}
+    - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
+      propertyPath: gameplayMusic
+      value: 
+      objectReference: {fileID: 8300000, guid: 443bd507ff1ed440091d2b36c14a0a7e, type: 3}
+    - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
+      propertyPath: mainMenuMusic
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: moneyCountSound
       value: 
       objectReference: {fileID: 8300000, guid: 9d5b10a760faa4ae2812797e2774542d, type: 3}
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
+      propertyPath: orderCompleteSFX
+      value: 
+      objectReference: {fileID: 8300000, guid: 8f9fcbccc551b456db1dbe5c7520d2b3, type: 3}
+    - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
+      propertyPath: levelCompleteMusic
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: moneyCompleteSound
       value: 
       objectReference: {fileID: 8300000, guid: 8f9fcbccc551b456db1dbe5c7520d2b3, type: 3}
+    - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
+      propertyPath: autoStartMainMenuMusic
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7093737043879858966, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.3222182

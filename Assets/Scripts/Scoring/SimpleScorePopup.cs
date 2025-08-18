@@ -27,7 +27,7 @@ public class SimpleScorePopup : MonoBehaviour
     
     [Header("Font Settings")]
     public TMP_FontAsset popupFont; // Custom font (leave null for default)
-    public float fontSize = 60f;
+    public float fontSize = 70f;
     public FontStyles fontStyle = FontStyles.Normal;
     
    
@@ -83,7 +83,7 @@ public class SimpleScorePopup : MonoBehaviour
     
         if (bonusPoints > 0)
         {
-            popupText = $"${basePoints}\n Tips:\n${bonusPoints}!";
+            popupText = $"Sale:\n${basePoints}\n Tips:\n${bonusPoints}!";
             textColor = Color.black;
         }
         else
