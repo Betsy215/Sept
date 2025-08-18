@@ -46,6 +46,7 @@ public class ScoreManager : MonoBehaviour
     // Score tracking
     private float currentScore = 0; // Level score (for star progress)
     public float currentOrderItemPoints = 0; // Track points for current order items
+    private float totalTipsEarned = 0f;
     
     [System.Serializable]
     public class ItemPointValues
@@ -160,15 +161,10 @@ public class ScoreManager : MonoBehaviour
         float timeBonusPoints = remainingTime * timeBonusMultiplier;
         timeBonusPoints = Mathf.Round(timeBonusPoints * 100f) / 100f;
         float tip = basepoints * timeBonusPoints / 100;
-        Debug.Log($"remaining time: {remainingTime}");
-        Debug.Log($"bonus :  {timeBonusPoints}");
-        Debug.Log($"base : { basepoints}");
-        Debug.Log($"tips: : { tip}");
-        // Add time bonus to score if any
-        if (tip > 0)
-        {
+        totalTipsEarned += tip;
+
             AddScore(tip);
-        }
+        
         
         // Show ONE combined popup with item points + time bonus
         StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints, tip));
@@ -177,6 +173,10 @@ public class ScoreManager : MonoBehaviour
         
         // Reset for next order
         currentOrderItemPoints = 0;
+    }
+    public float GetTotalTipsEarned() 
+    { 
+        return totalTipsEarned; 
     }
     
     // NEW: Show one combined popup after order completion

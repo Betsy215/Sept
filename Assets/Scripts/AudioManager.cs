@@ -28,7 +28,10 @@ public class AudioManager : MonoBehaviour
     
     [Header("Auto-Start Settings")]
     public bool autoStartMainMenuMusic = true; // NEW: Toggle this in inspector
-    
+    [Header("Money/Counting Sounds")]
+    public AudioClip moneyCountSound;      // Sound for each counting tick
+    public AudioClip moneyCompleteSound;  // Sound when transfer finishes
+
     // Audio enable/disable states
     private bool musicEnabled = true;
     private bool sfxEnabled = true;
@@ -144,6 +147,19 @@ public class AudioManager : MonoBehaviour
         PlayMusic(gameplayMusic, true); // Loop gameplay music
     }
     
+    public void PlayMoneyCount()
+    {
+      
+        PlaySFX(moneyCountSound);
+        
+    }
+    
+    public void PlayMoneyTransferComplete()
+    {
+       
+            PlaySFX(moneyCompleteSound);
+        
+    }
     public void PlayLevelCompleteMusic()
     {
         PlayMusic(levelCompleteMusic, false); // DON'T loop level complete music

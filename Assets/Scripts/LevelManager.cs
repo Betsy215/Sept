@@ -29,10 +29,15 @@ public class LevelManager : MonoBehaviour
     [Header("Level Complete UI")] 
     public GameObject popupCanvas;
     public GameObject levelCompletePanel;
-    public TextMeshProUGUI finalScoreText;
-    public TextMeshProUGUI totalScoreText;
+    public TextMeshProUGUI totalEarned;
+    public TextMeshProUGUI todaySale;
+    public TextMeshProUGUI todayTip;
     public Button nextLevelButton;
 
+    [Header("Score Animation Settings")]
+    public float scoreTransferDuration = 2f;    // How long the animation takes
+    public AnimationCurve scoreTransferCurve = AnimationCurve.EaseInOut(0, 0, 1, 1); // Animation curve for smoothness
+    
     [Header("Pause UI")] 
     public GameObject pausePanel;
     public Button resumeButton;
@@ -461,15 +466,10 @@ public class LevelManager : MonoBehaviour
         float levelScore = scoreManager.GetCurrentScore();
         float totalBefore = SessionManager.Instance.GetTotalScore();
 
-        Debug.Log($"Current level score: {levelScore}");
-        Debug.Log($"Session total BEFORE adding: {totalBefore}");
-
         SessionManager.Instance.AddLevelScore(levelScore);
         SessionManager.Instance.OnLevelCompleted(currentLevelIndex);
 
         float totalAfter = SessionManager.Instance.GetTotalScore();
-        Debug.Log($"Session total AFTER adding: {totalAfter}");
-        Debug.Log("=== END LEVEL COMPLETE DEBUG ===");
 
         customerManager.enabled = false; 
         orderSystem.enabled = false;
@@ -478,6 +478,7 @@ public class LevelManager : MonoBehaviour
 
     IEnumerator ShowLevelCompletePopup()
     {
+        AudioManager.Instance.SetSFXEnabled(true);
         // Wait for the specified delay
         yield return new WaitForSeconds(3f);
         if (AudioManager.Instance != null)
@@ -494,22 +495,24 @@ public class LevelManager : MonoBehaviour
         {
             levelCompletePanel.SetActive(true);
         }
-
-        if (finalScoreText != null && scoreManager != null)
-        {
-            float finalScore = scoreManager.GetCurrentScore();
-            finalScoreText.text = $" {finalScore}";
-        }
-
-        if (totalScoreText != null && SessionManager.Instance != null)
-        {
+      
+       
+            float tips = scoreManager.GetTotalTipsEarned();
+            todayTip.text = $"Tips Earned: {tips}";
+            float todayScore = scoreManager.GetCurrentScore();
+            todaySale.text = $"Today Sale: {todayScore}";
             float totalScore = SessionManager.Instance.GetTotalScore();
-            totalScoreText.text = $"Earned: {totalScore}";
-        }
-
+            totalEarned.text = $"Earned: {totalScore}";
+            
         SetupLevelCompleteButtons();
+        yield return new WaitForSeconds(1f);
+        yield return StartCoroutine(AnimateFullTransfer(todaySale, totalEarned, "Order Sale: ","Earned: ", todayScore,totalScore));
+        yield return new WaitForSeconds(1f);
+        yield return StartCoroutine(AnimateFullTransfer(todayTip, totalEarned, "Tips: ","Earned: ", tips,totalScore));
+        
     }
 
+   
     void SetupLevelCompleteButtons()
     {
         if (nextLevelButton != null)
@@ -589,27 +592,12 @@ public class LevelManager : MonoBehaviour
 
     #endregion
 
-    #region UTILITY METHODS
-
     public LevelData GetCurrentLevelData()
     {
         return currentLevelData;
     }
 
-    public int GetCurrentLevelIndex()
-    {
-        return currentLevelIndex;
-    }
-
-    public int GetCurrentLevelNumber()
-    {
-        return currentLevelIndex + 1;
-    }
-
-    public ServeableItem[] GetAllServeableItems()
-    {
-        return serveableItems != null ? serveableItems : new ServeableItem[0];
-    }
+   
 
     // CRITICAL: This method is used by OrderSystem.UpdateActiveFoodTypes()
     public ServeableItem[] GetActiveServeableItems()
@@ -630,26 +618,65 @@ public class LevelManager : MonoBehaviour
         
         return activeItems.ToArray();
     }
-
-    public int GetActiveItemCount()
+    public IEnumerator AnimateFullTransfer(
+        TextMeshProUGUI sourceText, 
+        TextMeshProUGUI targetText,
+        string sourcePrefix,
+        string targetPrefix,
+        float amountToTransfer, 
+        float targetFinalAmount)
     {
-        return GetActiveServeableItems().Length;
-    }
-
-    public ServeableItem FindServeableItem(string foodType)
-    {
-        if (serveableItems == null) return null;
-        
-        foreach (ServeableItem item in serveableItems)
+        // Calculate dynamic duration
+        float duration =  (amountToTransfer / 100f) ;
+        duration = Mathf.Clamp(duration, 0.5f, 10f);
+    
+        // Source starts with full amount, target starts without it
+        float sourceStart = amountToTransfer;
+        float targetStart = targetFinalAmount - amountToTransfer;
+    
+        // Set initial values
+        if (sourceText != null)
+            sourceText.text = $"{sourcePrefix}{sourceStart:F0}";
+        if (targetText != null)
+            targetText.text = $"{targetPrefix}{targetStart:F0}";
+    
+        float elapsedTime = 0f;
+        float nextSoundTime = 1f;
+    
+        while (elapsedTime < duration)
         {
-            if (item != null && item.GetFoodType() == foodType)
-            {
-                return item;
-            }
-        }
+            elapsedTime += Time.deltaTime;
+            float progress = elapsedTime / duration;
+            float easedProgress = AnimationCurve.EaseInOut(0, 0, 1, 1).Evaluate(progress);
         
-        return null;
+            // Source counts down to 0, target counts up to final
+            float currentSource = Mathf.Lerp(sourceStart, 0f, easedProgress);
+            float currentTarget = Mathf.Lerp(targetStart, targetFinalAmount, easedProgress);
+        
+            // Update UI
+            if (sourceText != null)
+                sourceText.text = $"{sourcePrefix}{currentSource:F0}";
+            if (targetText != null)
+                targetText.text = $"{targetPrefix}{currentTarget:F0}";
+        
+            // Play sound every second
+            if (elapsedTime >= nextSoundTime)
+            {
+               AudioManager.Instance.PlayMoneyCount();
+                nextSoundTime += 1f;
+            }
+        
+            yield return null;
+        }
+    
+        // Final values
+        if (sourceText != null)
+            sourceText.text = $"{sourcePrefix}0";
+        if (targetText != null)
+            targetText.text = $"{targetPrefix}{targetFinalAmount:F0}";
+    
+        AudioManager.Instance.PlayMoneyTransferComplete();
     }
 
-    #endregion
+  
 }
