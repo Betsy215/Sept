@@ -545,14 +545,9 @@ public class OrderSystem : MonoBehaviour
     
     void PlayOrderCompleteSound()
     {
-        if (audioSource != null && orderCompleteSound != null)
-        {
-            audioSource.PlayOneShot(orderCompleteSound);
-        }
-        else if (AudioManager.Instance != null)
-        {
+        
             AudioManager.Instance.PlayOrderComplete();
-        }
+        
     }
     
     // Debug logging

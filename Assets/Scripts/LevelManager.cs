@@ -478,13 +478,10 @@ public class LevelManager : MonoBehaviour
 
     IEnumerator ShowLevelCompletePopup()
     {
-        AudioManager.Instance.SetSFXEnabled(true);
         // Wait for the specified delay
         yield return new WaitForSeconds(3f);
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlayLevelCompleteMusic();
-        }
+        
+        AudioManager.Instance.PlayLevelCompleteMusic();
 
         if (popupCanvas != null)
         {

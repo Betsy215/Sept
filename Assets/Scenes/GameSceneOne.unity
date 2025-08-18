@@ -2049,6 +2049,31 @@ MonoBehaviour:
   todaySale: {fileID: 1086603810}
   todayTip: {fileID: 492118291}
   nextLevelButton: {fileID: 1377110459}
+  scoreTransferDuration: 2
+  scoreTransferCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   pausePanel: {fileID: 1204377467}
   resumeButton: {fileID: 1805489997}
   restartButton: {fileID: 1573855376}
@@ -4841,7 +4866,7 @@ MonoBehaviour:
   levelManager: {fileID: 905501929}
   customerManager: {fileID: 742151245}
   audioSource: {fileID: 0}
-  orderCompleteSound: {fileID: 0}
+  orderCompleteSound: {fileID: 8300000, guid: 8f9fcbccc551b456db1dbe5c7520d2b3, type: 3}
   itemServedSound: {fileID: 0}
   enableDebugLogs: 1
   speechBubble1: {fileID: 278268114}
