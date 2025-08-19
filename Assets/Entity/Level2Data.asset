@@ -15,10 +15,10 @@ MonoBehaviour:
   levelNumber: 2
   levelName: Day  2
   ordersPerLevel: 6
-  orderDisplayTime: 2
-  timeBetweenOrders: 1
+  orderDisplayTime: 5
+  timeBetweenOrders: 2
   minOrderItems: 1
-  maxOrderItems: 4
+  maxOrderItems: 3
   starThreshold1: 100
   starThreshold2: 150
   starThreshold3: 200

@@ -18,7 +18,7 @@ MonoBehaviour:
   orderDisplayTime: 5
   timeBetweenOrders: 2
   minOrderItems: 1
-  maxOrderItems: 3
+  maxOrderItems: 2
   starThreshold1: 50
   starThreshold2: 100
   starThreshold3: 150
