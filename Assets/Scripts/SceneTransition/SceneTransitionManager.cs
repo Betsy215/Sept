@@ -41,10 +41,17 @@ public class SceneTransitionManager : MonoBehaviour
                 CreateTransitionUI();
             }
             
-            // Start with transparent (scene visible)
+            // Start with transparent (scene visible) and NOT blocking raycasts
             if (fadeImage != null)
             {
                 SetFadeAlpha(0f);
+                fadeImage.raycastTarget = false; // IMPORTANT: Don't block raycasts when invisible
+            }
+            
+            // Ensure canvas is disabled initially
+            if (transitionCanvas != null)
+            {
+                transitionCanvas.gameObject.SetActive(false);
             }
         }
         else
@@ -55,31 +62,34 @@ public class SceneTransitionManager : MonoBehaviour
     
     void CreateTransitionUI()
     {
-        Debug.Log("SceneTransitionManager: Auto-creating transition UI");
+        Debug.Log("SceneTransitionManager: Creating transition UI");
         
-        // Create canvas
-        GameObject canvasGO = new GameObject("SceneTransitionCanvas");
+        // Create Canvas
+        GameObject canvasGO = new GameObject("TransitionCanvas");
         canvasGO.transform.SetParent(transform);
         
         transitionCanvas = canvasGO.AddComponent<Canvas>();
         transitionCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        transitionCanvas.sortingOrder = 9999; // On top of everything
+        transitionCanvas.sortingOrder = 9999; // Ensure it's on top
         
-        // Add GraphicRaycaster and CanvasScaler
-        canvasGO.AddComponent<GraphicRaycaster>();
+        // Add Canvas Scaler for responsive UI
         CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920, 1080);
         
-        // Create fade image
+        // Add Graphic Raycaster (needed for UI)
+        canvasGO.AddComponent<GraphicRaycaster>();
+        
+        // Create Fade Image
         GameObject imageGO = new GameObject("FadeImage");
         imageGO.transform.SetParent(canvasGO.transform, false);
         
         fadeImage = imageGO.AddComponent<Image>();
         fadeImage.color = fadeColor;
+        fadeImage.raycastTarget = false; // IMPORTANT: Start with raycasts disabled
         
-        // Make it cover the entire screen
-        RectTransform rectTransform = fadeImage.GetComponent<RectTransform>();
+        // Make it fill the entire screen
+        RectTransform rectTransform = imageGO.GetComponent<RectTransform>();
         rectTransform.anchorMin = Vector2.zero;
         rectTransform.anchorMax = Vector2.one;
         rectTransform.sizeDelta = Vector2.zero;
@@ -88,7 +98,6 @@ public class SceneTransitionManager : MonoBehaviour
         Debug.Log("SceneTransitionManager: Transition UI created successfully");
     }
     
-    // Main transition method
     public void TransitionToScene(string sceneName)
     {
         if (isTransitioning)
@@ -106,9 +115,16 @@ public class SceneTransitionManager : MonoBehaviour
         
         Debug.Log($"SceneTransitionManager: Starting transition to {sceneName}");
         
-        // Ensure transition UI is active
+        // Ensure transition UI is active and can block raycasts during transition
         if (transitionCanvas != null)
+        {
             transitionCanvas.gameObject.SetActive(true);
+        }
+        
+        if (fadeImage != null)
+        {
+            fadeImage.raycastTarget = true; // Enable raycast blocking during transition
+        }
         
         // Phase 1: Fade OUT (scene becomes invisible)
         yield return StartCoroutine(FadeOut());
@@ -119,6 +135,17 @@ public class SceneTransitionManager : MonoBehaviour
         
         // Phase 3: Fade IN (new scene becomes visible)
         yield return StartCoroutine(FadeIn());
+        
+        // IMPORTANT: Disable canvas and raycast blocking after transition
+        if (fadeImage != null)
+        {
+            fadeImage.raycastTarget = false; // Disable raycast blocking
+        }
+        
+        if (transitionCanvas != null)
+        {
+            transitionCanvas.gameObject.SetActive(false); // Hide the canvas completely
+        }
         
         isTransitioning = false;
         
@@ -171,36 +198,26 @@ public class SceneTransitionManager : MonoBehaviour
         }
     }
     
-    // Public methods for external use
+    // Public method to check if currently transitioning
     public bool IsTransitioning()
     {
         return isTransitioning;
     }
     
-    public void SetTransitionDuration(float duration)
+    // Method to manually hide transition (useful for debugging)
+    public void HideTransition()
     {
-        transitionDuration = duration;
-    }
-    
-    public void SetFadeColor(Color color)
-    {
-        fadeColor = color;
         if (fadeImage != null)
         {
-            Color currentColor = fadeImage.color;
-            fadeColor.a = currentColor.a; // Keep current alpha
-            fadeImage.color = fadeColor;
+            SetFadeAlpha(0f);
+            fadeImage.raycastTarget = false;
         }
-    }
-    
-    // Instant fade methods for special cases
-    public void FadeToBlackInstant()
-    {
-        SetFadeAlpha(1f);
-    }
-    
-    public void FadeToTransparentInstant()
-    {
-        SetFadeAlpha(0f);
+        
+        if (transitionCanvas != null)
+        {
+            transitionCanvas.gameObject.SetActive(false);
+        }
+        
+        isTransitioning = false;
     }
 }
