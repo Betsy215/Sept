@@ -89,13 +89,11 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     {
         yield return new WaitForSeconds(delayTime);
 
-        // Ensure SessionManager exists
-        if (SessionManager.Instance == null)
-        {
-            Debug.Log("ClickContinue: Creating SessionManager...");
+       
+
             GameObject sessionManagerGO = new GameObject("SessionManager");
             sessionManagerGO.AddComponent<SessionManager>();
-        }
+        
         
         // Continue existing session or start new if none exists
         if (SessionManager.Instance.HasActiveSession())
@@ -116,8 +114,7 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             Debug.Log("ClickContinue: Stopped main menu music before loading game");
         }
 
-        // Load the game scene
-        SceneManager.LoadScene(_sceneName);
+        SceneTransitionManager.Instance.TransitionToScene(_sceneName);
     }
     
     // Public method to refresh button state (useful if called from other scripts)

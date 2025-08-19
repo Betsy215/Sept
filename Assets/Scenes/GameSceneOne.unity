@@ -1002,7 +1002,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 4f1b75d78f4a84670b833d064e957583, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fbfaa494955f74ef0b4446a8219eeb7b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -3405,7 +3405,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 0e2cb8013a4aa4989ab89d2b8a22ce83, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c1d441700c3fb4486864bccaf261e255, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -3445,8 +3445,8 @@ Transform:
   m_GameObject: {fileID: 1420048310}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.29, y: -0.67, z: 0}
-  m_LocalScale: {x: 0.7773, y: 0.7071, z: 1}
+  m_LocalPosition: {x: 0.03, y: -0.8, z: 0}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -4866,7 +4866,6 @@ MonoBehaviour:
   levelManager: {fileID: 905501929}
   customerManager: {fileID: 742151245}
   audioSource: {fileID: 0}
-  orderCompleteSound: {fileID: 8300000, guid: 8f9fcbccc551b456db1dbe5c7520d2b3, type: 3}
   itemServedSound: {fileID: 0}
   enableDebugLogs: 1
   speechBubble1: {fileID: 278268114}

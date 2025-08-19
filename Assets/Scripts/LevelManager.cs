@@ -277,9 +277,9 @@ public class LevelManager : MonoBehaviour
             AudioManager.Instance.PlayGameplayMusic();
         }
         
-        LoadLevel(currentLevelIndex);
+        SceneTransitionManager.Instance.TransitionToScene(SceneManager.GetActiveScene().name);
         
-        Debug.Log("Level restarted");
+       
     }
 
     public bool IsPaused()
@@ -527,14 +527,14 @@ public class LevelManager : MonoBehaviour
 
     public void LoadNextLevel()
     {
-        HideLevelCompletePopup();
+    
     
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.StopMusic();
         }
 
-        SceneManager.LoadScene("Shop");
+        SceneTransitionManager.Instance.TransitionToScene("Shop");
     }
 
     void OnAllLevelsComplete()
@@ -551,18 +551,16 @@ public class LevelManager : MonoBehaviour
 
     public void GoToMainMenu()
     {
-        Debug.Log("Returning to main menu...");
 
-        if (AudioManager.Instance != null)
-        {
+       
             AudioManager.Instance.StopMusic();
-        }
+        
 
         // IMPORTANT: Ensure time is restored and pause state cleared before scene change
         Time.timeScale = 1f;
         isPaused = false;
 
-        SceneManager.LoadScene(mainMenuSceneName);
+        SceneTransitionManager.Instance.TransitionToScene(mainMenuSceneName);
     }
 
     void StartGameplayMusic()

@@ -407,24 +407,21 @@ public class ShopManager : MonoBehaviour
     
     public void LoadNextGameLevel()
     {
-        if (SessionManager.Instance != null)
-        {
-            int nextLevelIndex = SessionManager.Instance.GetCurrentLevelIndex();
-            Debug.Log($"Shop: Loading next level {nextLevelIndex + 1}");
-        }
+        
+        
+          
+        
 
-        if (AudioManager.Instance != null)
-        {
+        
             AudioManager.Instance.PlayGameplayMusic();
-        }
+        
 
-        SceneManager.LoadScene("GameSceneOne");
+            SceneTransitionManager.Instance.TransitionToScene("GameSceneOne");
     }
     
     public void OnMainMenuClicked()
     {
-        // TODO: Save shop data and return to main menu
-        SceneManager.LoadScene("MainMenu"); // Or whatever your main menu scene is called
+        SceneTransitionManager.Instance.TransitionToScene("MainMenu");
     }
 
     public void ScrollUp()

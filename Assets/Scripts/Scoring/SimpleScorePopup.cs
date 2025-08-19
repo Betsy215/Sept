@@ -83,7 +83,7 @@ public class SimpleScorePopup : MonoBehaviour
     
         if (bonusPoints > 0)
         {
-            popupText = $"Sale:\n${basePoints}\n Tips:\n${bonusPoints}!";
+            popupText = $"Sale:  $ {basePoints}\n Tips:  $ {bonusPoints}!";
             textColor = Color.black;
         }
         else
@@ -95,8 +95,6 @@ public class SimpleScorePopup : MonoBehaviour
         // Set text content and color
         textComponent.text = popupText;
         textComponent.color = textColor;
-    
-        Debug.Log($"Set text: '{popupText}' with color: {textColor}");
     
         // Store starting position
         startPosition = rectTransform.anchoredPosition;
@@ -217,8 +215,9 @@ public class SimpleScorePopup : MonoBehaviour
     popupObj.transform.SetParent(parent, false);
     
     RectTransform rectTransform = popupObj.AddComponent<RectTransform>();
-    rectTransform.sizeDelta = new Vector2(400, 500);
+    rectTransform.sizeDelta = new Vector2(500, 400);
     
+    // Add popup script to parent
     // Add popup script to parent
     SimpleScorePopup popup = popupObj.AddComponent<SimpleScorePopup>();
     

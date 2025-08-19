@@ -29,27 +29,21 @@ public class ClickPlay : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
     IEnumerator WaitForDelay(float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
+        Debug.Log("clicked!");
 
-        // Ensure SessionManager exists and start new session before loading game
-        if (SessionManager.Instance == null)
-        {
-            Debug.Log("ClickPlay: Creating SessionManager...");
             GameObject sessionManagerGO = new GameObject("SessionManager");
             sessionManagerGO.AddComponent<SessionManager>();
-        }
         
-        // Start new session
-        Debug.Log("ClickPlay: Starting new game session...");
+        
+       
         SessionManager.Instance.StartNewSession();
-
-        // NEW: Stop main menu music before loading game scene
-        if (AudioManager.Instance != null)
-        {
+        Debug.Log("new session!!");
+       
             AudioManager.Instance.StopMusic();
             Debug.Log("ClickPlay: Stopped main menu music before loading game");
-        }
+        
 
         // Load the game scene
-        SceneManager.LoadScene(_sceneName);
+        SceneTransitionManager.Instance.TransitionToScene(_sceneName);
     }
 }
