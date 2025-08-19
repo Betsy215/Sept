@@ -51,34 +51,27 @@ public class SettingsButtonsController : MonoBehaviour
     
     void InitializeSettings()
     {
-        // Auto-find components if not assigned
-        if (settingsAnimator == null)
-        {
+       
             settingsAnimator = GetComponent<Animator>();
-        }
         
-        if (audioButtonImage == null && audioButton != null)
-        {
+        
+        
             audioButtonImage = audioButton.GetComponent<Image>();
-        }
         
-        if (musicButtonImage == null && musicButton != null)
-        {
+        
+        
             musicButtonImage = musicButton.GetComponent<Image>();
-        }
         
-        // Store original colors
-        if (audioButtonImage != null)
-        {
+        
+        
             originalAudioColor = audioButtonImage.color;
-        }
         
-        if (musicButtonImage != null)
-        {
+        
+      
             originalMusicColor = musicButtonImage.color;
-        }
         
-        Debug.Log("SettingsButtonsController: Initialized in scene");
+        
+       
     }
     
     void LoadGlobalSettings()
@@ -102,34 +95,14 @@ public class SettingsButtonsController : MonoBehaviour
     
     void ApplySettingsToAudioManager()
     {
-        // Ensure AudioManager reflects current settings
-        if (AudioManager.Instance != null)
-        {
+       
             AudioManager.Instance.SetSFXEnabled(isAudioOn);
             AudioManager.Instance.SetMusicEnabled(isMusicOn);
             Debug.Log("SettingsButtonsController: Applied settings to AudioManager");
-        }
-        else
-        {
-            Debug.LogWarning("SettingsButtonsController: AudioManager not found! Will try again later...");
-            // Try again in a moment (AudioManager might be created by LevelManager)
-            Invoke(nameof(RetryApplySettings), 0.1f);
-        }
+        
     }
     
-    void RetryApplySettings()
-    {
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.SetSFXEnabled(isAudioOn);
-            AudioManager.Instance.SetMusicEnabled(isMusicOn);
-            Debug.Log("SettingsButtonsController: Applied settings to AudioManager (retry successful)");
-        }
-        else
-        {
-            Debug.LogWarning("SettingsButtonsController: AudioManager still not found after retry!");
-        }
-    }
+   
     
     void SetupButtonListeners()
     {
@@ -242,43 +215,5 @@ public class SettingsButtonsController : MonoBehaviour
         }
     }
     
-    // === SETTINGS PANEL CONTROL ===
-    
-    public void ToggleSettings()
-    {
-        if (settingsAnimator != null && !string.IsNullOrEmpty(showTrigger))
-        {
-            settingsAnimator.SetTrigger(showTrigger);
-            
-            // Play button click sound
-            if (AudioManager.Instance != null && AudioManager.Instance.IsSFXEnabled())
-            {
-                AudioManager.Instance.PlayButtonClick();
-            }
-            
-            Debug.Log("SettingsButtonsController: Settings panel toggled");
-        }
-    }
-    
-    // === PUBLIC GETTERS ===
-    
-    public bool IsAudioOn()
-    {
-        return isAudioOn;
-    }
-    
-    public bool IsMusicOn()
-    {
-        return isMusicOn;
-    }
-    
-    // === UTILITY METHODS ===
-    
-    public void RefreshSettings()
-    {
-        // Public method to refresh settings (useful for debugging)
-        LoadGlobalSettings();
-        UpdateButtonVisuals();
-        ApplySettingsToAudioManager();
-    }
+   
 }

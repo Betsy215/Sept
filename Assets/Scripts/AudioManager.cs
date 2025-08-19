@@ -220,11 +220,7 @@ public class AudioManager : MonoBehaviour
     public void SetSFXEnabled(bool enabled)
     {
         sfxEnabled = enabled;
-        if (enabled && sfxSource != null && buttonClickSFX != null)
-        {
-            sfxSource.PlayOneShot(buttonClickSFX);
-            Debug.Log("AudioManager: Played SFX confirmation sound");
-        }
+       
     }
     
     public void SetMusicVolume(float volume)
