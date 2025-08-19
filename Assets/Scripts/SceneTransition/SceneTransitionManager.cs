@@ -75,7 +75,7 @@ public class SceneTransitionManager : MonoBehaviour
         // Add Canvas Scaler for responsive UI
         CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080);
+        scaler.referenceResolution = new Vector2(1080, 1920);
         
         // Add Graphic Raycaster (needed for UI)
         canvasGO.AddComponent<GraphicRaycaster>();

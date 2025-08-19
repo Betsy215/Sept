@@ -222,30 +222,6 @@ public class AudioManager : MonoBehaviour
         sfxEnabled = enabled;
        
     }
-    
-    public void SetMusicVolume(float volume)
-    {
-        musicVolume = Mathf.Clamp01(volume);
-        if (musicSource != null)
-        {
-            musicSource.volume = musicVolume;
-        }
-        Debug.Log($"AudioManager: Music volume set to {musicVolume}");
-    }
-    
-    public void SetSFXVolume(float volume)
-    {
-        sfxVolume = Mathf.Clamp01(volume);
-        if (sfxSource != null)
-        {
-            sfxSource.volume = sfxVolume;
-        }
-        Debug.Log($"AudioManager: SFX volume set to {sfxVolume}");
-    }
-    
-    // Getters
-    public bool IsMusicEnabled() { return musicEnabled; }
     public bool IsSFXEnabled() { return sfxEnabled; }
-    public float GetMusicVolume() { return musicVolume; }
-    public float GetSFXVolume() { return sfxVolume; }
+    
 }
