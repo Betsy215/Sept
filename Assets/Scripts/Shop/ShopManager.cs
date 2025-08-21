@@ -283,7 +283,7 @@ public class ShopManager : MonoBehaviour
     {
         if (playerScoreText != null)
         {
-            playerScoreText.text = $"$ {playerScore}";
+            playerScoreText.text = $"EARNED: $ {playerScore}";
         }
     }
     

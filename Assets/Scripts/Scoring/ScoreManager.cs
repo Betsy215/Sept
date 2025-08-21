@@ -159,8 +159,8 @@ public class ScoreManager : MonoBehaviour
     {
         // Calculate time bonus
         float timeBonusPoints = remainingTime * timeBonusMultiplier;
-        timeBonusPoints = Mathf.Round(timeBonusPoints * 100f) / 100f;
-        float tip = basepoints * timeBonusPoints / 100;
+        float tipRaw = basepoints * timeBonusPoints / 100f;
+        float tip = (float)Math.Round(tipRaw, 2, MidpointRounding.AwayFromZero);
         totalTipsEarned += tip;
 
             AddScore(tip);

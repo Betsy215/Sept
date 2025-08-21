@@ -496,17 +496,17 @@ public class LevelManager : MonoBehaviour
       
        
             float tips = scoreManager.GetTotalTipsEarned();
-            todayTip.text = $"Tips Earned: {tips}";
+            todayTip.text = $"Tips Earned: $ {tips}";
             float todayScore = scoreManager.GetCurrentScore();
-            todaySale.text = $"Today Sale: {todayScore}";
+            todaySale.text = $"Today Sale: $ {todayScore}";
             float totalScore = SessionManager.Instance.GetTotalScore();
-            totalEarned.text = $"Earned: {totalScore}";
+            totalEarned.text = $"Earned: $ {totalScore}";
             
         SetupLevelCompleteButtons();
         yield return new WaitForSeconds(1f);
-        yield return StartCoroutine(AnimateFullTransfer(todaySale, totalEarned, "Order Sale: ","Earned: ", todayScore,totalScore));
+        yield return StartCoroutine(AnimateFullTransfer(todaySale, totalEarned, "Order Sale: $ ","Earned: $ ", todayScore,totalScore));
         yield return new WaitForSeconds(1f);
-        yield return StartCoroutine(AnimateFullTransfer(todayTip, totalEarned, "Tips: ","Earned: ", tips,totalScore));
+        yield return StartCoroutine(AnimateFullTransfer(todayTip, totalEarned, "Tips: $ ","Earned: $ ", tips,totalScore));
         
     }
 
@@ -654,6 +654,7 @@ public class LevelManager : MonoBehaviour
                 sourceText.text = $"{sourcePrefix}{currentSource:F0}";
             if (targetText != null)
                 targetText.text = $"{targetPrefix}{currentTarget:F0}";
+            targetText.color=Color.yellow;
         
             // Play sound every second
             if (elapsedTime >= nextSoundTime)
