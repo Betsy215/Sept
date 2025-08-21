@@ -22,7 +22,7 @@ public class SimpleScorePopup : MonoBehaviour
     public Color combinedColor = Color.yellow; // Color when showing both base + bonus
     
     [Header("Popup Positioning")]
-    public Vector2 defaultSpawnPosition = new Vector2(-280, 200); // Default spawn position
+    public Vector2 defaultSpawnPosition = new Vector2(-200, 200); // Default spawn position
     public float randomRange = 150f; // Random horizontal spread
     
     [Header("Font Settings")]

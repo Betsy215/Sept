@@ -560,7 +560,6 @@ public class OrderSystem : MonoBehaviour
         }
     }
     
-    #region Public API - Compatibility with existing scripts
     
     // For compatibility with existing code
     public bool IsOrderActive()
@@ -568,10 +567,7 @@ public class OrderSystem : MonoBehaviour
         return orderActive;
     }
     
-    public float GetRemainingTime()
-    {
-        return orderTimer;
-    }
+
     
     public List<string> GetCurrentOrderTypes()
     {
@@ -584,58 +580,13 @@ public class OrderSystem : MonoBehaviour
         return types;
     }
     
-    // For compatibility with ScoreManager and other existing scripts
-    public List<string> GetCurrentOrder()
-    {
-        return GetCurrentOrderTypes();
-    }
+
     
-    // For compatibility with LevelManager
-    public void CompleteLevel()
-    {
-        EndLevel();
-    }
     
-    void EndLevel()
-    {
-        DebugLog("Ending level - stopping order system");
-        
-        // Stop the order system
-        StopOrderSystem();
-        
-        // Notify LevelManager that level is complete
-        if (levelManager != null)
-        {
-            levelManager.OnLevelComplete();
-        }
-    }
+   
     
-    public void StopOrderSystem()
-    {
-        DebugLog("Stopping order system");
-        
-        if (orderCycleCoroutine != null)
-        {
-            StopCoroutine(orderCycleCoroutine);
-            orderCycleCoroutine = null;
-        }
-        
-        if (orderTimerCoroutine != null)
-        {
-            StopCoroutine(orderTimerCoroutine);
-            orderTimerCoroutine = null;
-        }
-        
-        // Reset processing flag
-        isProcessingCustomerOrder = false;
-        
-        orderActive = false;
-    }
-    
-    #endregion
-    
-    #region CUSTOMER FLOW METHODS - For CustomerManager integration
-    
+
+
     public void GenerateCustomerOrder()
     {
         if (isProcessingCustomerOrder)
@@ -737,24 +688,9 @@ public class OrderSystem : MonoBehaviour
         GenerateCustomerOrder();
     }
     
-    // Called when customer spawns next customer
-    void SpawnNextCustomer()
-    {
-        if (isUsingCustomerFlow && customerManager != null)
-        {
-            customerManager.SpawnCustomerForCurrentLevel();
-        }
-    }
+
     
-    // Handle delayed next customer spawn
-    IEnumerator DelayedNextCustomer()
-    {
-        DebugLog($"Waiting {timeBetweenOrders}s before next customer");
-        yield return new WaitForSeconds(timeBetweenOrders);
-        SpawnNextCustomer();
-    }
-    
-    #endregion
+
     
    
 }

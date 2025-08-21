@@ -312,6 +312,7 @@ public class LevelManager : MonoBehaviour
         {
             currentLevelIndex = levelIndex;
             currentLevelData = allLevels[levelIndex];
+            scoreManager.starProgressBar.Initialize(currentLevelData);
             ApplyLevelSettings();
             StartLevel();
         }
