@@ -22,12 +22,12 @@ public class SimpleScorePopup : MonoBehaviour
     public Color combinedColor = Color.yellow; // Color when showing both base + bonus
     
     [Header("Popup Positioning")]
-    public Vector2 defaultSpawnPosition = new Vector2(-200, 200); // Default spawn position
+    public Vector2 defaultSpawnPosition = new Vector2(-100, 350); // Default spawn position
     public float randomRange = 150f; // Random horizontal spread
     
     [Header("Font Settings")]
     public TMP_FontAsset popupFont; // Custom font (leave null for default)
-    public float fontSize = 70f;
+    public float fontSize = 60f;
     public FontStyles fontStyle = FontStyles.Normal;
     
    
@@ -215,7 +215,7 @@ public class SimpleScorePopup : MonoBehaviour
     popupObj.transform.SetParent(parent, false);
     
     RectTransform rectTransform = popupObj.AddComponent<RectTransform>();
-    rectTransform.sizeDelta = new Vector2(500, 400);
+    rectTransform.sizeDelta = new Vector2(400, 350);
     
     // Add popup script to parent
     // Add popup script to parent
