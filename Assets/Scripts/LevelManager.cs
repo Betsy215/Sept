@@ -654,7 +654,7 @@ public class LevelManager : MonoBehaviour
                 sourceText.text = $"{sourcePrefix}{currentSource:F0}";
             if (targetText != null)
                 targetText.text = $"{targetPrefix}{currentTarget:F0}";
-            targetText.color=Color.yellow;
+            targetText.color=Color.red;
         
             // Play sound every second
             if (elapsedTime >= nextSoundTime)

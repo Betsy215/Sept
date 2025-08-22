@@ -385,71 +385,68 @@ public class OrderSystem : MonoBehaviour
     }
     
     void CompleteOrder()
+{
+    Debug.Log("Order completed!");
+    
+    // Award completion bonus
+    if (scoreManager != null)
     {
-        Debug.Log("Order completed!");
+        float remainingTime = orderTimer;
+        float orderBasePoints = scoreManager.currentOrderItemPoints;
+        scoreManager.AwardOrderCompletionBonus(remainingTime, orderBasePoints);
+    }
+    
+    // Play order complete sound
+    PlayOrderCompleteSound();
+    
+    // Count as completed
+    ordersCompleted++;
+    UpdateOrderProgress();
+    
+    // CUSTOMER INTEGRATION: Notify customer manager
+    if (isUsingCustomerFlow && customerManager != null)
+    {
+        // CLEANED: Always call with true since orders are always completed correctly
+        customerManager.HandleOrderServed(true);
+        DebugLog("Notified CustomerManager - Order completed perfectly");
+
+        // Reset the processing flag to allow next customer orders
+        isProcessingCustomerOrder = false;
+        DebugLog("Reset isProcessingCustomerOrder flag for next customer");
+    }
+    
+    // Hide order and prepare for next one
+    orderActive = false;
+    if (speechBubble1 != null) speechBubble1.SetActive(false);
+    if (speechBubble2 != null) speechBubble2.SetActive(false);
+    if (speechBubble3 != null) speechBubble3.SetActive(false);
+    if (speechBubble4 != null) speechBubble4.SetActive(false);
+
+    // Check if level is complete
+    if (ordersCompleted >= ordersPerLevel)
+    {
+        DebugLog("All orders completed for this level!");
         
-        // Award completion bonus
-        if (scoreManager != null)
+        if (levelManager != null)
         {
-            float remainingTime = orderTimer;
-            float orderBasePoints = scoreManager.currentOrderItemPoints;
-            scoreManager.AwardOrderCompletionBonus(remainingTime, orderBasePoints);
+            levelManager.OnLevelComplete();
         }
-        
-        // Play order complete sound
-        PlayOrderCompleteSound();
-        
-        // Count as completed
-        ordersCompleted++;
-        UpdateOrderProgress();
-        
-        // CUSTOMER INTEGRATION: Notify customer manager
+    }
+    else
+    {
+        // CUSTOMER FLOW: Wait for customer to leave, then spawn next customer
         if (isUsingCustomerFlow && customerManager != null)
         {
-            customerManager.HandleOrderServed(true); // Always perfect in new system
-            DebugLog("Notified CustomerManager - Order completed");
-    
-            // CRITICAL FIX: Reset the processing flag to allow next customer orders
-            isProcessingCustomerOrder = false;
-            DebugLog("Reset isProcessingCustomerOrder flag for next customer");
-        }
-        
-        // Hide order and prepare for next one
-        orderActive = false;
-        if (speechBubble1 != null) speechBubble1.SetActive(false);
-        if (speechBubble2 != null) speechBubble2.SetActive(false);
-        if (speechBubble3 != null) speechBubble3.SetActive(false);
-        if (speechBubble4 != null) speechBubble4.SetActive(false);
-
-        // Check if level is complete
-        if (ordersCompleted >= ordersPerLevel)
-        {
-            DebugLog("All orders completed for this level!");
-            
-            if (levelManager != null)
-            {
-                levelManager.OnLevelComplete();
-            }
-
-           
+            DebugLog("Waiting for customer to leave before spawning next customer");
+            // Customer will leave automatically, and CustomerManager will handle next spawn
         }
         else
         {
-            // CUSTOMER FLOW: Wait for customer to leave, then spawn next customer
-            if (isUsingCustomerFlow && customerManager != null)
-            {
-                DebugLog("Waiting for customer to leave before spawning next customer");
-                // Customer will leave automatically, and when OnCustomerExited is called,
-                // the CustomerManager will be ready for the next customer
-                // We don't automatically generate the next order here
-            }
-            else
-            {
-                // ORIGINAL FLOW: Generate next order after delay
-                Invoke("GenerateNewOrder", timeBetweenOrders);
-            }
+            // ORIGINAL FLOW: Generate next order after delay
+            Invoke("GenerateNewOrder", timeBetweenOrders);
         }
     }
+}
     
     void ExpireOrder()
     {

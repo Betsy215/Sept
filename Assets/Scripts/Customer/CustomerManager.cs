@@ -89,16 +89,16 @@ public class CustomerManager : MonoBehaviour
     {
         if (currentCustomer != null)
         {
-            DebugLog($"Order served - Perfect: {perfect}");
-   
-            currentCustomer.OnOrderServed(perfect);
+            // CLEANED: In your system, this should always be true (orders always completed correctly)
+            DebugLog($"Order served perfectly - notifying customer");
+            currentCustomer.OnOrderServed(true); // Always true in your system
         }
         else
         {
             Debug.LogWarning("HandleOrderServed called but no current customer!");
         }
     }
-    
+
     public void HandleOrderExpired()
     {
         if (currentCustomer != null)

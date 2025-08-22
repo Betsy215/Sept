@@ -122,9 +122,9 @@ public class ShopManager : MonoBehaviour
                 // Always show the item
                 allShopItems[i].gameObject.SetActive(true);
                 
-                // Set availability based on unlock progression
-                bool isAvailable = i < availableItemCount && !allShopItems[i].isPurchased;
-                allShopItems[i].SetAvailable(isAvailable);
+                bool canAfford = playerScore >= allShopItems[i].price;
+                bool isAvailable = canAfford && !allShopItems[i].isPurchased;
+                allShopItems[i].SetAvailable(isAvailable, canAfford);
             }
         }
 
@@ -187,6 +187,7 @@ public class ShopManager : MonoBehaviour
 
             // Mark as purchased in UI
             item.MarkAsPurchased();
+            AudioManager.Instance.PlayPurchaseSound();
 
             // NEW: Unlock next item if there are more to unlock
             int totalItems = GetTotalShopItemCount();

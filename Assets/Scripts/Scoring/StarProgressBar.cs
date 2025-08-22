@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 
@@ -9,10 +10,10 @@ public class StarProgressBar : MonoBehaviour
     public Transform star2;
     public Transform star3;
     
-    [Header("Star Sprite Renderers")]
-    public SpriteRenderer star1Renderer;
-    public SpriteRenderer star2Renderer;
-    public SpriteRenderer star3Renderer;
+    [Header("Star UI Images")]
+    public Image star1Image;
+    public Image star2Image;
+    public Image star3Image;
     
     [Header("Star Sprites")]
     public Sprite starFilledSprite;
@@ -42,14 +43,15 @@ public class StarProgressBar : MonoBehaviour
     
     void AutoFindComponents()
     {
-        if (star1 != null && star1Renderer == null)
-            star1Renderer = star1.GetComponent<SpriteRenderer>();
+        // Look for Image components instead of SpriteRenderer
+        if (star1 != null && star1Image == null)
+            star1Image = star1.GetComponent<Image>();
             
-        if (star2 != null && star2Renderer == null)
-            star2Renderer = star2.GetComponent<SpriteRenderer>();
+        if (star2 != null && star2Image == null)
+            star2Image = star2.GetComponent<Image>();
             
-        if (star3 != null && star3Renderer == null)
-            star3Renderer = star3.GetComponent<SpriteRenderer>();
+        if (star3 != null && star3Image == null)
+            star3Image = star3.GetComponent<Image>();
     }
     
     public void Initialize(LevelData levelData)
@@ -73,8 +75,7 @@ public class StarProgressBar : MonoBehaviour
     
     public void UpdateDisplay(float currentScore)
     {
-        if (currentLevelData == null) return;
-        if (lastDisplayedScore == currentScore) return;
+
         
         lastDisplayedScore = currentScore;
         
@@ -109,87 +110,38 @@ public class StarProgressBar : MonoBehaviour
     
     void UpdateStarVisual(int starIndex, bool isEarned)
     {
-        SpriteRenderer starRenderer = GetStarRenderer(starIndex);
-        if (starRenderer == null) return;
+        // Use Image component instead of SpriteRenderer
+        Image starImage = GetStarImage(starIndex);
+      
+       starImage.sprite = isEarned ? starFilledSprite : starUnfilledSprite;
         
-        if (starFilledSprite != null && starUnfilledSprite != null)
-        {
-            starRenderer.sprite = isEarned ? starFilledSprite : starUnfilledSprite;
-        }
     }
     
-    IEnumerator AnimateStarEarned(int starIndex)
+    // New method to get Image component instead of SpriteRenderer
+    Image GetStarImage(int starIndex)
     {
-        Transform starTransform = GetStarTransform(starIndex);
-        if (starTransform == null) yield break;
-        
-        Vector3 originalScale = originalStarScales[starIndex];
-        Vector3 targetScale = originalScale * 1.3f;
-        
-        float duration = 0.4f;
-        float elapsed = 0f;
-        
-        starTransform.localScale = originalScale * 0.7f;
-        
-        while (elapsed < duration)
+        switch (starIndex)
         {
-            elapsed += Time.deltaTime;
-            float progress = elapsed / duration;
-            
-            if (progress < 0.6f)
-            {
-                float scaleProgress = progress / 0.6f;
-                starTransform.localScale = Vector3.Lerp(originalScale * 0.7f, targetScale, scaleProgress);
-            }
-            else
-            {
-                float scaleProgress = (progress - 0.6f) / 0.4f;
-                starTransform.localScale = Vector3.Lerp(targetScale, originalScale, scaleProgress);
-            }
-            
-            yield return null;
-        }
-        
-        starTransform.localScale = originalScale;
-    }
-    
-    Transform GetStarTransform(int index)
-    {
-        switch (index)
-        {
-            case 0: return star1;
-            case 1: return star2;
-            case 2: return star3;
-            default: return null;
-        }
-    }
-    
-    SpriteRenderer GetStarRenderer(int index)
-    {
-        switch (index)
-        {
-            case 0: return star1Renderer;
-            case 1: return star2Renderer;
-            case 2: return star3Renderer;
+            case 0: return star1Image;
+            case 1: return star2Image;
+            case 2: return star3Image;
             default: return null;
         }
     }
     
     void UpdateTexts(float currentScore)
     {
-        if (currentLevelData == null) return;
-        
         if (currentScoreText != null)
         {
-            currentScoreText.text = $"Score: {currentScore}";
+            currentScoreText.text = $"Score: {currentScore:F0}";
         }
         
-        if (nextStarText != null)
+        if (nextStarText != null && currentLevelData != null)
         {
             float scoreToNext = currentLevelData.GetScoreToNextStar(currentScore);
             if (scoreToNext > 0)
             {
-                nextStarText.text = $"{scoreToNext} to next star";
+                nextStarText.text = $"{scoreToNext:F0} to next star";
             }
             else
             {
@@ -197,7 +149,7 @@ public class StarProgressBar : MonoBehaviour
             }
         }
         
-        if (performanceText != null)
+        if (performanceText != null && currentLevelData != null)
         {
             performanceText.text = currentLevelData.GetPerformanceDescription(currentScore);
         }
@@ -231,5 +183,49 @@ public class StarProgressBar : MonoBehaviour
             if (starStates[i]) count++;
         }
         return count;
+    }
+    
+    IEnumerator AnimateStarEarned(int starIndex)
+    {
+        Transform starTransform = GetStarTransform(starIndex);
+        if (starTransform == null) yield break;
+        
+        Vector3 originalScale = originalStarScales[starIndex];
+        Vector3 targetScale = originalScale * 1.2f;
+        
+        // Scale up
+        float duration = 0.3f;
+        float elapsed = 0f;
+        
+        while (elapsed < duration)
+        {
+            float t = elapsed / duration;
+            starTransform.localScale = Vector3.Lerp(originalScale, targetScale, t);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        
+        // Scale back down
+        elapsed = 0f;
+        while (elapsed < duration)
+        {
+            float t = elapsed / duration;
+            starTransform.localScale = Vector3.Lerp(targetScale, originalScale, t);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        
+        starTransform.localScale = originalScale;
+    }
+    
+    Transform GetStarTransform(int starIndex)
+    {
+        switch (starIndex)
+        {
+            case 0: return star1;
+            case 1: return star2;
+            case 2: return star3;
+            default: return null;
+        }
     }
 }

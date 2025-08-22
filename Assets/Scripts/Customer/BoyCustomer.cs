@@ -17,21 +17,9 @@ public class BoyCustomer : CustomerController
     {
         base.Awake();
         
-        // Set Boy-specific animation state names
-        // You can reuse existing animations or create new ones
-        walkInAnimationState = "Sad_Boy_Walking";      // Create this or reuse "Sad_Toad_Walking"
-        waitingAnimationState = "Sad_Boy_Walking";     // Create this or reuse "Sad_Toad_Walking"
-        perfectReactionState = "Perfect_Order_Boy";    // Create this or reuse "Perfect_Order_Toad"
-        happyWalkOutState = "happy_boy_walking";       // Create this or reuse "happy_toad_walking"
-        sadWalkOutState = "Sad_Boy_Walking";           // Create this or reuse "Sad_Toad_Walking"
-        
         // CUSTOMIZE: Set timing for Boy customer
-        fallbackWalkInDuration = 2.0f; // If animation detection fails
-        servicePointDelay = 1.0f; // Extra delay after reaching service point
-        
-        // CUSTOMIZE: Set sad walk-out behavior
-        sadWalkDistance = 5.0f; // Distance to walk right when sad
-        sadWalkDuration = 3.0f; // Time to walk to the right
+        fallbackWalkInDuration = 2.0f;
+        servicePointDelay = 1.0f;
         
         Debug.Log($"BoyCustomer initialized with OrderDelay: {OrderDelay}s, ServicePointDelay: {servicePointDelay}s");
     }
@@ -39,54 +27,44 @@ public class BoyCustomer : CustomerController
     public override void OnOrderGenerated()
     {
         base.OnOrderGenerated();
-        Debug.Log("Boy customer: *excited* Hey! What food do you have?");
-        
-        // Set waiting state parameters
-        if (animator != null)
-        {
-            animator.SetInteger("CustomerState", 0); // Still in waiting state
-        }
+        Debug.Log("👦 Boy customer: *excited* Hey! What food do you have?");
     }
     
-    /// <summary>
-    /// ENHANCED: Better reaction messages for orders
-    /// </summary>
-    public override void OnOrderServed(bool perfect)
+    // SIMPLIFIED: Only happy reactions (orders always completed correctly)
+    protected override void PlayHappyReaction()
     {
-        if (perfect)
-        {
-            Debug.Log("👦✨ Boy customer: *happy shout* AWESOME! This looks amazing! *jumps with excitement*");
-        }
-        else
-        {
-            Debug.Log("👦😠 Boy customer: *disappointed* This isn't what I ordered! I'm outta here!");
-            Debug.Log("👦➡️ Boy will now walk to the RIGHT in disappointment...");
-        }
-        
-        base.OnOrderServed(perfect);
+        Debug.Log("👦✨ Boy customer: *happy shout* AWESOME! This looks amazing! *jumps with excitement*");
+        base.PlayHappyReaction();
     }
     
-    /// <summary>
-    /// ENHANCED: Better reaction for expired orders
-    /// </summary>
-    public override void OnOrderExpired()
+    // SIMPLIFIED: Only sad reactions (orders expired)
+    protected override void PlaySadReaction()
     {
         Debug.Log("👦💢 Boy customer: *angry* I've been waiting forever! This is terrible service!");
-        Debug.Log("👦➡️ Boy is storming off to the RIGHT!");
-        
-        base.OnOrderExpired();
+        base.PlaySadReaction();
     }
     
-    /// <summary>
-    /// ENHANCED: Boy-specific sad walk out behavior
-    /// </summary>
-    protected override IEnumerator SadWalkOutToRight()
+    // SIMPLIFIED: Happy walk out message
+    protected override IEnumerator HappyWalkOut()
     {
-        Debug.Log("👦😤 Boy: *angry stomping* This place stinks!");
-        
-        // Use base implementation but with boy-specific debug messages
-        yield return base.SadWalkOutToRight();
-        
-        Debug.Log("👦➡️ Boy has left the area in disappointment!");
+        Debug.Log("👦🎉 Boy: *excited jumping* This was the best meal ever! Thank you!");
+        yield return StartCoroutine(base.HappyWalkOut());
+    }
+    
+    // SIMPLIFIED: Sad walk out message
+    protected override IEnumerator SadWalkOut()
+    {
+        Debug.Log("👦😤 Boy: *stomping away angrily* This place stinks! I'm outta here!");
+        yield return StartCoroutine(base.SadWalkOut());
+    }
+    
+    public override void PlayWalkInAnimation()
+    {
+        if (animator != null)
+        {
+            animator.SetInteger("CustomerState", 0); // 0 = Walking In
+            animator.SetBool("IsHappy", false);
+            Debug.Log("👦 Boy: Playing walk in animation");
+        }
     }
 }

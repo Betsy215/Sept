@@ -59,35 +59,38 @@ public class ShopItemController : MonoBehaviour
         UpdateVisualState();
     }
     
-    // NEW: Public method to control availability from ShopManager
-    public void SetAvailable(bool available)
+    public void SetAvailable(bool available, bool canAfford = true)
     {
-        // Only update availability if item hasn't been purchased
-        // Purchased items should always stay in "purchased" state
         if (!isPurchased)
         {
             isAvailable = available;
         }
-        UpdateVisualState();
+        UpdateVisualState(canAfford);
     }
     
-    void UpdateVisualState()
+    void UpdateVisualState(bool canAfford = true)
     {
         // Get UI components
         Button iconButton = transform.Find("ItemIcon")?.GetComponent<Button>();
         Image iconImage = iconButton?.GetComponent<Image>();
-        
+    
         if (isPurchased)
         {
             // Item is purchased - show as owned (green and non-clickable)
             if (iconButton != null) iconButton.interactable = false;
             if (iconImage != null) iconImage.color = Color.green;
         }
-        else if (isAvailable)
+        else if (isAvailable && canAfford)
         {
             // Item is available for purchase (white and clickable)
             if (iconButton != null) iconButton.interactable = true;
             if (iconImage != null) iconImage.color = Color.white;
+        }
+        else if (!canAfford)
+        {
+            // Item is not affordable - show as very transparent (only shape visible)
+            if (iconButton != null) iconButton.interactable = false;
+            if (iconImage != null) iconImage.color = new Color(0f, 0f, 0f, 0.8f); 
         }
         else
         {
@@ -96,7 +99,6 @@ public class ShopItemController : MonoBehaviour
             if (iconImage != null) iconImage.color = new Color(0.5f, 0.5f, 0.5f, 1f); // Grey
         }
     }
-    
     // Public method for ShopManager to update visual state
     public void RefreshVisualState()
     {

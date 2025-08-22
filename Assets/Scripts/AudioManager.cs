@@ -179,7 +179,10 @@ public class AudioManager : MonoBehaviour
     {
         PlaySFX(orderCompleteSFX);
     }
-    
+    public void PlayPurchaseSound()
+    {
+        PlaySFX(orderCompleteSFX);
+    }
     public void PlayItemPickup()
     {
         PlaySFX(itemPickupSFX);
