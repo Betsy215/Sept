@@ -2079,6 +2079,66 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &935813607
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 935813609}
+  - component: {fileID: 935813608}
+  m_Layer: 0
+  m_Name: TableClothScaler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &935813608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 935813607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62e050a7d886431599dded391ff669f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tableclothRenderer: {fileID: 0}
+  foodItems: []
+  autoDetectFoodItems: 1
+  foodItemTag: 
+  referenceScreenWidth: 1080
+  referenceScreenHeight: 1920
+  referenceOrthographicSize: 5
+  widthHeightMatch: 0.5
+  minScaleFactor: 0.7
+  maxScaleFactor: 1.3
+  scaleFoodItems: 1
+  repositionFoodItems: 1
+  foodItemScaleMultiplier: 1
+  verticalOffset: 0
+  showDebugInfo: 0
+  drawGizmos: 1
+--- !u!4 &935813609
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 935813607}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.7019654, y: -0.6421269, z: 978.1841}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &978910112
 GameObject:
   m_ObjectHideFlags: 0
@@ -3385,7 +3445,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: c1d441700c3fb4486864bccaf261e255, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bbaf7a7252e7a421d8cb9af503a606b4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4979,3 +5039,4 @@ SceneRoots:
   - {fileID: 1581722773}
   - {fileID: 1189957813}
   - {fileID: 79097690}
+  - {fileID: 935813609}

@@ -215,7 +215,7 @@ public class SimpleScorePopup : MonoBehaviour
     popupObj.transform.SetParent(parent, false);
     
     RectTransform rectTransform = popupObj.AddComponent<RectTransform>();
-    rectTransform.sizeDelta = new Vector2(400, 350);
+    rectTransform.sizeDelta = new Vector2(300, 300);
     
     // Add popup script to parent
     // Add popup script to parent
