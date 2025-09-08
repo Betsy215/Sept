@@ -41,8 +41,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: GameObject
-    uniqueID: 3183804491
+  - name: Customoers
+    uniqueID: 1185915797
+    locked: 0
+  - name: Table
+    uniqueID: 1173542017
+    locked: 0
+  - name: FoodItems
+    uniqueID: 1328505229
     locked: 0
   - name: GameUI
     uniqueID: 2982788935
