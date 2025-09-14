@@ -94,7 +94,6 @@ public class GamePhaseManager : MonoBehaviour
         {
             if (item != null && item.gameObject.activeInHierarchy)
             {
-                // Add draggable component
                 DraggableFood draggable = item.GetComponent<DraggableFood>();
                 if (draggable == null)
                 {
