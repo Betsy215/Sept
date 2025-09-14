@@ -29,6 +29,9 @@ public class ServeableItem : MonoBehaviour
     
     [Header("Debug")]
     public bool enableDebugLogs = true;
+    
+    [Header("Phase Management")]
+    private bool servingEnabled = true;
 
     void Start()
     {
@@ -50,6 +53,21 @@ public class ServeableItem : MonoBehaviour
 
         // Audio setup is handled by AudioManager - no individual AudioSource needed
         DebugLog($"ServeableItem {foodType} initialized successfully");
+    }
+    
+    public void SetServingEnabled(bool enabled)
+    {
+        servingEnabled = enabled;
+    
+        if (enableDebugLogs)
+        {
+            Debug.Log($"{foodType}: Serving {(enabled ? "enabled" : "disabled")}");
+        }
+    }
+
+    public bool IsServingEnabled()
+    {
+        return servingEnabled;
     }
 
     void SetupCollider()
@@ -91,6 +109,9 @@ public class ServeableItem : MonoBehaviour
     // Handle mouse clicks on this item
     void OnMouseDown()
     {
+        
+        if (!servingEnabled) return;
+        
         // Check if we're clicking over UI elements
         bool overUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
         bool popupActive = popupCanvas != null && popupCanvas.activeInHierarchy;
