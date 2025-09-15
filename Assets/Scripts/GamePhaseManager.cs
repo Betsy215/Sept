@@ -145,15 +145,7 @@ public class GamePhaseManager : MonoBehaviour
     
     void EnableGameplaySystems()
     {
-        if (orderSystem != null)
-        {
-            orderSystem.enabled = true;
-        }
-        
-        if (customerManager != null)
-        {
-            customerManager.enabled = true;
-        }
+        levelManager.StartGamePlay();   
     }
     
     public void OnDoneButtonClicked()

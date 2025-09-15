@@ -48,6 +48,8 @@ public class LevelManager : MonoBehaviour
 
     [Header("Audio Setup")] 
     public GameObject audioManagerPrefab;
+    
+    public GamePhaseManager gamePhaseManager;
 
     // Current level tracking
     private int currentLevelIndex = 0;
@@ -416,14 +418,18 @@ public class LevelManager : MonoBehaviour
     // UPDATED: StartLevel method with popup clearing
     void StartLevel()
     {
-        Debug.Log($"Starting level: {currentLevelData.levelName}");
+        gamePhaseManager.StartArrangementPhase();
         
+        scoreManager.ResetScore(); // This will clear popup if enable
+    }
+
+    public void StartGamePlay()
+    {
         if (orderSystem != null)
         {
             // Determine flow type and start appropriately
             if (customerManager != null)
             {
-                Debug.Log("CustomerManager present - using customer-integrated flow");
                 // Initialize order system but don't start cycle yet
                 orderSystem.InitializeForCustomerFlow();
                 // Start the first customer spawn
@@ -431,14 +437,8 @@ public class LevelManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("No CustomerManager - using original order flow");
                 orderSystem.StartOrderCycle();
             }
-        }
-
-        if (scoreManager != null)
-        {
-            scoreManager.ResetScore(); // This will clear popup if enabled
         }
     }
 
