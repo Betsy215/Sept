@@ -4,161 +4,166 @@ using System.Collections.Generic;
 
 public enum GamePhase
 {
-    ARRANGEMENT,  // Player can drag items around
-    PLAYING       // Normal gameplay - serving customers
+    ARRANGEMENT, // Player can drag items around
+    PLAYING // Normal gameplay - serving customers
 }
 
 public class GamePhaseManager : MonoBehaviour
 {
-    [Header("UI References")]
-    public Button doneButton;
-    
-    [Header("Game References")]
-    public LevelManager levelManager;
+    [Header("UI References")] public Button doneButton;
+
+    [Header("Game References")] public LevelManager levelManager;
     public OrderSystem orderSystem;
     public CustomerManager customerManager;
     public TableLayer tableLayer;
-    
-    [Header("Debug")]
-    public bool enableDebugLogs = true;
-    
+
+    [Header("Debug")] public bool enableDebugLogs = true;
+
     // Private variables
     private GamePhase currentPhase = GamePhase.ARRANGEMENT;
     private ServeableItem[] allFoodItems;
-    
-    void Start()
+
+    private void Start()
     {
         InitializeGamePhase();
     }
-    
-    void InitializeGamePhase()
+
+    private void InitializeGamePhase()
     {
         // Get all food items from LevelManager
         if (levelManager != null)
-        {
             allFoodItems = levelManager.serveableItems;
-        }
         else
-        {
             allFoodItems = FindObjectsOfType<ServeableItem>();
-        }
-        
-      
+
+
         doneButton.onClick.AddListener(OnDoneButtonClicked);
-        
+
         // Start in arrangement phase
         StartArrangementPhase();
-        
+
         DebugLog("GamePhaseManager initialized");
     }
-    
+
     public void StartArrangementPhase()
     {
         currentPhase = GamePhase.ARRANGEMENT;
         DebugLog("=== ARRANGEMENT PHASE STARTED ===");
-        
+
+        LoadSavedFoodPositions();
+
         // Enable dragging on all food items
         EnableArrangementMode();
-        
+
         // Disable gameplay systems
         DisableGameplaySystems();
-        
+
         // Show done button
-        if (doneButton != null)
-        {
-            doneButton.gameObject.SetActive(true);
-        }
+        if (doneButton != null) doneButton.gameObject.SetActive(true);
     }
-    
+
     public void StartPlayPhase()
     {
         currentPhase = GamePhase.PLAYING;
         DebugLog("=== PLAY PHASE STARTED ===");
-        
+
         // Disable dragging
         DisableArrangementMode();
-        
+
         // Enable gameplay systems
         EnableGameplaySystems();
-        
+
         // Hide done button
-        if (doneButton != null)
-        {
-            doneButton.gameObject.SetActive(false);
-        }
+        if (doneButton != null) doneButton.gameObject.SetActive(false);
     }
-    
-    void EnableArrangementMode()
+
+    private void EnableArrangementMode()
     {
-        foreach (ServeableItem item in allFoodItems)
-        {
+        foreach (var item in allFoodItems)
             if (item != null && item.gameObject.activeInHierarchy)
             {
-                DraggableFood draggable = item.GetComponent<DraggableFood>();
-                if (draggable == null)
-                {
-                    draggable = item.gameObject.AddComponent<DraggableFood>();
-                }
-            
+                var draggable = item.GetComponent<DraggableFood>();
+                if (draggable == null) draggable = item.gameObject.AddComponent<DraggableFood>();
+
                 draggable.Initialize(tableLayer, this, allFoodItems);
                 draggable.SetDraggingEnabled(true);
-            
+
                 // Disable serving during arrangement
                 item.SetServingEnabled(false);
-            
+
                 DebugLog($"Enabled arrangement mode for {item.GetFoodType()}");
             }
-        }
     }
-    
-    void DisableArrangementMode()
+
+    private void DisableArrangementMode()
     {
-        foreach (ServeableItem item in allFoodItems)
-        {
+        foreach (var item in allFoodItems)
             if (item != null)
             {
                 // Disable dragging
-                DraggableFood draggable = item.GetComponent<DraggableFood>();
-                if (draggable != null)
-                {
-                    draggable.SetDraggingEnabled(false);
-                }
-            
+                var draggable = item.GetComponent<DraggableFood>();
+                if (draggable != null) draggable.SetDraggingEnabled(false);
+
                 // Re-enable serving
                 item.SetServingEnabled(true);
             }
-        }
     }
-    
-    void DisableGameplaySystems()
+
+    private void DisableGameplaySystems()
     {
-        if (orderSystem != null)
-        {
-            orderSystem.enabled = false;
-        }
-        
-        if (customerManager != null)
-        {
-            customerManager.enabled = false;
-        }
+        if (orderSystem != null) orderSystem.enabled = false;
+
+        if (customerManager != null) customerManager.enabled = false;
     }
-    
-    void EnableGameplaySystems()
+
+    private void EnableGameplaySystems()
     {
-        levelManager.StartGamePlay();   
+        orderSystem.enabled = true;
+        customerManager.enabled = true;
+        levelManager.StartGamePlay();
     }
-    
+
     public void OnDoneButtonClicked()
     {
-        DebugLog("Done button clicked - transitioning to play phase");
+        SessionManager.Instance.UpdateFoodPositions(allFoodItems);
         StartPlayPhase();
     }
-    
-    void DebugLog(string message)
+
+    private void DebugLog(string message)
     {
-        if (enableDebugLogs)
+        if (enableDebugLogs) Debug.Log($"GamePhaseManager: {message}");
+    }
+
+    /// <summary>
+    /// Load saved food positions from SessionManager when entering arrangement phase
+    /// </summary>
+    private void LoadSavedFoodPositions()
+    {
+        if (SessionManager.Instance == null || !SessionManager.Instance.HasSavedPositions())
         {
-            Debug.Log($"GamePhaseManager: {message}");
+            DebugLog("No saved positions found - using scene default positions");
+            return;
         }
+
+        var sessionData = SessionManager.Instance.GetCurrentSession();
+        var savedPositions = sessionData.savedFoodPositions;
+
+
+        foreach (var item in allFoodItems)
+            if (item != null && item.gameObject.activeInHierarchy)
+            {
+                // Find saved position for this food type
+                var savedPos = savedPositions.Find(p => p.foodType == item.GetFoodType());
+
+                if (savedPos != null)
+                {
+                    // Preserve the original Z position for layering
+                    var originalZ = item.transform.position.z;
+                    item.transform.position = savedPos.ToVector3(originalZ);
+
+
+                    DebugLog($"Loaded saved position for {item.GetFoodType()}: ({savedPos.x:F2}, {savedPos.y:F2})");
+                }
+            }
     }
 }

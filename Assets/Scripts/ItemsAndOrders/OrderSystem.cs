@@ -215,13 +215,9 @@ public class OrderSystem : MonoBehaviour
     {
         orderTimer -= Time.deltaTime;
         
-        if (orderTimerText != null)
-        {
-            orderTimerText.text = "Time: " + Mathf.Ceil(orderTimer).ToString();
-        }
-        
         if (orderTimer <= 0)
         {
+            Debug.Log("Order timer is over, expired");
             ExpireOrder();
         }
     }
@@ -296,9 +292,10 @@ public class OrderSystem : MonoBehaviour
             orderTitleText.text = "Order:";
     
         orderActive = true;
+        
         orderTimer = orderDisplayTime;
     
-        Debug.Log($"Order displayed: {currentOrderItems.Count} items using bubble{currentOrderItems.Count}");
+        Debug.Log($"Order active: {orderActive} , timer: {orderTimer}");
     }
     public bool TryServeItem(string foodType)
     {
