@@ -77,6 +77,10 @@ public class GamePhaseManager : MonoBehaviour
         if (doneButton != null) doneButton.gameObject.SetActive(false);
     }
 
+    // Add this to your GamePhaseManager.cs
+
+// Replace these methods in your existing GamePhaseManager.cs
+
     private void EnableArrangementMode()
     {
         foreach (var item in allFoodItems)
@@ -86,12 +90,14 @@ public class GamePhaseManager : MonoBehaviour
                 if (draggable == null) draggable = item.gameObject.AddComponent<DraggableFood>();
 
                 draggable.Initialize(tableLayer, this, allFoodItems);
+
+                // This now automatically starts iOS-style wiggling!
                 draggable.SetDraggingEnabled(true);
 
                 // Disable serving during arrangement
                 item.SetServingEnabled(false);
 
-                DebugLog($"Enabled arrangement mode for {item.GetFoodType()}");
+                DebugLog($"Enabled arrangement mode with iOS wiggle for {item.GetFoodType()}");
             }
     }
 
@@ -100,9 +106,10 @@ public class GamePhaseManager : MonoBehaviour
         foreach (var item in allFoodItems)
             if (item != null)
             {
-                // Disable dragging
                 var draggable = item.GetComponent<DraggableFood>();
-                if (draggable != null) draggable.SetDraggingEnabled(false);
+                if (draggable != null)
+                    // This now automatically stops wiggling!
+                    draggable.SetDraggingEnabled(false);
 
                 // Re-enable serving
                 item.SetServingEnabled(true);
