@@ -23,6 +23,8 @@ public class GamePhaseManager : MonoBehaviour
     private GamePhase currentPhase = GamePhase.ARRANGEMENT;
     private ServeableItem[] allFoodItems;
 
+    [Header("Tutorial")] public GameObject tutorialPanel;
+
     private void Start()
     {
         InitializeGamePhase();
@@ -49,6 +51,8 @@ public class GamePhaseManager : MonoBehaviour
     {
         currentPhase = GamePhase.ARRANGEMENT;
         DebugLog("=== ARRANGEMENT PHASE STARTED ===");
+
+        tutorialPanel.SetActive(true);
 
         LoadSavedFoodPositions();
 
@@ -132,6 +136,7 @@ public class GamePhaseManager : MonoBehaviour
 
     public void OnDoneButtonClicked()
     {
+        tutorialPanel.SetActive(false);
         SessionManager.Instance.UpdateFoodPositions(allFoodItems);
         StartPlayPhase();
     }
