@@ -10,6 +10,7 @@ public enum GamePhase
 
 public class GamePhaseManager : MonoBehaviour
 {
+    [Header("UI References")] public GameObject arrangmentUI;
     [Header("UI References")] public Button doneButton;
 
     [Header("Game References")] public LevelManager levelManager;
@@ -62,8 +63,8 @@ public class GamePhaseManager : MonoBehaviour
         // Disable gameplay systems
         DisableGameplaySystems();
 
-        // Show done button
-        if (doneButton != null) doneButton.gameObject.SetActive(true);
+
+        arrangmentUI.gameObject.SetActive(true);
     }
 
     public void StartPlayPhase()
@@ -77,8 +78,8 @@ public class GamePhaseManager : MonoBehaviour
         // Enable gameplay systems
         EnableGameplaySystems();
 
-        // Hide done button
-        if (doneButton != null) doneButton.gameObject.SetActive(false);
+        
+        arrangmentUI.gameObject.SetActive(false);
     }
 
     // Add this to your GamePhaseManager.cs
