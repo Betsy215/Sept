@@ -1706,6 +1706,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d77081e4a3c54a70afb37df0a41bfb45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  arrangmentUI: {fileID: 185986374}
   doneButton: {fileID: 741292074}
   levelManager: {fileID: 905501929}
   orderSystem: {fileID: 1998227852}
