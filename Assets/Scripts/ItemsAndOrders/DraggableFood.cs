@@ -17,13 +17,25 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     [Tooltip("Color when touched/dragging (darker)")]
     public Color touchedColor = new(0.7f, 0.7f, 0.7f, 1f);
 
+    [Tooltip("Color when overlap is detected (reddish)")]
+    public Color overlapColor = new(1f, 0.5f, 0.5f, 1f);
+
     [Header("iOS-Style Wiggle (Built-in)")] [Tooltip("Enable wiggle effect when dragging is enabled")]
     public bool enableWiggle = true;
 
-    [Header("Collision Settings")] [Tooltip("Minimum distance between food items")]
-    public float minDistanceBetweenItems = 1f;
+    [Header("Collision Settings")] [Tooltip("Enable overlap prevention between items")]
+    public bool preventOverlap = true;
+
+    [Tooltip("Minimum distance between food items (based on sprite bounds)")] [Range(0f, 2f)]
+    public float minDistanceBetweenItems = 0f;
+
+    [Tooltip("Use sprite bounds for accurate collision detection")]
+    public bool useSpriteBounds = true;
 
     [Header("Debug")] public bool enableDebugLogs = false;
+
+    [Tooltip("Show visual gizmos for collision detection")]
+    public bool showCollisionGizmos = false;
 
     // Authentic iOS wiggle constants (reverse-engineered from iOS SpringBoard)
     private const float WIGGLE_ROTATION = 1f; // ±1 degree (iOS standard)  
@@ -35,6 +47,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private bool isDragging = false;
     private bool isTouched = false;
     private bool isWiggling = false;
+    private bool hasOverlap = false;
 
     // Transform values
     private Vector3 originalScale;
@@ -42,6 +55,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private float originalZ;
     private Vector3 originalPosition;
     private Vector3 originalRotation;
+    private Vector3 lastValidPosition;
 
     // Wiggle variables
     private float wigglePhaseOffset;
@@ -54,6 +68,9 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private SpriteRenderer spriteRenderer;
     private Vector3 offset;
 
+    // Collision detection
+    private float itemRadius;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -64,18 +81,52 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         // Store original transform for wiggle
         originalPosition = transform.localPosition;
         originalRotation = transform.localEulerAngles;
+        lastValidPosition = transform.position;
 
         // iOS-authentic random phase offset (prevents sync between items)
         wigglePhaseOffset = Random.Range(0f, 0.1f); // Random 0-100ms offset like iOS
 
-        if (spriteRenderer != null) originalColor = spriteRenderer.color;
+        if (spriteRenderer != null)
+        {
+            originalColor = spriteRenderer.color;
+            CalculateItemRadius();
+        }
     }
 
     public void Initialize(TableLayer tableLayerRef, GamePhaseManager phaseManagerRef, ServeableItem[] foodItemsArray)
     {
         tableLayer = tableLayerRef;
         allFoodItems = foodItemsArray;
-        Debug.Log($"DraggableFood: Initialized {gameObject.name}");
+
+        // Recalculate radius in case sprite was loaded after Awake
+        CalculateItemRadius();
+
+        DebugLog($"Initialized {gameObject.name} with radius: {itemRadius}");
+    }
+
+    private void CalculateItemRadius()
+    {
+        if (spriteRenderer == null || spriteRenderer.sprite == null)
+        {
+            // Fallback to a default radius
+            itemRadius = 0.5f;
+            return;
+        }
+
+        if (useSpriteBounds)
+        {
+            // Use actual sprite bounds for accurate collision
+            var bounds = spriteRenderer.bounds;
+            // Use the larger of width/height and divide by 2 for radius
+            itemRadius = Mathf.Max(bounds.size.x, bounds.size.y) / 2f;
+        }
+        else
+        {
+            // Simple approximation based on transform scale
+            itemRadius = Mathf.Max(transform.localScale.x, transform.localScale.y) * 0.5f;
+        }
+
+        DebugLog($"Calculated radius for {gameObject.name}: {itemRadius}");
     }
 
     public void SetDraggingEnabled(bool enabled)
@@ -106,8 +157,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         isWiggling = true;
         wiggleCoroutine = StartCoroutine(WiggleCoroutine());
 
-        if (enableDebugLogs)
-            Debug.Log($"Started iOS wiggle for {gameObject.name}");
+        DebugLog($"Started iOS wiggle for {gameObject.name}");
     }
 
     private void StopWiggle()
@@ -129,8 +179,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             transform.localPosition = originalPosition;
         }
 
-        if (enableDebugLogs)
-            Debug.Log($"Stopped iOS wiggle for {gameObject.name}");
+        DebugLog($"Stopped iOS wiggle for {gameObject.name}");
     }
 
     private void PauseWiggle()
@@ -182,6 +231,63 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         originalPosition = transform.localPosition;
     }
 
+    // === COLLISION DETECTION ===
+
+    private bool CheckOverlapAtPosition(Vector3 testPosition)
+    {
+        if (!preventOverlap || allFoodItems == null) return false;
+
+        foreach (var otherItem in allFoodItems)
+        {
+            // Skip self and inactive items
+            if (otherItem == null || otherItem.gameObject == gameObject || !otherItem.gameObject.activeInHierarchy)
+                continue;
+
+            // Get the other item's position
+            var otherPosition = otherItem.transform.position;
+
+            // Calculate 2D distance (ignore Z)
+            var distance = Vector2.Distance(
+                new Vector2(testPosition.x, testPosition.y),
+                new Vector2(otherPosition.x, otherPosition.y)
+            );
+
+            // Get other item's radius
+            var otherRadius = GetItemRadius(otherItem);
+
+            // Calculate minimum allowed distance
+            var minDistance = itemRadius + otherRadius + minDistanceBetweenItems;
+
+            // Check if overlap would occur
+            if (distance < minDistance)
+            {
+                DebugLog(
+                    $"Overlap detected with {otherItem.GetFoodType()} - Distance: {distance:F2}, MinDistance: {minDistance:F2}");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private float GetItemRadius(ServeableItem item)
+    {
+        // Try to get DraggableFood component to use its calculated radius
+        var draggable = item.GetComponent<DraggableFood>();
+        if (draggable != null) return draggable.itemRadius;
+
+        // Fallback: calculate from sprite renderer
+        var sr = item.GetComponent<SpriteRenderer>();
+        if (sr != null && sr.sprite != null && useSpriteBounds)
+        {
+            var bounds = sr.bounds;
+            return Mathf.Max(bounds.size.x, bounds.size.y) / 2f;
+        }
+
+        // Default fallback
+        return 0.5f;
+    }
+
     // === DRAG FUNCTIONALITY ===
 
     public void OnPointerDown(PointerEventData eventData)
@@ -216,11 +322,44 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         worldPos.z = originalZ;
         var targetPosition = worldPos + offset;
 
-        if (tableLayer != null) targetPosition = tableLayer.ClampToTableBounds(targetPosition);
+        // Clamp to table bounds
+        if (tableLayer != null)
+            targetPosition = tableLayer.ClampToTableBounds(targetPosition);
 
-        var smoothPosition = Vector3.Lerp(transform.position, targetPosition, dragSmoothness);
-        smoothPosition.z = originalZ + dragZOffset;
-        transform.position = smoothPosition;
+        // Check for overlap at target position
+        var wouldOverlap = CheckOverlapAtPosition(targetPosition);
+
+        if (wouldOverlap)
+        {
+            // Keep at last valid position and show overlap feedback
+            if (!hasOverlap)
+            {
+                hasOverlap = true;
+                ApplyOverlapVisuals();
+                DebugLog("Overlap prevented - keeping at last valid position");
+            }
+
+            // Don't update position - stay at lastValidPosition
+            return;
+        }
+        else
+        {
+            // Clear overlap state if we had it
+            if (hasOverlap)
+            {
+                hasOverlap = false;
+                ApplyTouchedVisuals();
+            }
+
+            // Valid position - update normally
+            var smoothPosition = Vector3.Lerp(transform.position, targetPosition, dragSmoothness);
+            smoothPosition.z = originalZ + dragZOffset;
+            transform.position = smoothPosition;
+
+            // Update last valid position
+            lastValidPosition = smoothPosition;
+            lastValidPosition.z = originalZ; // Store without drag Z offset
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -233,6 +372,8 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         isDragging = true;
         transform.localScale = originalScale * dragScale;
+        lastValidPosition = transform.position;
+        lastValidPosition.z = originalZ;
 
         // Pause wiggle while dragging
         PauseWiggle();
@@ -241,8 +382,11 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private void StopDragging()
     {
         isDragging = false;
+        hasOverlap = false;
         transform.localScale = originalScale;
-        var finalPosition = transform.position;
+
+        // Snap to last valid position
+        var finalPosition = lastValidPosition;
         finalPosition.z = originalZ;
         transform.position = finalPosition;
 
@@ -260,6 +404,11 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (spriteRenderer != null) spriteRenderer.color = touchedColor;
     }
 
+    private void ApplyOverlapVisuals()
+    {
+        if (spriteRenderer != null) spriteRenderer.color = overlapColor;
+    }
+
     private void RestoreOriginalVisuals()
     {
         if (spriteRenderer != null) spriteRenderer.color = originalColor;
@@ -269,5 +418,47 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         // Clean up wiggle coroutine if object is disabled
         StopWiggle();
+    }
+
+    private void DebugLog(string message)
+    {
+        if (enableDebugLogs)
+            Debug.Log($"DraggableFood ({gameObject.name}): {message}");
+    }
+
+    // === DEBUG VISUALIZATION ===
+
+    private void OnDrawGizmos()
+    {
+        if (!showCollisionGizmos || !isDraggingEnabled) return;
+
+        // Draw this item's collision radius
+        Gizmos.color = hasOverlap ? Color.red : Color.green;
+        Gizmos.DrawWireSphere(transform.position, itemRadius);
+
+        // Draw minimum distance circle
+        Gizmos.color = new Color(1f, 1f, 0f, 0.3f);
+        Gizmos.DrawWireSphere(transform.position, itemRadius + minDistanceBetweenItems);
+
+        // Draw lines to nearby items
+        if (allFoodItems != null)
+            foreach (var otherItem in allFoodItems)
+            {
+                if (otherItem == null || otherItem.gameObject == gameObject || !otherItem.gameObject.activeInHierarchy)
+                    continue;
+
+                var otherPos = otherItem.transform.position;
+                var distance = Vector2.Distance(
+                    new Vector2(transform.position.x, transform.position.y),
+                    new Vector2(otherPos.x, otherPos.y)
+                );
+
+                var otherRadius = GetItemRadius(otherItem);
+                var minDist = itemRadius + otherRadius + minDistanceBetweenItems;
+
+                // Red line if too close, green if safe
+                Gizmos.color = distance < minDist ? new Color(1f, 0f, 0f, 0.5f) : new Color(0f, 1f, 0f, 0.2f);
+                Gizmos.DrawLine(transform.position, otherPos);
+            }
     }
 }
