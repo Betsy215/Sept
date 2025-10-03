@@ -2344,6 +2344,8 @@ MonoBehaviour:
   todaySale: {fileID: 1086603810}
   todayTip: {fileID: 492118291}
   nextLevelButton: {fileID: 1377110459}
+  levelCompleteRestartButton: {fileID: 1573855376}
+  levelCompleteMainMenuButton: {fileID: 0}
   scoreTransferDuration: 2
   scoreTransferCurve:
     serializedVersion: 2
@@ -2371,8 +2373,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   pausePanel: {fileID: 1204377467}
   resumeButton: {fileID: 1805489997}
-  restartButton: {fileID: 744884139}
-  mainMenuButton: {fileID: 1980253313}
+  pauseRestartButton: {fileID: 744884139}
+  pauseMainMenuButton: {fileID: 1980253313}
   audioManagerPrefab: {fileID: 7903000077810319493, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
   gamePhaseManager: {fileID: 753882334}
 --- !u!4 &905501930
@@ -2982,7 +2984,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1222821199
 RectTransform:
   m_ObjectHideFlags: 0
