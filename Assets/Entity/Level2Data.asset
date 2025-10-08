@@ -14,18 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelNumber: 2
   levelName: Day  2
-  ordersPerLevel: 6
-  orderDisplayTime: 5
+  ordersPerLevel: 5
+  orderDisplayTime: 4
   timeBetweenOrders: 2
   minOrderItems: 1
   maxOrderItems: 3
   starThreshold1: 100
-  starThreshold2: 150
-  starThreshold3: 200
+  starThreshold2: 200
+  starThreshold3: 300
   maxPossibleScore: 0
-  earnedStarColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  unearnedStarColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   backgroundSprite: {fileID: 0}
   useSpecificFoodTypes: 0
   difficultyMultiplier: 1

@@ -63,6 +63,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     // References
     private TableLayer tableLayer;
+    private GamePhaseManager gamePhaseManager;
     private ServeableItem[] allFoodItems;
     private Camera mainCamera;
     private SpriteRenderer spriteRenderer;
@@ -96,6 +97,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void Initialize(TableLayer tableLayerRef, GamePhaseManager phaseManagerRef, ServeableItem[] foodItemsArray)
     {
         tableLayer = tableLayerRef;
+        gamePhaseManager = phaseManagerRef;
         allFoodItems = foodItemsArray;
 
         // Recalculate radius in case sprite was loaded after Awake
@@ -270,6 +272,14 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         return false;
     }
 
+    /// <summary>
+    /// Public method to check if this item currently has overlap
+    /// </summary>
+    public bool HasOverlap()
+    {
+        return CheckOverlapAtPosition(transform.position);
+    }
+
     private float GetItemRadius(ServeableItem item)
     {
         // Try to get DraggableFood component to use its calculated radius
@@ -328,38 +338,38 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         // Check for overlap at target position
         var wouldOverlap = CheckOverlapAtPosition(targetPosition);
+        var overlapStateChanged = wouldOverlap != hasOverlap;
 
+        // Update visual feedback
         if (wouldOverlap)
         {
-            // Keep at last valid position and show overlap feedback
             if (!hasOverlap)
             {
                 hasOverlap = true;
                 ApplyOverlapVisuals();
-                DebugLog("Overlap prevented - keeping at last valid position");
+                DebugLog("Overlap detected - showing red but allowing movement");
             }
-
-            // Don't update position - stay at lastValidPosition
-            return;
         }
         else
         {
-            // Clear overlap state if we had it
             if (hasOverlap)
             {
                 hasOverlap = false;
                 ApplyTouchedVisuals();
             }
-
-            // Valid position - update normally
-            var smoothPosition = Vector3.Lerp(transform.position, targetPosition, dragSmoothness);
-            smoothPosition.z = originalZ + dragZOffset;
-            transform.position = smoothPosition;
-
-            // Update last valid position
-            lastValidPosition = smoothPosition;
-            lastValidPosition.z = originalZ; // Store without drag Z offset
         }
+
+        // ALWAYS allow movement (no blocking)
+        var smoothPosition = Vector3.Lerp(transform.position, targetPosition, dragSmoothness);
+        smoothPosition.z = originalZ + dragZOffset;
+        transform.position = smoothPosition;
+
+        // Update last valid position
+        lastValidPosition = smoothPosition;
+        lastValidPosition.z = originalZ;
+
+        // Notify GamePhaseManager when overlap state changes
+        if (overlapStateChanged && gamePhaseManager != null) gamePhaseManager.OnItemOverlapChanged();
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -397,6 +407,9 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         ResumeWiggle();
 
         if (!isTouched) RestoreOriginalVisuals();
+
+        // Final check after drag ends
+        if (gamePhaseManager != null) gamePhaseManager.OnItemOverlapChanged();
     }
 
     private void ApplyTouchedVisuals()

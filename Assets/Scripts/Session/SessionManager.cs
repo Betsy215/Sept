@@ -273,6 +273,17 @@ public class SessionManager : MonoBehaviour
         }
     }
 
+    // Add this to SessionManager.cs
+    public void SetCurrentLevel(int levelIndex)
+    {
+        if (currentSession != null && currentSession.isActive)
+        {
+            currentSession.currentLevel = levelIndex;
+            SaveSession();
+            Debug.Log($"Session current level set to {levelIndex}");
+        }
+    }
+
     public void CompleteSession()
     {
         if (currentSession != null)

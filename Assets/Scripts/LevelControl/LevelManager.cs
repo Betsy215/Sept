@@ -274,6 +274,12 @@ public class LevelManager : MonoBehaviour
         if (popupCanvas != null)
             popupCanvas.SetActive(false);
 
+        if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
+        {
+            SessionManager.Instance.SetCurrentLevel(currentLevelIndex);
+            Debug.Log($"RestartLevel: Reset session to level {currentLevelIndex}");
+        }
+
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayGameplayMusic();
 

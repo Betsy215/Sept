@@ -55,14 +55,13 @@ public class GamePhaseManager : MonoBehaviour
 
         tutorialPanel.SetActive(true);
 
-        LoadSavedFoodPositions();
+        LoadSavedFoodPositions(); // Now handles smart positioning
 
         // Enable dragging on all food items
         EnableArrangementMode();
 
         // Disable gameplay systems
         DisableGameplaySystems();
-
 
         arrangmentUI.gameObject.SetActive(true);
     }
@@ -78,7 +77,7 @@ public class GamePhaseManager : MonoBehaviour
         // Enable gameplay systems
         EnableGameplaySystems();
 
-        
+
         arrangmentUI.gameObject.SetActive(false);
     }
 
@@ -119,6 +118,99 @@ public class GamePhaseManager : MonoBehaviour
                 // Re-enable serving
                 item.SetServingEnabled(true);
             }
+    }
+
+    // Add this event handler (called by DraggableFood when overlap changes)
+    public void OnItemOverlapChanged()
+    {
+        UpdateDoneButtonState();
+    }
+
+    /// <summary>
+    /// Check if any items currently overlap
+    /// </summary>
+    private bool AnyItemsOverlapping()
+    {
+        if (allFoodItems == null) return false;
+
+        foreach (var item in allFoodItems)
+        {
+            if (item == null || !item.gameObject.activeInHierarchy) continue;
+
+            var draggable = item.GetComponent<DraggableFood>();
+            if (draggable != null && draggable.HasOverlap()) return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Update done button state - disable if overlaps exist
+    /// </summary>
+    private void UpdateDoneButtonState()
+    {
+        if (doneButton == null) return;
+
+        var hasOverlaps = AnyItemsOverlapping();
+        doneButton.interactable = !hasOverlaps;
+
+        if (hasOverlaps) DebugLog("Done button disabled - overlaps detected");
+    }
+
+
+    /// <summary>
+    /// Find safe position for new item using golden angle spiral search
+    /// </summary>
+    private Vector3 FindSafePosition(List<Vector3> occupiedPositions, float zPosition)
+    {
+        var minDistance = 1.5f;
+        var maxAttempts = 50;
+
+        var startPosition = Vector3.zero;
+        if (tableLayer != null && tableLayer.tableBounds != null) startPosition = tableLayer.tableBounds.bounds.center;
+
+        // Golden angle spiral for efficient, natural-looking space filling
+        for (var i = 0; i < maxAttempts; i++)
+        {
+            var angle = i * 137.5f * Mathf.Deg2Rad; // Golden angle (137.5 degrees)
+            var radius = 0.5f * Mathf.Sqrt(i); // Spiral outward
+
+            var candidate = startPosition + new Vector3(
+                Mathf.Cos(angle) * radius,
+                Mathf.Sin(angle) * radius,
+                zPosition
+            );
+
+            // Clamp to table bounds
+            if (tableLayer != null)
+                candidate = tableLayer.ClampToTableBounds(candidate);
+
+            // Check if safe distance from all occupied positions
+            var isSafe = true;
+            foreach (var occupied in occupiedPositions)
+            {
+                var dist = Vector2.Distance(
+                    new Vector2(candidate.x, candidate.y),
+                    new Vector2(occupied.x, occupied.y)
+                );
+
+                if (dist < minDistance)
+                {
+                    isSafe = false;
+                    break;
+                }
+            }
+
+            if (isSafe)
+            {
+                DebugLog($"Found safe position at ({candidate.x:F2}, {candidate.y:F2}) after {i + 1} attempts");
+                return candidate;
+            }
+        }
+
+        // Fallback: return table center
+        DebugLog("Warning: Could not find safe position after 50 attempts, using center");
+        return new Vector3(startPosition.x, startPosition.y, zPosition);
     }
 
     private void DisableGameplaySystems()
