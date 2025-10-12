@@ -466,11 +466,11 @@ public class LevelManager : MonoBehaviour
             levelCompletePanel.SetActive(true);
 
         var tips = scoreManager.GetTotalTipsEarned();
-        todayTip.text = $"Tips Earned: $ {tips}";
+        todayTip.text = $"Tips Earned: $ {tips:F2}";
         var todayScore = scoreManager.GetCurrentScore();
-        todaySale.text = $"Today Sale: $ {todayScore}";
+        todaySale.text = $"Today Sale: $ {todayScore:F2}";
         var totalScore = SessionManager.Instance.GetTotalScore();
-        totalEarned.text = $"Earned: $ {totalScore}";
+        totalEarned.text = $"Earned: $ {totalScore:F2}";
 
         SetupLevelCompleteButtons();
         yield return new WaitForSeconds(1f);

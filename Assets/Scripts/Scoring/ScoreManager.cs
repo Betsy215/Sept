@@ -199,19 +199,18 @@ public class ScoreManager : MonoBehaviour
     {
         var displayScore = SessionManager.Instance.GetTotalScore();
 
-        var scoreDisplayText = "$ " + displayScore;
+        var scoreDisplayText = "$ " + displayScore.ToString("F2");
 
-        // Update in-game score display (now shows level score only)
         if (inGameScoreText != null)
             inGameScoreText.text = scoreDisplayText;
         else
-            Debug.LogWarning("ScoreManager: inGameScoreText is null! Please assign it in the inspector.");
+            Debug.LogWarning("ScoreManager: inGameScoreText is null!");
 
-        // Update final score display (for level complete panel - keep as level score)
-        if (finalScoreText != null) finalScoreText.text = "Level Score: " + currentScore;
+        if (finalScoreText != null)
+            finalScoreText.text = "Level Score: " + currentScore.ToString("F2");
 
-        // Update overlay score text if you added one
-        if (overlayScoreText != null) overlayScoreText.text = scoreDisplayText;
+        if (overlayScoreText != null)
+            overlayScoreText.text = scoreDisplayText;
     }
 
     // Update total score UI
@@ -220,7 +219,7 @@ public class ScoreManager : MonoBehaviour
         if (totalScoreText != null && SessionManager.Instance != null)
         {
             var totalScore = SessionManager.Instance.GetTotalScore();
-            totalScoreText.text = "Total Score: " + totalScore;
+            totalScoreText.text = "Total Score: " + totalScore.ToString("F2");
         }
     }
 
@@ -228,7 +227,7 @@ public class ScoreManager : MonoBehaviour
     private void UpdateTotalScoreDisplay(float f)
     {
         // Update dedicated total score text if you have one
-        if (totalScoreText != null) totalScoreText.text = "Total Score: " + f;
+        if (totalScoreText != null) totalScoreText.text = "Total Score: " + f.ToString("F2");
 
         Debug.Log($"ScoreManager: Total score updated to {f}");
     }

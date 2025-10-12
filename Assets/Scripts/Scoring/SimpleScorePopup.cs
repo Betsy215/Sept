@@ -71,12 +71,12 @@ public class SimpleScorePopup : MonoBehaviour
 
         if (bonusPoints > 0)
         {
-            popupText = $" ${basePoints}\n Tips: $ {bonusPoints}";
+            popupText = $" ${basePoints}\n Tips: $ {bonusPoints:F2}";
             textColor = Color.black;
         }
         else
         {
-            popupText = $"${basePoints}";
+            popupText = $"${basePoints:F2}";
             textColor = Color.black;
         }
 

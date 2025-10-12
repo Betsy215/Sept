@@ -71,6 +71,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     // Collision detection
     private float itemRadius;
+    private Coroutine overlapCheckCoroutine;
 
     private void Awake()
     {
@@ -135,18 +136,33 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         isDraggingEnabled = enabled;
 
-        if (enabled)
+        if (isDraggingEnabled)
         {
-            // Start wiggling when dragging is enabled
-            if (enableWiggle) StartWiggle();
+            // ✅ Check immediately when enabling
+            CheckAndUpdateOverlapState();
+
+            // ✅ Start periodic checking coroutine
+            if (overlapCheckCoroutine == null)
+                overlapCheckCoroutine = StartCoroutine(OverlapCheckLoop());
+
+            if (enableWiggle && !isWiggling)
+                StartWiggle();
         }
         else
         {
-            // Stop wiggling when dragging is disabled
-            StopWiggle();
+            // ✅ Stop checking coroutine when disabled
+            if (overlapCheckCoroutine != null)
+            {
+                StopCoroutine(overlapCheckCoroutine);
+                overlapCheckCoroutine = null;
+            }
 
-            // Stop any active dragging
-            if (isDragging) StopDragging();
+            if (isWiggling)
+                StopWiggle();
+
+            // ✅ Clear overlap state when disabling
+            hasOverlap = false;
+            RestoreOriginalVisuals();
         }
     }
 
@@ -160,6 +176,63 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         wiggleCoroutine = StartCoroutine(WiggleCoroutine());
 
         DebugLog($"Started iOS wiggle for {gameObject.name}");
+    }
+
+    /// <summary>
+    /// Coroutine that checks for overlaps periodically.
+    /// Only runs when dragging is enabled, automatically stops when disabled.
+    /// Replaces the Update() method with a more efficient approach.
+    /// </summary>
+    private IEnumerator OverlapCheckLoop()
+    {
+        var lastCheckedPosition = transform.position;
+        const float checkInterval = 0.1f; // Check every 0.1 seconds
+        const float movementThreshold = 0.01f; // Only check if moved this much
+
+        while (true)
+        {
+            // Wait before next check (makes this coroutine efficient)
+            yield return new WaitForSeconds(checkInterval);
+
+            // Skip check if currently dragging (OnDrag handles that)
+            if (isDragging)
+                continue;
+
+            // Only check if position actually changed (optimization)
+            if (Vector3.Distance(transform.position, lastCheckedPosition) > movementThreshold)
+            {
+                lastCheckedPosition = transform.position;
+                CheckAndUpdateOverlapState();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Continuously check and update overlap state and visuals
+    /// </summary>
+    private void CheckAndUpdateOverlapState()
+    {
+        var currentlyOverlapping = CheckOverlapAtPosition(transform.position);
+
+        // Only update if state changed
+        if (currentlyOverlapping != hasOverlap)
+        {
+            hasOverlap = currentlyOverlapping;
+
+            if (hasOverlap)
+            {
+                ApplyOverlapVisuals();
+                DebugLog("Overlap detected - showing red");
+            }
+            else
+            {
+                RestoreOriginalVisuals();
+                DebugLog("Overlap cleared - restoring original color");
+            }
+
+            // Notify GamePhaseManager
+            if (gamePhaseManager != null) gamePhaseManager.OnItemOverlapChanged();
+        }
     }
 
     private void StopWiggle()
@@ -226,11 +299,6 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             yield return null;
         }
-    }
-
-    private void UpdateOriginalPosition()
-    {
-        originalPosition = transform.localPosition;
     }
 
     // === COLLISION DETECTION ===
@@ -412,6 +480,11 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (gamePhaseManager != null) gamePhaseManager.OnItemOverlapChanged();
     }
 
+    private void UpdateOriginalPosition()
+    {
+        originalPosition = transform.localPosition;
+    }
+
     private void ApplyTouchedVisuals()
     {
         if (spriteRenderer != null) spriteRenderer.color = touchedColor;
@@ -429,6 +502,13 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     private void OnDisable()
     {
+        // ✅ Stop overlap check coroutine if running
+        if (overlapCheckCoroutine != null)
+        {
+            StopCoroutine(overlapCheckCoroutine);
+            overlapCheckCoroutine = null;
+        }
+
         // Clean up wiggle coroutine if object is disabled
         StopWiggle();
     }
