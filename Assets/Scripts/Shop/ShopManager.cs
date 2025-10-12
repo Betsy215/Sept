@@ -8,24 +8,20 @@ using Unity.VisualScripting;
 
 public class ShopManager : MonoBehaviour
 {
-    [Header("UI References")] public GameObject shopPanel; // The white sliding panel
-    public GameObject itemContainer; // Parent for shop item UI elements
+    [Header("UI References")] public GameObject shopPanel;
+    public GameObject itemContainer;
 
     [Header("Shop Controls")] public Button nextLevelButton;
     public Button mainMenuButton;
     public TextMeshProUGUI playerScoreText;
-
-    [Header("Shop Item Management")]
-    // REMOVED: public ShopItemController[] allShopItems; // No longer needed!
-    private int availableItemCount = 6; // First 3 items available initially
 
     [Header("Animation")] public float slideAnimationDuration = 1f;
 
     [Header("Scroll Controls")] public Button scrollUpButton;
     public Button scrollDownButton;
     public ScrollRect itemScrollRect;
-    public float scrollAmount = 800f; // Configurable scroll distance
-    public float scrollDuration = 1f; // Smooth scroll time
+    public float scrollAmount = 800f;
+    public float scrollDuration = 1f;
 
     [Header("Purchase Popup")] public GameObject purchaseConfirmationPopup;
     public Image popupItemIcon;
@@ -35,22 +31,16 @@ public class ShopManager : MonoBehaviour
 
     private ShopItemController currentPurchaseItem;
 
-    // Internal references
-    private float playerScore;
-    private const string SHOP_SAVE_KEY = "ShopData";
-
     private void Start()
     {
         InitializeShop();
         AudioManager.Instance.PlayShopMusic();
         SetupButtonListeners();
-        StartCoroutine(DelayedScrollButtonUpdate()); // Initialize scroll button states
+        StartCoroutine(DelayedScrollButtonUpdate());
     }
 
-    // NEW: Ensure button listeners are set up
     private void SetupButtonListeners()
     {
-        // Purchase popup buttons
         if (confirmPurchaseButton != null)
         {
             confirmPurchaseButton.onClick.RemoveAllListeners();
@@ -63,7 +53,6 @@ public class ShopManager : MonoBehaviour
             cancelPurchaseButton.onClick.AddListener(CancelPurchase);
         }
 
-        // Scroll buttons
         if (scrollUpButton != null)
         {
             scrollUpButton.onClick.RemoveAllListeners();
@@ -76,14 +65,12 @@ public class ShopManager : MonoBehaviour
             scrollDownButton.onClick.AddListener(ScrollDown);
         }
 
-        // Continue/Next Level button
         if (nextLevelButton != null)
         {
             nextLevelButton.onClick.RemoveAllListeners();
             nextLevelButton.onClick.AddListener(OnNextLevelClicked);
         }
 
-        // Main menu button (if you have one)
         if (mainMenuButton != null)
         {
             mainMenuButton.onClick.RemoveAllListeners();
@@ -91,44 +78,25 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    // NEW: Helper method to get all shop items dynamically from itemContainer
     private ShopItemController[] GetAllShopItems()
     {
         if (itemContainer == null) return new ShopItemController[0];
-
-        return itemContainer.GetComponentsInChildren<ShopItemController>(true); // Include inactive items
-    }
-
-    // NEW: Get total count of shop items
-    private int GetTotalShopItemCount()
-    {
-        return GetAllShopItems().Length;
+        return itemContainer.GetComponentsInChildren<ShopItemController>(true);
     }
 
     private void RefreshShopDisplay()
     {
         var allShopItems = GetAllShopItems();
+        var currentScore = SessionManager.Instance.GetTotalScore();
 
-        // Show all items and set their availability
-        for (var i = 0; i < allShopItems.Length; i++)
-            if (allShopItems[i] != null)
+        // Show all items and check affordability only
+        foreach (var shopItem in allShopItems)
+            if (shopItem != null)
             {
-                // Always show the item
-                allShopItems[i].gameObject.SetActive(true);
-
-                var canAfford = playerScore >= allShopItems[i].price;
-                var isAvailable = canAfford && !allShopItems[i].isPurchased;
-                allShopItems[i].SetAvailable(isAvailable, canAfford);
+                shopItem.gameObject.SetActive(true);
+                var canAfford = currentScore >= shopItem.price;
+                shopItem.UpdateAffordability(canAfford);
             }
-
-        // Count actually available (not purchased) items for debug
-        var actuallyAvailable = 0;
-        var purchasedCount = 0;
-        for (var i = 0; i < Mathf.Min(availableItemCount, allShopItems.Length); i++)
-            if (allShopItems[i].isPurchased)
-                purchasedCount++;
-            else
-                actuallyAvailable++;
     }
 
     public void PurchaseItem(ShopItemController item)
@@ -147,10 +115,13 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
+        // Get current score from session
+        var currentScore = SessionManager.Instance.GetTotalScore();
+
         // Check if player has enough score
-        if (playerScore < item.price)
+        if (currentScore < item.price)
         {
-            ShowPurchaseFailedFeedback($"Not enough points!\nNeed: {item.price} | Have: {playerScore}");
+            ShowPurchaseFailedFeedback($"Not enough points!\nNeed: {item.price} | Have: {currentScore}");
             return;
         }
 
@@ -168,28 +139,15 @@ public class ShopManager : MonoBehaviour
             // Deduct score from session
             SessionManager.Instance.DeductScore(item.price);
 
-            // Update local score display
-            playerScore -= item.price;
+            // Update score display
             UpdateScoreDisplay();
 
             // Mark as purchased in UI
             item.MarkAsPurchased();
             AudioManager.Instance.PlayPurchaseSound();
 
-            // NEW: Unlock next item if there are more to unlock
-            var totalItems = GetTotalShopItemCount();
-            Debug.Log($"Before increment: availableItemCount={availableItemCount}, totalItems={totalItems}");
-            if (availableItemCount < totalItems)
-            {
-                availableItemCount++;
-                Debug.Log($"After increment: availableItemCount={availableItemCount}");
-                RefreshShopDisplay();
-                Debug.Log($"Purchase unlocked new item! Now {availableItemCount}/{totalItems} items available.");
-            }
-            else
-            {
-                Debug.Log("No more items to unlock!");
-            }
+            // Refresh all items to update affordability
+            RefreshShopDisplay();
 
             Debug.Log($"Successfully purchased {item.itemName} for {item.price} points!");
 
@@ -206,27 +164,19 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    // NEW: Show feedback for failed purchases
     private void ShowPurchaseFailedFeedback(string message)
     {
-        // Close the popup
         purchaseConfirmationPopup.SetActive(false);
-
-        // Simple feedback: Update popup text temporarily to show error
         StartCoroutine(ShowTemporaryMessage(message, Color.red));
     }
 
-    // NEW: Show feedback for successful purchases  
     private void ShowPurchaseSuccessFeedback(string message)
     {
-        // Simple feedback: Flash success message
         StartCoroutine(ShowTemporaryMessage(message, Color.green));
     }
 
-    // Helper to show temporary message
     private IEnumerator ShowTemporaryMessage(string message, Color color)
     {
-        // You could show this on the popup info text or create a dedicated feedback text
         if (popupItemInfo != null)
         {
             var originalText = popupItemInfo.text;
@@ -247,12 +197,10 @@ public class ShopManager : MonoBehaviour
         if (SessionManager.Instance == null || !SessionManager.Instance.HasActiveSession())
             return;
 
-        // Get purchased items from session
         var purchasedFoods = SessionManager.Instance.GetCurrentSession().purchasedFoodItems;
         var purchasedCharacters = SessionManager.Instance.GetCurrentSession().purchasedCharacters;
 
-        // Find all shop item controllers and update their purchased status
-        var shopItems = GetAllShopItems(); // Use our helper method
+        var shopItems = GetAllShopItems();
 
         foreach (var shopItem in shopItems)
             if (shopItem.itemType == ItemType.Food && purchasedFoods.Contains(shopItem.itemName))
@@ -263,119 +211,35 @@ public class ShopManager : MonoBehaviour
 
     private void UpdateScoreDisplay()
     {
-        if (playerScoreText != null) playerScoreText.text = $"EARNED: $ {playerScore}";
-    }
-
-    private void StartShopAnimation()
-    {
-        // Get the ShopPanel RectTransform
-        var panelRect = shopPanel.GetComponent<RectTransform>();
-
-        // Start position (off-screen left)
-        var startPos = new Vector2(-1284, 0);
-        var endPos = new Vector2(0, 0); // Center position
-
-        // Start the slide animation
-        StartCoroutine(SlidePanel(panelRect, startPos, endPos, slideAnimationDuration));
-    }
-
-    private IEnumerator SlidePanel(RectTransform panel, Vector2 start, Vector2 end, float duration)
-    {
-        var elapsed = 0f;
-
-        while (elapsed < duration)
+        if (playerScoreText != null)
         {
-            elapsed += Time.deltaTime;
-            var t = elapsed / duration;
-
-            // Smooth easing
-            t = Mathf.SmoothStep(0f, 1f, t);
-
-            // Lerp position
-            panel.anchoredPosition = Vector2.Lerp(start, end, t);
-
-            yield return null;
+            var currentScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : 0;
+            playerScoreText.text = $"EARNED: $ {currentScore:F2}";
         }
-
-        // Ensure final position
-        panel.anchoredPosition = end;
-    }
-
-    public void ShowPurchasePopup(ShopItemController item)
-    {
-        currentPurchaseItem = item;
-        var iconTransform = item.transform.Find("ItemIcon");
-        var iconImage = iconTransform.GetComponent<Image>();
-        popupItemIcon.sprite = iconImage.sprite;
-        var iconRect = iconTransform.GetComponent<RectTransform>();
-        var iconSize = iconRect.sizeDelta;
-
-        // Apply to popup icon
-        var popupIconRect = popupItemIcon.rectTransform;
-        popupIconRect.sizeDelta = iconSize;
-
-        if (popupItemInfo != null)
-        {
-            popupItemInfo.text = item.popupInfoText;
-            popupItemInfo.color = Color.white; // ← ADD THIS LINE to reset color
-        }
-
-        // Set button text with price
-        if (confirmPurchaseButton != null)
-        {
-            var buttonText = confirmPurchaseButton.GetComponentInChildren<TextMeshProUGUI>();
-            if (buttonText != null)
-                buttonText.text = item.purchaseButtonText;
-        }
-
-        // Show popup
-        purchaseConfirmationPopup.SetActive(true);
-    }
-
-    public void ConfirmPurchase()
-    {
-        if (currentPurchaseItem != null)
-        {
-            PurchaseItem(currentPurchaseItem);
-            purchaseConfirmationPopup.SetActive(false);
-            currentPurchaseItem = null;
-        }
-    }
-
-    public void CancelPurchase()
-    {
-        purchaseConfirmationPopup.SetActive(false);
-        currentPurchaseItem = null;
     }
 
     private void InitializeShop()
     {
-        if (SessionManager.Instance == null)
-            playerScore = 0;
-        else
-            playerScore = SessionManager.Instance.GetTotalScore();
-
-        // Update score display
+        // Update score display from session
         UpdateScoreDisplay();
 
-        // Show initial available items
+        // Show items and update affordability
         RefreshShopDisplay();
 
-        // Check which items are already purchased and update UI
+        // Check which items are already purchased
         UpdatePurchasedItemsUI();
 
-        // Update scroll button states after everything is set up
+        // Update scroll button states
         StartCoroutine(DelayedScrollButtonUpdate());
 
-        // Start the slide-in animation
+        // Start slide-in animation
         StartShopAnimation();
     }
 
-    // NEW: Delay scroll button update to ensure layout is complete
     private IEnumerator DelayedScrollButtonUpdate()
     {
         yield return new WaitForEndOfFrame();
-        UpdateScrollButtons(); // Changed from UpdateSimpleScrollButtons()
+        UpdateScrollButtons();
     }
 
     public void OnNextLevelClicked()
@@ -386,8 +250,6 @@ public class ShopManager : MonoBehaviour
     public void LoadNextGameLevel()
     {
         AudioManager.Instance.PlayGameplayMusic();
-
-
         SceneTransitionManager.Instance.TransitionToScene("GameSceneOne");
     }
 
@@ -401,7 +263,8 @@ public class ShopManager : MonoBehaviour
         if (itemContainer != null)
         {
             var itemContainerRect = itemContainer.GetComponent<RectTransform>();
-            if (itemContainerRect != null) StartCoroutine(SimpleScroll(itemContainerRect, -scrollAmount)); // Decrease Y
+            if (itemContainerRect != null)
+                StartCoroutine(SimpleScroll(itemContainerRect, -scrollAmount));
         }
     }
 
@@ -410,7 +273,8 @@ public class ShopManager : MonoBehaviour
         if (itemContainer != null)
         {
             var itemContainerRect = itemContainer.GetComponent<RectTransform>();
-            if (itemContainerRect != null) StartCoroutine(SimpleScroll(itemContainerRect, scrollAmount)); // Increase Y
+            if (itemContainerRect != null)
+                StartCoroutine(SimpleScroll(itemContainerRect, scrollAmount));
         }
     }
 
@@ -419,17 +283,14 @@ public class ShopManager : MonoBehaviour
         var startPos = containerRect.anchoredPosition;
         var targetPos = startPos + new Vector2(0, amount);
 
-        // Your exact boundary values
-        var topBoundary = -38f; // Y = -38 is top boundary
-        var bottomBoundary = 2000f; // Y = 2000 is bottom boundary
+        var topBoundary = -38f;
+        var bottomBoundary = 2000f;
 
-        // Clamp Y between boundaries
         targetPos.y = Mathf.Clamp(targetPos.y, topBoundary, bottomBoundary);
 
-        // Check if we're already at boundary (no movement needed)
-        if (Mathf.Abs(startPos.y - targetPos.y) < 1f) yield break;
+        if (Mathf.Abs(startPos.y - targetPos.y) < 1f)
+            yield break;
 
-        // Animate scroll
         var elapsed = 0f;
         while (elapsed < scrollDuration)
         {
@@ -453,17 +314,80 @@ public class ShopManager : MonoBehaviour
         if (containerRect == null) return;
 
         var currentY = containerRect.anchoredPosition.y;
-
-        // When Y = -38, disable up button, enable down button
-        // When Y > -38, enable up button
-        // When Y = 2000, disable down button
-
         var canScrollUp = currentY > -38f;
         var canScrollDown = currentY < 2000f;
 
-        // Update button states
-        if (scrollUpButton != null) scrollUpButton.interactable = canScrollUp;
+        if (scrollUpButton != null)
+            scrollUpButton.interactable = canScrollUp;
 
-        if (scrollDownButton != null) scrollDownButton.interactable = canScrollDown;
+        if (scrollDownButton != null)
+            scrollDownButton.interactable = canScrollDown;
+    }
+
+    private void StartShopAnimation()
+    {
+        var panelRect = shopPanel.GetComponent<RectTransform>();
+        var startPos = new Vector2(-1284, 0);
+        var endPos = new Vector2(0, 0);
+        StartCoroutine(SlidePanel(panelRect, startPos, endPos, slideAnimationDuration));
+    }
+
+    private IEnumerator SlidePanel(RectTransform panel, Vector2 start, Vector2 end, float duration)
+    {
+        var elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            var t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
+            panel.anchoredPosition = Vector2.Lerp(start, end, t);
+            yield return null;
+        }
+
+        panel.anchoredPosition = end;
+    }
+
+    public void ShowPurchasePopup(ShopItemController item)
+    {
+        currentPurchaseItem = item;
+
+        var iconTransform = item.transform.Find("ItemIcon");
+        var iconImage = iconTransform.GetComponent<Image>();
+        popupItemIcon.sprite = iconImage.sprite;
+
+        var iconRect = iconTransform.GetComponent<RectTransform>();
+        var popupIconRect = popupItemIcon.rectTransform;
+        popupIconRect.sizeDelta = iconRect.sizeDelta;
+
+        if (popupItemInfo != null)
+        {
+            popupItemInfo.text = item.popupInfoText;
+            popupItemInfo.color = Color.white;
+        }
+
+        if (confirmPurchaseButton != null)
+        {
+            var buttonText = confirmPurchaseButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (buttonText != null)
+                buttonText.text = item.purchaseButtonText;
+        }
+
+        purchaseConfirmationPopup.SetActive(true);
+    }
+
+    public void ConfirmPurchase()
+    {
+        if (currentPurchaseItem != null)
+        {
+            PurchaseItem(currentPurchaseItem);
+            purchaseConfirmationPopup.SetActive(false);
+            currentPurchaseItem = null;
+        }
+    }
+
+    public void CancelPurchase()
+    {
+        purchaseConfirmationPopup.SetActive(false);
+        currentPurchaseItem = null;
     }
 }

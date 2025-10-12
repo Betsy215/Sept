@@ -4,17 +4,18 @@ using TMPro;
 
 public class ShopItemController : MonoBehaviour
 {
-    [Header("Item Info")] public string itemName = "Bread";
+    [Header("Item Info")] 
+    public string itemName = "Bread";
     public int price = 50;
     public ItemType itemType = ItemType.Food;
 
-    [Header("Popup Display")] [TextArea(2, 4)]
+    [Header("Popup Display")] 
+    [TextArea(2, 4)]
     public string popupInfoText = "Fresh bread attracts more customers!";
-
     public string purchaseButtonText = "Buy for 50 Points";
 
-    [Header("State")] public bool isPurchased = false;
-    public bool isAvailable = true;
+    [Header("State")] 
+    public bool isPurchased = false;
 
     private ShopManager shopManager;
 
@@ -22,7 +23,7 @@ public class ShopItemController : MonoBehaviour
     {
         shopManager = FindObjectOfType<ShopManager>();
         SetupClickHandler();
-        UpdateVisualState();
+        UpdateVisualState(true); // Default to affordable on start
     }
 
     private void SetupClickHandler()
@@ -37,59 +38,52 @@ public class ShopItemController : MonoBehaviour
 
     private void OnItemClicked()
     {
-        if (shopManager != null && isAvailable && !isPurchased)
+        if (shopManager != null && !isPurchased)
+        {
             shopManager.ShowPurchasePopup(this);
-        else if (!isAvailable && !isPurchased) Debug.Log($"{itemName} is not yet available for purchase!");
-        // Could add visual feedback here (shake, sound, etc.)
+        }
     }
 
     public void MarkAsPurchased()
     {
         isPurchased = true;
-        UpdateVisualState();
+        UpdateVisualState(true);
     }
 
-    public void SetAvailable(bool available, bool canAfford = true)
+    // New simplified method - only takes canAfford parameter
+    public void UpdateAffordability(bool canAfford)
     {
-        if (!isPurchased) isAvailable = available;
         UpdateVisualState(canAfford);
     }
 
-    private void UpdateVisualState(bool canAfford = true)
+    private void UpdateVisualState(bool canAfford)
     {
-        // Get UI components
         var iconButton = transform.Find("ItemIcon")?.GetComponent<Button>();
         var iconImage = iconButton?.GetComponent<Image>();
 
         if (isPurchased)
         {
             // Item is purchased - show as owned (green and non-clickable)
-            if (iconButton != null) iconButton.interactable = false;
-            if (iconImage != null) iconImage.color = Color.green;
+            if (iconButton != null) 
+                iconButton.interactable = false;
+            if (iconImage != null) 
+                iconImage.color = Color.green;
         }
-        else if (isAvailable && canAfford)
+        else if (canAfford)
         {
-            // Item is available for purchase (white and clickable)
-            if (iconButton != null) iconButton.interactable = true;
-            if (iconImage != null) iconImage.color = Color.white;
-        }
-        else if (!canAfford)
-        {
-            // Item is not affordable - show as very transparent (only shape visible)
-            if (iconButton != null) iconButton.interactable = false;
-            if (iconImage != null) iconImage.color = new Color(0f, 0f, 0f, 0.8f);
+            // Item is affordable - show as available (white and clickable)
+            if (iconButton != null) 
+                iconButton.interactable = true;
+            if (iconImage != null) 
+                iconImage.color = Color.white;
         }
         else
         {
-            // Item is not yet available - show as locked (grey and non-clickable)
-            if (iconButton != null) iconButton.interactable = false;
-            if (iconImage != null) iconImage.color = new Color(0.5f, 0.5f, 0.5f, 1f); // Grey
+            // Item is not affordable - show as transparent (grey and non-clickable)
+            if (iconButton != null) 
+                iconButton.interactable = false;
+            if (iconImage != null) 
+                iconImage.color = new Color(0f, 0f, 0f, 0.8f);
         }
-    }
-
-    // Public method for ShopManager to update visual state
-    public void RefreshVisualState()
-    {
-        UpdateVisualState();
     }
 }
