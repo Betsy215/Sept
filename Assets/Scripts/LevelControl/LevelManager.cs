@@ -479,29 +479,40 @@ public class LevelManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         yield return StartCoroutine(AnimateFullTransfer(todayTip, totalEarned, "Tips: $ ", "Earned: $ ", tips,
             totalScore));
+
+        var isLastLevel = currentLevelIndex + 1 >= allLevels.Length;
+        if (isLastLevel)
+        {
+            yield return new WaitForSeconds(0.5f); // Small pause after animations
+            ShowFinalCompletionMessage();
+        }
+    }
+
+    private void ShowFinalCompletionMessage()
+    {
+        // Get total score from session
+        var totalScore = SessionManager.Instance.GetTotalScore();
+
+        // Override the text elements to show completion message
+        if (todaySale != null)
+            todaySale.text = "Congratulations!\nYou finished all levels!";
+
+        if (todayTip != null)
+            todayTip.text = ""; // Clear the tips text
+
+        if (totalEarned != null)
+            totalEarned.text = $"Total Earned: $ {totalScore:F2}";
+
+        Debug.Log($"🎉 All levels completed! Total score:\n{totalScore}");
     }
 
     private void SetupLevelCompleteButtons()
     {
-        if (nextLevelButton != null)
-        {
-            var hasMoreLevels = currentLevelIndex + 1 < allLevels.Length;
-            nextLevelButton.gameObject.SetActive(hasMoreLevels);
-            Debug.Log(
-                $"Next Level Button: {(hasMoreLevels ? "Shown" : "Hidden")} - Current: {currentLevelIndex + 1}, Total: {allLevels.Length}");
-        }
+        var isLastLevel = currentLevelIndex + 1 >= allLevels.Length;
 
-        if (levelCompleteMainMenuButton != null)
-        {
-            levelCompleteMainMenuButton.gameObject.SetActive(true);
-            Debug.Log("Level Complete Main Menu Button: Shown");
-        }
-
-        if (levelCompleteRestartButton != null)
-        {
-            levelCompleteRestartButton.gameObject.SetActive(true);
-            Debug.Log("Level Complete Restart Button: Shown");
-        }
+        if (nextLevelButton != null && !isLastLevel) nextLevelButton.gameObject.SetActive(true);
+        if (levelCompleteMainMenuButton != null && isLastLevel) levelCompleteMainMenuButton.gameObject.SetActive(true);
+        if (levelCompleteRestartButton != null && !isLastLevel) levelCompleteRestartButton.gameObject.SetActive(true);
     }
 
     public void LoadNextLevel()

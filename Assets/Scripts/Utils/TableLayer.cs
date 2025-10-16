@@ -3,85 +3,90 @@ using System.Collections.Generic;
 
 public class TableLayer : MonoBehaviour
 {
-    [Header("Table Visual")]
-    [Tooltip("The cloth/table sprite that will scale with screen size")]
+    [Header("Table Visual")] [Tooltip("The cloth/table sprite that will scale with screen size")]
     public SpriteRenderer tableClothSprite;
-    
-    [Header("Table Bounds")]
-    [Tooltip("Collider that defines the table area (for drag bounds)")]
+
+    [Header("Table Bounds")] [Tooltip("Collider that defines the table area (for drag bounds)")]
     public BoxCollider2D tableBounds;
-    
-    [Header("Responsive Settings")]
-    [Tooltip("Base reference resolution for scaling calculations")]
-    public Vector2 referenceResolution = new Vector2(1920, 1080);
-    
-    [Tooltip("How much the food items should scale relative to table scaling")]
-    [Range(0.5f, 2f)]
+
+    [Header("Responsive Settings")] [Tooltip("Base reference resolution for scaling calculations")]
+    public Vector2 referenceResolution = new(1920, 1080);
+
+    [Tooltip("How much the food items should scale relative to table scaling")] [Range(0.5f, 2f)]
     public float itemScaleMultiplier = 1f;
-    
-    [Header("References")]
-    [Tooltip("Reference to LevelManager to get active serveable items")]
+
+    [Header("References")] [Tooltip("Reference to LevelManager to get active serveable items")]
     public LevelManager levelManager;
-    
-    [Header("Debug")]
-    public bool showDebugInfo = true;
-    
+
+    [Tooltip("Main camera for calculating screen bounds")]
+    public Camera mainCamera;
+
+    [Header("Debug")] public bool showDebugInfo = true;
+
     // Private variables
     private Vector2 currentScreenSize;
     private Vector3 initialTableScale;
     private Vector3 initialTablePosition;
     private float uniformScaleFactor = 1f;
-    
-    // Store initial scales of food items (no position tracking needed for draggable items)
-    private Dictionary<Transform, Vector3> initialItemScales = new Dictionary<Transform, Vector3>();
 
-    void Start()
+    // Store initial scales of food items (no position tracking needed for draggable items)
+    private Dictionary<Transform, Vector3> initialItemScales = new();
+
+    private void Start()
     {
         Initialize();
     }
-    
-    void Initialize()
+
+    private void Initialize()
     {
+        // Auto-find main camera if not assigned
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+
         // Validation
         if (tableClothSprite == null)
         {
             Debug.LogError("TableLayer: tableClothSprite is not assigned!");
             return;
         }
-        
+
+        if (mainCamera == null)
+        {
+            Debug.LogError("TableLayer: mainCamera not found!");
+            return;
+        }
+
         // Store initial values
         currentScreenSize = new Vector2(Screen.width, Screen.height);
         initialTableScale = tableClothSprite.transform.localScale;
         initialTablePosition = tableClothSprite.transform.position;
-        
+
         // Calculate scaling once at start
         CalculateScaling();
-        
+
         // Setup table layout
         SetupTableLayout();
-        
+
         // Register food items and their initial positions
         RegisterFoodItems();
-        
+
         // Apply initial scaling
         ApplyScaling();
-        
+
         if (showDebugInfo)
-        {
             Debug.Log($"TableLayer initialized. Screen: {currentScreenSize}, Scale Factor: {uniformScaleFactor}");
-        }
     }
-    
-    void CalculateScaling()
+
+    private void CalculateScaling()
     {
         // Calculate scale factor based on screen area vs reference area
-        float screenArea = currentScreenSize.x * currentScreenSize.y;
-        float referenceArea = referenceResolution.x * referenceResolution.y;
-        
+        var screenArea = currentScreenSize.x * currentScreenSize.y;
+        var referenceArea = referenceResolution.x * referenceResolution.y;
+
         // Area ratio, then square root to get linear scale factor
-        float areaRatio = screenArea / referenceArea;
+        var areaRatio = screenArea / referenceArea;
         uniformScaleFactor = Mathf.Sqrt(areaRatio);
-        
+
         if (showDebugInfo)
         {
             Debug.Log($"Screen: {currentScreenSize} (Area: {screenArea:F0})");
@@ -89,110 +94,152 @@ public class TableLayer : MonoBehaviour
             Debug.Log($"Area Ratio: {areaRatio:F3}, Scale Factor: {uniformScaleFactor:F3}");
         }
     }
-    
-    void SetupTableLayout()
+
+    private void SetupTableLayout()
     {
-        
+        // NEW: Scale and position tablecloth
+        UpdateTableCloth();
+
         // Update bounds collider to match table size
         UpdateTableBounds();
     }
-    
-    void RegisterFoodItems()
+
+    // NEW METHOD: Scale tablecloth and anchor to bottom of screen
+    private void UpdateTableCloth()
+    {
+        if (tableClothSprite == null || mainCamera == null)
+            return;
+
+        // Apply uniform scale factor to tablecloth
+        var newScale = initialTableScale * uniformScaleFactor;
+        tableClothSprite.transform.localScale = newScale;
+
+        // Calculate camera bounds in world space
+        var cameraHeight = mainCamera.orthographicSize * 2f;
+        var cameraWidth = cameraHeight * mainCamera.aspect;
+        var cameraBottom = mainCamera.transform.position.y - mainCamera.orthographicSize;
+
+        // Get sprite bounds after scaling
+        var spriteBounds = tableClothSprite.sprite.bounds;
+        var spriteHeight = spriteBounds.size.y * newScale.y;
+        var spriteHalfHeight = spriteHeight / 2f;
+
+        // Position tablecloth so its bottom edge touches camera bottom
+        // Sprite pivot is typically at center, so we need to account for that
+        var newPosition = tableClothSprite.transform.position;
+        newPosition.y = cameraBottom + spriteHalfHeight;
+        tableClothSprite.transform.position = newPosition;
+
+        if (showDebugInfo)
+        {
+            Debug.Log($"TableCloth scaled to: {newScale}");
+            Debug.Log($"TableCloth positioned at Y: {newPosition.y}");
+            Debug.Log($"Camera bottom: {cameraBottom}, Sprite height: {spriteHeight}");
+        }
+    }
+
+    private void RegisterFoodItems()
     {
         // Clear existing data
         initialItemScales.Clear();
-        
+
         // Get ALL serveable items from LevelManager (not just active ones)
         if (levelManager != null)
         {
-            ServeableItem[] allItems = levelManager.serveableItems;
-            
-            foreach (ServeableItem item in allItems)
-            {
+            var allItems = levelManager.serveableItems;
+
+            foreach (var item in allItems)
                 if (item != null)
                 {
-                    Transform foodTransform = item.transform;
-                    
+                    var foodTransform = item.transform;
+
                     // Store initial scale for ALL items (regardless of active state)
                     initialItemScales[foodTransform] = foodTransform.localScale;
-                    
+
                     if (showDebugInfo)
                         Debug.Log($"Registered {item.GetFoodType()} with initial scale: {foodTransform.localScale}");
                 }
-            }
         }
         else
         {
             Debug.LogWarning("TableLayer: LevelManager reference not set! Cannot auto-register food items.");
         }
     }
-    
-    void ApplyScaling()
+
+    private void ApplyScaling()
     {
+        // NEW: Scale tablecloth first
+        UpdateTableCloth();
+
+        // Then scale food items
         UpdateFoodItems();
+
+        // Finally update bounds to match scaled tablecloth
         UpdateTableBounds();
     }
-    
-    void UpdateFoodItems()
+
+    private void UpdateFoodItems()
     {
         // Only scale items, don't move them (players can drag them wherever they want)
         foreach (var kvp in initialItemScales)
         {
-            Transform foodItem = kvp.Key;
-            Vector3 originalScale = kvp.Value;
-            
+            var foodItem = kvp.Key;
+            var originalScale = kvp.Value;
+
             if (foodItem == null) continue;
-            
+
             // Update scale only - position is controlled by player dragging
-            Vector3 newScale = originalScale * uniformScaleFactor * itemScaleMultiplier;
+            var newScale = originalScale * uniformScaleFactor * itemScaleMultiplier;
             foodItem.localScale = newScale;
         }
     }
-    
-    void UpdateTableBounds()
+
+    private void UpdateTableBounds()
     {
         if (tableBounds == null || tableClothSprite == null) return;
-        
+
         // Update bounds collider to match table sprite size
-        Bounds spriteBounds = tableClothSprite.bounds;
-        
+        var spriteBounds = tableClothSprite.bounds;
+
         tableBounds.transform.position = spriteBounds.center;
         tableBounds.size = new Vector2(spriteBounds.size.x, spriteBounds.size.y);
+
+        if (showDebugInfo) Debug.Log($"TableBounds updated - Center: {spriteBounds.center}, Size: {spriteBounds.size}");
     }
-    
+
     #region Public Methods for Food Item Management
-    
+
     /// <summary>
     /// Add a new food item to the table scaling system
     /// </summary>
     public void AddFoodItem(Transform foodItem)
     {
         if (foodItem == null) return;
-        
+
         // Store initial scale only
         initialItemScales[foodItem] = foodItem.localScale;
-        
+
         // Apply current scaling to the new item
-        Vector3 newScale = foodItem.localScale * uniformScaleFactor * itemScaleMultiplier;
+        var newScale = foodItem.localScale * uniformScaleFactor * itemScaleMultiplier;
         foodItem.localScale = newScale;
-        
+
         if (showDebugInfo)
             Debug.Log($"Added {foodItem.name} to table scaling system");
     }
-    
+
     /// <summary>
     /// Remove a food item from the table scaling system
     /// </summary>
     public void RemoveFoodItem(Transform foodItem)
     {
         if (foodItem == null) return;
-        
+
         initialItemScales.Remove(foodItem);
-        
+
         if (showDebugInfo)
             Debug.Log($"Removed {foodItem.name} from table scaling system");
     }
-    
+
     /// <summary>
     /// Check if a world position is within the table bounds
     /// </summary>
@@ -201,22 +248,22 @@ public class TableLayer : MonoBehaviour
         if (tableBounds == null) return false;
         return tableBounds.bounds.Contains(worldPosition);
     }
-    
+
     /// <summary>
     /// Clamp a position to stay within table bounds
     /// </summary>
     public Vector3 ClampToTableBounds(Vector3 worldPosition)
     {
         if (tableBounds == null) return worldPosition;
-        
-        Bounds bounds = tableBounds.bounds;
+
+        var bounds = tableBounds.bounds;
         return new Vector3(
             Mathf.Clamp(worldPosition.x, bounds.min.x, bounds.max.x),
             Mathf.Clamp(worldPosition.y, bounds.min.y, bounds.max.y),
             worldPosition.z
         );
     }
-    
+
     /// <summary>
     /// Update a food item's scale after it's been added dynamically
     /// </summary>
@@ -224,11 +271,11 @@ public class TableLayer : MonoBehaviour
     {
         if (initialItemScales.ContainsKey(foodItem))
         {
-            Vector3 newScale = initialItemScales[foodItem] * uniformScaleFactor * itemScaleMultiplier;
+            var newScale = initialItemScales[foodItem] * uniformScaleFactor * itemScaleMultiplier;
             foodItem.localScale = newScale;
         }
     }
-    
+
     /// <summary>
     /// Force recalculate scaling (useful when switching scenes)
     /// </summary>
@@ -238,30 +285,37 @@ public class TableLayer : MonoBehaviour
         CalculateScaling();
         SetupTableLayout();
         ApplyScaling();
-        
+
         if (showDebugInfo)
             Debug.Log("TableLayer scaling recalculated manually");
     }
-    
+
     #endregion
-    
-    void OnDrawGizmos()
+
+    private void OnDrawGizmos()
     {
         if (showDebugInfo && tableBounds != null)
         {
             // Draw table bounds
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(tableBounds.bounds.center, tableBounds.bounds.size);
-            
+
             // Draw food item positions (where they currently are after dragging)
             Gizmos.color = Color.red;
             foreach (var kvp in initialItemScales)
             {
-                Transform foodItem = kvp.Key;
-                if (foodItem != null)
-                {
-                    Gizmos.DrawWireSphere(foodItem.position, 0.1f);
-                }
+                var foodItem = kvp.Key;
+                if (foodItem != null) Gizmos.DrawWireSphere(foodItem.position, 0.1f);
+            }
+
+            // Draw camera bounds for reference
+            if (mainCamera != null)
+            {
+                Gizmos.color = Color.blue;
+                var height = mainCamera.orthographicSize * 2f;
+                var width = height * mainCamera.aspect;
+                var cameraPos = mainCamera.transform.position;
+                Gizmos.DrawWireCube(cameraPos, new Vector3(width, height, 0));
             }
         }
     }
