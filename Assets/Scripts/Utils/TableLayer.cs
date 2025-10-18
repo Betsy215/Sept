@@ -9,6 +9,11 @@ public class TableLayer : MonoBehaviour
     [Header("Table Bounds")] [Tooltip("Collider that defines the table area (for drag bounds)")]
     public BoxCollider2D tableBounds;
 
+    [Header("Table Coverage Settings")]
+    [Tooltip("What percentage of the screen height should the tablecloth cover from bottom")]
+    [Range(0.3f, 1f)]
+    public float screenCoveragePercent = 0.45f; // Cover 45% of screen from bottom
+
     [Header("Responsive Settings")] [Tooltip("Base reference resolution for scaling calculations")]
     public Vector2 referenceResolution = new(1920, 1080);
 
@@ -97,44 +102,57 @@ public class TableLayer : MonoBehaviour
 
     private void SetupTableLayout()
     {
-        // NEW: Scale and position tablecloth
+        // Scale and position tablecloth
         UpdateTableCloth();
 
         // Update bounds collider to match table size
         UpdateTableBounds();
     }
 
-    // NEW METHOD: Scale tablecloth and anchor to bottom of screen
+    // Scale tablecloth to cover bottom percentage of screen (no padding)
     private void UpdateTableCloth()
     {
         if (tableClothSprite == null || mainCamera == null)
             return;
 
-        // Apply uniform scale factor to tablecloth
-        var newScale = initialTableScale * uniformScaleFactor;
-        tableClothSprite.transform.localScale = newScale;
-
-        // Calculate camera bounds in world space
+        // Calculate world space screen dimensions
         var cameraHeight = mainCamera.orthographicSize * 2f;
         var cameraWidth = cameraHeight * mainCamera.aspect;
-        var cameraBottom = mainCamera.transform.position.y - mainCamera.orthographicSize;
 
-        // Get sprite bounds after scaling
+        // Calculate desired coverage dimensions (no padding)
+        var targetWidth = cameraWidth;
+        var targetHeight = cameraHeight * screenCoveragePercent;
+
+        // Calculate required scale based on original sprite size
         var spriteBounds = tableClothSprite.sprite.bounds;
-        var spriteHeight = spriteBounds.size.y * newScale.y;
-        var spriteHalfHeight = spriteHeight / 2f;
+        var originalSpriteHeight = spriteBounds.size.y;
+        var originalSpriteWidth = spriteBounds.size.x;
 
-        // Position tablecloth so its bottom edge touches camera bottom
-        // Sprite pivot is typically at center, so we need to account for that
+        // Calculate scales needed to achieve target dimensions
+        var requiredScaleY = targetHeight / originalSpriteHeight;
+        var requiredScaleX = targetWidth / originalSpriteWidth;
+
+        // Apply the scale
+        var newScale = new Vector3(requiredScaleX, requiredScaleY, 1f);
+        tableClothSprite.transform.localScale = newScale;
+
+        // Position tablecloth at bottom of screen
+        var cameraBottom = mainCamera.transform.position.y - mainCamera.orthographicSize;
+        var scaledSpriteHeight = originalSpriteHeight * requiredScaleY;
+        var spriteHalfHeight = scaledSpriteHeight / 2f;
+
+        // Position so it covers from bottom up
         var newPosition = tableClothSprite.transform.position;
         newPosition.y = cameraBottom + spriteHalfHeight;
         tableClothSprite.transform.position = newPosition;
 
         if (showDebugInfo)
         {
-            Debug.Log($"TableCloth scaled to: {newScale}");
-            Debug.Log($"TableCloth positioned at Y: {newPosition.y}");
-            Debug.Log($"Camera bottom: {cameraBottom}, Sprite height: {spriteHeight}");
+            Debug.Log($"Screen dimensions: {cameraWidth:F2} x {cameraHeight:F2}");
+            Debug.Log($"Target dimensions: {targetWidth:F2} x {targetHeight:F2} (no padding)");
+            Debug.Log($"Coverage: {screenCoveragePercent * 100}% = {targetHeight:F2} units");
+            Debug.Log($"TableCloth scale: {newScale}");
+            Debug.Log($"TableCloth position Y: {newPosition.y:F2}");
         }
     }
 
@@ -168,7 +186,7 @@ public class TableLayer : MonoBehaviour
 
     private void ApplyScaling()
     {
-        // NEW: Scale tablecloth first
+        // Scale tablecloth first
         UpdateTableCloth();
 
         // Then scale food items
@@ -198,13 +216,14 @@ public class TableLayer : MonoBehaviour
     {
         if (tableBounds == null || tableClothSprite == null) return;
 
-        // Update bounds collider to match table sprite size
+        // Make bounds exactly match tablecloth size
         var spriteBounds = tableClothSprite.bounds;
 
         tableBounds.transform.position = spriteBounds.center;
         tableBounds.size = new Vector2(spriteBounds.size.x, spriteBounds.size.y);
 
-        if (showDebugInfo) Debug.Log($"TableBounds updated - Center: {spriteBounds.center}, Size: {spriteBounds.size}");
+        if (showDebugInfo)
+            Debug.Log($"TableBounds updated - Center: {spriteBounds.center}, Size: {spriteBounds.size}");
     }
 
     #region Public Methods for Food Item Management
@@ -219,12 +238,12 @@ public class TableLayer : MonoBehaviour
         // Store initial scale only
         initialItemScales[foodItem] = foodItem.localScale;
 
-        // Apply current scaling to the new item
+        // Apply current scaling immediately
         var newScale = foodItem.localScale * uniformScaleFactor * itemScaleMultiplier;
         foodItem.localScale = newScale;
 
         if (showDebugInfo)
-            Debug.Log($"Added {foodItem.name} to table scaling system");
+            Debug.Log($"Added food item: {foodItem.name} with scale: {newScale}");
     }
 
     /// <summary>
@@ -232,12 +251,25 @@ public class TableLayer : MonoBehaviour
     /// </summary>
     public void RemoveFoodItem(Transform foodItem)
     {
-        if (foodItem == null) return;
+        if (foodItem != null && initialItemScales.ContainsKey(foodItem))
+        {
+            initialItemScales.Remove(foodItem);
 
-        initialItemScales.Remove(foodItem);
+            if (showDebugInfo)
+                Debug.Log($"Removed food item: {foodItem.name}");
+        }
+    }
 
-        if (showDebugInfo)
-            Debug.Log($"Removed {foodItem.name} from table scaling system");
+    /// <summary>
+    /// Update scale for a specific food item (useful for dynamic items)
+    /// </summary>
+    public void UpdateFoodItemScale(Transform foodItem)
+    {
+        if (foodItem == null || !initialItemScales.ContainsKey(foodItem))
+            return;
+
+        var newScale = initialItemScales[foodItem] * uniformScaleFactor * itemScaleMultiplier;
+        foodItem.localScale = newScale;
     }
 
     /// <summary>
@@ -265,18 +297,6 @@ public class TableLayer : MonoBehaviour
     }
 
     /// <summary>
-    /// Update a food item's scale after it's been added dynamically
-    /// </summary>
-    public void UpdateFoodItemScale(Transform foodItem)
-    {
-        if (initialItemScales.ContainsKey(foodItem))
-        {
-            var newScale = initialItemScales[foodItem] * uniformScaleFactor * itemScaleMultiplier;
-            foodItem.localScale = newScale;
-        }
-    }
-
-    /// <summary>
     /// Force recalculate scaling (useful when switching scenes)
     /// </summary>
     public void RecalculateScaling()
@@ -294,28 +314,37 @@ public class TableLayer : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (showDebugInfo && tableBounds != null)
+        if (showDebugInfo && mainCamera != null)
         {
-            // Draw table bounds
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireCube(tableBounds.bounds.center, tableBounds.bounds.size);
+            // Draw camera bounds for reference
+            Gizmos.color = Color.blue;
+            var height = mainCamera.orthographicSize * 2f;
+            var width = height * mainCamera.aspect;
+            var cameraPos = mainCamera.transform.position;
+            Gizmos.DrawWireCube(cameraPos, new Vector3(width, height, 0));
 
-            // Draw food item positions (where they currently are after dragging)
+            // Draw tablecloth coverage area
+            if (tableClothSprite != null)
+            {
+                Gizmos.color = Color.yellow;
+                var tableBounds = tableClothSprite.bounds;
+                Gizmos.DrawWireCube(tableBounds.center, tableBounds.size);
+            }
+
+            // Draw table bounds (should match tablecloth)
+            if (tableBounds != null)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireCube(tableBounds.bounds.center, tableBounds.bounds.size);
+            }
+
+            // Draw food item positions
             Gizmos.color = Color.red;
             foreach (var kvp in initialItemScales)
             {
                 var foodItem = kvp.Key;
-                if (foodItem != null) Gizmos.DrawWireSphere(foodItem.position, 0.1f);
-            }
-
-            // Draw camera bounds for reference
-            if (mainCamera != null)
-            {
-                Gizmos.color = Color.blue;
-                var height = mainCamera.orthographicSize * 2f;
-                var width = height * mainCamera.aspect;
-                var cameraPos = mainCamera.transform.position;
-                Gizmos.DrawWireCube(cameraPos, new Vector3(width, height, 0));
+                if (foodItem != null)
+                    Gizmos.DrawWireSphere(foodItem.position, 0.1f);
             }
         }
     }

@@ -83,7 +83,7 @@ public class GamePhaseManager : MonoBehaviour
 
     // Add this to your GamePhaseManager.cs
 
-// Replace these methods in your existing GamePhaseManager.cs
+    // Replace these methods in your existing GamePhaseManager.cs
 
     private void EnableArrangementMode()
     {
