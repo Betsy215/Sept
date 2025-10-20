@@ -14,27 +14,19 @@ public class TableLayer : MonoBehaviour
     [Range(0.3f, 1f)]
     public float screenCoveragePercent = 0.45f; // Cover 45% of screen from bottom
 
-    [Header("Responsive Settings")] [Tooltip("Base reference resolution for scaling calculations")]
-    public Vector2 referenceResolution = new(1920, 1080);
-
-    [Tooltip("How much the food items should scale relative to table scaling")] [Range(0.5f, 2f)]
-    public float itemScaleMultiplier = 1f;
-
     [Header("References")] [Tooltip("Reference to LevelManager to get active serveable items")]
     public LevelManager levelManager;
 
-    [Tooltip("Main camera for calculating screen bounds")]
+    [Tooltip("Main camera for world space conversion")]
     public Camera mainCamera;
 
     [Header("Debug")] public bool showDebugInfo = true;
 
     // Private variables
-    private Vector2 currentScreenSize;
     private Vector3 initialTableScale;
     private Vector3 initialTablePosition;
-    private float uniformScaleFactor = 1f;
 
-    // Store initial scales of food items (no position tracking needed for draggable items)
+    // Store initial scales for reference only - NO SCALING APPLIED
     private Dictionary<Transform, Vector3> initialItemScales = new();
 
     private void Start()
@@ -62,73 +54,48 @@ public class TableLayer : MonoBehaviour
         }
 
         // Store initial values
-        currentScreenSize = new Vector2(Screen.width, Screen.height);
         initialTableScale = tableClothSprite.transform.localScale;
         initialTablePosition = tableClothSprite.transform.position;
-
-        // Calculate scaling once at start
-        CalculateScaling();
 
         // Setup table layout
         SetupTableLayout();
 
-        // Register food items and their initial positions
+        // Register food items (NO SCALING)
         RegisterFoodItems();
 
-        // Apply initial scaling
-        ApplyScaling();
-
         if (showDebugInfo)
-            Debug.Log($"TableLayer initialized. Screen: {currentScreenSize}, Scale Factor: {uniformScaleFactor}");
-    }
-
-    private void CalculateScaling()
-    {
-        // Calculate scale factor based on screen area vs reference area
-        var screenArea = currentScreenSize.x * currentScreenSize.y;
-        var referenceArea = referenceResolution.x * referenceResolution.y;
-
-        // Area ratio, then square root to get linear scale factor
-        var areaRatio = screenArea / referenceArea;
-        uniformScaleFactor = Mathf.Sqrt(areaRatio);
-
-        if (showDebugInfo)
-        {
-            Debug.Log($"Screen: {currentScreenSize} (Area: {screenArea:F0})");
-            Debug.Log($"Reference: {referenceResolution} (Area: {referenceArea:F0})");
-            Debug.Log($"Area Ratio: {areaRatio:F3}, Scale Factor: {uniformScaleFactor:F3}");
-        }
+            Debug.Log($"TableLayer initialized. Screen: {Screen.width}x{Screen.height}");
     }
 
     private void SetupTableLayout()
     {
-        // Scale and position tablecloth
+        // Scale and position tablecloth to exact screen dimensions
         UpdateTableCloth();
 
-        // Update bounds collider to match table size
+        // Update bounds collider to match table size exactly
         UpdateTableBounds();
     }
 
-    // Scale tablecloth to cover bottom percentage of screen (no padding)
+    // Simple version that was working - no safe area calculations
     private void UpdateTableCloth()
     {
         if (tableClothSprite == null || mainCamera == null)
             return;
 
-        // Calculate world space screen dimensions
-        var cameraHeight = mainCamera.orthographicSize * 2f;
-        var cameraWidth = cameraHeight * mainCamera.aspect;
+        // Get screen dimensions in world space
+        var screenHeight = mainCamera.orthographicSize * 2f;
+        var screenWidth = screenHeight * mainCamera.aspect;
 
-        // Calculate desired coverage dimensions (no padding)
-        var targetWidth = cameraWidth;
-        var targetHeight = cameraHeight * screenCoveragePercent;
+        // Target dimensions: exact screen width, percentage of screen height
+        var targetWidth = screenWidth;
+        var targetHeight = screenHeight * screenCoveragePercent;
 
         // Calculate required scale based on original sprite size
         var spriteBounds = tableClothSprite.sprite.bounds;
         var originalSpriteHeight = spriteBounds.size.y;
         var originalSpriteWidth = spriteBounds.size.x;
 
-        // Calculate scales needed to achieve target dimensions
+        // Calculate scales to achieve target dimensions
         var requiredScaleY = targetHeight / originalSpriteHeight;
         var requiredScaleX = targetWidth / originalSpriteWidth;
 
@@ -136,23 +103,24 @@ public class TableLayer : MonoBehaviour
         var newScale = new Vector3(requiredScaleX, requiredScaleY, 1f);
         tableClothSprite.transform.localScale = newScale;
 
-        // Position tablecloth at bottom of screen
-        var cameraBottom = mainCamera.transform.position.y - mainCamera.orthographicSize;
+        // Position tablecloth so bottom edge touches screen bottom
+        var screenBottom = mainCamera.transform.position.y - mainCamera.orthographicSize;
         var scaledSpriteHeight = originalSpriteHeight * requiredScaleY;
         var spriteHalfHeight = scaledSpriteHeight / 2f;
 
-        // Position so it covers from bottom up
+        // Position sprite center so bottom edge is at screen bottom
         var newPosition = tableClothSprite.transform.position;
-        newPosition.y = cameraBottom + spriteHalfHeight;
+        newPosition.x = mainCamera.transform.position.x; // Center horizontally
+        newPosition.y = screenBottom + spriteHalfHeight;
         tableClothSprite.transform.position = newPosition;
 
         if (showDebugInfo)
         {
-            Debug.Log($"Screen dimensions: {cameraWidth:F2} x {cameraHeight:F2}");
-            Debug.Log($"Target dimensions: {targetWidth:F2} x {targetHeight:F2} (no padding)");
-            Debug.Log($"Coverage: {screenCoveragePercent * 100}% = {targetHeight:F2} units");
+            Debug.Log($"Screen dimensions: {screenWidth:F2} x {screenHeight:F2}");
+            Debug.Log($"Target dimensions: {targetWidth:F2} x {targetHeight:F2}");
+            Debug.Log($"Coverage: {screenCoveragePercent * 100}% height");
             Debug.Log($"TableCloth scale: {newScale}");
-            Debug.Log($"TableCloth position Y: {newPosition.y:F2}");
+            Debug.Log($"TableCloth bottom edge: {newPosition.y - spriteHalfHeight:F2}");
         }
     }
 
@@ -161,7 +129,7 @@ public class TableLayer : MonoBehaviour
         // Clear existing data
         initialItemScales.Clear();
 
-        // Get ALL serveable items from LevelManager (not just active ones)
+        // Get ALL serveable items from LevelManager
         if (levelManager != null)
         {
             var allItems = levelManager.serveableItems;
@@ -171,83 +139,60 @@ public class TableLayer : MonoBehaviour
                 {
                     var foodTransform = item.transform;
 
-                    // Store initial scale for ALL items (regardless of active state)
+                    // Store initial scale for REFERENCE ONLY - DON'T SCALE
                     initialItemScales[foodTransform] = foodTransform.localScale;
 
                     if (showDebugInfo)
-                        Debug.Log($"Registered {item.GetFoodType()} with initial scale: {foodTransform.localScale}");
+                        Debug.Log($"Registered {item.GetFoodType()} - NO SCALING APPLIED");
                 }
         }
         else
         {
-            Debug.LogWarning("TableLayer: LevelManager reference not set! Cannot auto-register food items.");
-        }
-    }
-
-    private void ApplyScaling()
-    {
-        // Scale tablecloth first
-        UpdateTableCloth();
-
-        // Then scale food items
-        UpdateFoodItems();
-
-        // Finally update bounds to match scaled tablecloth
-        UpdateTableBounds();
-    }
-
-    private void UpdateFoodItems()
-    {
-        // Only scale items, don't move them (players can drag them wherever they want)
-        foreach (var kvp in initialItemScales)
-        {
-            var foodItem = kvp.Key;
-            var originalScale = kvp.Value;
-
-            if (foodItem == null) continue;
-
-            // Update scale only - position is controlled by player dragging
-            var newScale = originalScale * uniformScaleFactor * itemScaleMultiplier;
-            foodItem.localScale = newScale;
+            Debug.LogWarning("TableLayer: LevelManager reference not set!");
         }
     }
 
     private void UpdateTableBounds()
     {
-        if (tableBounds == null || tableClothSprite == null) return;
+        if (tableBounds == null || tableClothSprite == null || mainCamera == null) return;
 
-        // Make bounds exactly match tablecloth size
-        var spriteBounds = tableClothSprite.bounds;
+        // Calculate bounds using SAME logic as tablecloth (not sprite bounds)
+        var screenHeight = mainCamera.orthographicSize * 2f;
+        var screenWidth = screenHeight * mainCamera.aspect;
 
-        tableBounds.transform.position = spriteBounds.center;
-        tableBounds.size = new Vector2(spriteBounds.size.x, spriteBounds.size.y);
+        // Use EXACT same dimensions as tablecloth
+        var boundsWidth = screenWidth;
+        var boundsHeight = screenHeight * screenCoveragePercent;
+
+        // Position bounds at same location as tablecloth
+        tableBounds.transform.position = tableClothSprite.transform.position;
+        tableBounds.size = new Vector2(boundsWidth, boundsHeight);
 
         if (showDebugInfo)
-            Debug.Log($"TableBounds updated - Center: {spriteBounds.center}, Size: {spriteBounds.size}");
+        {
+            Debug.Log($"TableBounds size: {boundsWidth:F2} x {boundsHeight:F2}");
+            Debug.Log($"TableBounds matches tablecloth exactly");
+        }
     }
 
     #region Public Methods for Food Item Management
 
     /// <summary>
-    /// Add a new food item to the table scaling system
+    /// Add a new food item to the table system (NO SCALING)
     /// </summary>
     public void AddFoodItem(Transform foodItem)
     {
         if (foodItem == null) return;
 
-        // Store initial scale only
+        // Store initial scale for reference only - NO SCALING
         initialItemScales[foodItem] = foodItem.localScale;
 
-        // Apply current scaling immediately
-        var newScale = foodItem.localScale * uniformScaleFactor * itemScaleMultiplier;
-        foodItem.localScale = newScale;
-
         if (showDebugInfo)
-            Debug.Log($"Added food item: {foodItem.name} with scale: {newScale}");
+            Debug.Log($"Added food item: {foodItem.name} - NO SCALING APPLIED");
     }
 
     /// <summary>
-    /// Remove a food item from the table scaling system
+    /// Remove a food item from the table system
     /// </summary>
     public void RemoveFoodItem(Transform foodItem)
     {
@@ -258,18 +203,6 @@ public class TableLayer : MonoBehaviour
             if (showDebugInfo)
                 Debug.Log($"Removed food item: {foodItem.name}");
         }
-    }
-
-    /// <summary>
-    /// Update scale for a specific food item (useful for dynamic items)
-    /// </summary>
-    public void UpdateFoodItemScale(Transform foodItem)
-    {
-        if (foodItem == null || !initialItemScales.ContainsKey(foodItem))
-            return;
-
-        var newScale = initialItemScales[foodItem] * uniformScaleFactor * itemScaleMultiplier;
-        foodItem.localScale = newScale;
     }
 
     /// <summary>
@@ -297,17 +230,14 @@ public class TableLayer : MonoBehaviour
     }
 
     /// <summary>
-    /// Force recalculate scaling (useful when switching scenes)
+    /// Force recalculate table layout
     /// </summary>
     public void RecalculateScaling()
     {
-        currentScreenSize = new Vector2(Screen.width, Screen.height);
-        CalculateScaling();
         SetupTableLayout();
-        ApplyScaling();
 
         if (showDebugInfo)
-            Debug.Log("TableLayer scaling recalculated manually");
+            Debug.Log("TableLayer recalculated");
     }
 
     #endregion
@@ -316,14 +246,14 @@ public class TableLayer : MonoBehaviour
     {
         if (showDebugInfo && mainCamera != null)
         {
-            // Draw camera bounds for reference
+            // Draw screen bounds for reference (blue)
             Gizmos.color = Color.blue;
             var height = mainCamera.orthographicSize * 2f;
             var width = height * mainCamera.aspect;
             var cameraPos = mainCamera.transform.position;
             Gizmos.DrawWireCube(cameraPos, new Vector3(width, height, 0));
 
-            // Draw tablecloth coverage area
+            // Draw tablecloth (yellow)
             if (tableClothSprite != null)
             {
                 Gizmos.color = Color.yellow;
@@ -331,14 +261,14 @@ public class TableLayer : MonoBehaviour
                 Gizmos.DrawWireCube(tableBounds.center, tableBounds.size);
             }
 
-            // Draw table bounds (should match tablecloth)
+            // Draw table bounds (green) - should match tablecloth exactly
             if (tableBounds != null)
             {
                 Gizmos.color = Color.green;
                 Gizmos.DrawWireCube(tableBounds.bounds.center, tableBounds.bounds.size);
             }
 
-            // Draw food item positions
+            // Draw food item positions (red)
             Gizmos.color = Color.red;
             foreach (var kvp in initialItemScales)
             {
