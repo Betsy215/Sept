@@ -9,6 +9,9 @@ public class TableLayer : MonoBehaviour
     [Header("Table Bounds")] [Tooltip("Collider that defines the table area (for drag bounds)")]
     public BoxCollider2D tableBounds;
 
+    [Tooltip("Padding between table bounds and tablecloth edges (in world units)")] [Range(0f, 1f)]
+    public float tableBoundsPadding = 0.3f;
+
     [Header("Table Coverage Settings")]
     [Tooltip("What percentage of the screen height should the tablecloth cover from bottom")]
     [Range(0.3f, 1f)]
@@ -156,23 +159,20 @@ public class TableLayer : MonoBehaviour
     {
         if (tableBounds == null || tableClothSprite == null || mainCamera == null) return;
 
-        // Calculate bounds using SAME logic as tablecloth (not sprite bounds)
+        // Calculate tablecloth dimensions using SAME logic as tablecloth
         var screenHeight = mainCamera.orthographicSize * 2f;
         var screenWidth = screenHeight * mainCamera.aspect;
 
-        // Use EXACT same dimensions as tablecloth
-        var boundsWidth = screenWidth;
-        var boundsHeight = screenHeight * screenCoveragePercent;
+        var tableclothWidth = screenWidth;
+        var tableclothHeight = screenHeight * screenCoveragePercent;
+
+        // Apply padding to create smaller bounds (safe zone)
+        var boundsWidth = tableclothWidth - tableBoundsPadding * 2f; // Subtract padding from both sides
+        var boundsHeight = tableclothHeight - tableBoundsPadding * 2f; // Subtract padding from top and bottom
 
         // Position bounds at same location as tablecloth
         tableBounds.transform.position = tableClothSprite.transform.position;
         tableBounds.size = new Vector2(boundsWidth, boundsHeight);
-
-        if (showDebugInfo)
-        {
-            Debug.Log($"TableBounds size: {boundsWidth:F2} x {boundsHeight:F2}");
-            Debug.Log($"TableBounds matches tablecloth exactly");
-        }
     }
 
     #region Public Methods for Food Item Management
