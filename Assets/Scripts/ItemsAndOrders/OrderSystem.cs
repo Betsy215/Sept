@@ -226,16 +226,16 @@ public class OrderSystem : MonoBehaviour
         var orderSize = Random.Range(minOrderItems, maxOrderItems + 1);
         currentOrderItems.Clear();
 
-        // Make sure we don't exceed available food types
-        orderSize = Mathf.Min(orderSize, activeFoodTypes.Count);
+        // REMOVED: Allow duplicate food items in orders
+        // orderSize = Mathf.Min(orderSize, activeFoodTypes.Count);
 
         for (var i = 0; i < orderSize; i++)
         {
-            // Select random food type
+            // Select random food type (can be duplicate)
             var randomFood = activeFoodTypes[Random.Range(0, activeFoodTypes.Count)];
 
-            // Create order item instance
-            CreateOrderItemInstance(randomFood, i);
+            // FIXED: Pass the total orderSize to prevent incremental count bug
+            CreateOrderItemInstance(randomFood, i, orderSize);
         }
 
         DisplayOrder();
@@ -243,7 +243,8 @@ public class OrderSystem : MonoBehaviour
         Debug.Log($"New order generated with {currentOrderItems.Count} items");
     }
 
-    private void CreateOrderItemInstance(string foodType, int index)
+
+    private void CreateOrderItemInstance(string foodType, int index, int totalOrderSize)
     {
         // Find the matching food item
         var orderItem = System.Array.Find(availableFoods, item =>
@@ -251,8 +252,8 @@ public class OrderSystem : MonoBehaviour
 
         if (orderItem != null && orderItem.displayPrefab != null)
         {
-            // Calculate position for this item
-            var itemPosition = CalculateOrderItemPosition(index);
+            // FIXED: Pass the intended total order size instead of using incremental count
+            var itemPosition = CalculateOrderItemPosition(index, totalOrderSize);
 
             // Create the display item
             var displayItem = Instantiate(orderItem.displayPrefab, orderContainer);
@@ -270,10 +271,8 @@ public class OrderSystem : MonoBehaviour
         }
     }
 
-    private Vector3 CalculateOrderItemPosition(int index)
+    private Vector3 CalculateOrderItemPosition(int index, int totalItems)
     {
-        var totalItems = currentOrderItems.Count;
-
         // For 1-2 items: Use single column layout
         if (totalItems <= 2)
         {
@@ -286,11 +285,11 @@ public class OrderSystem : MonoBehaviour
         {
             // TWO COLUMN LAYOUT: Calculate 2x2 grid positions using itemSpacing
             // Grid positions:
-            // [0] [1]
-            // [2] [3]
+            // [0] [2]
+            // [1] [3]
 
-            var row = index / 2; // Row: 0 for items 0,1 and 1 for items 2,3
-            var col = index % 2; // Column: 0 for items 0,2 and 1 for items 1,3
+            var row = index % 2; // Row: 0 for items 0,2 and 1 for items 1,3
+            var col = index / 2; // Column: 0 for items 0,1 and 1 for items 2,3
 
             // Calculate position using itemSpacing for both horizontal and vertical spacing
             var x = twoColumnStartPosition.x + col * itemSpacing;
