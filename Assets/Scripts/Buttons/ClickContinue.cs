@@ -12,61 +12,57 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     public AudioClip _compressClip, _uncompressClip;
     public AudioSource _source;
     public string _sceneName;
-    
-    [Header("Button State")]
-    public bool checkSessionOnStart = true; // Auto-disable if no session
-    
-    void Start()
+
+    private void Start()
     {
-        if (checkSessionOnStart)
-        {
-            UpdateButtonState();
-        }
+        UpdateButtonState();
     }
-    
-    void UpdateButtonState()
+
+    private void OnEnable()
     {
-        // Check if there's an active session
-        bool hasActiveSession = false;
-        
-        if (SessionManager.Instance != null)
-        {
-            hasActiveSession = SessionManager.Instance.HasActiveSession();
-        }
-        else
-        {
-            // Check PlayerPrefs directly if SessionManager doesn't exist yet
-            hasActiveSession = PlayerPrefs.HasKey("FoodTruckSession");
-        }
-        
-        // Enable/disable button based on session availability
-        Button button = GetComponent<Button>();
-        if (button != null)
-        {
-            button.interactable = hasActiveSession;
-        }
-        
-        // Optional: Change visual appearance when disabled
-        if (!hasActiveSession && _img != null)
-        {
-            Color disabledColor = Color.gray;
-            disabledColor.a = 0.5f;
-            _img.color = disabledColor;
-        }
-        else if (_img != null)
-        {
-            _img.color = Color.white;
-        }
-        
-        Debug.Log($"Continue button: {(hasActiveSession ? "ENABLED" : "DISABLED")} - Has session: {hasActiveSession}");
+        // Check button state when returning to main menu
+        Invoke("UpdateButtonState", 0.1f);
     }
-    
+
+    private void UpdateButtonState()
+    {
+        var canContinue = false;
+
+        if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
+        {
+            var session = SessionManager.Instance.GetCurrentSession();
+            if (session != null)
+                // Enable continue only if player finished at least 1 level
+                canContinue = session.levelsCompleted >= 1;
+        }
+
+        // Enable/disable button
+        var button = GetComponent<Button>();
+        if (button != null) button.interactable = canContinue;
+
+        // Update visual appearance
+        if (_img != null)
+        {
+            if (canContinue)
+            {
+                _img.color = Color.white;
+            }
+            else
+            {
+                var disabledColor = Color.gray;
+                disabledColor.a = 0.5f;
+                _img.color = disabledColor;
+            }
+        }
+
+        Debug.Log($"Continue button: {(canContinue ? "ENABLED" : "DISABLED")}");
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
-        // Only respond if button is interactable
-        Button button = GetComponent<Button>();
+        var button = GetComponent<Button>();
         if (button != null && !button.interactable) return;
-        
+
         _img.sprite = _pressed;
         if (_source != null && _compressClip != null)
             _source.PlayOneShot(_compressClip);
@@ -74,28 +70,28 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        // Only respond if button is interactable
-        Button button = GetComponent<Button>();
+        var button = GetComponent<Button>();
         if (button != null && !button.interactable) return;
-        
+
         _img.sprite = _default;
         if (_source != null && _uncompressClip != null)
             _source.PlayOneShot(_uncompressClip);
-            
+
         StartCoroutine(WaitForDelay(2));
     }
-    
-    IEnumerator WaitForDelay(float delayTime)
+
+    private IEnumerator WaitForDelay(float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
 
-       
-
-            GameObject sessionManagerGO = new GameObject("SessionManager");
+        // Ensure SessionManager exists
+        if (SessionManager.Instance == null)
+        {
+            var sessionManagerGO = new GameObject("SessionManager");
             sessionManagerGO.AddComponent<SessionManager>();
-        
-        
-        // Continue existing session or start new if none exists
+        }
+
+        // Continue session
         if (SessionManager.Instance.HasActiveSession())
         {
             Debug.Log("ClickContinue: Continuing existing session...");
@@ -107,19 +103,9 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             SessionManager.Instance.StartNewSession();
         }
 
-        // NEW: Stop main menu music before loading game scene
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.StopMusic();
-            Debug.Log("ClickContinue: Stopped main menu music before loading game");
-        }
+        // Stop main menu music
+        if (AudioManager.Instance != null) AudioManager.Instance.StopMusic();
 
         SceneTransitionManager.Instance.TransitionToScene(_sceneName);
-    }
-    
-    // Public method to refresh button state (useful if called from other scripts)
-    public void RefreshButtonState()
-    {
-        UpdateButtonState();
     }
 }
