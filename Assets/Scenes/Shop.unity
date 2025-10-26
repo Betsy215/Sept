@@ -1514,7 +1514,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 742415409}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
   m_Name: 
@@ -2602,7 +2602,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7923891422100210688, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Name
-      value: Toad
+      value: Granma
       objectReference: {fileID: 0}
     - target: {fileID: 8201218472030623872, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_SizeDelta.x

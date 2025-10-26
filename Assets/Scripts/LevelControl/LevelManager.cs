@@ -82,8 +82,7 @@ public class LevelManager : MonoBehaviour
         SetupPauseUI();
         SetupSessionEvents();
 
-        // Start gameplay music
-        StartGameplayMusic();
+        // REMOVED: StartGameplayMusic(); - Music now handled by phase transitions
     }
 
     private void EnsureAudioManagerExists()
@@ -242,8 +241,15 @@ public class LevelManager : MonoBehaviour
         if (popupCanvas != null && !IsAnyPopupActive())
             popupCanvas.SetActive(false);
 
+        // UPDATED: Resume appropriate music based on current game phase
         if (AudioManager.Instance != null)
-            AudioManager.Instance.PlayGameplayMusic();
+        {
+            // Check if orders are active to determine if we're in gameplay phase
+            if (orderSystem != null && orderSystem.IsOrderActive())
+                StartGameplayMusic();
+            else
+                StartArrangementMusic();
+        }
 
         Debug.Log("Game resumed");
     }
@@ -280,8 +286,9 @@ public class LevelManager : MonoBehaviour
             Debug.Log($"RestartLevel: Reset session to level {currentLevelIndex}");
         }
 
+        // UPDATED: Stop existing music - let the restart handle music properly
         if (AudioManager.Instance != null)
-            AudioManager.Instance.PlayGameplayMusic();
+            AudioManager.Instance.StopMusic();
 
         SceneTransitionManager.Instance.TransitionToScene(SceneManager.GetActiveScene().name);
     }
@@ -405,10 +412,27 @@ public class LevelManager : MonoBehaviour
     {
         gamePhaseManager.StartArrangementPhase();
         scoreManager.ResetScore();
+        StartArrangementMusic(); // NEW: Start arrangement music when level starts
+    }
+
+    // NEW: Method to start arrangement music
+    private void StartArrangementMusic()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayArrangementMusic();
+    }
+
+    // EXISTING: Method to start gameplay music (now uses playlist)
+    private void StartGameplayMusic()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayGameplayMusic();
     }
 
     public void StartGamePlay()
     {
+        StartGameplayMusic(); // NEW: Transition to gameplay music when gameplay starts
+
         if (orderSystem != null)
         {
             // Determine flow type and start appropriately
@@ -503,7 +527,7 @@ public class LevelManager : MonoBehaviour
         if (totalEarned != null)
             totalEarned.text = $"Total Earned: $ {totalScore:F2}";
 
-        Debug.Log($"🎉 All levels completed! Total score:\n{totalScore}");
+        Debug.Log($"🎉 All levels completed! Total score: {totalScore}");
     }
 
     private void SetupLevelCompleteButtons()
@@ -545,12 +569,6 @@ public class LevelManager : MonoBehaviour
         isPaused = false;
 
         SceneTransitionManager.Instance.TransitionToScene(mainMenuSceneName);
-    }
-
-    private void StartGameplayMusic()
-    {
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlayGameplayMusic();
     }
 
     private void OnSessionCompleted()

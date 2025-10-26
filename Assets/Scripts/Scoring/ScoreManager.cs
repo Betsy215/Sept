@@ -292,18 +292,16 @@ public class ScoreManager : MonoBehaviour
         return pointsPerItem;
     }
 
-    // UPDATED: Helper method to add score and update session total immediately
     private void AddScore(float points)
     {
         // Add to level score (for star progress and level completion)
         currentScore += points;
 
-        // IMMEDIATELY add to session total score
-        if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
-            SessionManager.Instance.AddScoreImmediately(points);
+        // Remove this line - don't add to session total during gameplay
+        // SessionManager.Instance.AddScoreImmediately(points);
 
-        UpdateScoreUI(); // This will now show the updated level score
-        starProgressBar.UpdateDisplay(currentScore); // Star progress uses level score
+        UpdateScoreUI();
+        starProgressBar.UpdateDisplay(currentScore);
     }
 
     // Helper method to show feedback text

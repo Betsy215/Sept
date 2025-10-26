@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7599815499784295780}
   - component: {fileID: -1553348195026608517}
   - component: {fileID: -6185369822500061835}
-  - component: {fileID: -7655600882293471894}
+  - component: {fileID: 1433252652188703250}
   m_Layer: 0
   m_Name: Kid
   m_TagString: Untagged
@@ -108,7 +108,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-7655600882293471894
+--- !u!114 &1433252652188703250
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -117,25 +117,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 7264733269058083822}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7bb43ae4abb54aff92b5716d50983a92, type: 3}
+  m_Script: {fileID: 11500000, guid: 8c8c5b515ade4d0f820d2aa7ca09cac4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkInAnimationState: Sad_Toad_Walking
-  waitingAnimationState: Sad_Toad_Walking
-  perfectReactionState: Perfect_Order
-  happyWalkOutState: happy_walking
-  sadWalkOutState: Sad_Walking
   fallbackWalkInDuration: 2
   servicePointDelay: 1
   walkOutPauseDelay: 0.3
-  animationDetectionTimeout: 5
-  sadWalkDistance: 5
-  sadWalkDuration: 3
-  sadSpriteRenderer: {fileID: -1553348195026608517}
-  happySpriteRenderer: {fileID: 8089881781666668468}
-  toadPatienceLevel: 5
-  toadOrderDelay: 1
-  toadPreferredFoods:
+  sadSpriteRenderer: {fileID: 0}
+  happySpriteRenderer: {fileID: 0}
+  girlPatienceLevel: 5
+  girlOrderDelay: 1
+  girlPreferredFoods:
   - Burger
   - Fries
 --- !u!1 &8488520408386371444

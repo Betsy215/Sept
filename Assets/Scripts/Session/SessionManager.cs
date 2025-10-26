@@ -227,36 +227,15 @@ public class SessionManager : MonoBehaviour
         }
     }
 
-    // NEW: Method to immediately add points to session total (called during gameplay)
-    public void AddScoreImmediately(float points)
-    {
-        if (currentSession != null && currentSession.isActive)
-        {
-            currentSession.totalScore += points;
-            SaveSession(); // Save immediately to persist progress
 
-            Debug.Log($"Added {points} points immediately. New session total: {currentSession.totalScore}");
-
-            // Notify UI of score change
-            OnTotalScoreChanged?.Invoke(currentSession.totalScore);
-        }
-    }
-
-    // UPDATED: Modified to avoid double-adding scores
     public void AddLevelScore(float levelScore)
     {
-        // This method is now called only at level completion for summary/logging
-        // The actual score addition happens immediately during gameplay via AddScoreImmediately()
-
         if (currentSession != null && currentSession.isActive)
         {
-            // Don't add to total score here anymore - it's already been added immediately
-            // Just save the session to ensure persistence
+            // Now actually add the level score to session total
+            currentSession.totalScore += levelScore;
             SaveSession();
 
-            Debug.Log($"Level completed with score: {levelScore}. Session total: {currentSession.totalScore}");
-
-            // Still notify UI in case it needs updating
             OnTotalScoreChanged?.Invoke(currentSession.totalScore);
         }
     }

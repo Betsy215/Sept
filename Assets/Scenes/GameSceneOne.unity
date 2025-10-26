@@ -697,7 +697,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &278268116
 Transform:
   m_ObjectHideFlags: 0
@@ -1315,7 +1315,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &593318281
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1654,9 +1654,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customerPrefabs:
-  - {fileID: -7655600882293471894, guid: 480e6c6abf9c641ceb659ed07c359013, type: 3}
   - {fileID: 6078073404647016362, guid: d3f41be60a84743a28fa235f67a87645, type: 3}
   - {fileID: 7080979575534249089, guid: 071e0c6af32264758a61a2e46f2e0a47, type: 3}
+  - {fileID: 1433252652188703250, guid: fb454bab6cd6a42f68df7fe3aa93d33b, type: 3}
+  - {fileID: 5264646542919529082, guid: 480e6c6abf9c641ceb659ed07c359013, type: 3}
   spawnPoint: {fileID: 1787719493}
   orderSystem: {fileID: 1998227852}
   levelManager: {fileID: 905501929}
@@ -1898,7 +1899,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &792063514
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2001,7 +2002,7 @@ Transform:
   m_GameObject: {fileID: 792063513}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.732, y: -3.3247, z: 0}
+  m_LocalPosition: {x: 2, y: -3, z: 0}
   m_LocalScale: {x: 0.28133902, y: 0.28621984, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3433,7 +3434,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &1342687400
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3767,19 +3768,19 @@ MonoBehaviour:
   timeBonusMultiplier: 10
   itemPoints:
   - itemType: Bread
-    points: 30
-  - itemType: Apple
     points: 20
+  - itemType: Apple
+    points: 15
   - itemType: Juice
-    points: 50
+    points: 30
   - itemType: Melon
-    points: 80
+    points: 35
   - itemType: Pie
-    points: 100
+    points: 40
   - itemType: Mb
-    points: 180
+    points: 45
   - itemType: Log
-    points: 300
+    points: 50
   enableScorePopups: 1
   gameCanvas: {fileID: 1907019807}
   popupFont: {fileID: 11400000, guid: 0361640937a4447a09258110a454af31, type: 2}
@@ -4069,7 +4070,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1581722772
 SpriteRenderer:
   m_ObjectHideFlags: 0
