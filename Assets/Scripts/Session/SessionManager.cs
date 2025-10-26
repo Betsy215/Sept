@@ -240,6 +240,16 @@ public class SessionManager : MonoBehaviour
         }
     }
 
+    public void AddScoreImmediately(float points)
+    {
+        if (currentSession != null && currentSession.isActive)
+        {
+            currentSession.totalScore += points;
+            SaveSession();
+            OnTotalScoreChanged?.Invoke(currentSession.totalScore);
+        }
+    }
+
     public void OnLevelCompleted(int levelIndex)
     {
         if (currentSession != null && currentSession.isActive)

@@ -466,7 +466,7 @@ public class LevelManager : MonoBehaviour
         var levelScore = scoreManager.GetCurrentScore();
         var totalBefore = SessionManager.Instance.GetTotalScore();
 
-        SessionManager.Instance.AddLevelScore(levelScore);
+        //    SessionManager.Instance.AddLevelScore(levelScore);
         SessionManager.Instance.OnLevelCompleted(currentLevelIndex);
 
         var totalAfter = SessionManager.Instance.GetTotalScore();

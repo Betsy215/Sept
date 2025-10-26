@@ -130,36 +130,37 @@ public class ScoreManager : MonoBehaviour
     }
 
 
-    // UPDATED: Called when an individual item is served correctly - NO POPUP
     public void AwardItemPoints(string itemType)
     {
         var points = GetPointsForItem(itemType);
 
-        // Add to running totals
-        AddScore(points);
-        currentOrderItemPoints += points; // Track for this order
+        currentScore += points;
+        currentOrderItemPoints += points; // Accumulate but don't add to session yet
 
+        starProgressBar.UpdateDisplay(currentScore);
         PlayPointsSound();
     }
 
-    // UPDATED: Called when an order is completed - shows combined popup
     public void AwardOrderCompletionBonus(float remainingTime, float basepoints)
     {
-        // Calculate time bonus
         var timeBonusPoints = remainingTime * timeBonusMultiplier;
         var tipRaw = basepoints * timeBonusPoints / 100f;
         var tip = (float)Math.Round(tipRaw, 2, MidpointRounding.AwayFromZero);
         totalTipsEarned += tip;
 
-        AddScore(tip);
+        currentScore += tip;
 
+        // ADD ALL POINTS TO SESSION NOW
+        var totalPoints = currentOrderItemPoints + tip;
+        if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
+            SessionManager.Instance.AddScoreImmediately(totalPoints);
 
-        // Show ONE combined popup with item points + time bonus
+        UpdateScoreUI(); // Score display updates here
+        starProgressBar.UpdateDisplay(currentScore);
+
         StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints, tip));
-
         PlayBonusSound();
 
-        // Reset for next order
         currentOrderItemPoints = 0;
     }
 
@@ -178,20 +179,26 @@ public class ScoreManager : MonoBehaviour
         ShowScorePopup(itemPoints, timeBonus);
     }
 
-    // SIMPLIFIED: Called when an order expires - no penalties, just feedback
     public void ApplyOrderExpiredPenalty()
     {
+        // FIX: Still award points earned before expiration
         if (currentOrderItemPoints > 0)
-            // Use existing delayed popup method with 0 bonus
-            StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints, 0f)); // 0f = no bonus
-        // Only provide feedback - no score penalties
+        {
+            // Add accumulated points to session
+            if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
+                SessionManager.Instance.AddScoreImmediately(currentOrderItemPoints);
+
+            UpdateScoreUI(); // Update score display
+
+            // Show popup with earned points (no bonus)
+            StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints, 0f));
+        }
+
         ShowFeedback("Order Expired!", Color.red);
         PlayPenaltySound();
 
-        // Reset current order tracking since order is over
         currentOrderItemPoints = 0;
-
-        Debug.Log("Order expired - no score penalty applied");
+        Debug.Log("Order expired - awarded points for items served");
     }
 
     // UPDATED: Show level score instead of session total score
@@ -274,11 +281,6 @@ public class ScoreManager : MonoBehaviour
         Debug.Log("ScoreManager: Level ended");
     }
 
-    // NEW: Method to check if popup is currently visible
-    public bool IsPopupVisible()
-    {
-        return SimpleScorePopup.HasActivePopup();
-    }
 
     // Helper method to get points for specific item types
     private int GetPointsForItem(string itemType)
@@ -294,11 +296,11 @@ public class ScoreManager : MonoBehaviour
 
     private void AddScore(float points)
     {
-        // Add to level score (for star progress and level completion)
         currentScore += points;
 
-        // Remove this line - don't add to session total during gameplay
-        // SessionManager.Instance.AddScoreImmediately(points);
+        // UNCOMMENT THIS LINE:
+        if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
+            SessionManager.Instance.AddScoreImmediately(points);
 
         UpdateScoreUI();
         starProgressBar.UpdateDisplay(currentScore);

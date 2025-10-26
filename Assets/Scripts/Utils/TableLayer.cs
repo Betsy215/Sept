@@ -159,20 +159,36 @@ public class TableLayer : MonoBehaviour
     {
         if (tableBounds == null || tableClothSprite == null || mainCamera == null) return;
 
-        // Calculate tablecloth dimensions using SAME logic as tablecloth
+        // Keep tablecloth dimensions as-is for visual reference
         var screenHeight = mainCamera.orthographicSize * 2f;
         var screenWidth = screenHeight * mainCamera.aspect;
-
-        var tableclothWidth = screenWidth;
         var tableclothHeight = screenHeight * screenCoveragePercent;
 
-        // Apply padding to create smaller bounds (safe zone)
-        var boundsWidth = tableclothWidth - tableBoundsPadding * 2f; // Subtract padding from both sides
-        var boundsHeight = tableclothHeight - tableBoundsPadding * 2f; // Subtract padding from top and bottom
+        // SAFE AREA CALCULATION FOR BOUNDS
+        // Get Unity's safe area (handles notches, gestures automatically)
+        var safeArea = Screen.safeArea;
+        var safeWidthRatio = safeArea.width / Screen.width;
+        var safeHeightRatio = safeArea.height / Screen.height;
 
-        // Position bounds at same location as tablecloth
+        // Calculate safe bounds dimensions
+        var safeBoundsWidth = screenWidth * safeWidthRatio;
+        var safeBoundsHeight = tableclothHeight * safeHeightRatio;
+
+        // Add additional padding for comfort (your existing padding)
+        var boundsWidth = safeBoundsWidth - tableBoundsPadding * 2f;
+        var boundsHeight = safeBoundsHeight - tableBoundsPadding * 2f;
+
+        // Position bounds at same location as tablecloth (centered)
         tableBounds.transform.position = tableClothSprite.transform.position;
         tableBounds.size = new Vector2(boundsWidth, boundsHeight);
+
+        if (showDebugInfo)
+        {
+            Debug.Log($"Screen safe area: {safeArea}");
+            Debug.Log($"Safe width ratio: {safeWidthRatio:F3}, Safe height ratio: {safeHeightRatio:F3}");
+            Debug.Log($"Tablecloth size: {screenWidth:F2} x {tableclothHeight:F2} (visual)");
+            Debug.Log($"Bounds size: {boundsWidth:F2} x {boundsHeight:F2} (interactive)");
+        }
     }
 
     #region Public Methods for Food Item Management
