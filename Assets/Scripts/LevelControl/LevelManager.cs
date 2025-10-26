@@ -494,7 +494,7 @@ public class LevelManager : MonoBehaviour
         var todayScore = scoreManager.GetCurrentScore();
         todaySale.text = $"Today Sale: $ {todayScore:F2}";
         var totalScore = SessionManager.Instance.GetTotalScore();
-        totalEarned.text = $"Earned: $ {totalScore:F2}";
+        totalEarned.text = $"Earned: $ 0.00";
 
         SetupLevelCompleteButtons();
         yield return new WaitForSeconds(1f);
@@ -519,13 +519,13 @@ public class LevelManager : MonoBehaviour
 
         // Override the text elements to show completion message
         if (todaySale != null)
-            todaySale.text = "Congratulations!\nYou finished all levels!";
+            todaySale.text = "\nCongrats!\nYou finished all levels!";
 
         if (todayTip != null)
             todayTip.text = ""; // Clear the tips text
 
         if (totalEarned != null)
-            totalEarned.text = $"Total Earned: $ {totalScore:F2}";
+            totalEarned.text = $"Total Earned: \n$ {totalScore:F2}";
 
         Debug.Log($"🎉 All levels completed! Total score: {totalScore}");
     }

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -54,16 +55,22 @@ public class GamePhaseManager : MonoBehaviour
         DebugLog("=== ARRANGEMENT PHASE STARTED ===");
 
         tutorialPanel.SetActive(true);
-
-        LoadSavedFoodPositions(); // Now handles smart positioning
-
-        // Enable dragging on all food items
+        LoadSavedFoodPositions();
         EnableArrangementMode();
-
-        // Disable gameplay systems
         DisableGameplaySystems();
-
         arrangmentUI.gameObject.SetActive(true);
+
+        // ✅ ADD THIS LINE: Initial button state check
+        StartCoroutine(DelayedButtonStateUpdate());
+    }
+
+// ✅ ADD THIS METHOD: Delayed initial check
+    private IEnumerator DelayedButtonStateUpdate()
+    {
+        // Wait for draggable components to fully initialize
+        yield return new WaitForSeconds(0.2f);
+        UpdateDoneButtonState();
+        DebugLog("Initial done button state updated");
     }
 
     public void StartPlayPhase()

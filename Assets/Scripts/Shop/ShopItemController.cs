@@ -4,18 +4,16 @@ using TMPro;
 
 public class ShopItemController : MonoBehaviour
 {
-    [Header("Item Info")] 
-    public string itemName = "Bread";
-    public int price = 50;
-    public ItemType itemType = ItemType.Food;
+    [Header("Item Info")] public string itemName;
+    public int price;
+    public ItemType itemType;
 
-    [Header("Popup Display")] 
-    [TextArea(2, 4)]
+    [Header("Popup Display")] [TextArea(2, 4)]
     public string popupInfoText = "Fresh bread attracts more customers!";
+
     public string purchaseButtonText = "Buy for 50 Points";
 
-    [Header("State")] 
-    public bool isPurchased = false;
+    [Header("State")] public bool isPurchased = false;
 
     private ShopManager shopManager;
 
@@ -38,10 +36,7 @@ public class ShopItemController : MonoBehaviour
 
     private void OnItemClicked()
     {
-        if (shopManager != null && !isPurchased)
-        {
-            shopManager.ShowPurchasePopup(this);
-        }
+        if (shopManager != null && !isPurchased) shopManager.ShowPurchasePopup(this);
     }
 
     public void MarkAsPurchased()
@@ -64,25 +59,25 @@ public class ShopItemController : MonoBehaviour
         if (isPurchased)
         {
             // Item is purchased - show as owned (green and non-clickable)
-            if (iconButton != null) 
+            if (iconButton != null)
                 iconButton.interactable = false;
-            if (iconImage != null) 
+            if (iconImage != null)
                 iconImage.color = Color.green;
         }
         else if (canAfford)
         {
             // Item is affordable - show as available (white and clickable)
-            if (iconButton != null) 
+            if (iconButton != null)
                 iconButton.interactable = true;
-            if (iconImage != null) 
+            if (iconImage != null)
                 iconImage.color = Color.white;
         }
         else
         {
             // Item is not affordable - show as transparent (grey and non-clickable)
-            if (iconButton != null) 
+            if (iconButton != null)
                 iconButton.interactable = false;
-            if (iconImage != null) 
+            if (iconImage != null)
                 iconImage.color = new Color(0f, 0f, 0f, 0.8f);
         }
     }

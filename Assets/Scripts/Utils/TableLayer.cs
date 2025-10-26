@@ -178,8 +178,11 @@ public class TableLayer : MonoBehaviour
         var boundsWidth = safeBoundsWidth - tableBoundsPadding * 2f;
         var boundsHeight = safeBoundsHeight - tableBoundsPadding * 2f;
 
-        // Position bounds at same location as tablecloth (centered)
-        tableBounds.transform.position = tableClothSprite.transform.position;
+        // Position bounds to align top edges
+        var boundsPosition = tableClothSprite.transform.position;
+        boundsPosition.y += (tableClothSprite.bounds.size.y - boundsHeight) / 2f; // Align top edges
+
+        tableBounds.transform.position = boundsPosition;
         tableBounds.size = new Vector2(boundsWidth, boundsHeight);
 
         if (showDebugInfo)
@@ -188,6 +191,7 @@ public class TableLayer : MonoBehaviour
             Debug.Log($"Safe width ratio: {safeWidthRatio:F3}, Safe height ratio: {safeHeightRatio:F3}");
             Debug.Log($"Tablecloth size: {screenWidth:F2} x {tableclothHeight:F2} (visual)");
             Debug.Log($"Bounds size: {boundsWidth:F2} x {boundsHeight:F2} (interactive)");
+            Debug.Log($"Top edges aligned: Tablecloth and bounds both at Y = {tableClothSprite.bounds.max.y:F2}");
         }
     }
 
