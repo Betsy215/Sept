@@ -1985,7 +1985,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6fc7fc24e8f47b79e69a5e11358a2af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodType: Log
+  foodType: Log Cake
   orderSystem: {fileID: 1998227852}
   popupCanvas: {fileID: 0}
   useAudioManager: 1
@@ -3522,7 +3522,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6fc7fc24e8f47b79e69a5e11358a2af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodType: Mb
+  foodType: Mont Blanc
   orderSystem: {fileID: 1998227852}
   popupCanvas: {fileID: 0}
   useAudioManager: 1
@@ -3779,9 +3779,9 @@ MonoBehaviour:
     points: 35
   - itemType: Pie
     points: 40
-  - itemType: Mb
+  - itemType: Mont Blanc
     points: 45
-  - itemType: Log
+  - itemType: Log Cake
     points: 50
   enableScorePopups: 1
   gameCanvas: {fileID: 1907019807}
@@ -5436,9 +5436,9 @@ MonoBehaviour:
     displayPrefab: {fileID: 7967219586748323803, guid: 90183fe8ad12a4166924a80c36de4969, type: 3}
   - foodType: Apple
     displayPrefab: {fileID: 7967219586748323803, guid: 8a33db967f0924e1c945fc1069904b24, type: 3}
-  - foodType: Mb
+  - foodType: Mont Blanc
     displayPrefab: {fileID: 8878342301148696013, guid: 67f9cc9b04c56489382f79c5197e5002, type: 3}
-  - foodType: Log
+  - foodType: Log Cake
     displayPrefab: {fileID: 8878342301148696013, guid: 70a4e3e8df2f449e09e0160fbe154de5, type: 3}
   itemSpacing: 1
   singleColumnStartPosition: {x: -0.55, y: 1.3, z: 0}
