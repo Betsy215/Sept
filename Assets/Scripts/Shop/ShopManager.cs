@@ -15,6 +15,7 @@ public class ShopManager : MonoBehaviour
     public Button mainMenuButton;
     public TextMeshProUGUI playerScoreText;
 
+
     [Header("Animation")] public float slideAnimationDuration = 1f;
 
     [Header("Scroll Controls")] public Button scrollUpButton;

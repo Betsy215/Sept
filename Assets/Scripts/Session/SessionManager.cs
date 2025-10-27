@@ -15,6 +15,7 @@ public class SessionData
     public List<string> purchasedFoodItems;
     public List<string> purchasedCharacters;
 
+
     [Serializable]
     public class FoodItemPosition
     {
@@ -58,6 +59,12 @@ public class SessionManager : MonoBehaviour
     private ScoreManager scoreManager;
 
     [SerializeField] private LevelManager levelManager;
+
+    [Header("Shop Configuration")] [Tooltip("Total number of food items available in the shop")]
+    public int totalFoodItems = 4;
+
+    [Tooltip("Total number of characters available in the shop")]
+    public int totalCharacters = 2;
 
     // Session data
     private SessionData currentSession;
@@ -248,6 +255,21 @@ public class SessionManager : MonoBehaviour
             SaveSession();
             OnTotalScoreChanged?.Invoke(currentSession.totalScore);
         }
+    }
+
+    public (int unpurchasedFood, int unpurchasedCharacters) GetUnpurchasedItemsCount()
+    {
+        if (currentSession == null) return (0, 0);
+
+        // Count purchased items
+        var purchasedFoodCount = currentSession.purchasedFoodItems?.Count ?? 0;
+        var purchasedCharacterCount = currentSession.purchasedCharacters?.Count ?? 0;
+
+        // Calculate unpurchased counts
+        var unpurchasedFood = Mathf.Max(0, totalFoodItems - purchasedFoodCount);
+        var unpurchasedCharacters = Mathf.Max(0, totalCharacters - purchasedCharacterCount);
+
+        return (unpurchasedFood, unpurchasedCharacters);
     }
 
     public void OnLevelCompleted(int levelIndex)

@@ -446,6 +446,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreManager: {fileID: 0}
   levelManager: {fileID: 0}
+  totalFoodItems: 7
+  totalCharacters: 4
 --- !u!1 &1101794723
 GameObject:
   m_ObjectHideFlags: 0
@@ -940,7 +942,6 @@ MonoBehaviour:
   _uncompressClip: {fileID: 8300000, guid: 19f89c6e740e7447f9e12a8310d3e973, type: 3}
   _source: {fileID: 1455117238}
   _sceneName: GameSceneOne
-  checkSessionOnStart: 1
 --- !u!1 &1745903063
 GameObject:
   m_ObjectHideFlags: 0

@@ -37,6 +37,7 @@ public class LevelManager : MonoBehaviour
     public Button resumeButton;
     public Button pauseRestartButton;
     public Button pauseMainMenuButton;
+    public TextMeshProUGUI unlockedItemsText;
 
     [Header("Audio Setup")] public GameObject audioManagerPrefab;
 
@@ -497,6 +498,7 @@ public class LevelManager : MonoBehaviour
         totalEarned.text = $"Earned: $ 0.00";
 
         SetupLevelCompleteButtons();
+        UpdateUnlockedItemsDisplay();
         yield return new WaitForSeconds(1f);
         yield return StartCoroutine(AnimateFullTransfer(todaySale, totalEarned, "Order Sale: $ ", "Earned: $ ",
             todayScore, totalScore));
@@ -525,8 +527,8 @@ public class LevelManager : MonoBehaviour
             todayTip.text = ""; // Clear the tips text
 
         if (totalEarned != null)
-            totalEarned.text = $"Total Earned: \n$ {totalScore:F2}";
-
+            totalEarned.text = $"Unlocked items : ";
+        UpdateUnlockedItemsDisplay();
         Debug.Log($"🎉 All levels completed! Total score: {totalScore}");
 
         // FIX: Mark session as completed when all levels are finished
@@ -535,6 +537,28 @@ public class LevelManager : MonoBehaviour
             SessionManager.Instance.CompleteSession();
             Debug.Log("Session marked as completed - Continue button should now be disabled");
         }
+    }
+
+    private void UpdateUnlockedItemsDisplay()
+    {
+        if (unlockedItemsText == null) return;
+
+        if (SessionManager.Instance == null || !SessionManager.Instance.HasActiveSession())
+        {
+            // No session, show zeros
+            unlockedItemsText.text = "";
+            return;
+        }
+
+        // Get purchased counts (which are the "unlocked" items)
+        var session = SessionManager.Instance.GetCurrentSession();
+        var unlockedFood = session.purchasedFoodItems?.Count ?? 0;
+        var unlockedCustomers = session.purchasedCharacters?.Count ?? 0;
+
+        // Update single UI element
+        unlockedItemsText.text = $"Unlocked Food: {unlockedFood}\nUnlocked Customers: {unlockedCustomers}";
+
+        Debug.Log($"Level Complete: Showing unlocked food: {unlockedFood}, customers: {unlockedCustomers}");
     }
 
     private void SetupLevelCompleteButtons()
