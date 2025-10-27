@@ -3243,7 +3243,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -1, y: -326}
+  m_AnchoredPosition: {x: -1, y: -450}
   m_SizeDelta: {x: 1000, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1322818013
@@ -3774,17 +3774,17 @@ MonoBehaviour:
   - itemType: Bread
     points: 20
   - itemType: Apple
-    points: 15
+    points: 25
   - itemType: Juice
-    points: 30
+    points: 25
   - itemType: Melon
-    points: 35
+    points: 30
   - itemType: Pie
-    points: 40
+    points: 35
   - itemType: Mont Blanc
-    points: 45
+    points: 40
   - itemType: Log Cake
-    points: 50
+    points: 45
   enableScorePopups: 1
   gameCanvas: {fileID: 1907019807}
   popupFont: {fileID: 11400000, guid: 0361640937a4447a09258110a454af31, type: 2}
