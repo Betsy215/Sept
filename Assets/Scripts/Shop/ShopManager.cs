@@ -33,9 +33,21 @@ public class ShopManager : MonoBehaviour
 
     private void Start()
     {
-        InitializeShop();
-        AudioManager.Instance.PlayShopMusic();
         SetupButtonListeners();
+        AudioManager.Instance.PlayShopMusic();
+
+        // FIX: Wait for all ShopItemController.Start() methods to complete
+        StartCoroutine(DelayedInitializeShop());
+    }
+
+// Add this new method:
+    private IEnumerator DelayedInitializeShop()
+    {
+        // Wait for all Start() methods to complete
+        yield return new WaitForEndOfFrame();
+
+        // Now initialize shop with correct affordability
+        InitializeShop();
         StartCoroutine(DelayedScrollButtonUpdate());
     }
 

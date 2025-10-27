@@ -647,7 +647,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_text
-      value: $ 500
+      value: $ 800
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_fontAsset
@@ -707,7 +707,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 800
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -2894,7 +2894,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 500
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon

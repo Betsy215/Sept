@@ -21,7 +21,9 @@ public class ShopItemController : MonoBehaviour
     {
         shopManager = FindObjectOfType<ShopManager>();
         SetupClickHandler();
-        UpdateVisualState(true); // Default to affordable on start
+
+        // FIX: Start with unaffordable state instead of affordable
+        UpdateVisualState(false); // ← Changed from true to false
     }
 
     private void SetupClickHandler()

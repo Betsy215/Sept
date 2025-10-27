@@ -528,6 +528,13 @@ public class LevelManager : MonoBehaviour
             totalEarned.text = $"Total Earned: \n$ {totalScore:F2}";
 
         Debug.Log($"🎉 All levels completed! Total score: {totalScore}");
+
+        // FIX: Mark session as completed when all levels are finished
+        if (SessionManager.Instance != null)
+        {
+            SessionManager.Instance.CompleteSession();
+            Debug.Log("Session marked as completed - Continue button should now be disabled");
+        }
     }
 
     private void SetupLevelCompleteButtons()
