@@ -550,15 +550,13 @@ public class LevelManager : MonoBehaviour
             return;
         }
 
-        // Get purchased counts (which are the "unlocked" items)
-        var session = SessionManager.Instance.GetCurrentSession();
-        var unlockedFood = session.purchasedFoodItems?.Count ?? 0;
-        var unlockedCustomers = session.purchasedCharacters?.Count ?? 0;
+        // Get REMAINING items to unlock (total - purchased)
+        var (remainingFood, remainingCharacters) = SessionManager.Instance.GetUnpurchasedItemsCount();
 
-        // Update single UI element
-        unlockedItemsText.text = $"Unlocked Food: {unlockedFood}\nUnlocked Customers: {unlockedCustomers}";
+        // Update UI to show remaining items
+        unlockedItemsText.text = $"Unlocked Food: {remainingFood}\nUnlocked Customers: {remainingCharacters}";
 
-        Debug.Log($"Level Complete: Showing unlocked food: {unlockedFood}, customers: {unlockedCustomers}");
+        Debug.Log($"Level Complete: Remaining to unlock - Food: {remainingFood}, Customers: {remainingCharacters}");
     }
 
     private void SetupLevelCompleteButtons()
