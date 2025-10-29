@@ -181,18 +181,6 @@ public class SessionManager : MonoBehaviour
                currentSession.savedFoodPositions.Count > 0;
     }
 
-    /// <summary>
-    /// Apply saved positions to current scene (called once when session loads)
-    /// </summary>
-    private void ApplySavedPositionsToScene()
-    {
-        if (!HasSavedPositions()) return;
-
-        // Find current food items in scene
-        var sceneItems = FindObjectsOfType<ServeableItem>();
-        ApplySavedPositions(sceneItems);
-    }
-
 
     private void InitializeSession()
     {
@@ -234,18 +222,6 @@ public class SessionManager : MonoBehaviour
         }
     }
 
-
-    public void AddLevelScore(float levelScore)
-    {
-        if (currentSession != null && currentSession.isActive)
-        {
-            // Now actually add the level score to session total
-            currentSession.totalScore += levelScore;
-            SaveSession();
-
-            OnTotalScoreChanged?.Invoke(currentSession.totalScore);
-        }
-    }
 
     public void AddScoreImmediately(float points)
     {
@@ -336,12 +312,6 @@ public class SessionManager : MonoBehaviour
         Debug.Log("LevelManager registered with SessionManager");
     }
 
-    // NEW: Public method for ScoreManager to register itself
-    public void RegisterScoreManager(ScoreManager manager)
-    {
-        scoreManager = manager;
-        Debug.Log("ScoreManager registered with SessionManager");
-    }
 
     private void SaveSession()
     {
@@ -399,12 +369,6 @@ public class SessionManager : MonoBehaviour
         }
     }
 
-    public void DeleteSession()
-    {
-        PlayerPrefs.DeleteKey(SESSION_SAVE_KEY);
-        currentSession = null;
-        Debug.Log("Session deleted");
-    }
 
     #region SHOP SYSTEM METHODS
 

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
 using TMPro;
+using UnityEditor.SceneManagement;
 
 #if UNITY_EDITOR
 [System.Serializable]
@@ -33,6 +34,12 @@ public class RefillSystemSetup : EditorWindow
         EditorGUILayout.HelpBox(
             "This tool will help you set up the refill system by creating prefabs and configuring components.",
             MessageType.Info);
+
+        GUILayout.Space(10);
+
+        // Diagnostic Section (at the top for troubleshooting)
+        GUILayout.Label("🔍 Troubleshooting", EditorStyles.boldLabel);
+        if (GUILayout.Button("Diagnose Script Issues", GUILayout.Height(30))) DiagnoseScriptIssues();
 
         GUILayout.Space(10);
 
@@ -71,13 +78,17 @@ public class RefillSystemSetup : EditorWindow
         if (GUILayout.Button("Add RefillableItem to Selected Items", GUILayout.Height(30)))
             AddRefillableItemToSelected();
 
+        if (GUILayout.Button("Enable Refill on All Items", GUILayout.Height(30))) EnableRefillOnAllItems();
+
         GUILayout.Space(20);
 
         EditorGUILayout.HelpBox(
-            "1. Create both prefabs first\n" +
-            "2. Setup RefillSystem in scene\n" +
-            "3. Select food items and add RefillableItem components\n" +
-            "4. Replace existing scripts with updated versions",
+            "1. Click 'Diagnose Script Issues' first to check if all scripts compile\n" +
+            "2. Create both prefabs\n" +
+            "3. Setup RefillSystem in scene\n" +
+            "4. Select food items and add RefillableItem components\n" +
+            "5. Use 'Enable Refill on All Items' to ensure all items have refill enabled\n" +
+            "6. Replace existing scripts with updated versions",
             MessageType.None);
     }
 
@@ -85,8 +96,9 @@ public class RefillSystemSetup : EditorWindow
     {
         // Create Canvas
         var canvasGO = new GameObject("CountUIPrefab");
+        canvasGO.SetActive(true); // Ensure prefab is active
         var canvas = canvasGO.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceCamera;
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay; // Changed to Overlay for reliability
 
         var scaler = canvasGO.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -116,7 +128,10 @@ public class RefillSystemSetup : EditorWindow
 
         if (textFont != null) text.font = TMP_FontAsset.CreateFontAsset(textFont);
 
-        // Configure RectTransforms
+        // Configure RectTransforms with proper sizes
+        var canvasRect = canvasGO.GetComponent<RectTransform>();
+        canvasRect.sizeDelta = new Vector2(100, 100); // Give the canvas a size
+
         var displayRect = countDisplay.GetComponent<RectTransform>();
         displayRect.sizeDelta = new Vector2(40, 40);
         displayRect.anchoredPosition = Vector2.zero;
@@ -127,18 +142,43 @@ public class RefillSystemSetup : EditorWindow
         textRect.sizeDelta = Vector2.zero;
         textRect.anchoredPosition = Vector2.zero;
 
-        // Add RefillCountUI component
-        var countUI = countDisplay.AddComponent<RefillCountUI>();
+        // Set initial position for the canvas to screen center (will be repositioned by RefillCountUI)
+        canvasRect.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+
+        // Add RefillCountUI component to the root Canvas GameObject
+        // First check if the RefillCountUI script exists
+        var refillCountUIType = System.Type.GetType("RefillCountUI");
+        if (refillCountUIType == null)
+        {
+            Debug.LogError(
+                "❌ RefillCountUI script not found! Make sure RefillCountUI.cs is in your project and compiles correctly.");
+            EditorUtility.DisplayDialog("Error",
+                "RefillCountUI script not found! Please ensure RefillCountUI.cs is in your project.", "OK");
+            DestroyImmediate(canvasGO);
+            return;
+        }
+
+        var countUI = canvasGO.AddComponent<RefillCountUI>();
         countUI.countText = text;
         countUI.backgroundImage = backgroundImage;
         countUI.inStockColor = countTextColor;
         countUI.backgroundInStockColor = countBackgroundColor;
 
+        Debug.Log("✅ RefillCountUI component added to canvas GameObject");
+
         // Save as prefab
         var prefabPath = "Assets/Prefabs/UI/CountUIPrefab.prefab";
         System.IO.Directory.CreateDirectory("Assets/Prefabs/UI");
 
-        PrefabUtility.SaveAsPrefabAsset(canvasGO, prefabPath);
+        var prefab = PrefabUtility.SaveAsPrefabAsset(canvasGO, prefabPath);
+
+        // Verify the prefab was created correctly
+        var verifyComponent = prefab.GetComponent<RefillCountUI>();
+        if (verifyComponent != null)
+            Debug.Log("✅ RefillCountUI component verified on prefab");
+        else
+            Debug.LogError("❌ RefillCountUI component missing from prefab!");
+
         DestroyImmediate(canvasGO);
 
         Debug.Log($"Count UI Prefab created at {prefabPath}");
@@ -187,18 +227,40 @@ public class RefillSystemSetup : EditorWindow
         fillRect.sizeDelta = Vector2.zero;
         fillRect.anchoredPosition = Vector2.zero;
 
-        // Add RefillStatusBar component
-        var statusBarComponent = statusBar.AddComponent<RefillStatusBar>();
+        // Add RefillStatusBar component to the root Canvas GameObject
+        // First check if the RefillStatusBar script exists
+        var refillStatusBarType = System.Type.GetType("RefillStatusBar");
+        if (refillStatusBarType == null)
+        {
+            Debug.LogError(
+                "❌ RefillStatusBar script not found! Make sure RefillStatusBar.cs is in your project and compiles correctly.");
+            EditorUtility.DisplayDialog("Error",
+                "RefillStatusBar script not found! Please ensure RefillStatusBar.cs is in your project.", "OK");
+            DestroyImmediate(canvasGO);
+            return;
+        }
+
+        var statusBarComponent = canvasGO.AddComponent<RefillStatusBar>();
         statusBarComponent.fillImage = fillImage;
         statusBarComponent.backgroundImage = backgroundImage;
         statusBarComponent.fillColor = statusBarFillColor;
         statusBarComponent.backgroundColor = statusBarBackgroundColor;
 
+        Debug.Log("✅ RefillStatusBar component added to canvas GameObject");
+
         // Save as prefab
         var prefabPath = "Assets/Prefabs/UI/StatusBarPrefab.prefab";
         System.IO.Directory.CreateDirectory("Assets/Prefabs/UI");
 
-        PrefabUtility.SaveAsPrefabAsset(canvasGO, prefabPath);
+        var prefab = PrefabUtility.SaveAsPrefabAsset(canvasGO, prefabPath);
+
+        // Verify the prefab was created correctly
+        var verifyComponent = prefab.GetComponent<RefillStatusBar>();
+        if (verifyComponent != null)
+            Debug.Log("✅ RefillStatusBar component verified on prefab");
+        else
+            Debug.LogError("❌ RefillStatusBar component missing from prefab!");
+
         DestroyImmediate(canvasGO);
 
         Debug.Log($"Status Bar Prefab created at {prefabPath}");
@@ -261,6 +323,111 @@ public class RefillSystemSetup : EditorWindow
             "OK");
     }
 
+    private void DiagnoseScriptIssues()
+    {
+        Debug.Log("=== REFILL SYSTEM SCRIPT DIAGNOSIS ===");
+
+        // Check if all required scripts exist and compile correctly
+        string[] requiredScripts =
+        {
+            "RefillSystem",
+            "RefillableItem",
+            "RefillCountUI",
+            "RefillStatusBar"
+        };
+
+        var allScriptsFound = true;
+
+        foreach (var scriptName in requiredScripts)
+        {
+            var scriptType = System.Type.GetType(scriptName);
+            if (scriptType != null)
+            {
+                Debug.Log($"✅ {scriptName} script found and compiled");
+            }
+            else
+            {
+                Debug.LogError($"❌ {scriptName} script missing or failed to compile!");
+                allScriptsFound = false;
+            }
+        }
+
+        // Check if prefabs exist
+        string[] prefabPaths =
+        {
+            "Assets/Prefabs/UI/CountUIPrefab.prefab",
+            "Assets/Prefabs/UI/StatusBarPrefab.prefab"
+        };
+
+        foreach (var prefabPath in prefabPaths)
+            if (System.IO.File.Exists(prefabPath))
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+                if (prefab != null)
+                {
+                    Debug.Log($"✅ Prefab found: {prefabPath}");
+
+                    // Check components on prefab
+                    if (prefabPath.Contains("CountUI"))
+                    {
+                        var countUI = prefab.GetComponent<RefillCountUI>();
+                        Debug.Log($"  RefillCountUI component: {(countUI != null ? "✅ Found" : "❌ Missing")}");
+                    }
+                    else if (prefabPath.Contains("StatusBar"))
+                    {
+                        var statusBar = prefab.GetComponent<RefillStatusBar>();
+                        Debug.Log($"  RefillStatusBar component: {(statusBar != null ? "✅ Found" : "❌ Missing")}");
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"❌ Failed to load prefab: {prefabPath}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"⚠️ Prefab not found: {prefabPath}");
+            }
+
+        if (allScriptsFound)
+            EditorUtility.DisplayDialog("Diagnosis Complete",
+                "All required scripts found and compiled successfully! Check Console for detailed results.", "OK");
+        else
+            EditorUtility.DisplayDialog("Script Issues Found",
+                "Some required scripts are missing or failed to compile! Check Console for details.", "OK");
+
+        Debug.Log("=== DIAGNOSIS COMPLETE ===");
+    }
+
+    private void EnableRefillOnAllItems()
+    {
+        var allRefillableItems = FindObjectsOfType<RefillableItem>();
+
+        if (allRefillableItems.Length == 0)
+        {
+            EditorUtility.DisplayDialog("No Items Found", "No RefillableItem components found in the scene.", "OK");
+            return;
+        }
+
+        var enabledCount = 0;
+
+        foreach (var item in allRefillableItems)
+            if (!item.enableRefill)
+            {
+                item.enableRefill = true;
+                enabledCount++;
+                Debug.Log($"Enabled refill for {item.name}");
+            }
+
+        if (enabledCount > 0)
+            EditorUtility.DisplayDialog("Success",
+                $"Enabled refill on {enabledCount} items!\n\nTotal RefillableItems in scene: {allRefillableItems.Length}",
+                "OK");
+        else
+            EditorUtility.DisplayDialog("Info",
+                $"All {allRefillableItems.Length} RefillableItems already have refill enabled.", "OK");
+    }
+
     private void AddRefillableItemToSelected()
     {
         var selectedObjects = Selection.gameObjects;
@@ -283,14 +450,23 @@ public class RefillSystemSetup : EditorWindow
                 if (existingRefillable == null)
                 {
                     var refillableItem = obj.AddComponent<RefillableItem>();
-                    refillableItem.enableRefill = true;
+                    refillableItem.enableRefill = true; // Explicitly set to true
                     refillableItem.topPadding = 0.5f;
                     addedCount++;
                     Debug.Log($"Added RefillableItem to {obj.name}");
                 }
                 else
                 {
-                    Debug.Log($"{obj.name} already has RefillableItem component");
+                    // Also ensure existing components have enableRefill set to true
+                    if (!existingRefillable.enableRefill)
+                    {
+                        existingRefillable.enableRefill = true;
+                        Debug.Log($"Enabled refill for existing RefillableItem on {obj.name}");
+                    }
+                    else
+                    {
+                        Debug.Log($"{obj.name} already has RefillableItem component with refill enabled");
+                    }
                 }
             }
             else

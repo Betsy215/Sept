@@ -71,15 +71,30 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     }
 
     // NEW: IPointerDownHandler implementation for hold detection
+    // NOTE: This works with both 2D and 3D colliders
     public void OnPointerDown(PointerEventData eventData)
     {
+        DebugLog($"ServeableItem OnPointerDown - servingEnabled:{servingEnabled}");
+
         if (!servingEnabled) return;
 
         // Check if UI popup is blocking
-        if (IsUIBlocking()) return;
+        if (IsUIBlocking())
+        {
+            DebugLog("UI blocking, ignoring pointer down");
+            return;
+        }
 
         // Forward to refillable item for hold detection
-        if (refillableItem != null) refillableItem.OnPointerDown();
+        if (refillableItem != null)
+        {
+            DebugLog("Forwarding OnPointerDown to RefillableItem");
+            refillableItem.OnPointerDown();
+        }
+        else
+        {
+            DebugLog("No RefillableItem found to forward to");
+        }
 
         DebugLog($"{foodType}: Pointer down detected");
     }
@@ -87,10 +102,20 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     // NEW: IPointerUpHandler implementation for hold detection
     public void OnPointerUp(PointerEventData eventData)
     {
+        DebugLog($"ServeableItem OnPointerUp - servingEnabled:{servingEnabled}");
+
         if (!servingEnabled) return;
 
         // Forward to refillable item
-        if (refillableItem != null) refillableItem.OnPointerUp();
+        if (refillableItem != null)
+        {
+            DebugLog("Forwarding OnPointerUp to RefillableItem");
+            refillableItem.OnPointerUp();
+        }
+        else
+        {
+            DebugLog("No RefillableItem found to forward to");
+        }
 
         // Check if it was a click (not a hold)
         // This will be handled by the OnMouseUpAsButton method

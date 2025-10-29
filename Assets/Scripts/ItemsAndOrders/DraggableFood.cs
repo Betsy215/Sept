@@ -115,13 +115,6 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     private void CalculateItemRadius()
     {
-        if (spriteRenderer == null || spriteRenderer.sprite == null)
-        {
-            // Fallback to a default radius
-            itemRadius = 0.5f;
-            return;
-        }
-
         if (useSpriteBounds)
         {
             // NEW: Use RefillableItem bounds if available (includes padding)
@@ -133,8 +126,25 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             }
             else
             {
-                // Use actual sprite bounds for accurate collision
-                bounds = spriteRenderer.bounds;
+                // Try BoxCollider (3D) first
+                var boxCollider3D = GetComponent<BoxCollider>();
+                if (boxCollider3D != null)
+                {
+                    bounds = boxCollider3D.bounds;
+                    DebugLog($"Using BoxCollider (3D) bounds for {gameObject.name}");
+                }
+                else if (spriteRenderer != null && spriteRenderer.sprite != null)
+                {
+                    // Use actual sprite bounds for accurate collision
+                    bounds = spriteRenderer.bounds;
+                    DebugLog($"Using SpriteRenderer bounds for {gameObject.name}");
+                }
+                else
+                {
+                    // Fallback to default size
+                    bounds = new Bounds(transform.position, Vector3.one * 0.5f);
+                    DebugLog($"Using fallback bounds for {gameObject.name}");
+                }
             }
 
             // Use the larger of width/height and divide by 2 for radius
@@ -342,11 +352,19 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         var draggable = item.GetComponent<DraggableFood>();
         if (draggable != null) return draggable.itemRadius;
 
-        // NEW: Try to get RefillableItem bounds
+        // NEW: Try to get RefillableItem bounds (now uses BoxCollider 3D)
         var refillable = item.GetComponent<RefillableItem>();
         if (refillable != null)
         {
             var bounds = refillable.GetBoundsWithPadding();
+            return Mathf.Max(bounds.size.x, bounds.size.y) / 2f;
+        }
+
+        // Try BoxCollider (3D) first
+        var boxCollider3D = item.GetComponent<BoxCollider>();
+        if (boxCollider3D != null)
+        {
+            var bounds = boxCollider3D.bounds;
             return Mathf.Max(bounds.size.x, bounds.size.y) / 2f;
         }
 
@@ -523,12 +541,11 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         // Draw this item's collision radius
         Gizmos.color = hasOverlap ? Color.red : Color.green;
-        Gizmos.DrawWireSphere(transform.position, itemRadius); // FIXED: Changed from DrawWireCircle
+        Gizmos.DrawWireSphere(transform.position, itemRadius);
 
         // Draw minimum distance circle
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position,
-            itemRadius + minDistanceBetweenItems); // FIXED: Changed from DrawWireCircle
+        Gizmos.DrawWireSphere(transform.position, itemRadius + minDistanceBetweenItems);
 
         // NEW: Draw refill padding if available
         if (refillableItem != null)

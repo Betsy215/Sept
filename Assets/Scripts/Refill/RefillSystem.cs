@@ -40,6 +40,17 @@ public class RefillSystem : MonoBehaviour
     private void Start()
     {
         InitializeSystem();
+
+        // Also scan again after a delay to catch any items that weren't ready yet
+        Invoke("RescanForItems", 0.5f);
+    }
+
+    private void RescanForItems()
+    {
+        var items = FindObjectsOfType<RefillableItem>();
+        foreach (var item in items) RegisterRefillableItem(item);
+
+        DebugLog($"Rescan complete: {refillableItems.Count} total refillable items");
     }
 
     private void InitializeSystem()
@@ -51,7 +62,7 @@ public class RefillSystem : MonoBehaviour
         if (uiCanvas == null) uiCanvas = FindObjectOfType<Canvas>();
 
         // Find all refillable items in scene
-        RefillableItem[] items = FindObjectsOfType<RefillableItem>();
+        var items = FindObjectsOfType<RefillableItem>();
         foreach (var item in items) RegisterRefillableItem(item);
 
         DebugLog($"RefillSystem initialized with {refillableItems.Count} refillable items");
@@ -101,17 +112,79 @@ public class RefillSystem : MonoBehaviour
 
     public GameObject CreateCountUI(Transform parent)
     {
-        if (countUIPrefab == null || uiCanvas == null) return null;
+        DebugLog($"CreateCountUI called");
+        DebugLog($"countUIPrefab assigned: {countUIPrefab != null}");
+        DebugLog($"uiCanvas assigned: {uiCanvas != null}");
 
+        if (countUIPrefab == null)
+        {
+            DebugLog("ERROR: countUIPrefab is null! Please assign the CountUIPrefab in RefillSystem Inspector");
+            return null;
+        }
+
+        if (uiCanvas == null)
+        {
+            DebugLog("ERROR: uiCanvas is null! Please assign your Canvas in RefillSystem Inspector");
+            return null;
+        }
+
+        DebugLog($"About to instantiate countUIPrefab: {countUIPrefab.name}");
         var countUI = Instantiate(countUIPrefab, uiCanvas.transform);
+
+        // IMPORTANT: Make sure the count UI GameObject is active
+        countUI.SetActive(true);
+        DebugLog($"Count UI GameObject set to active: {countUI.activeInHierarchy}");
+
+        // Name the UI object to identify which food item it belongs to
+        if (parent != null)
+        {
+            countUI.name = $"CountUI_{parent.name}";
+            DebugLog($"Named count UI: {countUI.name}");
+        }
+
+        DebugLog($"Count UI instantiated: {countUI != null}");
+
+        if (countUI != null)
+        {
+            DebugLog($"Created count UI GameObject: {countUI.name}");
+
+            // Check if it has the RefillCountUI component
+            var countUIComponent = countUI.GetComponent<RefillCountUI>();
+            DebugLog($"RefillCountUI component found: {countUIComponent != null}");
+        }
+
         return countUI;
     }
 
     public GameObject CreateStatusBar(Transform parent)
     {
-        if (statusBarPrefab == null || uiCanvas == null) return null;
+        DebugLog($"CreateStatusBar called");
+        DebugLog($"statusBarPrefab assigned: {statusBarPrefab != null}");
+        DebugLog($"uiCanvas assigned: {uiCanvas != null}");
+
+        if (statusBarPrefab == null)
+        {
+            DebugLog("ERROR: statusBarPrefab is null! Please assign the StatusBarPrefab in RefillSystem Inspector");
+            return null;
+        }
+
+        if (uiCanvas == null)
+        {
+            DebugLog("ERROR: uiCanvas is null! Please assign your Canvas in RefillSystem Inspector");
+            return null;
+        }
 
         var statusBar = Instantiate(statusBarPrefab, uiCanvas.transform);
+
+        // Name the UI object to identify which food item it belongs to
+        if (parent != null)
+        {
+            statusBar.name = $"StatusBar_{parent.name}";
+            DebugLog($"Named status bar: {statusBar.name}");
+        }
+
+        DebugLog($"Status bar instantiated: {statusBar != null}");
+
         return statusBar;
     }
 
@@ -138,6 +211,18 @@ public class RefillSystem : MonoBehaviour
     public int GetDefaultMaxCount()
     {
         return defaultMaxCount;
+    }
+
+    [ContextMenu("Register All RefillableItems")]
+    public void RegisterAllRefillableItems()
+    {
+        var items = FindObjectsOfType<RefillableItem>();
+
+        DebugLog($"Found {items.Length} RefillableItems in scene");
+
+        foreach (var item in items) RegisterRefillableItem(item);
+
+        DebugLog($"Registration complete: {refillableItems.Count} items registered");
     }
 
     private void DebugLog(string message)
