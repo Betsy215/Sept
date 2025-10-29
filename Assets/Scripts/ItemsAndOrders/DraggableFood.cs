@@ -73,6 +73,9 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private float itemRadius;
     private Coroutine overlapCheckCoroutine;
 
+    // NEW: Refill system integration
+    private RefillableItem refillableItem;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -93,6 +96,9 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             originalColor = spriteRenderer.color;
             CalculateItemRadius();
         }
+
+        // NEW: Get RefillableItem component
+        refillableItem = GetComponent<RefillableItem>();
     }
 
     public void Initialize(TableLayer tableLayerRef, GamePhaseManager phaseManagerRef, ServeableItem[] foodItemsArray)
@@ -118,8 +124,19 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         if (useSpriteBounds)
         {
-            // Use actual sprite bounds for accurate collision
-            var bounds = spriteRenderer.bounds;
+            // NEW: Use RefillableItem bounds if available (includes padding)
+            Bounds bounds;
+            if (refillableItem != null)
+            {
+                bounds = refillableItem.GetBoundsWithPadding();
+                DebugLog($"Using RefillableItem bounds with padding for {gameObject.name}");
+            }
+            else
+            {
+                // Use actual sprite bounds for accurate collision
+                bounds = spriteRenderer.bounds;
+            }
+
             // Use the larger of width/height and divide by 2 for radius
             itemRadius = Mathf.Max(bounds.size.x, bounds.size.y) / 2f;
         }
@@ -185,53 +202,36 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     /// </summary>
     private IEnumerator OverlapCheckLoop()
     {
-        var lastCheckedPosition = transform.position;
-        const float checkInterval = 0.1f; // Check every 0.1 seconds
-        const float movementThreshold = 0.01f; // Only check if moved this much
-
-        while (true)
+        while (isDraggingEnabled)
         {
-            // Wait before next check (makes this coroutine efficient)
-            yield return new WaitForSeconds(checkInterval);
-
-            // Skip check if currently dragging (OnDrag handles that)
-            if (isDragging)
-                continue;
-
-            // Only check if position actually changed (optimization)
-            if (Vector3.Distance(transform.position, lastCheckedPosition) > movementThreshold)
-            {
-                lastCheckedPosition = transform.position;
-                CheckAndUpdateOverlapState();
-            }
+            CheckAndUpdateOverlapState();
+            yield return new WaitForSeconds(0.1f); // Check every 100ms
         }
     }
 
     /// <summary>
-    /// Continuously check and update overlap state and visuals
+    /// Check current overlap state and update visuals if needed
     /// </summary>
     private void CheckAndUpdateOverlapState()
     {
-        var currentlyOverlapping = CheckOverlapAtPosition(transform.position);
+        var currentOverlap = CheckOverlapAtPosition(transform.position);
 
-        // Only update if state changed
-        if (currentlyOverlapping != hasOverlap)
+        if (currentOverlap != hasOverlap)
         {
-            hasOverlap = currentlyOverlapping;
+            hasOverlap = currentOverlap;
 
+            // Update visuals based on current state
             if (hasOverlap)
-            {
                 ApplyOverlapVisuals();
-                DebugLog("Overlap detected - showing red");
-            }
+            else if (isTouched)
+                ApplyTouchedVisuals();
             else
-            {
                 RestoreOriginalVisuals();
-                DebugLog("Overlap cleared - restoring original color");
-            }
 
-            // Notify GamePhaseManager
+            // Notify GamePhaseManager about overlap state change
             if (gamePhaseManager != null) gamePhaseManager.OnItemOverlapChanged();
+
+            DebugLog($"Overlap state changed to: {hasOverlap}");
         }
     }
 
@@ -247,12 +247,9 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             wiggleCoroutine = null;
         }
 
-        // Restore original transform
-        if (!isDragging)
-        {
-            transform.localRotation = Quaternion.Euler(originalRotation);
-            transform.localPosition = originalPosition;
-        }
+        // Reset transform to original state
+        transform.localPosition = originalPosition;
+        transform.localEulerAngles = originalRotation;
 
         DebugLog($"Stopped iOS wiggle for {gameObject.name}");
     }
@@ -265,37 +262,30 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             wiggleCoroutine = null;
         }
 
-        isWiggling = false;
+        // Don't reset transform - keep current position
+        DebugLog($"Paused wiggle for {gameObject.name}");
     }
 
     private void ResumeWiggle()
     {
-        if (isDraggingEnabled && enableWiggle && !isDragging) StartWiggle();
+        if (isDraggingEnabled && enableWiggle && !isWiggling)
+            StartWiggle();
     }
 
     private IEnumerator WiggleCoroutine()
     {
-        // iOS-authentic timing: wait for random offset before starting
-        yield return new WaitForSeconds(wigglePhaseOffset);
-
-        while (isWiggling)
+        while (isWiggling && isDraggingEnabled && !isDragging)
         {
-            // iOS SpringBoard timing: 0.1 second cycles
-            var time = Time.time * WIGGLE_SPEED;
+            var time = Time.time + wigglePhaseOffset;
 
-            // Authentic iOS rotation: ±1 degree
-            var rotationZ = Mathf.Sin(time) * WIGGLE_ROTATION;
-            var newRotation = originalRotation;
-            newRotation.z += rotationZ;
+            // iOS-authentic wiggle motion: rotation + subtle position
+            var rotationWiggle = Mathf.Sin(time * WIGGLE_SPEED) * WIGGLE_ROTATION;
+            var positionWiggleX = Mathf.Sin(time * WIGGLE_SPEED * 0.7f) * WIGGLE_POSITION;
+            var positionWiggleY = Mathf.Cos(time * WIGGLE_SPEED * 0.9f) * WIGGLE_POSITION;
 
-            // Very subtle position wiggle (like iOS)
-            var positionOffset = Vector3.zero;
-            positionOffset.x = Mathf.Sin(time * 1.1f) * WIGGLE_POSITION;
-            positionOffset.y = Mathf.Cos(time * 0.9f) * WIGGLE_POSITION;
-
-            // Apply transformations
-            transform.localRotation = Quaternion.Euler(newRotation);
-            transform.localPosition = originalPosition + positionOffset;
+            // Apply wiggle
+            transform.localEulerAngles = originalRotation + Vector3.forward * rotationWiggle;
+            transform.localPosition = originalPosition + new Vector3(positionWiggleX, positionWiggleY, 0);
 
             yield return null;
         }
@@ -309,11 +299,9 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         foreach (var otherItem in allFoodItems)
         {
-            // Skip self and inactive items
             if (otherItem == null || otherItem.gameObject == gameObject || !otherItem.gameObject.activeInHierarchy)
                 continue;
 
-            // Get the other item's position
             var otherPosition = otherItem.transform.position;
 
             // Calculate 2D distance (ignore Z)
@@ -353,6 +341,14 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         // Try to get DraggableFood component to use its calculated radius
         var draggable = item.GetComponent<DraggableFood>();
         if (draggable != null) return draggable.itemRadius;
+
+        // NEW: Try to get RefillableItem bounds
+        var refillable = item.GetComponent<RefillableItem>();
+        if (refillable != null)
+        {
+            var bounds = refillable.GetBoundsWithPadding();
+            return Mathf.Max(bounds.size.x, bounds.size.y) / 2f;
+        }
 
         // Fallback: calculate from sprite renderer
         var sr = item.GetComponent<SpriteRenderer>();
@@ -527,31 +523,19 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         // Draw this item's collision radius
         Gizmos.color = hasOverlap ? Color.red : Color.green;
-        Gizmos.DrawWireSphere(transform.position, itemRadius);
+        Gizmos.DrawWireSphere(transform.position, itemRadius); // FIXED: Changed from DrawWireCircle
 
         // Draw minimum distance circle
-        Gizmos.color = new Color(1f, 1f, 0f, 0.3f);
-        Gizmos.DrawWireSphere(transform.position, itemRadius + minDistanceBetweenItems);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position,
+            itemRadius + minDistanceBetweenItems); // FIXED: Changed from DrawWireCircle
 
-        // Draw lines to nearby items
-        if (allFoodItems != null)
-            foreach (var otherItem in allFoodItems)
-            {
-                if (otherItem == null || otherItem.gameObject == gameObject || !otherItem.gameObject.activeInHierarchy)
-                    continue;
-
-                var otherPos = otherItem.transform.position;
-                var distance = Vector2.Distance(
-                    new Vector2(transform.position.x, transform.position.y),
-                    new Vector2(otherPos.x, otherPos.y)
-                );
-
-                var otherRadius = GetItemRadius(otherItem);
-                var minDist = itemRadius + otherRadius + minDistanceBetweenItems;
-
-                // Red line if too close, green if safe
-                Gizmos.color = distance < minDist ? new Color(1f, 0f, 0f, 0.5f) : new Color(0f, 1f, 0f, 0.2f);
-                Gizmos.DrawLine(transform.position, otherPos);
-            }
+        // NEW: Draw refill padding if available
+        if (refillableItem != null)
+        {
+            Gizmos.color = Color.blue;
+            var bounds = refillableItem.GetBoundsWithPadding();
+            Gizmos.DrawWireCube(bounds.center, bounds.size);
+        }
     }
 }

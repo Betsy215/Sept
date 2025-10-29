@@ -18,6 +18,7 @@ public class GamePhaseManager : MonoBehaviour
     public OrderSystem orderSystem;
     public CustomerManager customerManager;
     public TableLayer tableLayer;
+    public RefillSystem refillSystem; // NEW: Reference to refill system
 
     [Header("Debug")] public bool enableDebugLogs = true;
 
@@ -39,7 +40,7 @@ public class GamePhaseManager : MonoBehaviour
             allFoodItems = levelManager.serveableItems;
         else
             allFoodItems = FindObjectsOfType<ServeableItem>();
-
+        if (refillSystem == null) refillSystem = FindObjectOfType<RefillSystem>();
 
         doneButton.onClick.AddListener(OnDoneButtonClicked);
 
@@ -62,6 +63,7 @@ public class GamePhaseManager : MonoBehaviour
 
         // ✅ ADD THIS LINE: Initial button state check
         StartCoroutine(DelayedButtonStateUpdate());
+        if (refillSystem != null) refillSystem.NotifyPhaseChange(currentPhase);
     }
 
 // ✅ ADD THIS METHOD: Delayed initial check
@@ -77,7 +79,7 @@ public class GamePhaseManager : MonoBehaviour
     {
         currentPhase = GamePhase.PLAYING;
         DebugLog("=== PLAY PHASE STARTED ===");
-
+        if (refillSystem != null) refillSystem.NotifyPhaseChange(currentPhase);
         // Disable dragging
         DisableArrangementMode();
 

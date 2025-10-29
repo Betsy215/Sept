@@ -1,44 +1,43 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ServeableItem : MonoBehaviour
+public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    [Header("Item Settings")]
-    [Tooltip("Type of food this item represents (must match OrderSystem food types)")]
+    [Header("Item Settings")] [Tooltip("Type of food this item represents (must match OrderSystem food types)")]
     public string foodType = "Bread"; // e.g., "Bread", "Apple", "Juice", etc.
-    
-    [Header("References")]
-    [Tooltip("Reference to OrderSystem - will auto-find if not assigned")]
+
+    [Header("References")] [Tooltip("Reference to OrderSystem - will auto-find if not assigned")]
     public OrderSystem orderSystem;
-    
-    [Header("Visual Feedback")]
-    [Tooltip("Canvas used for UI popup detection")]
+
+    [Header("Visual Feedback")] [Tooltip("Canvas used for UI popup detection")]
     public GameObject popupCanvas;
-    
-    [Header("Audio Feedback")]
-    [Tooltip("Play rejection sound through AudioManager (recommended)")]
+
+    [Header("Audio Feedback")] [Tooltip("Play rejection sound through AudioManager (recommended)")]
     public bool useAudioManager = true;
-    
-    [Header("Animation Settings")]
-    [Tooltip("How intense the shake effect should be")]
+
+    [Header("Animation Settings")] [Tooltip("How intense the shake effect should be")]
     public float shakeIntensity = 0.15f;
+
     [Tooltip("How long the shake effect lasts")]
     public float shakeDuration = 0.4f;
+
     [Tooltip("How many times the item shakes")]
     public int shakeCount = 3;
-    
-    [Header("Debug")]
-    public bool enableDebugLogs = true;
-    
-    [Header("Phase Management")]
-    private bool servingEnabled = true;
 
-    void Start()
+    [Header("Debug")] public bool enableDebugLogs = true;
+
+    [Header("Phase Management")] private bool servingEnabled = true;
+
+    // NEW: Refill system integration
+    private RefillableItem refillableItem;
+    private RefillSystem refillSystem;
+
+    private void Start()
     {
         Initialize();
     }
 
-    void Initialize()
+    private void Initialize()
     {
         // Auto-find OrderSystem if not assigned
         if (orderSystem == null)
@@ -51,77 +50,66 @@ public class ServeableItem : MonoBehaviour
             }
         }
 
+        // NEW: Get refill components
+        refillableItem = GetComponent<RefillableItem>();
+        refillSystem = FindObjectOfType<RefillSystem>();
+
         // Audio setup is handled by AudioManager - no individual AudioSource needed
         DebugLog($"ServeableItem {foodType} initialized successfully");
     }
-    
+
     public void SetServingEnabled(bool enabled)
     {
         servingEnabled = enabled;
-    
-        if (enableDebugLogs)
-        {
-            Debug.Log($"{foodType}: Serving {(enabled ? "enabled" : "disabled")}");
-        }
+
+        if (enableDebugLogs) Debug.Log($"{foodType}: Serving {(enabled ? "enabled" : "disabled")}");
     }
 
-    public bool IsServingEnabled()
+    public string GetFoodType()
     {
-        return servingEnabled;
+        return foodType;
     }
 
-    void SetupCollider()
+    // NEW: IPointerDownHandler implementation for hold detection
+    public void OnPointerDown(PointerEventData eventData)
     {
-        Collider itemCollider = GetComponent<Collider>();
-        if (itemCollider == null)
-        {
-            // Automatically create collider based on sprite size
-            SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null && spriteRenderer.sprite != null)
-            {
-                // Create BoxCollider that matches sprite bounds
-                BoxCollider boxCollider = gameObject.AddComponent<BoxCollider>();
-                
-                // Get sprite bounds and convert to local space
-                Bounds spriteBounds = spriteRenderer.bounds;
-                Vector3 localSize = transform.InverseTransformVector(spriteBounds.size);
-                
-                boxCollider.size = new Vector3(Mathf.Abs(localSize.x), Mathf.Abs(localSize.y), 0.5f);
-                boxCollider.isTrigger = false; // Make it solid for clicking
-                
-                DebugLog($"{foodType}: Auto-created collider with size {boxCollider.size}");
-            }
-            else
-            {
-                // Fallback: create default sized collider
-                BoxCollider boxCollider = gameObject.AddComponent<BoxCollider>();
-                boxCollider.size = new Vector3(1f, 1f, 0.5f);
-                
-                Debug.LogWarning($"{foodType}: No sprite found, created default collider");
-            }
-        }
-        else
-        {
-            DebugLog($"{foodType}: Using existing collider");
-        }
-    }
-
-    // Handle mouse clicks on this item
-    void OnMouseDown()
-    {
-        
         if (!servingEnabled) return;
-        
-        // Check if we're clicking over UI elements
-        bool overUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-        bool popupActive = popupCanvas != null && popupCanvas.activeInHierarchy;
-        
-        DebugLog($"{foodType} clicked. Over UI: {overUI}, Popup active: {popupActive}");
 
-        // Block clicks if over UI AND popup is active
-        if (overUI && popupActive) 
+        // Check if UI popup is blocking
+        if (IsUIBlocking()) return;
+
+        // Forward to refillable item for hold detection
+        if (refillableItem != null) refillableItem.OnPointerDown();
+
+        DebugLog($"{foodType}: Pointer down detected");
+    }
+
+    // NEW: IPointerUpHandler implementation for hold detection
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (!servingEnabled) return;
+
+        // Forward to refillable item
+        if (refillableItem != null) refillableItem.OnPointerUp();
+
+        // Check if it was a click (not a hold)
+        // This will be handled by the OnMouseUpAsButton method
+        DebugLog($"{foodType}: Pointer up detected");
+    }
+
+    // Keep existing OnMouseUpAsButton for click detection
+    private void OnMouseUpAsButton()
+    {
+        if (!servingEnabled) return;
+
+        // Check if UI popup is blocking
+        if (IsUIBlocking()) return;
+
+        // Check if item is out of stock
+        if (refillableItem != null && refillableItem.IsOutOfStock())
         {
-            DebugLog($"{foodType}: Click blocked by popup");
+            DebugLog($"{foodType}: Cannot serve - out of stock!");
+            OnItemRejected(); // Play rejection feedback
             return;
         }
 
@@ -129,8 +117,26 @@ public class ServeableItem : MonoBehaviour
         OnItemClicked();
     }
 
+    private bool IsUIBlocking()
+    {
+        // Check if clicking over UI elements
+        var overUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        var popupActive = popupCanvas != null && popupCanvas.activeInHierarchy;
+
+        DebugLog($"{foodType}: UI Check - Over UI: {overUI}, Popup active: {popupActive}");
+
+        // Block clicks if over UI AND popup is active
+        if (overUI && popupActive)
+        {
+            DebugLog($"{foodType}: Click blocked by popup");
+            return true;
+        }
+
+        return false;
+    }
+
     // Main logic for serving this item
-    void OnItemClicked()
+    private void OnItemClicked()
     {
         DebugLog($"Player clicked on {foodType}");
 
@@ -149,8 +155,8 @@ public class ServeableItem : MonoBehaviour
         }
 
         // Try to serve this item to the current order
-        bool itemServed = orderSystem.TryServeItem(foodType);
-        
+        var itemServed = orderSystem.TryServeItem(foodType);
+
         if (itemServed)
         {
             DebugLog($"{foodType}: Successfully served!");
@@ -164,62 +170,63 @@ public class ServeableItem : MonoBehaviour
     }
 
     // Called when item was successfully served
-    void OnItemServedSuccessfully()
+    private void OnItemServedSuccessfully()
     {
         // ✅ SUCCESS FEEDBACK: Order items already pop and disappear via ServedItemVisual
         // The visual feedback happens on the order display items, not on the serveable item
         // This is correct behavior - player sees the order item disappear with pop effect
-        
+
         DebugLog($"{foodType}: Item served successfully - order item will pop and disappear");
-        
+
+        // NEW: Notify refill system that item was served correctly
+        if (refillSystem != null) refillSystem.OnItemServed(foodType, true);
+
         // Optional: Could add subtle success effect on the serveable item here
         // For now, keeping it clean since the main feedback is on the order
     }
 
     // Called when item was not needed for current order
-    void OnItemRejected()
+    private void OnItemRejected()
     {
         // ❌ REJECTION FEEDBACK: Shake the item and play rejection sound
         DebugLog($"{foodType}: Item rejected - playing shake and sound feedback");
-        
+
+        // NEW: Notify refill system that item was clicked but not served
+        if (refillSystem != null) refillSystem.OnItemServed(foodType, false);
+
         // Start shake animation
-        StartCoroutine(ShakeWithSound());
+        StartCoroutine(ShakeAnimation());
+
+        // Play rejection sound
+        PlayRejectionSound();
     }
 
-    // Enhanced shake effect with sound for wrong item clicks
-    System.Collections.IEnumerator ShakeWithSound()
+    private System.Collections.IEnumerator ShakeAnimation()
     {
-        // Play rejection sound immediately
-        PlayRejectionSound();
-        
-        Vector3 originalPosition = transform.position;
-        float shakeDelay = shakeDuration / (shakeCount * 2); // Time for each shake direction
-        
-        for (int i = 0; i < shakeCount; i++)
+        var originalPosition = transform.position;
+
+        for (var i = 0; i < shakeCount; i++)
         {
-            // Shake right
-            transform.position = originalPosition + new Vector3(shakeIntensity, 0, 0);
-            yield return new WaitForSeconds(shakeDelay);
-            
             // Shake left
-            transform.position = originalPosition + new Vector3(-shakeIntensity, 0, 0);
-            yield return new WaitForSeconds(shakeDelay);
+            transform.position = originalPosition + Vector3.right * shakeIntensity;
+            yield return new WaitForSeconds(shakeDuration / (shakeCount * 2f));
+
+            // Shake right  
+            transform.position = originalPosition + Vector3.left * shakeIntensity;
+            yield return new WaitForSeconds(shakeDuration / (shakeCount * 2f));
         }
-        
+
         // Return to original position
         transform.position = originalPosition;
-        
-        DebugLog($"{foodType}: Shake effect completed");
     }
 
-    // Play rejection sound effect through AudioManager
-    void PlayRejectionSound()
+    private void PlayRejectionSound()
     {
         if (useAudioManager && AudioManager.Instance != null)
         {
-            // Use the centralized AudioManager for consistent audio control
-            AudioManager.Instance.PlayWrongItemSFX();
-            DebugLog($"{foodType}: Played rejection sound via AudioManager");
+            // AudioManager should have a rejection sound clip
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.GetComponent<AudioSource>()?.clip);
+            DebugLog($"{foodType}: Playing rejection sound via AudioManager");
         }
         else
         {
@@ -227,67 +234,8 @@ public class ServeableItem : MonoBehaviour
         }
     }
 
-    // Debug logging helper
-    void DebugLog(string message)
+    private void DebugLog(string message)
     {
-        if (enableDebugLogs)
-        {
-            Debug.Log($"[ServeableItem] {message}");
-        }
-    }
-
-    // Public methods for external access
-    public string GetFoodType()
-    {
-        return foodType;
-    }
-
-    public bool CanServe()
-    {
-        return orderSystem != null && orderSystem.IsOrderActive();
-    }
-
-    // Context menu for testing in editor
-    [ContextMenu("Test Serve Item")]
-    void TestServeItem()
-    {
-        if (Application.isPlaying)
-        {
-            OnItemClicked();
-        }
-        else
-        {
-            Debug.LogWarning("Can only test serving in Play Mode!");
-        }
-    }
-
-    // Context menu to test rejection feedback
-    [ContextMenu("Test Rejection Feedback")]
-    void TestRejectionFeedback()
-    {
-        if (Application.isPlaying)
-        {
-            OnItemRejected();
-        }
-        else
-        {
-            Debug.LogWarning("Can only test rejection in Play Mode!");
-        }
-    }
-    
-    [ContextMenu("Recalculate Collider")]
-    void RecalculateCollider()
-    {
-        // Remove existing collider
-        Collider existingCollider = GetComponent<Collider>();
-        if (existingCollider != null)
-        {
-            DestroyImmediate(existingCollider);
-        }
-        
-        // Setup new collider
-        SetupCollider();
-        
-        Debug.Log($"{foodType}: Collider recalculated!");
+        if (enableDebugLogs) Debug.Log($"ServeableItem ({foodType}): {message}");
     }
 }
