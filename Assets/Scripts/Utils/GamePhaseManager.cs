@@ -115,28 +115,10 @@ public class GamePhaseManager : MonoBehaviour
     /// </summary>
     private int GetCurrentLevel()
     {
-        if (levelManager != null)
-            // Try to get current level from LevelManager
-            // Adjust this based on your LevelManager's actual property/method
-            // Common possibilities:
-            if (levelManager.TryGetComponent<LevelManager>(out var lm))
-            {
-                // Option 1: If LevelManager has a currentLevel field
-                // return lm.currentLevel;
-                // Option 2: If LevelManager has a GetCurrentLevel() method
-                // return lm.GetCurrentLevel();
-                // Option 3: Get from scene name if levels are separate scenes
-                var sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-                if (sceneName.Contains("Level") && int.TryParse(sceneName.Replace("Level", ""), out var levelFromScene))
-                    return levelFromScene;
-            }
-
-        // Fallback: try to get from SessionManager if it tracks current level
+        // Get from SessionManager (this should work)
         if (SessionManager.Instance != null)
-        {
-            // Adjust based on your SessionManager implementation
-            // return SessionManager.Instance.GetCurrentLevel();
-        }
+            return SessionManager.Instance.GetCurrentLevelIndex() + 1; // +1 because SessionManager is 0-based
+
 
         // Default fallback
         DebugLog("Could not determine current level, defaulting to Level 1");
@@ -270,7 +252,7 @@ public class GamePhaseManager : MonoBehaviour
     {
         return currentPhase;
     }
-    
+
     /// <summary>
     /// Load saved food positions from SessionManager when entering arrangement phase
     /// </summary>

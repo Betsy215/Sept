@@ -14,6 +14,7 @@ public class SessionData
 
     public List<string> purchasedFoodItems;
     public List<string> purchasedCharacters;
+    public bool refillTutorialShown = false;
 
 
     [Serializable]

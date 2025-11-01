@@ -46,8 +46,6 @@ public class LevelManager : MonoBehaviour
     [Header("Tutorial")] public GameObject refillTutorialPanel;
     public Button closeButton;
 
-    private bool refillTutorialShown = false;
-
 
     // Current level tracking
     private int currentLevelIndex = 0;
@@ -129,17 +127,25 @@ public class LevelManager : MonoBehaviour
 
     public void ShowRefillTutorial()
     {
-        // Check if already shown THIS SESSION
-        if (refillTutorialShown)
+        // Check SessionManager instead of local flag
+        if (SessionManager.Instance != null && SessionManager.Instance.GetCurrentSession().refillTutorialShown)
+        {
+            Debug.Log("Tutorial already shown this session - returning early");
             return;
+        }
 
-        popupCanvas.SetActive(true);
+        Debug.Log("Showing tutorial for first time this session");
+
+        // Show tutorial panel
+        if (popupCanvas != null)
+            popupCanvas.SetActive(true);
         refillTutorialPanel.SetActive(true);
 
-        // Mark as shown for THIS SESSION
-        refillTutorialShown = true;
-
-        Debug.Log("Tutorial shown (game continues playing)");
+        // Mark as shown in SESSION DATA
+        if (SessionManager.Instance != null) SessionManager.Instance.GetCurrentSession().refillTutorialShown = true;
+        // Optionally save the session to persist this flag
+        // SessionManager.Instance.SaveSession();
+        Debug.Log("Tutorial flag set in session data");
     }
 
     public void DismissRefillTutorial()
@@ -510,6 +516,7 @@ public class LevelManager : MonoBehaviour
 
     private IEnumerator ShowLevelCompletePopup()
     {
+        refillTutorialPanel.SetActive(false);
         // Wait for the specified delay
         yield return new WaitForSeconds(3f);
 
