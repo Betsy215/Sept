@@ -456,6 +456,9 @@ public class RefillableItem : MonoBehaviour
             // Just went out of stock
             spriteRenderer.color = refillSystem.GetOutOfStockColor();
             DebugLog("Item is now out of stock");
+
+            // REPLACE with this:
+            refillSystem.OnItemBecameEmpty();
         }
         else if (!isOutOfStock && wasOutOfStock)
         {

@@ -43,6 +43,12 @@ public class LevelManager : MonoBehaviour
 
     public GamePhaseManager gamePhaseManager;
 
+    [Header("Tutorial")] public GameObject refillTutorialPanel;
+    public Button closeButton;
+
+    private bool refillTutorialShown = false;
+
+
     // Current level tracking
     private int currentLevelIndex = 0;
     private LevelData currentLevelData;
@@ -120,6 +126,32 @@ public class LevelManager : MonoBehaviour
         if (SessionManager.Instance != null)
             SessionManager.Instance.OnSessionCompleted += OnSessionCompleted;
     }
+
+    public void ShowRefillTutorial()
+    {
+        // Check if already shown THIS SESSION
+        if (refillTutorialShown)
+            return;
+
+        popupCanvas.SetActive(true);
+        refillTutorialPanel.SetActive(true);
+
+        // Mark as shown for THIS SESSION
+        refillTutorialShown = true;
+
+        Debug.Log("Tutorial shown (game continues playing)");
+    }
+
+    public void DismissRefillTutorial()
+    {
+        // Just hide the tutorial panel
+        refillTutorialPanel.SetActive(false);
+
+        popupCanvas.SetActive(false);
+
+        Debug.Log("Tutorial dismissed");
+    }
+
 
     private void SetupLevelCompleteUI()
     {
@@ -245,8 +277,7 @@ public class LevelManager : MonoBehaviour
         // UPDATED: Resume appropriate music based on current game phase
         if (AudioManager.Instance != null)
         {
-            // Check if orders are active to determine if we're in gameplay phase
-            if (orderSystem != null && orderSystem.IsOrderActive())
+            if (gamePhaseManager.GetCurrentPhase() == GamePhase.PLAYING)
                 StartGameplayMusic();
             else
                 StartArrangementMusic();

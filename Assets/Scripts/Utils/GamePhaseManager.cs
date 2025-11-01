@@ -266,6 +266,11 @@ public class GamePhaseManager : MonoBehaviour
         if (enableDebugLogs) Debug.Log($"GamePhaseManager: {message}");
     }
 
+    public GamePhase GetCurrentPhase()
+    {
+        return currentPhase;
+    }
+    
     /// <summary>
     /// Load saved food positions from SessionManager when entering arrangement phase
     /// </summary>

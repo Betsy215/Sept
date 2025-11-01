@@ -13,17 +13,12 @@ public class RefillSystem : MonoBehaviour
     [Header("Visual Settings")] [Tooltip("Color when item is out of stock")]
     public Color outOfStockColor = new(1f, 1f, 1f, 0.5f);
 
-    [Header("UI Positioning (Reference for child UI setup)")]
-    [Tooltip("Recommended vertical offset for count UI above items")]
-    public float countUIOffset = 0.8f;
-
-    [Tooltip("Recommended vertical offset for status bar below items")]
-    public float statusBarOffset = -0.6f;
-
     [Header("References")] [Tooltip("Reference to GamePhaseManager")]
     public GamePhaseManager gamePhaseManager;
 
     [Header("Debug")] public bool enableDebugLogs = true;
+
+    public LevelManager levelManager;
 
     // Private variables
     private List<RefillableItem> refillableItems = new();
@@ -46,11 +41,20 @@ public class RefillSystem : MonoBehaviour
         DebugLog($"Rescan complete: {refillableItems.Count} total refillable items");
     }
 
+    public void OnItemBecameEmpty()
+    {
+        if (levelManager != null)
+            levelManager.ShowRefillTutorial();
+    }
+
     private void InitializeSystem()
     {
         // Find GamePhaseManager if not assigned
         if (gamePhaseManager == null)
             gamePhaseManager = FindObjectOfType<GamePhaseManager>();
+
+        if (levelManager == null)
+            levelManager = FindObjectOfType<LevelManager>();
 
         // Find all refillable items in scene
         var items = FindObjectsOfType<RefillableItem>();
@@ -105,16 +109,6 @@ public class RefillSystem : MonoBehaviour
     }
 
     #region Settings Getters
-
-    public float GetCountUIOffset()
-    {
-        return countUIOffset;
-    }
-
-    public float GetStatusBarOffset()
-    {
-        return statusBarOffset;
-    }
 
     public Color GetOutOfStockColor()
     {
