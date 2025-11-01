@@ -1756,7 +1756,7 @@ MonoBehaviour:
   refillBar: {fileID: 2087541358}
   fill: {fileID: 542324203}
   bar: {fileID: 288004235}
-  topPadding: 0.5
+  topPadding: 0.2
   inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
   outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 579974206}
@@ -2508,7 +2508,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6, y: 5, z: 0}
+  m_Size: {x: 5, y: 5, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!212 &792063515
 SpriteRenderer:
@@ -2618,7 +2618,7 @@ MonoBehaviour:
   refillBar: {fileID: 1222107086}
   fill: {fileID: 1844395898}
   bar: {fileID: 996697349}
-  topPadding: 0.5
+  topPadding: 0.2
   inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
   outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 0}
@@ -2862,7 +2862,7 @@ Transform:
   m_GameObject: {fileID: 848596945}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.5, y: -3.6, z: 0}
+  m_LocalPosition: {x: -1, y: -4.103037, z: 0}
   m_LocalScale: {x: 0.1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2889,7 +2889,7 @@ MonoBehaviour:
   refillBar: {fileID: 1104347123}
   fill: {fileID: 280620396}
   bar: {fileID: 394082242}
-  topPadding: 0.5
+  topPadding: 0.2
   inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
   outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 0}
@@ -3043,7 +3043,7 @@ MonoBehaviour:
   refillBar: {fileID: 817575389}
   fill: {fileID: 528063850}
   bar: {fileID: 1790195890}
-  topPadding: 0.5
+  topPadding: 0.2
   inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
   outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 0}
@@ -5105,7 +5105,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6, y: 5, z: 0}
+  m_Size: {x: 5, y: 5, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!212 &1342687401
 SpriteRenderer:
@@ -5215,7 +5215,7 @@ MonoBehaviour:
   refillBar: {fileID: 1297568457}
   fill: {fileID: 801290573}
   bar: {fileID: 1078032237}
-  topPadding: 0.5
+  topPadding: 0.2
   inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
   outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 0}
@@ -5789,7 +5789,7 @@ Transform:
   m_GameObject: {fileID: 1420048310}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: -2, z: 0}
+  m_LocalPosition: {x: 1, y: -1.1070371, z: 0}
   m_LocalScale: {x: 0.18, y: 0.18, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5837,7 +5837,7 @@ MonoBehaviour:
   refillBar: {fileID: 1409850422}
   fill: {fileID: 1089455552}
   bar: {fileID: 1833733277}
-  topPadding: 0.5
+  topPadding: 0.2
   inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
   outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 1420048312}
@@ -7172,7 +7172,7 @@ Transform:
   m_GameObject: {fileID: 1820549554}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: -3.6, z: 0}
+  m_LocalPosition: {x: 1, y: -4.164756, z: 0}
   m_LocalScale: {x: 0.9, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7199,7 +7199,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.5, y: 1, z: 0}
+  m_Size: {x: 1.3, y: 1, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1820549559
 MonoBehaviour:
@@ -7216,11 +7216,11 @@ MonoBehaviour:
   enableRefill: 1
   customMaxCount: 5
   customRefillTime: 2
-  count: {fileID: 0}
-  refillBar: {fileID: 0}
-  fill: {fileID: 0}
-  bar: {fileID: 0}
-  topPadding: 0.5
+  count: {fileID: 1316501262}
+  refillBar: {fileID: 1169633635}
+  fill: {fileID: 245189520}
+  bar: {fileID: 1782917448}
+  topPadding: 0.3
   inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
   outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 0}
@@ -7244,7 +7244,7 @@ MonoBehaviour:
   refillBar: {fileID: 0}
   fill: {fileID: 0}
   bar: {fileID: 0}
-  topPadding: 0.5
+  topPadding: 0.3
   inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
   outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 0}
