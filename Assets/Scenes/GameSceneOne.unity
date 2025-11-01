@@ -2823,7 +2823,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   customMaxCount: 3
-  customRefillTime: 3
+  customRefillTime: 2
   count: {fileID: 1508669474}
   refillBar: {fileID: 1222107086}
   fill: {fileID: 1844395898}
@@ -3094,7 +3094,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   customMaxCount: 3
-  customRefillTime: 2
+  customRefillTime: 1.5
   count: {fileID: 2092704413}
   refillBar: {fileID: 1104347123}
   fill: {fileID: 280620396}
@@ -3248,7 +3248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   customMaxCount: 3
-  customRefillTime: 1
+  customRefillTime: 1.5
   count: {fileID: 1840498383}
   refillBar: {fileID: 817575389}
   fill: {fileID: 528063850}
@@ -5422,7 +5422,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   customMaxCount: 3
-  customRefillTime: 3
+  customRefillTime: 2
   count: {fileID: 1104905315}
   refillBar: {fileID: 1297568457}
   fill: {fileID: 801290573}
@@ -7428,7 +7428,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   customMaxCount: 3
-  customRefillTime: 2
+  customRefillTime: 1.5
   count: {fileID: 1316501262}
   refillBar: {fileID: 1169633635}
   fill: {fileID: 245189520}

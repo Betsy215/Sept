@@ -17,7 +17,7 @@ MonoBehaviour:
   ordersPerLevel: 6
   orderDisplayTime: 4
   timeBetweenOrders: 2
-  minOrderItems: 1
+  minOrderItems: 2
   maxOrderItems: 4
   starThreshold1: 150
   starThreshold2: 250
