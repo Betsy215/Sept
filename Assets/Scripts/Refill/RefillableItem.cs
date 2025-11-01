@@ -26,13 +26,11 @@ public class RefillableItem : MonoBehaviour
     [Tooltip("The Bar SpriteRenderer inside RefillBar")]
     public SpriteRenderer bar;
 
-    [Header("UI Colors")] public Color inStockTextColor = Color.white;
-    public Color outOfStockTextColor = Color.red;
-    public Color statusFillColor = Color.green;
-    public Color statusBackgroundColor = new(0.2f, 0.2f, 0.2f, 0.8f);
-
     [Header("Visual Settings")] [Tooltip("Padding to add above item for count UI (affects bounds checking)")]
     public float topPadding = 0.5f;
+
+    [Header("UI Colors")] public Color inStockTextColor = Color.white;
+    public Color outOfStockTextColor = Color.red;
 
     [Header("References")] [Tooltip("ServeableItem component (auto-found if not assigned)")]
     public ServeableItem serveableItem;
@@ -43,6 +41,7 @@ public class RefillableItem : MonoBehaviour
     private RefillSystem refillSystem;
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
+    private Vector3 originalFillScale; // Store the intended fill scale
 
     // Refill state
     private int currentCount;
@@ -104,17 +103,18 @@ public class RefillableItem : MonoBehaviour
             if (bar != null) DebugLog("Auto-assigned Bar SpriteRenderer");
         }
 
-        // Setup UI colors
-        SetupUIColors();
+        // Store original fill scale for animation
+        SetupUIReferences();
     }
 
-    private void SetupUIColors()
+    private void SetupUIReferences()
     {
+        // Store the original fill scale for animation
         if (fill != null)
-            fill.color = statusFillColor;
-
-        if (bar != null)
-            bar.color = statusBackgroundColor;
+        {
+            originalFillScale = fill.transform.localScale;
+            DebugLog($"Stored original fill scale: {originalFillScale}");
+        }
     }
 
     private void RegisterWithRefillSystem()
@@ -224,14 +224,15 @@ public class RefillableItem : MonoBehaviour
     {
         if (fill != null)
         {
-            // Scale horizontally to show progress
-            var scale = fill.transform.localScale;
-            scale.x = Mathf.Clamp01(amount);
+            // Scale the fill sprite
+            var scale = originalFillScale;
+            scale.x = originalFillScale.x * Mathf.Clamp01(amount);
             fill.transform.localScale = scale;
 
-            // Adjust position to anchor fill to left
+            // Move the sprite left as it scales to create left-to-right fill effect
             var pos = fill.transform.localPosition;
-            pos.x = -(1f - amount) * 0.4f; // Adjust based on your bar width
+            var missingWidth = originalFillScale.x * (1f - amount);
+            pos.x = -missingWidth * 0.5f; // Move left by half the missing width
             fill.transform.localPosition = pos;
         }
     }
@@ -325,6 +326,57 @@ public class RefillableItem : MonoBehaviour
 
         refillCoroutine = StartCoroutine(RefillCoroutine());
         DebugLog("Started refilling");
+    }
+
+    // Add this to RefillableItem.cs
+    private void OnDrawGizmos()
+    {
+        if (!enableDebugLogs) return; // Only show when debug is enabled
+
+        // Get the bounds with padding
+        var bounds = GetBoundsWithPadding();
+
+        // Set gizmo color based on state
+        if (Application.isPlaying)
+        {
+            if (isGameplayMode)
+                Gizmos.color = enableRefill ? Color.green : Color.gray;
+            else
+                Gizmos.color = Color.yellow; // Arrangement mode
+        }
+        else
+        {
+            Gizmos.color = Color.cyan; // Editor mode
+        }
+
+        // Draw the bounds as a wireframe cube
+        Gizmos.DrawWireCube(bounds.center, bounds.size);
+
+        // Draw the original collider bounds in a different color for comparison
+        var baseBounds = GetBaseBounds();
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(baseBounds.center, baseBounds.size);
+    }
+
+// Optional: More detailed debug method
+    [ContextMenu("Show Bounds Info")]
+    public void ShowBoundsInfo()
+    {
+        var bounds = GetBoundsWithPadding();
+        var baseBounds = GetBaseBounds();
+
+        DebugLog("=== BOUNDS DEBUG INFO ===");
+        DebugLog($"Base Bounds - Center: {baseBounds.center}, Size: {baseBounds.size}");
+        DebugLog($"Padded Bounds - Center: {bounds.center}, Size: {bounds.size}");
+        DebugLog($"Top Padding: {topPadding}");
+        DebugLog($"Gameplay Mode: {isGameplayMode}");
+        DebugLog($"Enable Refill: {enableRefill}");
+
+        if (count != null && count.gameObject.activeInHierarchy)
+        {
+            var countBounds = count.bounds;
+            DebugLog($"Count UI Bounds: {countBounds}");
+        }
     }
 
     private void StopRefilling()
@@ -424,11 +476,10 @@ public class RefillableItem : MonoBehaviour
 
         // Calculate UI bounds when visible
         var totalTopPadding = topPadding;
-        var totalBottomPadding = 0f;
+        // Remove totalBottomPadding since status bar is centered
 
         if (enableRefill && isGameplayMode)
-        {
-            // Include Count UI bounds
+            // Include Count UI bounds (above food item)
             if (count != null && count.gameObject.activeInHierarchy)
             {
                 var countBounds = count.bounds;
@@ -436,19 +487,10 @@ public class RefillableItem : MonoBehaviour
                 totalTopPadding = Mathf.Max(totalTopPadding, countUITop + 0.1f);
             }
 
-            // Include RefillBar bounds when visible
-            if (refillBar != null && refillBar.activeInHierarchy)
-            {
-                var statusBarBounds = GetChildRendererBounds(refillBar);
-                var statusBarBottom = transform.position.y - statusBarBounds.min.y;
-                totalBottomPadding = Mathf.Max(totalBottomPadding, statusBarBottom + 0.1f);
-            }
-        }
-
-        // Expand bounds to include UI space
-        bounds.size = new Vector3(bounds.size.x, bounds.size.y + totalTopPadding + totalBottomPadding, bounds.size.z);
-        bounds.center = new Vector3(bounds.center.x, bounds.center.y + (totalTopPadding - totalBottomPadding) / 2f,
-            bounds.center.z);
+        // Remove RefillBar bounds calculation since it's centered, not below
+        // Expand bounds to include UI space (only top padding needed)
+        bounds.size = new Vector3(bounds.size.x, bounds.size.y + totalTopPadding, bounds.size.z);
+        bounds.center = new Vector3(bounds.center.x, bounds.center.y + totalTopPadding / 2f, bounds.center.z);
 
         return bounds;
     }
