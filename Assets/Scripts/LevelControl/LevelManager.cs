@@ -556,17 +556,22 @@ public class LevelManager : MonoBehaviour
     {
         // Get total score from session
         var totalScore = SessionManager.Instance.GetTotalScore();
+        var highScore = SessionManager.Instance.GetHighScore();
+        var isNewRecord = SessionManager.Instance.CheckAndSaveHighScore();
+
 
         // Override the text elements to show completion message
         if (todaySale != null)
             todaySale.text = "\nCongrats!\nYou finished all levels!";
 
-        if (todayTip != null)
-            todayTip.text = ""; // Clear the tips text
-
-        if (totalEarned != null)
-            totalEarned.text = $"Unlocked items : ";
+        todayTip.text = $"Unlocked items : ";
         UpdateUnlockedItemsDisplay();
+
+        if (isNewRecord)
+            totalEarned.text = $"New Record!  ${totalScore:F2}";
+        else
+            totalEarned.text = $"Final Score: ${totalScore:F2}";
+
         Debug.Log($"🎉 All levels completed! Total score: {totalScore}");
 
         // FIX: Mark session as completed when all levels are finished

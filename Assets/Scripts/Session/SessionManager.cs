@@ -70,6 +70,7 @@ public class SessionManager : MonoBehaviour
     // Session data
     private SessionData currentSession;
     private const string SESSION_SAVE_KEY = "FoodTruckSession";
+    private const string HIGH_SCORE_KEY = "FoodTruckHighScore";
 
     // Events for UI updates
     public Action<float> OnTotalScoreChanged;
@@ -223,6 +224,32 @@ public class SessionManager : MonoBehaviour
         }
     }
 
+    public float GetHighScore()
+    {
+        return PlayerPrefs.GetFloat(HIGH_SCORE_KEY, 0f);
+    }
+
+    public bool IsNewHighScore(float currentScore)
+    {
+        return currentScore > GetHighScore();
+    }
+
+    public void SaveHighScore(float newHighScore)
+    {
+        PlayerPrefs.SetFloat(HIGH_SCORE_KEY, newHighScore);
+        PlayerPrefs.Save();
+        Debug.Log($"New high score saved: {newHighScore:F2}");
+    }
+
+    public bool CheckAndSaveHighScore()
+    {
+        var currentScore = GetTotalScore();
+        var isNewRecord = IsNewHighScore(currentScore);
+
+        if (isNewRecord) SaveHighScore(currentScore);
+
+        return isNewRecord;
+    }
 
     public void AddScoreImmediately(float points)
     {
