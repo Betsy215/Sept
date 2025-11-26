@@ -316,7 +316,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 1
+      value: 850
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -340,12 +340,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
-      value: $ 800                                                                                     
-        Mont Blanc
+      value: "$ 850                                                                                     
+        \nMont Blanc"
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
-      value: $800
+      value: $850
       objectReference: {fileID: 0}
     - target: {fileID: 9095678449651516868, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Sprite
@@ -707,7 +707,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 1
+      value: 800
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -1046,7 +1046,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 1
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -1309,7 +1309,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 1
+      value: 900
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -1333,12 +1333,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
-      value: $ 800                                                                                     
-        Log Cake
+      value: "$ 900                                                                                     
+        \nLog Cake"
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
-      value: $800
+      value: $900
       objectReference: {fileID: 0}
     - target: {fileID: 9095678449651516868, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Sprite
@@ -2336,7 +2336,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -16, y: -100}
+  m_AnchoredPosition: {x: -16, y: -280}
   m_SizeDelta: {x: 800, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1497742595
@@ -2630,7 +2630,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 1
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -2658,13 +2658,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
-      value: '$ 100
+      value: '$ 150
 
         New Customer!'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
-      value: $100
+      value: $150
       objectReference: {fileID: 0}
     - target: {fileID: 9095678449651516868, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Sprite
@@ -2894,7 +2894,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 1
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -3154,7 +3154,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 1
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -3178,13 +3178,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
-      value: '$ 100
+      value: '$ 180
 
         Orange Juice'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
-      value: $100
+      value: $180
       objectReference: {fileID: 0}
     - target: {fileID: 9095678449651516868, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Sprite
@@ -3823,7 +3823,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 1
+      value: 350
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon

@@ -1349,7 +1349,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -200}
+  m_AnchoredPosition: {x: 0, y: -280}
   m_SizeDelta: {x: 705.42, y: 116.67999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &400494684
@@ -3247,7 +3247,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   customMaxCount: 3
-  customRefillTime: 1.5
+  customRefillTime: 1
   count: {fileID: 1840498383}
   refillBar: {fileID: 817575389}
   fill: {fileID: 528063850}
@@ -6043,7 +6043,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   customMaxCount: 3
-  customRefillTime: 0.5
+  customRefillTime: 1
   count: {fileID: 1399674976}
   refillBar: {fileID: 1409850422}
   fill: {fileID: 1089455552}
