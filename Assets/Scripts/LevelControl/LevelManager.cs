@@ -564,7 +564,6 @@ public class LevelManager : MonoBehaviour
         if (todaySale != null)
             todaySale.text = "\nCongrats!\nYou finished all levels!";
 
-        todayTip.text = $"Unlocked items : ";
         UpdateUnlockedItemsDisplay();
 
         if (isNewRecord)
