@@ -5860,19 +5860,19 @@ MonoBehaviour:
   timeBonusMultiplier: 10
   itemPoints:
   - itemType: Bread
-    points: 18
+    points: 15
   - itemType: Apple
-    points: 20
+    points: 15
   - itemType: Juice
-    points: 25
+    points: 20
   - itemType: Melon
-    points: 28
+    points: 25
   - itemType: Pie
-    points: 32
+    points: 30
   - itemType: Mont Blanc
     points: 35
   - itemType: Log Cake
-    points: 40
+    points: 35
   enableScorePopups: 1
   gameCanvas: {fileID: 1907019807}
   popupFont: {fileID: 11400000, guid: 0361640937a4447a09258110a454af31, type: 2}

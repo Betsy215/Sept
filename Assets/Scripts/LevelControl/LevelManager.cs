@@ -563,7 +563,7 @@ public class LevelManager : MonoBehaviour
         // Override the text elements to show completion message
         if (todaySale != null)
             todaySale.text = "\nCongrats!\nYou finished all levels!";
-
+        todayTip.text = "";
         UpdateUnlockedItemsDisplay();
 
         if (isNewRecord)
