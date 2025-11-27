@@ -567,7 +567,7 @@ public class LevelManager : MonoBehaviour
         UpdateUnlockedItemsDisplay();
 
         if (isNewRecord)
-            totalEarned.text = $"New Record!  ${totalScore:F2}";
+            totalEarned.text = $"New Record! ${totalScore:F2}";
         else
             totalEarned.text = $"Final Score: ${totalScore:F2}";
 
