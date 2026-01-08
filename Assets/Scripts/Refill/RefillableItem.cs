@@ -10,6 +10,9 @@ public class RefillableItem : MonoBehaviour
     [Tooltip("Maximum count for this item (0 = use system default)")]
     public int customMaxCount = 0;
 
+    [Tooltip("Starting count for this item (-1 = start full, 0+ = specific count)")]
+    public int customStartingCount = -1;
+
     [Tooltip("Custom refill time per count (0 = use system default)")]
     public float customRefillTime = 0f;
 
@@ -36,6 +39,8 @@ public class RefillableItem : MonoBehaviour
     public ServeableItem serveableItem;
 
     [Header("Debug")] public bool enableDebugLogs = true;
+
+    [Header("Events")] public System.Action<int, int> OnCountChanged;
 
     // Private variables
     private RefillSystem refillSystem;
@@ -140,7 +145,10 @@ public class RefillableItem : MonoBehaviour
         // Set up refill parameters
         maxCount = customMaxCount > 0 ? customMaxCount : refillSystem.GetDefaultMaxCount();
         refillTimePerCount = customRefillTime > 0 ? customRefillTime : refillSystem.GetRefillTimePerCount();
-        currentCount = maxCount; // Start with full count
+        if (customStartingCount == -1)
+            currentCount = maxCount; // Default: start full
+        else
+            currentCount = Mathf.Clamp(customStartingCount, 0, maxCount); // Custom starting count
 
         DebugLog(
             $"Parameters set - maxCount: {maxCount}, refillTime: {refillTimePerCount}, currentCount: {currentCount}");
@@ -251,12 +259,37 @@ public class RefillableItem : MonoBehaviour
             UpdateCountDisplay();
             UpdateVisualState();
 
+            // ADD THIS LINE:
+            OnCountChanged?.Invoke(currentCount, maxCount);
+
             DebugLog($"Item served correctly. Count: {currentCount}/{maxCount}");
         }
         else
         {
             DebugLog("Item clicked but not needed - count unchanged");
         }
+    }
+
+    public void IncreaseCount(int amount)
+    {
+        if (amount <= 0) return;
+
+        var oldCount = currentCount;
+        currentCount = Mathf.Min(currentCount + amount, maxCount);
+
+        if (currentCount != oldCount)
+        {
+            UpdateCountDisplay();
+            UpdateVisualState();
+            OnCountChanged?.Invoke(currentCount, maxCount);
+            DebugLog($"Count increased by {amount}. New count: {currentCount}/{maxCount}");
+        }
+    }
+
+
+    public bool HasSpace(int amount)
+    {
+        return currentCount + amount <= maxCount;
     }
 
     // Called by ServeableItem for hold detection
