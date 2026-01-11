@@ -1,61 +1,261 @@
 using UnityEngine;
+using System.Collections;
 
 public class Coffees : MonoBehaviour
 {
-    [Header("Coffee Display")] [SerializeField]
-    private SpriteRenderer[] slots; // Slot1, Slot2, Slot3
+    [Header("Coffee Sprites by Level")] [SerializeField]
+    private Sprite[] level1CoffeeSprites = new Sprite[3]; // l1cup0, l1cup1, l1cup2
 
-    [SerializeField] private Sprite plateSprite;
-    [SerializeField] private Sprite cupSprite;
+    [SerializeField] private Sprite level1cup1_serving; // Only serving sprite needed for level 1
+    [SerializeField] private Sprite[] level2CoffeeSprites = new Sprite[4]; // l2cup0, l2cup1, l2cup2, l2cup3  
+    [SerializeField] private Sprite level2cup1_serving; // l2cup1_serving
+    [SerializeField] private Sprite level2cup2_serving; // l2cup2_serving
+
+    [Header("Serving Animation")] [SerializeField]
+    private float plateRestoreDelay = 1f; // Delay before showing empty plate after serving
 
     private RefillableItem refillableItem;
+    private SpriteRenderer spriteRenderer;
+    private int previousCount;
+    private Coroutine plateRestoreCoroutine;
+    private Sprite[] currentSpriteArray; // Active normal sprite set based on upgrade level
 
     private void Start()
     {
-        // Get RefillableItem component
+        // Get components
         refillableItem = GetComponent<RefillableItem>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (refillableItem != null)
         {
             // Subscribe to count change events
             refillableItem.OnCountChanged += HandleCountChanged;
 
+            // Determine which sprite set to use based on maxCount
+            SetupSpriteArrayForUpgradeLevel();
+
+            // Store initial count
+            previousCount = refillableItem.GetCurrentCount();
+
             // Initial visual update
             HandleCountChanged(refillableItem.GetCurrentCount(), refillableItem.GetMaxCount());
         }
+        else
+        {
+            Debug.LogError("Coffees: RefillableItem component not found!");
+        }
+    }
 
-        // Auto-find slots if not assigned
-        if (slots == null || slots.Length == 0) slots = GetComponentsInChildren<SpriteRenderer>();
+    private void SetupSpriteArrayForUpgradeLevel()
+    {
+        var maxCount = refillableItem.GetMaxCount();
+
+        switch (maxCount)
+        {
+            case 2:
+                currentSpriteArray = level1CoffeeSprites; // l1cup0, l1cup1, l1cup2
+                Debug.Log("Coffees: Using Level 1 sprites (2-cup capacity)");
+                break;
+
+            case 3:
+                currentSpriteArray = level2CoffeeSprites; // l2cup0, l2cup1, l2cup2, l2cup3
+                Debug.Log("Coffees: Using Level 2 sprites (3-cup capacity)");
+                break;
+
+            default:
+                Debug.LogWarning($"Coffees: Unsupported maxCount {maxCount}, defaulting to Level 1");
+                currentSpriteArray = level1CoffeeSprites;
+                break;
+        }
+
+        // Validate sprite arrays
+        ValidateSpriteArrays(maxCount);
+    }
+
+    private void ValidateSpriteArrays(int maxCount)
+    {
+        // Validate normal sprites
+        for (var i = 0; i <= maxCount; i++)
+            if (i >= currentSpriteArray.Length || currentSpriteArray[i] == null)
+                Debug.LogError($"Coffees: Missing normal sprite at index {i}");
+
+        // Validate serving sprites based on level
+        if (maxCount == 2)
+        {
+            if (level1cup1_serving == null) Debug.LogError("Coffees: Missing level1cup1_serving sprite");
+        }
+        else if (maxCount == 3)
+        {
+            if (level2cup1_serving == null) Debug.LogError("Coffees: Missing level2cup1_serving sprite");
+            if (level2cup2_serving == null) Debug.LogError("Coffees: Missing level2cup2_serving sprite");
+        }
     }
 
     private void OnDestroy()
     {
         // Unsubscribe to prevent memory leaks
         if (refillableItem != null) refillableItem.OnCountChanged -= HandleCountChanged;
+
+        // Stop any running coroutine
+        if (plateRestoreCoroutine != null) StopCoroutine(plateRestoreCoroutine);
     }
 
     // Event handler - called whenever RefillableItem count changes
     private void HandleCountChanged(int currentCount, int maxCount)
     {
-        UpdateCoffeeVisuals(currentCount, maxCount);
-        Debug.Log($"Coffee count changed: {currentCount}/{maxCount}");
+        var wasServed = currentCount < previousCount;
+        previousCount = currentCount;
+
+        Debug.Log($"Coffees: Count changed to {currentCount}/{maxCount} ({(wasServed ? "served" : "brewed")})");
+
+        if (wasServed)
+            // Cup was served - show immediate change then restore plates after delay
+            UpdateCoffeeVisuals(currentCount, maxCount, true);
+        else
+            // Coffee was brewed - show immediate change
+            UpdateCoffeeVisuals(currentCount, maxCount, false);
     }
 
-    private void UpdateCoffeeVisuals(int currentCount, int maxCount)
+    private void UpdateCoffeeVisuals(int currentCount, int maxCount, bool showPlatesAfterDelay)
     {
-        // Show active slots based on maxCount
-        for (var i = 0; i < maxCount && i < slots.Length; i++)
-            if (slots[i] != null)
-            {
-                // Show cup if we have coffee in this slot, otherwise show plate
-                var hasCoffee = i < currentCount;
-                slots[i].sprite = hasCoffee ? cupSprite : plateSprite;
-                slots[i].gameObject.SetActive(true);
-            }
+        if (showPlatesAfterDelay)
+        {
+            // Stop any existing coroutine
+            if (plateRestoreCoroutine != null) StopCoroutine(plateRestoreCoroutine);
 
-        // Hide unused slots beyond maxCount
-        for (var i = maxCount; i < slots.Length; i++)
-            if (slots[i] != null)
-                slots[i].gameObject.SetActive(false);
+            // Show empty space immediately, then restore plates after delay
+            SetCoffeeSprite(currentCount, maxCount, true);
+            plateRestoreCoroutine = StartCoroutine(RestorePlatesAfterDelay(currentCount, maxCount));
+
+            Debug.Log("Coffees: Starting serving animation");
+        }
+        else
+        {
+            // Brewing - show plates immediately
+            SetCoffeeSprite(currentCount, maxCount, false);
+        }
+    }
+
+    private IEnumerator RestorePlatesAfterDelay(int currentCount, int maxCount)
+    {
+        yield return new WaitForSeconds(plateRestoreDelay);
+
+        // Restore plates (normal display)
+        SetCoffeeSprite(currentCount, maxCount, false);
+        plateRestoreCoroutine = null;
+
+        Debug.Log("Coffees: Plates restored");
+    }
+
+    private void SetCoffeeSprite(int currentCount, int maxCount, bool showEmptySpaces)
+    {
+        if (spriteRenderer == null || currentSpriteArray == null) return;
+
+        Sprite targetSprite = null;
+        var spriteType = "normal";
+
+        if (showEmptySpaces && currentCount > 0)
+        {
+            // Try to get serving sprite for current count
+            targetSprite = GetServingSprite(currentCount, maxCount);
+            if (targetSprite != null) spriteType = "serving";
+        }
+
+        // If no serving sprite available or not showing empty spaces, use normal sprite
+        if (targetSprite == null)
+        {
+            var spriteIndex = Mathf.Clamp(currentCount, 0, currentSpriteArray.Length - 1);
+            spriteIndex = Mathf.Clamp(spriteIndex, 0, maxCount);
+
+            if (spriteIndex < currentSpriteArray.Length && currentSpriteArray[spriteIndex] != null)
+                targetSprite = currentSpriteArray[spriteIndex];
+        }
+
+        // Set the sprite
+        if (targetSprite != null)
+        {
+            spriteRenderer.sprite = targetSprite;
+            Debug.Log($"Coffees: Set {spriteType} sprite for {currentCount} cups");
+        }
+        else
+        {
+            Debug.LogError($"Coffees: No sprite found for {currentCount} cups");
+        }
+    }
+
+    private Sprite GetServingSprite(int currentCount, int maxCount)
+    {
+        if (currentCount <= 0) return null; // No serving sprite for 0 cups
+
+        if (maxCount == 2)
+        {
+            // Level 1: Only l1cup1_serving exists
+            if (currentCount == 1 && level1cup1_serving != null) return level1cup1_serving;
+        }
+        else if (maxCount == 3)
+        {
+            // Level 2: l2cup1_serving and l2cup2_serving exist
+            if (currentCount == 1 && level2cup1_serving != null)
+                return level2cup1_serving;
+            else if (currentCount == 2 && level2cup2_serving != null) return level2cup2_serving;
+        }
+
+        return null; // No serving sprite available
+    }
+
+    // Public method to refresh sprite setup (useful if maxCount changes after upgrades)
+    public void RefreshSpriteSetup()
+    {
+        SetupSpriteArrayForUpgradeLevel();
+
+        if (refillableItem != null) HandleCountChanged(refillableItem.GetCurrentCount(), refillableItem.GetMaxCount());
+    }
+
+    // Debug methods
+    [ContextMenu("Test Level 1 Setup")]
+    private void TestLevel1Setup()
+    {
+        if (refillableItem != null)
+        {
+            currentSpriteArray = level1CoffeeSprites;
+            HandleCountChanged(refillableItem.GetCurrentCount(), 2);
+            Debug.Log("Coffees: Testing Level 1 setup");
+        }
+    }
+
+    [ContextMenu("Test Level 2 Setup")]
+    private void TestLevel2Setup()
+    {
+        if (refillableItem != null)
+        {
+            currentSpriteArray = level2CoffeeSprites;
+            HandleCountChanged(refillableItem.GetCurrentCount(), 3);
+            Debug.Log("Coffees: Testing Level 2 setup");
+        }
+    }
+
+    [ContextMenu("Test Serving Animation")]
+    private void TestServingAnimation()
+    {
+        if (refillableItem != null)
+        {
+            var currentCount = refillableItem.GetCurrentCount();
+            var maxCount = refillableItem.GetMaxCount();
+
+            // Show serving sprite immediately
+            SetCoffeeSprite(currentCount, maxCount, true);
+
+            // Schedule normal sprite after delay
+            StartCoroutine(TestServingCoroutine(currentCount, maxCount));
+
+            Debug.Log("Coffees: Testing serving animation");
+        }
+    }
+
+    private IEnumerator TestServingCoroutine(int currentCount, int maxCount)
+    {
+        yield return new WaitForSeconds(plateRestoreDelay);
+        SetCoffeeSprite(currentCount, maxCount, false);
+        Debug.Log("Coffees: Test serving animation complete");
     }
 }

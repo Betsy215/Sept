@@ -41,8 +41,21 @@ public class BeanContainer : MonoBehaviour
 
     private void UpdateDisplay()
     {
-        if (spriteRenderer != null && beanLevelSprites != null &&
-            currentBeanLevel < beanLevelSprites.Length)
-            spriteRenderer.sprite = beanLevelSprites[currentBeanLevel];
+        if (spriteRenderer != null)
+        {
+            if (currentBeanLevel <= 0)
+            {
+                // No beans - hide sprite completely
+                spriteRenderer.sprite = null;
+                // OR: spriteRenderer.enabled = false;
+            }
+            else if (currentBeanLevel <= beanLevelSprites.Length)
+            {
+                // Show corresponding bean level sprite
+                // Array index = currentBeanLevel - 1
+                spriteRenderer.sprite = beanLevelSprites[currentBeanLevel - 1];
+                spriteRenderer.enabled = true;
+            }
+        }
     }
 }
