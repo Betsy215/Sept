@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Coffees : MonoBehaviour
+public class Coffee : MonoBehaviour
 {
     [Header("Coffee Sprites by Level")] [SerializeField]
     private Sprite[] level1CoffeeSprites = new Sprite[3]; // l1cup0, l1cup1, l1cup2

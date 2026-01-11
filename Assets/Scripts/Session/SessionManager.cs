@@ -46,7 +46,7 @@ public class SessionData
         sessionStartTime = DateTime.Now;
         isActive = true;
 
-        purchasedFoodItems = new List<string> { "Apple", "Bread" };
+        purchasedFoodItems = new List<string> { "Apple", "Bread", "Coffee" };
         purchasedCharacters = new List<string> { "Girl" };
         savedFoodPositions = new List<FoodItemPosition>();
     }

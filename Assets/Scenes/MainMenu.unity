@@ -446,7 +446,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreManager: {fileID: 0}
   levelManager: {fileID: 0}
-  totalFoodItems: 7
+  totalFoodItems: 8
   totalCharacters: 4
 --- !u!1 &1101794723
 GameObject:
