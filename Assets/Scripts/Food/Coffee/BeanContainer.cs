@@ -8,7 +8,7 @@ public class BeanContainer : MonoBehaviour
     [Header("References")] [SerializeField]
     private SpriteRenderer spriteRenderer;
 
-    private int currentBeanLevel = 6; // Start full
+    private int currentBeanLevel = 6;
 
     private void Start()
     {
