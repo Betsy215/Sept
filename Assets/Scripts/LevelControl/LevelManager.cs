@@ -399,6 +399,7 @@ public class LevelManager : MonoBehaviour
         UpdateLevelInfoDisplay();
     }
 
+    // REPLACE this existing method:
     private void ApplyServeableItemSettings()
     {
         // Check if SessionManager is available
@@ -408,16 +409,22 @@ public class LevelManager : MonoBehaviour
             Debug.LogWarning("No active session found, activating all serveable items as fallback");
             for (var i = 0; i < serveableItems.Length; i++)
                 if (serveableItems[i] != null)
+                {
                     serveableItems[i].gameObject.SetActive(true);
+
+                    // NEW: Set default upgrade level
+                    var upgradeable = serveableItems[i].GetComponent<IUpgradeable>();
+                    if (upgradeable != null) upgradeable.SetUpgradeLevel(1);
+                }
 
             return;
         }
 
-        // Get purchased food items from session
+        // NEW: Get BOTH purchase status AND upgrade levels
         var purchasedItems = SessionManager.Instance.GetCurrentSession().purchasedFoodItems;
         var activatedCount = 0;
 
-        // Activate only purchased items
+        // Activate only purchased items AND apply upgrade levels
         for (var i = 0; i < serveableItems.Length; i++)
             if (serveableItems[i] != null)
             {
@@ -426,11 +433,22 @@ public class LevelManager : MonoBehaviour
                 serveableItems[i].gameObject.SetActive(shouldBeActive);
 
                 if (shouldBeActive)
+                {
                     activatedCount++;
+
+                    // NEW: Apply upgrade level (defaults to 1 if not found)
+                    var upgradeable = serveableItems[i].GetComponent<IUpgradeable>();
+                    if (upgradeable != null)
+                    {
+                        var upgradeLevel = SessionManager.Instance.GetFoodUpgradeLevel(itemFoodType);
+                        upgradeable.SetUpgradeLevel(upgradeLevel);
+                        Debug.Log($"Applied upgrade level {upgradeLevel} to {itemFoodType}");
+                    }
+                }
             }
 
         Debug.Log(
-            $"Level {currentLevelIndex + 1}: Activated {activatedCount} out of {serveableItems.Length} serveable items based on purchased items: [{string.Join(", ", purchasedItems)}]");
+            $"Level {currentLevelIndex + 1}: Activated {activatedCount} out of {serveableItems.Length} serveable items with upgrade levels applied");
     }
 
     private void ApplyVisualSettings()

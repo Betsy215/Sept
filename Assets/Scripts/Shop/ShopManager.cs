@@ -177,6 +177,46 @@ public class ShopManager : MonoBehaviour
         }
     }
 
+    // ADD this method to ShopManager class:
+    public void PurchaseUpgrade(string foodType, int cost)
+    {
+        if (SessionManager.Instance == null || !SessionManager.Instance.HasActiveSession())
+        {
+            ShowPurchaseFailedFeedback("No active session!");
+            return;
+        }
+
+        var currentScore = SessionManager.Instance.GetTotalScore();
+        if (currentScore < cost)
+        {
+            ShowPurchaseFailedFeedback($"Not enough points!\nNeed: {cost} | Have: {currentScore}");
+            return;
+        }
+
+        if (!SessionManager.Instance.CanUpgradeFood(foodType))
+        {
+            ShowPurchaseFailedFeedback($"{foodType} already at max level!");
+            return;
+        }
+
+        var upgradeSuccess = SessionManager.Instance.UpgradeFood(foodType, cost);
+
+        if (upgradeSuccess)
+        {
+            UpdateScoreDisplay();
+
+            var newLevel = SessionManager.Instance.GetFoodUpgradeLevel(foodType);
+            ShowPurchaseSuccessFeedback($"Upgraded {foodType} to level {newLevel}!");
+
+            Debug.Log($"Successfully upgraded {foodType} for {cost} points!");
+        }
+        else
+        {
+            Debug.LogError($"Failed to upgrade {foodType}");
+            ShowPurchaseFailedFeedback("Upgrade failed!");
+        }
+    }
+
     private void ShowPurchaseFailedFeedback(string message)
     {
         purchaseConfirmationPopup.SetActive(false);

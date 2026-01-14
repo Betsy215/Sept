@@ -638,6 +638,18 @@ public class RefillableItem : MonoBehaviour
         StartCoroutine(TestHoldCoroutine());
     }
 
+    public void OverrideMaxCount(int newMaxCount)
+    {
+        maxCount = newMaxCount;
+        currentCount = Mathf.Clamp(currentCount, 0, maxCount);
+
+        UpdateCountDisplay();
+        UpdateVisualState();
+        OnCountChanged?.Invoke(currentCount, maxCount);
+
+        Debug.Log($"RefillableItem: MaxCount overridden to {newMaxCount}, currentCount: {currentCount}");
+    }
+
     private IEnumerator TestHoldCoroutine()
     {
         yield return new WaitForSeconds(1f);

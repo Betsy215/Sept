@@ -15,7 +15,7 @@ public class SessionData
     public List<string> purchasedFoodItems;
     public List<string> purchasedCharacters;
     public bool refillTutorialShown = false;
-
+    public Dictionary<string, int> foodUpgradeLevels;
 
     [Serializable]
     public class FoodItemPosition
@@ -47,6 +47,10 @@ public class SessionData
         isActive = true;
 
         purchasedFoodItems = new List<string> { "Apple", "Bread", "Coffee" };
+        foodUpgradeLevels = new Dictionary<string, int>()
+        {
+            { "Coffee", 1 }
+        };
         purchasedCharacters = new List<string> { "Girl" };
         savedFoodPositions = new List<FoodItemPosition>();
     }
@@ -378,6 +382,11 @@ public class SessionManager : MonoBehaviour
                 if (currentSession.purchasedCharacters == null)
                     currentSession.purchasedCharacters = new List<string> { "Girl" };
 
+                if (currentSession.foodUpgradeLevels == null)
+                    currentSession.foodUpgradeLevels = new Dictionary<string, int>()
+                    {
+                        { "Coffee", 1 }
+                    };
                 // NEW: Handle legacy sessions without saved positions
                 if (currentSession.savedFoodPositions == null)
                 {
@@ -452,6 +461,49 @@ public class SessionManager : MonoBehaviour
 
         Debug.Log($"Cannot deduct {amount} points - insufficient score ({currentSession.totalScore})");
         return false;
+    }
+
+    // ADD these methods to SessionManager class:
+
+    public bool UpgradeFood(string foodType, int cost = 0)
+    {
+        if (currentSession == null) return false;
+
+        var currentLevel = GetFoodUpgradeLevel(foodType);
+        if (currentLevel >= 3)
+        {
+            Debug.Log($"Food item {foodType} already at max level");
+            return false;
+        }
+
+        if (cost > 0 && !DeductScore(cost)) return false;
+
+        if (!currentSession.foodUpgradeLevels.ContainsKey(foodType))
+            currentSession.foodUpgradeLevels[foodType] = 1;
+
+        currentSession.foodUpgradeLevels[foodType]++;
+        SaveSession();
+
+        Debug.Log($"Upgraded {foodType} to level {currentSession.foodUpgradeLevels[foodType]}");
+        return true;
+    }
+
+    public int GetFoodUpgradeLevel(string foodType)
+    {
+        if (currentSession?.foodUpgradeLevels?.ContainsKey(foodType) == true)
+            return currentSession.foodUpgradeLevels[foodType];
+        return 1;
+    }
+
+    public Dictionary<string, int> GetAllFoodUpgradeLevels()
+    {
+        return currentSession?.foodUpgradeLevels ?? new Dictionary<string, int>();
+    }
+
+    public bool CanUpgradeFood(string foodType, int maxLevel = 3)
+    {
+        var currentLevel = GetFoodUpgradeLevel(foodType);
+        return currentLevel < maxLevel;
     }
 
     // Called when the application is paused/closed

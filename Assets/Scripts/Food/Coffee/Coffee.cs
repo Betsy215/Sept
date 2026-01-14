@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Coffee : MonoBehaviour
+public class Coffee : MonoBehaviour, IUpgradeable
 {
     [Header("Coffee Sprites by Level")] [SerializeField]
     private Sprite[] level1CoffeeSprites = new Sprite[3]; // l1cup0, l1cup1, l1cup2
@@ -14,6 +14,7 @@ public class Coffee : MonoBehaviour
     [Header("Serving Animation")] [SerializeField]
     private float plateRestoreDelay = 1f; // Delay before showing empty plate after serving
 
+    private int currentUpgradeLevel = 1;
     private RefillableItem refillableItem;
     private SpriteRenderer spriteRenderer;
     private int previousCount;
@@ -27,49 +28,51 @@ public class Coffee : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (refillableItem != null)
-        {
             // Subscribe to count change events
             refillableItem.OnCountChanged += HandleCountChanged;
-
-            // Determine which sprite set to use based on maxCount
-            SetupSpriteArrayForUpgradeLevel();
-
-            // Store initial count
-            previousCount = refillableItem.GetCurrentCount();
-
-            // Initial visual update
-            HandleCountChanged(refillableItem.GetCurrentCount(), refillableItem.GetMaxCount());
-        }
         else
-        {
             Debug.LogError("Coffees: RefillableItem component not found!");
-        }
+    }
+
+    public void SetUpgradeLevel(int level)
+    {
+        currentUpgradeLevel = level;
+        Debug.Log($"Coffee: Upgrade level set to {level}");
+        ApplyUpgradeLevel();
+    }
+
+    private void ApplyUpgradeLevel()
+    {
+        if (refillableItem == null) return;
+
+        var maxCount = currentUpgradeLevel == 1 ? 2 : 3;
+        refillableItem.OverrideMaxCount(maxCount);
+
+        SetupSpriteArrayForUpgradeLevel();
+
+        previousCount = refillableItem.GetCurrentCount();
+        HandleCountChanged(refillableItem.GetCurrentCount(), refillableItem.GetMaxCount());
+
+        Debug.Log($"Coffee: Applied level {currentUpgradeLevel} configuration (maxCount: {maxCount})");
     }
 
     private void SetupSpriteArrayForUpgradeLevel()
     {
-        var maxCount = refillableItem.GetMaxCount();
-
-        switch (maxCount)
+        switch (currentUpgradeLevel)
         {
-            case 2:
-                currentSpriteArray = level1CoffeeSprites; // l1cup0, l1cup1, l1cup2
-                Debug.Log("Coffees: Using Level 1 sprites (2-cup capacity)");
-                break;
-
-            case 3:
-                currentSpriteArray = level2CoffeeSprites; // l2cup0, l2cup1, l2cup2, l2cup3
-                Debug.Log("Coffees: Using Level 2 sprites (3-cup capacity)");
-                break;
-
-            default:
-                Debug.LogWarning($"Coffees: Unsupported maxCount {maxCount}, defaulting to Level 1");
+            case 1:
                 currentSpriteArray = level1CoffeeSprites;
+                Debug.Log("Coffee: Using Level 1 sprites (2-cup capacity)");
+                break;
+
+            case 2:
+            default:
+                currentSpriteArray = level2CoffeeSprites;
+                Debug.Log("Coffee: Using Level 2+ sprites (3-cup capacity)");
                 break;
         }
 
-        // Validate sprite arrays
-        ValidateSpriteArrays(maxCount);
+        ValidateSpriteArrays(currentUpgradeLevel == 1 ? 2 : 3);
     }
 
     private void ValidateSpriteArrays(int maxCount)
