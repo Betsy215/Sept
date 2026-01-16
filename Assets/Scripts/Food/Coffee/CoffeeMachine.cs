@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CoffeeMachine : MonoBehaviour
+public class CoffeeMachine : MonoBehaviour, IDraggable
 {
     [Header("References")] [SerializeField]
     private BeanContainer beanContainer;
@@ -53,7 +53,6 @@ public class CoffeeMachine : MonoBehaviour
     // Called by animation event when brewing completes
     public void OnBrewingComplete()
     {
-        // Add coffee using updated RefillableItem method
         if (coffeeRefillableItem != null) coffeeRefillableItem.IncreaseCount(cupsPerBrew);
 
         isBrewing = false;

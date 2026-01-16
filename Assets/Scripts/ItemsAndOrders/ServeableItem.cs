@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDraggable
 {
     [Header("Item Settings")] [Tooltip("Type of food this item represents (must match OrderSystem food types)")]
     public string foodType = "Bread"; // e.g., "Bread", "Apple", "Juice", etc.
@@ -31,6 +31,19 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     // NEW: Refill system integration
     private RefillableItem refillableItem;
     private RefillSystem refillSystem;
+
+    public void SetDraggingEnabled(bool enabled)
+    {
+        var draggable = GetComponent<DraggableFood>();
+        if (draggable == null && enabled)
+            draggable = gameObject.AddComponent<DraggableFood>();
+
+        if (draggable != null)
+            draggable.SetDraggingEnabled(enabled);
+
+        // Disable serving during arrangement, enable during play
+        SetServingEnabled(!enabled);
+    }
 
     private void Start()
     {

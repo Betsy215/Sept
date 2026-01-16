@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 
 public enum GamePhase
@@ -152,62 +153,39 @@ public class GamePhaseManager : MonoBehaviour
 
     private void EnableArrangementMode()
     {
-        foreach (var item in allFoodItems)
-            if (item != null && item.gameObject.activeInHierarchy)
+        // Find all IDraggable objects
+        var draggableItems = FindObjectsOfType<MonoBehaviour>().OfType<IDraggable>();
+
+        foreach (var item in draggableItems)
+        {
+            var gameObject = ((MonoBehaviour)item).gameObject;
+
+            if (gameObject != null && gameObject.activeInHierarchy)
             {
-                var draggable = item.GetComponent<DraggableFood>();
-                if (draggable == null)
-                    draggable = item.gameObject.AddComponent<DraggableFood>();
+                item.InitializeDragging(tableLayer, this, allFoodItems);
+                item.SetDraggingEnabled(true);
 
-                draggable.Initialize(tableLayer, this, allFoodItems);
-
-                // This now automatically starts iOS-style wiggling!
-                draggable.SetDraggingEnabled(true);
-
-                // Disable serving during arrangement
-                item.SetServingEnabled(false);
-
-                DebugLog($"Enabled arrangement mode with iOS wiggle for {item.GetFoodType()}");
+                DebugLog($"Enabled arrangement mode for {gameObject.name}");
             }
+        }
     }
 
     private void DisableArrangementMode()
     {
-        foreach (var item in allFoodItems)
-            if (item != null)
-            {
-                var draggable = item.GetComponent<DraggableFood>();
-                if (draggable != null)
-                    // This now automatically stops wiggling!
-                    draggable.SetDraggingEnabled(false);
+        var draggableItems = FindObjectsOfType<MonoBehaviour>().OfType<IDraggable>();
 
-                // Re-enable serving
-                item.SetServingEnabled(true);
-            }
+        foreach (var item in draggableItems) item.SetDraggingEnabled(false);
     }
 
-    // Add this event handler (called by DraggableFood when overlap changes)
+    private bool AnyItemsOverlapping()
+    {
+        var draggableItems = FindObjectsOfType<MonoBehaviour>().OfType<IDraggable>();
+        return draggableItems.Any(item => item.HasOverlap());
+    }
+
     public void OnItemOverlapChanged()
     {
         UpdateDoneButtonState();
-    }
-
-    /// <summary>
-    /// Check if any items currently overlap
-    /// </summary>
-    private bool AnyItemsOverlapping()
-    {
-        if (allFoodItems == null) return false;
-
-        foreach (var item in allFoodItems)
-        {
-            if (item == null || !item.gameObject.activeInHierarchy) continue;
-
-            var draggable = item.GetComponent<DraggableFood>();
-            if (draggable != null && draggable.HasOverlap()) return true;
-        }
-
-        return false;
     }
 
     /// <summary>
