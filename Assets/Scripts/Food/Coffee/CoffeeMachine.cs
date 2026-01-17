@@ -1,6 +1,7 @@
 using UnityEngine;
 
-public class CoffeeMachine : MonoBehaviour, IDraggable
+// MODIFY: Add IUpgradeable interface to class declaration
+public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable
 {
     [Header("References")] [SerializeField]
     private BeanContainer beanContainer;
@@ -8,9 +9,16 @@ public class CoffeeMachine : MonoBehaviour, IDraggable
     [SerializeField] private RefillableItem coffeeRefillableItem;
     [SerializeField] private Animator animator;
 
-    [Header("Settings")] [SerializeField] private int cupsPerBrew = 1;
+    [Header("Upgrade Level Sprites")] [SerializeField]
+    private Sprite level2Sprite;
+
+    private SpriteRenderer spriteRenderer; // Assign in inspector
 
     private bool isBrewing = false;
+
+    // ADD: New fields for upgrade system and progressive brewing
+    private int currentUpgradeLevel = 1;
+    private int cupsBrewedThisSession = 0;
 
     private void Start()
     {
@@ -20,6 +28,20 @@ public class CoffeeMachine : MonoBehaviour, IDraggable
 
         if (animator == null)
             animator = GetComponent<Animator>();
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        switch (currentUpgradeLevel)
+        {
+            case 2:
+                if (level2Sprite != null)
+                {
+                    spriteRenderer.sprite = level2Sprite;
+                    Debug.Log("🎨 CoffeeMachine: Updated to Level 1 sprite");
+                }
+
+                break;
+        }
     }
 
     private void OnMouseUpAsButton()
@@ -32,30 +54,94 @@ public class CoffeeMachine : MonoBehaviour, IDraggable
         if (isBrewing) return false;
         if (beanContainer == null || coffeeRefillableItem == null) return false;
 
-        return beanContainer.HasEnoughBeans(cupsPerBrew) &&
-               coffeeRefillableItem.HasSpace(cupsPerBrew);
+        // MODIFY: Check if there's space for at least 1 cup
+        return beanContainer.HasEnoughBeans(1) && coffeeRefillableItem.HasSpace(1);
     }
 
     private void StartBrewing()
     {
         isBrewing = true;
+        cupsBrewedThisSession = 0; // Reset counter
 
-        // Consume beans immediately
-        beanContainer.ConsumeBeans(cupsPerBrew);
+        // MODIFY: Consume beans for 1 cup at a time (we'll consume more as we brew)
+        beanContainer.ConsumeBeans(1);
 
         // Trigger animation
         if (animator != null)
             animator.SetTrigger("StartBrewing");
 
-        Debug.Log("Brewing started...");
+        Debug.Log($"Brewing started... Level {currentUpgradeLevel} machine");
     }
 
-    // Called by animation event when brewing completes
-    public void OnBrewingComplete()
-    {
-        if (coffeeRefillableItem != null) coffeeRefillableItem.IncreaseCount(cupsPerBrew);
+    // REMOVE: Old OnBrewingComplete method completely
+    // DELETE: public void OnBrewingComplete() { ... }
 
+    // ADD: New progressive brewing methods
+    public void OnFinish1Cup()
+    {
+        cupsBrewedThisSession++;
+
+        // Add 1 cup to coffee supply
+        if (coffeeRefillableItem != null)
+            coffeeRefillableItem.IncreaseCount(1);
+
+        Debug.Log($"First cup complete! Cups brewed this session: {cupsBrewedThisSession}");
+
+        // Level 1 machine: Finish brewing after 1 cup
+        if (currentUpgradeLevel == 1)
+        {
+            CompleteBrewing();
+        }
+        // Level 2+ machine: Continue brewing for second cup
+        else
+        {
+            // Consume beans for second cup
+            if (beanContainer != null && beanContainer.HasEnoughBeans(1))
+            {
+                beanContainer.ConsumeBeans(1);
+                Debug.Log("Continuing to brew second cup...");
+            }
+        }
+    }
+
+    public void OnFinish2Cup()
+    {
+        // Only called for Level 2+ machines (Level 1 stops at OnFinish1Cup)
+        if (currentUpgradeLevel >= 2)
+        {
+            cupsBrewedThisSession++;
+
+            // Add second cup to coffee supply
+            if (coffeeRefillableItem != null)
+                coffeeRefillableItem.IncreaseCount(1);
+
+            Debug.Log($"Second cup complete! Total cups brewed: {cupsBrewedThisSession}");
+        }
+
+        CompleteBrewing();
+    }
+
+    // ADD: Centralized brewing completion
+    private void CompleteBrewing()
+    {
         isBrewing = false;
-        Debug.Log("Brewing complete!");
+
+        Debug.Log($"Brewing complete! Level {currentUpgradeLevel} machine finished {cupsBrewedThisSession} cups.");
+
+        cupsBrewedThisSession = 0; // Reset for next brewing session
+    }
+
+    public void SetUpgradeLevel(int level)
+    {
+        currentUpgradeLevel = level;
+
+        // UPDATE: Set animator parameter so it knows which animation to play
+        if (animator != null)
+        {
+            animator.SetInteger("BrewingLevel", currentUpgradeLevel);
+            Debug.Log($"CoffeeMachine: Set BrewingLevel parameter to {currentUpgradeLevel}");
+        }
+
+        Debug.Log($"CoffeeMachine: Upgrade level set to {level}");
     }
 }

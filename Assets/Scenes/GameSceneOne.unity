@@ -227,7 +227,7 @@ SpriteRenderer:
   m_SortingLayerID: 1328505229
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: cdf6c318ae7b34d18af3e438cd48548d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 941b1410c068e43febe3a31913610acc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -312,6 +312,7 @@ MonoBehaviour:
   coffeeRefillableItem: {fileID: 676287862}
   animator: {fileID: 135501133}
   cupsPerBrew: 1
+  level2Sprite: {fileID: 21300000, guid: cdf6c318ae7b34d18af3e438cd48548d, type: 3}
 --- !u!1 &151964288
 GameObject:
   m_ObjectHideFlags: 0

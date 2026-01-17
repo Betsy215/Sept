@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections.Generic;
+using System.Linq;
 
 public class LevelManager : MonoBehaviour
 {
@@ -399,32 +400,28 @@ public class LevelManager : MonoBehaviour
         UpdateLevelInfoDisplay();
     }
 
-    // REPLACE this existing method:
+    // REPLACE: ApplyServeableItemSettings method with this cleaner version
     private void ApplyServeableItemSettings()
     {
         // Check if SessionManager is available
         if (SessionManager.Instance == null || !SessionManager.Instance.HasActiveSession())
         {
-            // Fallback: activate all items if no session
-            Debug.LogWarning("No active session found, activating all serveable items as fallback");
+            // Fallback: activate all items and set default upgrade levels
             for (var i = 0; i < serveableItems.Length; i++)
                 if (serveableItems[i] != null)
-                {
                     serveableItems[i].gameObject.SetActive(true);
 
-                    // NEW: Set default upgrade level
-                    var upgradeable = serveableItems[i].GetComponent<IUpgradeable>();
-                    if (upgradeable != null) upgradeable.SetUpgradeLevel(1);
-                }
-
+            // Set default upgrade levels for ALL IUpgradeable objects
+            SetDefaultUpgradeLevels();
             return;
         }
 
-        // NEW: Get BOTH purchase status AND upgrade levels
-        var purchasedItems = SessionManager.Instance.GetCurrentSession().purchasedFoodItems;
+        // Get purchase status AND apply upgrade levels
+        var sessionData = SessionManager.Instance.GetCurrentSession();
+        var purchasedItems = sessionData.purchasedFoodItems;
         var activatedCount = 0;
 
-        // Activate only purchased items AND apply upgrade levels
+        // Activate only purchased ServeableItems
         for (var i = 0; i < serveableItems.Length; i++)
             if (serveableItems[i] != null)
             {
@@ -432,24 +429,57 @@ public class LevelManager : MonoBehaviour
                 var shouldBeActive = purchasedItems.Contains(itemFoodType);
                 serveableItems[i].gameObject.SetActive(shouldBeActive);
 
-                if (shouldBeActive)
-                {
-                    activatedCount++;
-
-                    // NEW: Apply upgrade level (defaults to 1 if not found)
-                    var upgradeable = serveableItems[i].GetComponent<IUpgradeable>();
-                    if (upgradeable != null)
-                    {
-                        var upgradeLevel = SessionManager.Instance.GetFoodUpgradeLevel(itemFoodType);
-                        upgradeable.SetUpgradeLevel(upgradeLevel);
-                        Debug.Log($"Applied upgrade level {upgradeLevel} to {itemFoodType}");
-                    }
-                }
+                if (shouldBeActive) activatedCount++;
             }
 
+        // Apply upgrade levels to ALL IUpgradeable objects (unified approach)
+        ApplyUpgradeLevels();
+
         Debug.Log(
-            $"Level {currentLevelIndex + 1}: Activated {activatedCount} out of {serveableItems.Length} serveable items with upgrade levels applied");
+            $"Level {currentLevelIndex + 1}: Activated {activatedCount} serveable items with upgrade levels applied");
     }
+
+// ADD: Unified upgrade level application
+    private void ApplyUpgradeLevels()
+    {
+        var upgradeableItems = FindObjectsOfType<MonoBehaviour>().OfType<IUpgradeable>();
+
+        foreach (var item in upgradeableItems)
+        {
+            var gameObject = ((MonoBehaviour)item).gameObject;
+
+            // Get upgrade level based on object type
+            var upgradeLevel = GetUpgradeLevelForObject(gameObject);
+            item.SetUpgradeLevel(upgradeLevel);
+
+            Debug.Log($"Applied upgrade level {upgradeLevel} to {gameObject.name}");
+        }
+    }
+
+// ADD: Helper to determine upgrade level for any object
+    private int GetUpgradeLevelForObject(GameObject obj)
+    {
+        // For ServeableItems, use food type
+        var serveableItem = obj.GetComponent<ServeableItem>();
+        if (serveableItem != null) return SessionManager.Instance.GetFoodUpgradeLevel(serveableItem.GetFoodType());
+
+        // For CoffeeMachine, use "CoffeeMachine" key
+        var coffeeMachine = obj.GetComponent<CoffeeMachine>();
+        if (coffeeMachine != null) return SessionManager.Instance.GetFoodUpgradeLevel("CoffeeMachine");
+
+        // For other objects, use GameObject name as key
+        return SessionManager.Instance.GetFoodUpgradeLevel(obj.name);
+    }
+
+// ADD: Set default levels for all IUpgradeable objects
+    private void SetDefaultUpgradeLevels()
+    {
+        var upgradeableItems = FindObjectsOfType<MonoBehaviour>().OfType<IUpgradeable>();
+
+        foreach (var item in upgradeableItems) item.SetUpgradeLevel(1); // Default level 1
+    }
+
+// ADD: using System.Linq at the top if not already there
 
     private void ApplyVisualSettings()
     {

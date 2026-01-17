@@ -49,7 +49,8 @@ public class SessionData
         purchasedFoodItems = new List<string> { "Apple", "Bread", "Coffee" };
         foodUpgradeLevels = new Dictionary<string, int>()
         {
-            { "Coffee", 1 }
+            { "Coffee", 1 },
+            { "CoffeeMachine", 2 }
         };
         purchasedCharacters = new List<string> { "Girl" };
         savedFoodPositions = new List<FoodItemPosition>();
