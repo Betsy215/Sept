@@ -20,29 +20,25 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable
     private int currentUpgradeLevel = 1;
     private int cupsBrewedThisSession = 0;
 
+    private void Awake()
+    {
+        Debug.Log($"🔵 CoffeeMachine Awake() - Time: {Time.frameCount}");
+    }
+
     private void Start()
     {
-        // Auto-find components if not assigned
+        Debug.Log($"🟢 CoffeeMachine Start() - currentUpgradeLevel: {currentUpgradeLevel}, Time: {Time.frameCount}");
+
         if (beanContainer == null)
             beanContainer = GetComponentInChildren<BeanContainer>();
 
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        spriteRenderer = GetComponent<SpriteRenderer>();
-
-        switch (currentUpgradeLevel)
-        {
-            case 2:
-                if (level2Sprite != null)
-                {
-                    spriteRenderer.sprite = level2Sprite;
-                    Debug.Log("🎨 CoffeeMachine: Updated to Level 1 sprite");
-                }
-
-                break;
-        }
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
     }
+
 
     private void OnMouseUpAsButton()
     {
@@ -133,15 +129,46 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable
 
     public void SetUpgradeLevel(int level)
     {
+        Debug.Log($"🟡 CoffeeMachine SetUpgradeLevel({level}) called - Time: {Time.frameCount}");
         currentUpgradeLevel = level;
 
-        // UPDATE: Set animator parameter so it knows which animation to play
+        // Initialize components if needed
+        if (animator == null)
+            animator = GetComponent<Animator>();
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Set animator parameter
         if (animator != null)
         {
             animator.SetInteger("BrewingLevel", currentUpgradeLevel);
-            Debug.Log($"CoffeeMachine: Set BrewingLevel parameter to {currentUpgradeLevel}");
+            Debug.Log($"🎬 CoffeeMachine: Set BrewingLevel parameter to {currentUpgradeLevel}");
         }
 
-        Debug.Log($"CoffeeMachine: Upgrade level set to {level}");
+        // ✅ ACTUALLY SWITCH THE SPRITE HERE (like Coffee does)
+        if (spriteRenderer != null)
+            switch (currentUpgradeLevel)
+            {
+                case 2:
+                    if (level2Sprite != null)
+                    {
+                        spriteRenderer.sprite = level2Sprite;
+                        Debug.Log($"🎨 CoffeeMachine: Updated to Level 2 sprite");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("⚠️ level2Sprite not assigned!");
+                    }
+
+                    break;
+
+                case 1:
+                default:
+                    // Keep default Level 1 sprite
+                    Debug.Log($"🎨 CoffeeMachine: Using Level 1 sprite");
+                    break;
+            }
+
+        Debug.Log($"⬆️ CoffeeMachine: Upgrade level set to {level}");
     }
 }
