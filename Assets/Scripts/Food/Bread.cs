@@ -1,0 +1,180 @@
+using UnityEngine;
+
+/// <summary>
+/// Handles bread board visual display based on count.
+/// Shows 0-4 bread pieces visually through sprite switching.
+/// Always 4 breads max (no upgrade levels).
+/// No animations - just clean sprite changes.
+/// 
+/// SETUP REQUIREMENTS:
+/// - RefillableItem.enableRefill = FALSE (no hold-to-refill)
+/// - RefillableItem.customMaxCount = 4
+/// - RefillableItem.customStartingCount = 4
+/// - Remove Count and RefillBar UI children
+/// 
+/// COMPATIBILITY:
+/// - Works with ServeableItem (foodType = "Bread")
+/// - Works with RefillableItem for count management
+/// - Works with OrderSystem for orders
+/// - Works with SessionManager for saving
+/// - Does NOT implement IUpgradeable (no upgrades)
+/// </summary>
+public class Bread : MonoBehaviour
+{
+    [Header("Bread Sprites")] [Tooltip("Sprite array: Index 0 = empty board, 1-4 = bread pieces")] [SerializeField]
+    private Sprite[] breadSprites = new Sprite[5]; // 0-4 breads
+
+    [Header("Debug")] public bool enableDebugLogs = true;
+
+    // References
+    private RefillableItem refillableItem;
+    private SpriteRenderer spriteRenderer;
+    private ServeableItem serveableItem;
+    private int previousCount;
+
+    private void Start()
+    {
+        // Get components
+        refillableItem = GetComponent<RefillableItem>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        serveableItem = GetComponent<ServeableItem>();
+
+        if (refillableItem != null)
+        {
+            // Subscribe to count change events
+            refillableItem.OnCountChanged += HandleCountChanged;
+
+            // Initialize with current count
+            previousCount = refillableItem.GetCurrentCount();
+            UpdateBreadSprite(previousCount);
+
+            DebugLog($"Bread initialized with count: {previousCount}");
+
+            // Verify settings
+            VerifySettings();
+        }
+        else
+        {
+            Debug.LogError("Bread: RefillableItem component not found!");
+        }
+
+        if (serveableItem == null) Debug.LogWarning("Bread: ServeableItem component not found!");
+
+        // Validate sprites
+        ValidateSpriteArray();
+    }
+
+    private void OnDestroy()
+    {
+        // Unsubscribe to prevent memory leaks
+        if (refillableItem != null) refillableItem.OnCountChanged -= HandleCountChanged;
+    }
+
+    /// <summary>
+    /// Verifies RefillableItem settings are correct
+    /// </summary>
+    private void VerifySettings()
+    {
+        if (refillableItem == null) return;
+
+        // Check max count is 4
+        if (refillableItem.GetMaxCount() != 4)
+            Debug.LogWarning(
+                $"Bread: maxCount is {refillableItem.GetMaxCount()}, expected 4. Set customMaxCount to 4 in RefillableItem.");
+
+        // Check refill is disabled
+        if (refillableItem.enableRefill)
+            Debug.LogWarning(
+                "Bread: enableRefill should be FALSE (no hold-to-refill). Uncheck in RefillableItem component.");
+
+        DebugLog("Settings verified");
+    }
+
+    /// <summary>
+    /// Event handler - called when RefillableItem count changes
+    /// </summary>
+    private void HandleCountChanged(int currentCount, int maxCount)
+    {
+        var wasServed = currentCount < previousCount;
+        var wasRefilled = currentCount > previousCount;
+        previousCount = currentCount;
+
+        DebugLog($"Count changed: {currentCount}/4 ({(wasServed ? "served" : wasRefilled ? "refilled" : "changed")})");
+
+        // Update sprite
+        UpdateBreadSprite(currentCount);
+    }
+
+    /// <summary>
+    /// Updates the sprite based on current count
+    /// </summary>
+    private void UpdateBreadSprite(int currentCount)
+    {
+        if (spriteRenderer == null) return;
+
+        // Clamp to valid range
+        currentCount = Mathf.Clamp(currentCount, 0, 4);
+
+        // Set sprite
+        if (currentCount < breadSprites.Length && breadSprites[currentCount] != null)
+        {
+            spriteRenderer.sprite = breadSprites[currentCount];
+            DebugLog($"Sprite updated: bread_{currentCount}");
+        }
+        else
+        {
+            Debug.LogError($"Bread: Missing sprite at index {currentCount}!");
+        }
+    }
+
+    /// <summary>
+    /// Validates all sprites are assigned
+    /// </summary>
+    private void ValidateSpriteArray()
+    {
+        for (var i = 0; i <= 4; i++)
+            if (i >= breadSprites.Length || breadSprites[i] == null)
+                Debug.LogError($"Bread: Missing sprite at index {i}! Assign bread_{i} in inspector.");
+    }
+
+    private void DebugLog(string message)
+    {
+        if (enableDebugLogs) Debug.Log($"[Bread] {message}");
+    }
+
+    #region Editor Testing
+
+#if UNITY_EDITOR
+    [ContextMenu("Test: Show 0 Breads (Empty)")]
+    private void Test0Breads()
+    {
+        UpdateBreadSprite(0);
+    }
+
+    [ContextMenu("Test: Show 1 Bread")]
+    private void Test1Bread()
+    {
+        UpdateBreadSprite(1);
+    }
+
+    [ContextMenu("Test: Show 2 Breads")]
+    private void Test2Breads()
+    {
+        UpdateBreadSprite(2);
+    }
+
+    [ContextMenu("Test: Show 3 Breads")]
+    private void Test3Breads()
+    {
+        UpdateBreadSprite(3);
+    }
+
+    [ContextMenu("Test: Show 4 Breads (Full)")]
+    private void Test4Breads()
+    {
+        UpdateBreadSprite(4);
+    }
+#endif
+
+    #endregion
+}
