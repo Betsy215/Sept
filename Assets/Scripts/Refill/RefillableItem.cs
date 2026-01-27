@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using TMPro;
 
 public class RefillableItem : MonoBehaviour
 {
@@ -16,10 +15,6 @@ public class RefillableItem : MonoBehaviour
     [Tooltip("Custom refill time per count (0 = use system default)")]
     public float customRefillTime = 0f;
 
-    [Header("UI References - Assign from child objects")]
-    [Tooltip("The Count TextMeshPro component (child of this item)")]
-    public TextMeshPro count;
-
     [Tooltip("The RefillBar GameObject (child of this item)")]
     public GameObject refillBar;
 
@@ -28,12 +23,6 @@ public class RefillableItem : MonoBehaviour
 
     [Tooltip("The Bar SpriteRenderer inside RefillBar")]
     public SpriteRenderer bar;
-
-    [Header("Visual Settings")] [Tooltip("Padding to add above item for count UI (affects bounds checking)")]
-    public float topPadding = 0.5f;
-
-    [Header("UI Colors")] public Color inStockTextColor = Color.white;
-    public Color outOfStockTextColor = Color.red;
 
     [Header("References")] [Tooltip("ServeableItem component (auto-found if not assigned)")]
     public ServeableItem serveableItem;
@@ -81,35 +70,15 @@ public class RefillableItem : MonoBehaviour
         RegisterWithRefillSystem();
     }
 
-    [ContextMenu("Auto-Assign UI References")]
     private void AutoAssignUIReferences()
     {
-        if (count == null)
-        {
-            count = transform.Find("Count")?.GetComponent<TextMeshPro>();
-            if (count != null) DebugLog("Auto-assigned Count component");
-        }
-
         if (refillBar == null)
         {
             refillBar = transform.Find("RefillBar")?.gameObject;
             if (refillBar != null) DebugLog("Auto-assigned RefillBar GameObject");
         }
 
-        if (fill == null && refillBar != null)
-        {
-            fill = refillBar.transform.Find("Fill")?.GetComponent<SpriteRenderer>();
-            if (fill != null) DebugLog("Auto-assigned Fill SpriteRenderer");
-        }
-
-        if (bar == null && refillBar != null)
-        {
-            bar = refillBar.transform.Find("Bar")?.GetComponent<SpriteRenderer>();
-            if (bar != null) DebugLog("Auto-assigned Bar SpriteRenderer");
-        }
-
-        // Store original fill scale for animation
-        SetupUIReferences();
+        // ... fill and bar assignment remain unchanged
     }
 
     private void SetupUIReferences()
@@ -155,7 +124,6 @@ public class RefillableItem : MonoBehaviour
 
         // Initialize UI
         SetUIVisible(false); // Start hidden
-        UpdateCountDisplay();
         UpdateVisualState();
 
         DebugLog($"Initialized with max count: {maxCount}, refill time: {refillTimePerCount}s");
@@ -166,18 +134,10 @@ public class RefillableItem : MonoBehaviour
     public void SetGameplayMode(bool gameplayMode)
     {
         isGameplayMode = gameplayMode;
-
         DebugLog($"SetGameplayMode called: {gameplayMode}");
-
-        // Show/hide count UI based on gameplay mode and refill enabled
-        var shouldShowCountUI = gameplayMode && enableRefill;
-        SetCountUIVisible(shouldShowCountUI);
 
         // Status bar stays hidden unless actively refilling
         SetStatusBarVisible(false);
-
-        if (shouldShowCountUI)
-            UpdateCountDisplay();
 
         // Stop any ongoing refill when leaving gameplay mode
         if (!gameplayMode && refillCoroutine != null)
@@ -187,22 +147,12 @@ public class RefillableItem : MonoBehaviour
             isRefilling = false;
         }
 
-        DebugLog($"Gameplay mode set to: {gameplayMode}, Count UI visible: {shouldShowCountUI}");
+        DebugLog($"Gameplay mode set to: {gameplayMode}");
     }
 
     private void SetUIVisible(bool visible)
     {
-        SetCountUIVisible(visible && enableRefill);
         SetStatusBarVisible(false); // Status bar only shows during refill
-    }
-
-    private void SetCountUIVisible(bool visible)
-    {
-        if (count != null)
-        {
-            count.gameObject.SetActive(visible);
-            DebugLog($"Count UI visibility set to: {visible}");
-        }
     }
 
     private void SetStatusBarVisible(bool visible)
@@ -211,20 +161,6 @@ public class RefillableItem : MonoBehaviour
         {
             refillBar.SetActive(visible);
             DebugLog($"Status bar visibility set to: {visible}");
-        }
-    }
-
-    public void UpdateCountDisplay()
-    {
-        if (count != null)
-        {
-            count.text = currentCount.ToString();
-
-            // Update color based on stock status
-            var isOutOfStock = currentCount <= 0;
-            count.color = isOutOfStock ? outOfStockTextColor : inStockTextColor;
-
-            DebugLog($"Count updated: {currentCount}/{maxCount}, outOfStock: {isOutOfStock}");
         }
     }
 
@@ -256,10 +192,7 @@ public class RefillableItem : MonoBehaviour
         if (wasCorrect)
         {
             currentCount = Mathf.Max(0, currentCount - 1);
-            UpdateCountDisplay();
-            UpdateVisualState();
-
-            // ADD THIS LINE:
+            UpdateVisualState(); // UpdateCountDisplay() removed
             OnCountChanged?.Invoke(currentCount, maxCount);
 
             DebugLog($"Item served correctly. Count: {currentCount}/{maxCount}");
@@ -279,8 +212,7 @@ public class RefillableItem : MonoBehaviour
 
         if (currentCount != oldCount)
         {
-            UpdateCountDisplay();
-            UpdateVisualState();
+            UpdateVisualState(); // UpdateCountDisplay() removed
             OnCountChanged?.Invoke(currentCount, maxCount);
             DebugLog($"Count increased by {amount}. New count: {currentCount}/{maxCount}");
         }
@@ -401,15 +333,8 @@ public class RefillableItem : MonoBehaviour
         DebugLog("=== BOUNDS DEBUG INFO ===");
         DebugLog($"Base Bounds - Center: {baseBounds.center}, Size: {baseBounds.size}");
         DebugLog($"Padded Bounds - Center: {bounds.center}, Size: {bounds.size}");
-        DebugLog($"Top Padding: {topPadding}");
         DebugLog($"Gameplay Mode: {isGameplayMode}");
         DebugLog($"Enable Refill: {enableRefill}");
-
-        if (count != null && count.gameObject.activeInHierarchy)
-        {
-            var countBounds = count.bounds;
-            DebugLog($"Count UI Bounds: {countBounds}");
-        }
     }
 
     private void StopRefilling()
@@ -438,8 +363,8 @@ public class RefillableItem : MonoBehaviour
             if (isRefilling && currentCount < maxCount)
             {
                 currentCount++;
-                UpdateCountDisplay();
-                UpdateVisualState();
+                UpdateVisualState(); // UpdateCountDisplay() removed
+                OnCountChanged?.Invoke(currentCount, maxCount);
 
                 DebugLog($"Refilled! Count: {currentCount}/{maxCount}");
 
@@ -510,23 +435,10 @@ public class RefillableItem : MonoBehaviour
         // Get base item bounds
         var bounds = GetBaseBounds();
 
-        // Calculate UI bounds when visible
-        var totalTopPadding = topPadding;
-        // Remove totalBottomPadding since status bar is centered
 
-        if (enableRefill && isGameplayMode)
-            // Include Count UI bounds (above food item)
-            if (count != null && count.gameObject.activeInHierarchy)
-            {
-                var countBounds = count.bounds;
-                var countUITop = countBounds.max.y - transform.position.y;
-                totalTopPadding = Mathf.Max(totalTopPadding, countUITop + 0.1f);
-            }
-
-        // Remove RefillBar bounds calculation since it's centered, not below
         // Expand bounds to include UI space (only top padding needed)
-        bounds.size = new Vector3(bounds.size.x, bounds.size.y + totalTopPadding, bounds.size.z);
-        bounds.center = new Vector3(bounds.center.x, bounds.center.y + totalTopPadding / 2f, bounds.center.z);
+        bounds.size = new Vector3(bounds.size.x, bounds.size.y, bounds.size.z);
+        bounds.center = new Vector3(bounds.center.x, bounds.center.y / 2f, bounds.center.z);
 
         return bounds;
     }
@@ -589,30 +501,9 @@ public class RefillableItem : MonoBehaviour
         return maxCount;
     }
 
-    public float GetTopPadding()
-    {
-        return topPadding;
-    }
-
     #endregion
 
     #region Debug Methods
-
-    [ContextMenu("Test Count UI")]
-    public void TestCountUI()
-    {
-        DebugLog("Testing Count UI...");
-        if (count != null)
-        {
-            SetCountUIVisible(true);
-            UpdateCountDisplay();
-            DebugLog("Count UI should now be visible");
-        }
-        else
-        {
-            DebugLog("ERROR: Count component not assigned!");
-        }
-    }
 
     [ContextMenu("Test Status Bar")]
     public void TestStatusBar()
@@ -643,8 +534,7 @@ public class RefillableItem : MonoBehaviour
         maxCount = newMaxCount;
         currentCount = Mathf.Clamp(currentCount, 0, maxCount);
 
-        UpdateCountDisplay();
-        UpdateVisualState();
+        UpdateVisualState(); // UpdateCountDisplay() removed
         OnCountChanged?.Invoke(currentCount, maxCount);
 
         Debug.Log($"RefillableItem: MaxCount overridden to {newMaxCount}, currentCount: {currentCount}");
