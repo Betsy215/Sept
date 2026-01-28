@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class RefillableItem : MonoBehaviour
 {
-    [Header("Refill Configuration")] [Tooltip("Enable refill system for this item")]
+    [Header("Refill Configuration")] [Tooltip("Enable refill system for count tracking")]
     public bool enableRefill = true;
+
+    [Tooltip("Enable hold-to-refill gesture (requires enableRefill = true)")]
+    public bool enableHoldToRefill = true;
 
     [Tooltip("Maximum count for this item (0 = use system default)")]
     public int customMaxCount = 0;
@@ -15,7 +18,7 @@ public class RefillableItem : MonoBehaviour
     [Tooltip("Custom refill time per count (0 = use system default)")]
     public float customRefillTime = 0f;
 
-    [Tooltip("The RefillBar GameObject (child of this item)")]
+    [Header("UI References - Assign from child objects")] [Tooltip("The RefillBar GameObject (child of this item)")]
     public GameObject refillBar;
 
     [Tooltip("The Fill SpriteRenderer inside RefillBar")]
@@ -70,6 +73,7 @@ public class RefillableItem : MonoBehaviour
         RegisterWithRefillSystem();
     }
 
+    [ContextMenu("Auto-Assign UI References")]
     private void AutoAssignUIReferences()
     {
         if (refillBar == null)
@@ -78,7 +82,20 @@ public class RefillableItem : MonoBehaviour
             if (refillBar != null) DebugLog("Auto-assigned RefillBar GameObject");
         }
 
-        // ... fill and bar assignment remain unchanged
+        if (fill == null && refillBar != null)
+        {
+            fill = refillBar.transform.Find("Fill")?.GetComponent<SpriteRenderer>();
+            if (fill != null) DebugLog("Auto-assigned Fill SpriteRenderer");
+        }
+
+        if (bar == null && refillBar != null)
+        {
+            bar = refillBar.transform.Find("Bar")?.GetComponent<SpriteRenderer>();
+            if (bar != null) DebugLog("Auto-assigned Bar SpriteRenderer");
+        }
+
+        // Store original fill scale for animation
+        SetupUIReferences();
     }
 
     private void SetupUIReferences()
@@ -134,6 +151,7 @@ public class RefillableItem : MonoBehaviour
     public void SetGameplayMode(bool gameplayMode)
     {
         isGameplayMode = gameplayMode;
+
         DebugLog($"SetGameplayMode called: {gameplayMode}");
 
         // Status bar stays hidden unless actively refilling
@@ -192,7 +210,7 @@ public class RefillableItem : MonoBehaviour
         if (wasCorrect)
         {
             currentCount = Mathf.Max(0, currentCount - 1);
-            UpdateVisualState(); // UpdateCountDisplay() removed
+            UpdateVisualState();
             OnCountChanged?.Invoke(currentCount, maxCount);
 
             DebugLog($"Item served correctly. Count: {currentCount}/{maxCount}");
@@ -212,12 +230,11 @@ public class RefillableItem : MonoBehaviour
 
         if (currentCount != oldCount)
         {
-            UpdateVisualState(); // UpdateCountDisplay() removed
+            UpdateVisualState();
             OnCountChanged?.Invoke(currentCount, maxCount);
             DebugLog($"Count increased by {amount}. New count: {currentCount}/{maxCount}");
         }
     }
-
 
     public bool HasSpace(int amount)
     {
@@ -228,12 +245,13 @@ public class RefillableItem : MonoBehaviour
     public void OnPointerDown()
     {
         DebugLog(
-            $"OnPointerDown called - enableRefill:{enableRefill}, isGameplayMode:{isGameplayMode}, currentCount:{currentCount}, maxCount:{maxCount}");
+            $"OnPointerDown called - enableRefill:{enableRefill}, enableHoldToRefill:{enableHoldToRefill}, isGameplayMode:{isGameplayMode}, currentCount:{currentCount}, maxCount:{maxCount}");
 
-        if (!enableRefill || !isGameplayMode || currentCount >= maxCount)
+        // Check if hold-to-refill is enabled
+        if (!enableRefill || !enableHoldToRefill || !isGameplayMode || currentCount >= maxCount)
         {
             DebugLog(
-                $"Hold detection blocked - enableRefill:{enableRefill}, isGameplayMode:{isGameplayMode}, currentCount:{currentCount}/{maxCount}");
+                $"Hold detection blocked - enableRefill:{enableRefill}, enableHoldToRefill:{enableHoldToRefill}, isGameplayMode:{isGameplayMode}, currentCount:{currentCount}/{maxCount}");
             return;
         }
 
@@ -293,50 +311,6 @@ public class RefillableItem : MonoBehaviour
         DebugLog("Started refilling");
     }
 
-    // Add this to RefillableItem.cs
-    private void OnDrawGizmos()
-    {
-        if (!enableDebugLogs) return; // Only show when debug is enabled
-
-        // Get the bounds with padding
-        var bounds = GetBoundsWithPadding();
-
-        // Set gizmo color based on state
-        if (Application.isPlaying)
-        {
-            if (isGameplayMode)
-                Gizmos.color = enableRefill ? Color.green : Color.gray;
-            else
-                Gizmos.color = Color.yellow; // Arrangement mode
-        }
-        else
-        {
-            Gizmos.color = Color.cyan; // Editor mode
-        }
-
-        // Draw the bounds as a wireframe cube
-        Gizmos.DrawWireCube(bounds.center, bounds.size);
-
-        // Draw the original collider bounds in a different color for comparison
-        var baseBounds = GetBaseBounds();
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(baseBounds.center, baseBounds.size);
-    }
-
-// Optional: More detailed debug method
-    [ContextMenu("Show Bounds Info")]
-    public void ShowBoundsInfo()
-    {
-        var bounds = GetBoundsWithPadding();
-        var baseBounds = GetBaseBounds();
-
-        DebugLog("=== BOUNDS DEBUG INFO ===");
-        DebugLog($"Base Bounds - Center: {baseBounds.center}, Size: {baseBounds.size}");
-        DebugLog($"Padded Bounds - Center: {bounds.center}, Size: {bounds.size}");
-        DebugLog($"Gameplay Mode: {isGameplayMode}");
-        DebugLog($"Enable Refill: {enableRefill}");
-    }
-
     private void StopRefilling()
     {
         isHolding = false;
@@ -363,7 +337,7 @@ public class RefillableItem : MonoBehaviour
             if (isRefilling && currentCount < maxCount)
             {
                 currentCount++;
-                UpdateVisualState(); // UpdateCountDisplay() removed
+                UpdateVisualState();
                 OnCountChanged?.Invoke(currentCount, maxCount);
 
                 DebugLog($"Refilled! Count: {currentCount}/{maxCount}");
@@ -415,7 +389,6 @@ public class RefillableItem : MonoBehaviour
             spriteRenderer.color = refillSystem.GetOutOfStockColor();
             DebugLog("Item is now out of stock");
 
-            // REPLACE with this:
             refillSystem.OnItemBecameEmpty();
         }
         else if (!isOutOfStock && wasOutOfStock)
@@ -435,10 +408,9 @@ public class RefillableItem : MonoBehaviour
         // Get base item bounds
         var bounds = GetBaseBounds();
 
-
         // Expand bounds to include UI space (only top padding needed)
         bounds.size = new Vector3(bounds.size.x, bounds.size.y, bounds.size.z);
-        bounds.center = new Vector3(bounds.center.x, bounds.center.y / 2f, bounds.center.z);
+        bounds.center = new Vector3(bounds.center.x, bounds.center.y, bounds.center.z);
 
         return bounds;
     }
@@ -462,19 +434,6 @@ public class RefillableItem : MonoBehaviour
 
         // Fallback
         return new Bounds(transform.position, Vector3.one);
-    }
-
-    private Bounds GetChildRendererBounds(GameObject parent)
-    {
-        var renderers = parent.GetComponentsInChildren<Renderer>();
-        if (renderers.Length == 0)
-            return new Bounds(parent.transform.position, Vector3.zero);
-
-        var bounds = renderers[0].bounds;
-        for (var i = 1; i < renderers.Length; i++)
-            bounds.Encapsulate(renderers[i].bounds);
-
-        return bounds;
     }
 
     #endregion
@@ -534,7 +493,7 @@ public class RefillableItem : MonoBehaviour
         maxCount = newMaxCount;
         currentCount = Mathf.Clamp(currentCount, 0, maxCount);
 
-        UpdateVisualState(); // UpdateCountDisplay() removed
+        UpdateVisualState();
         OnCountChanged?.Invoke(currentCount, maxCount);
 
         Debug.Log($"RefillableItem: MaxCount overridden to {newMaxCount}, currentCount: {currentCount}");
@@ -550,6 +509,50 @@ public class RefillableItem : MonoBehaviour
     {
         if (enableDebugLogs)
             Debug.Log($"RefillableItem ({GetFoodType()}): {message}");
+    }
+
+    // Gizmos for debugging bounds
+    private void OnDrawGizmos()
+    {
+        if (!enableDebugLogs) return; // Only show when debug is enabled
+
+        // Get the bounds with padding
+        var bounds = GetBoundsWithPadding();
+
+        // Set gizmo color based on state
+        if (Application.isPlaying)
+        {
+            if (isGameplayMode)
+                Gizmos.color = enableRefill ? Color.green : Color.gray;
+            else
+                Gizmos.color = Color.yellow; // Arrangement mode
+        }
+        else
+        {
+            Gizmos.color = Color.cyan; // Editor mode
+        }
+
+        // Draw the bounds as a wireframe cube
+        Gizmos.DrawWireCube(bounds.center, bounds.size);
+
+        // Draw the original collider bounds in a different color for comparison
+        var baseBounds = GetBaseBounds();
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(baseBounds.center, baseBounds.size);
+    }
+
+    [ContextMenu("Show Bounds Info")]
+    public void ShowBoundsInfo()
+    {
+        var bounds = GetBoundsWithPadding();
+        var baseBounds = GetBaseBounds();
+
+        DebugLog("=== BOUNDS DEBUG INFO ===");
+        DebugLog($"Base Bounds - Center: {baseBounds.center}, Size: {baseBounds.size}");
+        DebugLog($"Padded Bounds - Center: {bounds.center}, Size: {bounds.size}");
+        DebugLog($"Gameplay Mode: {isGameplayMode}");
+        DebugLog($"Enable Refill: {enableRefill}");
+        DebugLog($"Enable Hold To Refill: {enableHoldToRefill}");
     }
 
     #endregion

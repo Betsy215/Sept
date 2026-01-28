@@ -227,7 +227,7 @@ SpriteRenderer:
   m_SortingLayerID: 1328505229
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 941b1410c068e43febe3a31913610acc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5793db8823cc94ab8b61b05e602bcdcf, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2124,7 +2124,7 @@ SpriteRenderer:
   m_SortingLayerID: 1328505229
   m_SortingLayer: 3
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: debac55cea3fc4525b5a06ade9bbda8f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bb670d1bb92294ed7bf3f721bdf9d4e7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2184,16 +2184,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableRefill: 1
+  enableHoldToRefill: 0
   customMaxCount: 4
-  customStartingCount: -1
-  customRefillTime: 0.5
-  count: {fileID: 0}
+  customStartingCount: 4
+  customRefillTime: -1
   refillBar: {fileID: 0}
   fill: {fileID: 0}
   bar: {fileID: 0}
-  topPadding: 0.2
-  inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
-  outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 579974206}
   enableDebugLogs: 1
 --- !u!114 &579974211
@@ -2453,16 +2450,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableRefill: 1
-  customMaxCount: 3
-  customStartingCount: -1
-  customRefillTime: 0.5
-  count: {fileID: 0}
+  enableHoldToRefill: 0
+  customMaxCount: 2
+  customStartingCount: 2
+  customRefillTime: -1
   refillBar: {fileID: 0}
   fill: {fileID: 0}
   bar: {fileID: 0}
-  topPadding: 0.2
-  inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
-  outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 676287864}
   enableDebugLogs: 1
 --- !u!65 &676287863
@@ -2596,7 +2590,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e09515fcbfab24aea9f5acbeb05963c7, type: 3}
   - {fileID: 21300000, guid: 0e7b3b9869d4541e3b09acac8caa3353, type: 3}
   level2cup1_serving: {fileID: 21300000, guid: f4146ac8e458343ae9f0163c0b650f36, type: 3}
-  level2cup2_serving: {fileID: 21300000, guid: 035952e66fb8d406fafd271fbadc736a, type: 3}
+  level2cup2_serving: {fileID: 21300000, guid: 453c650c25f344121aeaf4cdf0e69459, type: 3}
   plateRestoreDelay: 1
 --- !u!1 &722960907
 GameObject:
@@ -3244,16 +3238,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableRefill: 1
+  enableHoldToRefill: 1
   customMaxCount: 3
   customStartingCount: -1
   customRefillTime: 2
-  count: {fileID: 1508669474}
   refillBar: {fileID: 1222107086}
   fill: {fileID: 1844395898}
   bar: {fileID: 996697349}
-  topPadding: 0.2
-  inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
-  outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 0}
   enableDebugLogs: 1
 --- !u!1 &801290571
@@ -3516,16 +3507,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableRefill: 1
+  enableHoldToRefill: 1
   customMaxCount: 3
   customStartingCount: -1
   customRefillTime: 1.5
-  count: {fileID: 2092704413}
   refillBar: {fileID: 1104347123}
   fill: {fileID: 280620396}
   bar: {fileID: 394082242}
-  topPadding: 0.2
-  inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
-  outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 0}
   enableDebugLogs: 1
 --- !u!1 &857287319
@@ -3671,16 +3659,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableRefill: 1
+  enableHoldToRefill: 1
   customMaxCount: 3
   customStartingCount: -1
   customRefillTime: 1
-  count: {fileID: 1840498383}
   refillBar: {fileID: 817575389}
   fill: {fileID: 528063850}
   bar: {fileID: 1790195890}
-  topPadding: 0.2
-  inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
-  outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 0}
   enableDebugLogs: 1
 --- !u!1 &871515505
@@ -5763,16 +5748,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableRefill: 1
+  enableHoldToRefill: 1
   customMaxCount: 3
   customStartingCount: -1
   customRefillTime: 2
-  count: {fileID: 1104905315}
   refillBar: {fileID: 1297568457}
   fill: {fileID: 801290573}
   bar: {fileID: 1078032237}
-  topPadding: 0.2
-  inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
-  outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 0}
   enableDebugLogs: 1
 --- !u!1 &1377110457
@@ -6182,16 +6164,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableRefill: 1
+  enableHoldToRefill: 1
   customMaxCount: 3
   customStartingCount: -1
   customRefillTime: 1
-  count: {fileID: 0}
   refillBar: {fileID: 0}
   fill: {fileID: 0}
   bar: {fileID: 0}
-  topPadding: 0.2
-  inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
-  outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 1420048312}
   enableDebugLogs: 1
 --- !u!1 &1508669472
@@ -7567,16 +7546,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableRefill: 1
+  enableHoldToRefill: 1
   customMaxCount: 3
   customStartingCount: -1
   customRefillTime: 1.5
-  count: {fileID: 1316501262}
   refillBar: {fileID: 1169633635}
   fill: {fileID: 245189520}
   bar: {fileID: 1782917448}
-  topPadding: 0.3
-  inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
-  outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 0}
   enableDebugLogs: 1
 --- !u!114 &1820549560
@@ -7592,16 +7568,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableRefill: 1
+  enableHoldToRefill: 1
   customMaxCount: 3
   customStartingCount: -1
   customRefillTime: 1
-  count: {fileID: 0}
   refillBar: {fileID: 0}
   fill: {fileID: 0}
   bar: {fileID: 0}
-  topPadding: 0.3
-  inStockTextColor: {r: 1, g: 1, b: 1, a: 1}
-  outOfStockTextColor: {r: 1, g: 0, b: 0, a: 1}
   serveableItem: {fileID: 0}
   enableDebugLogs: 1
 --- !u!1 &1837143684

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// Handles bread board visual display based on count.
@@ -7,9 +8,10 @@ using UnityEngine;
 /// No animations - just clean sprite changes.
 /// 
 /// SETUP REQUIREMENTS:
-/// - RefillableItem.enableRefill = FALSE (no hold-to-refill)
+/// - RefillableItem.enableRefill = TRUE (enable count tracking)
+/// - RefillableItem.enableHoldToRefill = FALSE (disable hold gesture)
 /// - RefillableItem.customMaxCount = 4
-/// - RefillableItem.customStartingCount = 4
+/// - RefillableItem.customStartingCount = -1 (start full)
 /// - Remove Count and RefillBar UI children
 /// 
 /// COMPATIBILITY:
@@ -39,35 +41,48 @@ public class Bread : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         serveableItem = GetComponent<ServeableItem>();
 
-        if (refillableItem != null)
-        {
-            // Subscribe to count change events
-            refillableItem.OnCountChanged += HandleCountChanged;
-
-            // Initialize with current count
-            previousCount = refillableItem.GetCurrentCount();
-            UpdateBreadSprite(previousCount);
-
-            DebugLog($"Bread initialized with count: {previousCount}");
-
-            // Verify settings
-            VerifySettings();
-        }
-        else
+        if (refillableItem == null)
         {
             Debug.LogError("Bread: RefillableItem component not found!");
+            return;
         }
 
-        if (serveableItem == null) Debug.LogWarning("Bread: ServeableItem component not found!");
+        if (serveableItem == null)
+            Debug.LogWarning("Bread: ServeableItem component not found!");
 
         // Validate sprites
         ValidateSpriteArray();
+
+        // FIXED: Wait for RefillableItem to be initialized
+        StartCoroutine(InitializeAfterRefillableItem());
+    }
+
+    /// <summary>
+    /// Wait for RefillableItem to be initialized by RefillSystem before setting up Bread
+    /// </summary>
+    private IEnumerator InitializeAfterRefillableItem()
+    {
+        // Wait one frame for RefillableItem.Start() and RefillSystem initialization
+        yield return null;
+
+        // Subscribe to count change events
+        refillableItem.OnCountChanged += HandleCountChanged;
+
+        // Initialize with current count (now properly initialized)
+        previousCount = refillableItem.GetCurrentCount();
+        UpdateBreadSprite(previousCount);
+
+        DebugLog($"Bread initialized with count: {previousCount}/{refillableItem.GetMaxCount()}");
+
+        // Verify settings
+        VerifySettings();
     }
 
     private void OnDestroy()
     {
         // Unsubscribe to prevent memory leaks
-        if (refillableItem != null) refillableItem.OnCountChanged -= HandleCountChanged;
+        if (refillableItem != null)
+            refillableItem.OnCountChanged -= HandleCountChanged;
     }
 
     /// <summary>
@@ -82,10 +97,16 @@ public class Bread : MonoBehaviour
             Debug.LogWarning(
                 $"Bread: maxCount is {refillableItem.GetMaxCount()}, expected 4. Set customMaxCount to 4 in RefillableItem.");
 
-        // Check refill is disabled
-        if (refillableItem.enableRefill)
+        // Check enableRefill is TRUE (required for count tracking)
+        if (!refillableItem.enableRefill)
+            Debug.LogError(
+                "Bread: enableRefill MUST be TRUE for count tracking to work! Check RefillableItem component.");
+
+        // Check enableHoldToRefill is FALSE (bread doesn't use hold gesture)
+        // NOTE: This field only exists if you've updated RefillableItem.cs
+        if (refillableItem.enableHoldToRefill)
             Debug.LogWarning(
-                "Bread: enableRefill should be FALSE (no hold-to-refill). Uncheck in RefillableItem component.");
+                "Bread: enableHoldToRefill should be FALSE (bread uses different refill mechanism). Check RefillableItem component.");
 
         DebugLog("Settings verified");
     }
@@ -99,7 +120,8 @@ public class Bread : MonoBehaviour
         var wasRefilled = currentCount > previousCount;
         previousCount = currentCount;
 
-        DebugLog($"Count changed: {currentCount}/4 ({(wasServed ? "served" : wasRefilled ? "refilled" : "changed")})");
+        DebugLog(
+            $"Count changed: {currentCount}/{maxCount} ({(wasServed ? "served" : wasRefilled ? "refilled" : "changed")})");
 
         // Update sprite
         UpdateBreadSprite(currentCount);
@@ -139,7 +161,8 @@ public class Bread : MonoBehaviour
 
     private void DebugLog(string message)
     {
-        if (enableDebugLogs) Debug.Log($"[Bread] {message}");
+        if (enableDebugLogs)
+            Debug.Log($"[Bread] {message}");
     }
 
     #region Editor Testing
