@@ -6,10 +6,13 @@ public class Coffee : MonoBehaviour, IUpgradeable
     [Header("Coffee Sprites by Level")] [SerializeField]
     private Sprite[] level1CoffeeSprites = new Sprite[3]; // l1cup0, l1cup1, l1cup2
 
-    [SerializeField] private Sprite level1cup1_serving; // Only serving sprite needed for level 1
     [SerializeField] private Sprite[] level2CoffeeSprites = new Sprite[4]; // l2cup0, l2cup1, l2cup2, l2cup3  
+
+    [SerializeField] private Sprite level1cup1_serving; // Only serving sprite needed for level 1
     [SerializeField] private Sprite level2cup1_serving; // l2cup1_serving
-    [SerializeField] private Sprite level2cup2_serving; // l2cup2_serving
+    [SerializeField] private Sprite level2cup2_serving;
+    [SerializeField] private Sprite level2cup0_serving;
+    [SerializeField] private Sprite level1cup0_serving; // l2cup2_serving
 
     [Header("Serving Animation")] [SerializeField]
     private float plateRestoreDelay = 1f; // Delay before showing empty plate after serving
@@ -32,12 +35,15 @@ public class Coffee : MonoBehaviour, IUpgradeable
             refillableItem.OnCountChanged += HandleCountChanged;
         else
             Debug.LogError("Coffees: RefillableItem component not found!");
+
+        Debug.Log($"coffeetest: Coffee.Start() - Level: {currentUpgradeLevel}");
     }
 
     public void SetUpgradeLevel(int level)
     {
         currentUpgradeLevel = level;
         Debug.Log($"Coffee: Upgrade level set to {level}");
+        Debug.Log($"coffeetest: Coffee.SetUpgradeLevel({level}) called");
         ApplyUpgradeLevel();
     }
 
@@ -54,6 +60,7 @@ public class Coffee : MonoBehaviour, IUpgradeable
         HandleCountChanged(refillableItem.GetCurrentCount(), refillableItem.GetMaxCount());
 
         Debug.Log($"Coffee: Applied level {currentUpgradeLevel} configuration (maxCount: {maxCount})");
+        Debug.Log($"coffeetest: Coffee.ApplyUpgradeLevel() - maxCount: {maxCount}, currentCount: {previousCount}");
     }
 
     private void SetupSpriteArrayForUpgradeLevel()
@@ -107,24 +114,41 @@ public class Coffee : MonoBehaviour, IUpgradeable
     private void HandleCountChanged(int currentCount, int maxCount)
     {
         var wasServed = currentCount < previousCount;
+
+        Debug.Log(
+            $"coffeetest: Coffee.HandleCountChanged - ENTRY: currentCount={currentCount}, maxCount={maxCount}, previousCount={previousCount}, wasServed={wasServed}");
+
         previousCount = currentCount;
 
         Debug.Log($"Coffees: Count changed to {currentCount}/{maxCount} ({(wasServed ? "served" : "brewed")})");
 
         if (wasServed)
+        {
+            Debug.Log($"coffeetest: Coffee.HandleCountChanged - Serving path: showPlatesAfterDelay=true");
             // Cup was served - show immediate change then restore plates after delay
             UpdateCoffeeVisuals(currentCount, maxCount, true);
+        }
         else
+        {
+            Debug.Log($"coffeetest: Coffee.HandleCountChanged - Brewing path: showPlatesAfterDelay=false");
             // Coffee was brewed - show immediate change
             UpdateCoffeeVisuals(currentCount, maxCount, false);
+        }
     }
 
     private void UpdateCoffeeVisuals(int currentCount, int maxCount, bool showPlatesAfterDelay)
     {
+        Debug.Log(
+            $"coffeetest: Coffee.UpdateCoffeeVisuals - currentCount={currentCount}, maxCount={maxCount}, showPlatesAfterDelay={showPlatesAfterDelay}");
+
         if (showPlatesAfterDelay)
         {
             // Stop any existing coroutine
-            if (plateRestoreCoroutine != null) StopCoroutine(plateRestoreCoroutine);
+            if (plateRestoreCoroutine != null)
+            {
+                Debug.Log($"coffeetest: Coffee.UpdateCoffeeVisuals - Stopping existing coroutine");
+                StopCoroutine(plateRestoreCoroutine);
+            }
 
             // Show empty space immediately, then restore plates after delay
             SetCoffeeSprite(currentCount, maxCount, true);
@@ -135,14 +159,17 @@ public class Coffee : MonoBehaviour, IUpgradeable
         else
         {
             // Brewing - show plates immediately
+            Debug.Log($"coffeetest: Coffee.UpdateCoffeeVisuals - Calling SetCoffeeSprite (no delay)");
             SetCoffeeSprite(currentCount, maxCount, false);
         }
     }
 
     private IEnumerator RestorePlatesAfterDelay(int currentCount, int maxCount)
     {
+        Debug.Log($"coffeetest: Coffee.RestorePlatesAfterDelay - Starting coroutine, will wait {plateRestoreDelay}s");
         yield return new WaitForSeconds(plateRestoreDelay);
 
+        Debug.Log($"coffeetest: Coffee.RestorePlatesAfterDelay - Delay finished, restoring plates");
         // Restore plates (normal display)
         SetCoffeeSprite(currentCount, maxCount, false);
         plateRestoreCoroutine = null;
@@ -152,6 +179,9 @@ public class Coffee : MonoBehaviour, IUpgradeable
 
     private void SetCoffeeSprite(int currentCount, int maxCount, bool showEmptySpaces)
     {
+        Debug.Log(
+            $"coffeetest: Coffee.SetCoffeeSprite - ENTRY: currentCount={currentCount}, maxCount={maxCount}, showEmptySpaces={showEmptySpaces}");
+
         if (spriteRenderer == null || currentSpriteArray == null) return;
 
         Sprite targetSprite = null;
@@ -172,6 +202,8 @@ public class Coffee : MonoBehaviour, IUpgradeable
 
             if (spriteIndex < currentSpriteArray.Length && currentSpriteArray[spriteIndex] != null)
                 targetSprite = currentSpriteArray[spriteIndex];
+
+            Debug.Log($"coffeetest: Coffee.SetCoffeeSprite - Using normal sprite at index {spriteIndex}");
         }
 
         // Set the sprite
@@ -179,31 +211,37 @@ public class Coffee : MonoBehaviour, IUpgradeable
         {
             spriteRenderer.sprite = targetSprite;
             Debug.Log($"Coffees: Set {spriteType} sprite for {currentCount} cups");
+            Debug.Log($"coffeetest: Coffee.SetCoffeeSprite - SUCCESS: Set {spriteType} sprite for {currentCount} cups");
         }
         else
         {
             Debug.LogError($"Coffees: No sprite found for {currentCount} cups");
+            Debug.LogError($"coffeetest: Coffee.SetCoffeeSprite - ERROR: No sprite found for {currentCount} cups");
         }
     }
 
     private Sprite GetServingSprite(int currentCount, int maxCount)
     {
-        if (currentCount <= 0) return null; // No serving sprite for 0 cups
-
         if (maxCount == 2)
         {
-            // Level 1: Only l1cup1_serving exists
-            if (currentCount == 1 && level1cup1_serving != null) return level1cup1_serving;
+            // Level 1: Serving sprites for 2-cup capacity
+            if (currentCount == 1 && level1cup1_serving != null)
+                return level1cup1_serving;
+            if (currentCount == 0 && level1cup0_serving != null) // ✅ ADD
+                return level1cup0_serving;
         }
         else if (maxCount == 3)
         {
-            // Level 2: l2cup1_serving and l2cup2_serving exist
+            // Level 2: Serving sprites for 3-cup capacity
+            if (currentCount == 2 && level2cup2_serving != null)
+                return level2cup2_serving;
             if (currentCount == 1 && level2cup1_serving != null)
                 return level2cup1_serving;
-            else if (currentCount == 2 && level2cup2_serving != null) return level2cup2_serving;
+            if (currentCount == 0 && level2cup0_serving != null) // ✅ ADD
+                return level2cup0_serving;
         }
 
-        return null; // No serving sprite available
+        return null;
     }
 
     // Public method to refresh sprite setup (useful if maxCount changes after upgrades)

@@ -227,7 +227,7 @@ SpriteRenderer:
   m_SortingLayerID: 1328505229
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 5793db8823cc94ab8b61b05e602bcdcf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9e049f719d38c4886831b0bd9ec72b68, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2452,8 +2452,8 @@ MonoBehaviour:
   enableRefill: 1
   enableHoldToRefill: 0
   customMaxCount: 2
-  customStartingCount: 2
-  customRefillTime: -1
+  customStartingCount: -1
+  customRefillTime: 0.5
   refillBar: {fileID: 0}
   fill: {fileID: 0}
   bar: {fileID: 0}
@@ -2583,14 +2583,16 @@ MonoBehaviour:
   - {fileID: 21300000, guid: c023d302e3b26447faface4b0f306c99, type: 3}
   - {fileID: 21300000, guid: 36b06ef0b624e434695004b18eab6e49, type: 3}
   - {fileID: 21300000, guid: 453c650c25f344121aeaf4cdf0e69459, type: 3}
-  level1cup1_serving: {fileID: 21300000, guid: f4146ac8e458343ae9f0163c0b650f36, type: 3}
   level2CoffeeSprites:
   - {fileID: 21300000, guid: 3884ce1fa721046b68553b8ff413ea7d, type: 3}
   - {fileID: 21300000, guid: 9783012eb5b7e426cbb940be70b55bc5, type: 3}
   - {fileID: 21300000, guid: e09515fcbfab24aea9f5acbeb05963c7, type: 3}
   - {fileID: 21300000, guid: 0e7b3b9869d4541e3b09acac8caa3353, type: 3}
+  level1cup1_serving: {fileID: 21300000, guid: f4146ac8e458343ae9f0163c0b650f36, type: 3}
   level2cup1_serving: {fileID: 21300000, guid: f4146ac8e458343ae9f0163c0b650f36, type: 3}
   level2cup2_serving: {fileID: 21300000, guid: 453c650c25f344121aeaf4cdf0e69459, type: 3}
+  level2cup0_serving: {fileID: 21300000, guid: e879171283c964314bd1996379065e28, type: 3}
+  level1cup0_serving: {fileID: 21300000, guid: e879171283c964314bd1996379065e28, type: 3}
   plateRestoreDelay: 1
 --- !u!1 &722960907
 GameObject:
@@ -6084,15 +6086,15 @@ SpriteRenderer:
   m_SortingLayerID: 1328505229
   m_SortingLayer: 3
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 90eab4180ea9c4e558f2c751c6dcf7bc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: adab73d36ba17497783a62b5c9cac7c2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.9, y: 1.87}
+  m_Size: {x: 5, y: 5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &1420048312
@@ -6125,7 +6127,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1, y: -1.1070371, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 1}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
