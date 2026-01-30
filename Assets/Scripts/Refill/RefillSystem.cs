@@ -41,12 +41,6 @@ public class RefillSystem : MonoBehaviour
         DebugLog($"Rescan complete: {refillableItems.Count} total refillable items");
     }
 
-    public void OnItemBecameEmpty()
-    {
-        if (levelManager != null)
-            levelManager.ShowRefillTutorial();
-    }
-
     private void InitializeSystem()
     {
         // Find GamePhaseManager if not assigned
@@ -109,11 +103,6 @@ public class RefillSystem : MonoBehaviour
     }
 
     #region Settings Getters
-
-    public Color GetOutOfStockColor()
-    {
-        return outOfStockColor;
-    }
 
     public float GetRefillTimePerCount()
     {

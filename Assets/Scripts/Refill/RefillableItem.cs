@@ -37,7 +37,6 @@ public class RefillableItem : MonoBehaviour
     // Private variables
     private RefillSystem refillSystem;
     private SpriteRenderer spriteRenderer;
-    private Color originalColor;
     private Vector3 originalFillScale; // Store the intended fill scale
 
     // Refill state
@@ -59,9 +58,6 @@ public class RefillableItem : MonoBehaviour
         // Get components
         serveableItem = GetComponent<ServeableItem>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        if (spriteRenderer != null)
-            originalColor = spriteRenderer.color;
     }
 
     private void Start()
@@ -141,7 +137,6 @@ public class RefillableItem : MonoBehaviour
 
         // Initialize UI
         SetUIVisible(false); // Start hidden
-        UpdateVisualState();
 
         DebugLog($"Initialized with max count: {maxCount}, refill time: {refillTimePerCount}s");
     }
@@ -210,7 +205,6 @@ public class RefillableItem : MonoBehaviour
         if (wasCorrect)
         {
             currentCount = Mathf.Max(0, currentCount - 1);
-            UpdateVisualState();
             OnCountChanged?.Invoke(currentCount, maxCount);
 
             DebugLog($"Item served correctly. Count: {currentCount}/{maxCount}");
@@ -230,7 +224,6 @@ public class RefillableItem : MonoBehaviour
 
         if (currentCount != oldCount)
         {
-            UpdateVisualState();
             OnCountChanged?.Invoke(currentCount, maxCount);
             DebugLog($"Count increased by {amount}. New count: {currentCount}/{maxCount}");
         }
@@ -337,7 +330,6 @@ public class RefillableItem : MonoBehaviour
             if (isRefilling && currentCount < maxCount)
             {
                 currentCount++;
-                UpdateVisualState();
                 OnCountChanged?.Invoke(currentCount, maxCount);
 
                 DebugLog($"Refilled! Count: {currentCount}/{maxCount}");
@@ -375,29 +367,6 @@ public class RefillableItem : MonoBehaviour
     #endregion
 
     #region Visual State
-
-    private void UpdateVisualState()
-    {
-        if (spriteRenderer == null) return;
-
-        var wasOutOfStock = isOutOfStock;
-        isOutOfStock = currentCount <= 0;
-
-        if (isOutOfStock && !wasOutOfStock)
-        {
-            // Just went out of stock
-            spriteRenderer.color = refillSystem.GetOutOfStockColor();
-            DebugLog("Item is now out of stock");
-
-            refillSystem.OnItemBecameEmpty();
-        }
-        else if (!isOutOfStock && wasOutOfStock)
-        {
-            // Just restocked
-            spriteRenderer.color = originalColor;
-            DebugLog("Item is back in stock");
-        }
-    }
 
     #endregion
 
@@ -492,8 +461,6 @@ public class RefillableItem : MonoBehaviour
     {
         maxCount = newMaxCount;
         currentCount = Mathf.Clamp(currentCount, 0, maxCount);
-
-        UpdateVisualState();
         OnCountChanged?.Invoke(currentCount, maxCount);
 
         Debug.Log($"RefillableItem: MaxCount overridden to {newMaxCount}, currentCount: {currentCount}");
