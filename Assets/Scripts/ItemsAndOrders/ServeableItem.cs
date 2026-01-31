@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDraggable
 {
     [Header("Item Settings")] [Tooltip("Type of food this item represents (must match OrderSystem food types)")]
-    public string foodType = "Bread"; // e.g., "Bread", "Apple", "Juice", etc.
+    public string foodType = ""; // e.g., "Bread", "Apple", "Juice", etc.
 
     [Header("References")] [Tooltip("Reference to OrderSystem - will auto-find if not assigned")]
     public OrderSystem orderSystem;

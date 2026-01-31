@@ -46,7 +46,7 @@ public class SessionData
         sessionStartTime = DateTime.Now;
         isActive = true;
 
-        purchasedFoodItems = new List<string> { "Apple", "Bread", "Coffee", "CoffeeMachine" };
+        purchasedFoodItems = new List<string> { "Coffee", "CoffeeMachine" };
         foodUpgradeLevels = new Dictionary<string, int>()
         {
             { "Coffee", 2 },
@@ -367,18 +367,6 @@ public class SessionManager : MonoBehaviour
             {
                 currentSession = JsonUtility.FromJson<SessionData>(jsonData);
                 Debug.Log("Session loaded successfully");
-
-                // Handle legacy sessions
-                if (currentSession.purchasedFoodItems == null)
-                {
-                    currentSession.purchasedFoodItems = new List<string> { "Apple", "Bread" };
-                }
-                else if (!currentSession.purchasedFoodItems.Contains("Bread"))
-                {
-                    currentSession.purchasedFoodItems.Add("Bread");
-                    Debug.Log("Added Bread to existing session");
-                    SaveSession();
-                }
 
                 if (currentSession.purchasedCharacters == null)
                     currentSession.purchasedCharacters = new List<string> { "Girl" };
