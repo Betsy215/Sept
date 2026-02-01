@@ -460,10 +460,21 @@ public class RefillableItem : MonoBehaviour
     public void OverrideMaxCount(int newMaxCount)
     {
         maxCount = newMaxCount;
-        currentCount = Mathf.Clamp(currentCount, 0, maxCount);
-        OnCountChanged?.Invoke(currentCount, maxCount);
 
-        Debug.Log($"RefillableItem: MaxCount overridden to {newMaxCount}, currentCount: {currentCount}");
+        // ✅ If item was set to start full (customStartingCount = -1), update currentCount to new max
+        if (customStartingCount == -1)
+        {
+            currentCount = maxCount;
+            OnCountChanged?.Invoke(currentCount, maxCount);
+            DebugLog($"Max count overridden to {maxCount}, current count updated to full");
+        }
+        else
+        {
+            // Otherwise clamp current count to new max (in case new max is lower)
+            currentCount = Mathf.Clamp(currentCount, 0, maxCount);
+            OnCountChanged?.Invoke(currentCount, maxCount);
+            DebugLog($"Max count overridden to {maxCount}, current count clamped to {currentCount}");
+        }
     }
 
     private IEnumerator TestHoldCoroutine()

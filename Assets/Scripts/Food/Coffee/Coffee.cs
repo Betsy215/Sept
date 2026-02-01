@@ -116,27 +116,4 @@ public class Coffee : MonoBehaviour, IUpgradeable
 
         if (refillableItem != null) HandleCountChanged(refillableItem.GetCurrentCount(), refillableItem.GetMaxCount());
     }
-
-    // Debug methods
-    [ContextMenu("Test Level 1 Setup")]
-    private void TestLevel1Setup()
-    {
-        if (refillableItem != null)
-        {
-            currentSpriteArray = level1CoffeeSprites;
-            HandleCountChanged(refillableItem.GetCurrentCount(), 2);
-            Debug.Log("Coffee: Testing Level 1 setup");
-        }
-    }
-
-    [ContextMenu("Test Level 2 Setup")]
-    private void TestLevel2Setup()
-    {
-        if (refillableItem != null)
-        {
-            currentSpriteArray = level2CoffeeSprites;
-            HandleCountChanged(refillableItem.GetCurrentCount(), 3);
-            Debug.Log("Coffee: Testing Level 2 setup");
-        }
-    }
 }
