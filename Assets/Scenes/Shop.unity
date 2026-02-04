@@ -1281,7 +1281,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7923891422100210688, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Name
-      value: Log
+      value: Cake
       objectReference: {fileID: 0}
     - target: {fileID: 8201218472030623872, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_SizeDelta.x
@@ -1317,7 +1317,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 8e6938550ecc540b8898e4ac04116683, type: 3}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemName
-      value: Log Cake
+      value: Strawberry Cake
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: iconImage
@@ -1334,7 +1334,7 @@ PrefabInstance:
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
       value: "$ 900                                                                                     
-        \nLog Cake"
+        \nClassic Strawberry Cake"
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
