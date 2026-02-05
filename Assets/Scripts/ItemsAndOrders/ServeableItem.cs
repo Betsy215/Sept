@@ -219,8 +219,7 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         // NEW: Notify refill system that item was served correctly
         if (refillSystem != null) refillSystem.OnItemServed(foodType, true);
 
-        // Optional: Could add subtle success effect on the serveable item here
-        // For now, keeping it clean since the main feedback is on the order
+        SendMessage("OnServedSuccessfully", SendMessageOptions.DontRequireReceiver);
     }
 
     // Called when item was not needed for current order
