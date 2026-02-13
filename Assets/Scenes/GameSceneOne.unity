@@ -3387,6 +3387,7 @@ GameObject:
   - component: {fileID: 857287320}
   - component: {fileID: 857287323}
   - component: {fileID: 857287324}
+  - component: {fileID: 857287325}
   m_Layer: 0
   m_Name: Juice
   m_TagString: Untagged
@@ -3524,6 +3525,21 @@ MonoBehaviour:
   bar: {fileID: 0}
   serveableItem: {fileID: 0}
   enableDebugLogs: 1
+--- !u!114 &857287325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 857287319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dd6cf58d033457fa2694245e454fae0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  juiceServedSound: {fileID: 8300000, guid: c62ef3c0fbeb64c49854896c36f130d9, type: 3}
+  soundVolume: 1
+  enableDebugLogs: 0
 --- !u!1 &871515505
 GameObject:
   m_ObjectHideFlags: 0
@@ -6611,6 +6627,7 @@ GameObject:
   - component: {fileID: 1820549555}
   - component: {fileID: 1820549558}
   - component: {fileID: 1820549559}
+  - component: {fileID: 1820549560}
   m_Layer: 0
   m_Name: Pie
   m_TagString: Untagged
@@ -6685,7 +6702,7 @@ MonoBehaviour:
   foodType: Pie
   orderSystem: {fileID: 1998227852}
   popupCanvas: {fileID: 0}
-  useAudioManager: 1
+  useAudioManager: 0
   shakeIntensity: 0.15
   shakeDuration: 0.4
   shakeCount: 3
@@ -6748,6 +6765,48 @@ MonoBehaviour:
   bar: {fileID: 0}
   serveableItem: {fileID: 0}
   enableDebugLogs: 1
+--- !u!114 &1820549560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820549554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 297c3610766e4f46b64428c9e37b6e55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sinkDistance: 0.5
+  sinkDuration: 0.1
+  riseDuration: 0.1
+  sinkCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  pieServedSound: {fileID: 8300000, guid: 047eef639f79e4663a987ec9b981f018, type: 3}
+  soundVolume: 1
+  enableDebugLogs: 0
 --- !u!1 &1837143684
 GameObject:
   m_ObjectHideFlags: 0
