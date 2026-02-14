@@ -11,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Kitchen
   - 
   - 
   - 
@@ -55,4 +55,13 @@ TagManager:
     locked: 0
   - name: Popup
     uniqueID: 4032780529
+    locked: 0
+  - name: KitchenBG
+    uniqueID: 51756109
+    locked: 0
+  - name: KitchenObjects
+    uniqueID: 351696803
+    locked: 0
+  - name: KitchenUI
+    uniqueID: 3691810285
     locked: 0
