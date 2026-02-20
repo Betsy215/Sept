@@ -395,6 +395,7 @@ GameObject:
   - component: {fileID: 185177638}
   - component: {fileID: 185177637}
   - component: {fileID: 185177636}
+  - component: {fileID: 185177639}
   m_Layer: 5
   m_Name: KitchenButton
   m_TagString: Untagged
@@ -503,6 +504,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 185177633}
   m_CullTransparentMesh: 1
+--- !u!114 &185177639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 185177633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08bc9d86773a4e10acdda46091e1c34b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &185986374
 GameObject:
   m_ObjectHideFlags: 0
@@ -7247,6 +7260,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1942776060}
+  - component: {fileID: 1942776061}
   m_Layer: 0
   m_Name: KitchenSceneManager
   m_TagString: Untagged
@@ -7269,6 +7283,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1942776061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942776059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bc60d4567c944d597051fa90137c59b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  kitchenSceneName: KitchenScene
+  enableDebugLogs: 1
 --- !u!1 &1980253311
 GameObject:
   m_ObjectHideFlags: 0
