@@ -1904,7 +1904,7 @@ GameObject:
   - component: {fileID: 579974210}
   - component: {fileID: 579974211}
   m_Layer: 0
-  m_Name: Bread
+  m_Name: Choux
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1922,7 +1922,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6fc7fc24e8f47b79e69a5e11358a2af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodType: Bread
+  foodType: Choux
   orderSystem: {fileID: 1998227852}
   popupCanvas: {fileID: 0}
   useAudioManager: 1
@@ -5639,7 +5639,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &1420048311
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5681,15 +5681,15 @@ SpriteRenderer:
   m_SortingLayerID: 1328505229
   m_SortingLayer: 3
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: e41fc4a5cb34c4a78bea3b2158b50347, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0e2cb8013a4aa4989ab89d2b8a22ce83, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 5, y: 5}
+  m_Size: {x: 1.9, y: 1.87}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &1420048312
@@ -6675,7 +6675,7 @@ GameObject:
   - component: {fileID: 1820549559}
   - component: {fileID: 1820549560}
   m_Layer: 0
-  m_Name: Pie
+  m_Name: Bread
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6745,7 +6745,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6fc7fc24e8f47b79e69a5e11358a2af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodType: Pie
+  foodType: Bread
   orderSystem: {fileID: 1998227852}
   popupCanvas: {fileID: 0}
   useAudioManager: 0
@@ -7507,13 +7507,13 @@ MonoBehaviour:
   orderTitleText: {fileID: 0}
   orderTimerText: {fileID: 0}
   availableFoods:
-  - foodType: Bread
+  - foodType: Choux
     displayPrefab: {fileID: 8878342301148696013, guid: 9ca22cca6b5fc4edaa744a554c23e1e9, type: 3}
   - foodType: Melon
     displayPrefab: {fileID: 7967219586748323803, guid: ed0ec16cc60794fd18b3e444cd55d6f6, type: 3}
   - foodType: Juice
     displayPrefab: {fileID: 7967219586748323803, guid: 9a4b59423ac3a4c9a9a770b467f6e795, type: 3}
-  - foodType: Pie
+  - foodType: Bread
     displayPrefab: {fileID: 7967219586748323803, guid: 90183fe8ad12a4166924a80c36de4969, type: 3}
   - foodType: Apple
     displayPrefab: {fileID: 7967219586748323803, guid: 8a33db967f0924e1c945fc1069904b24, type: 3}
