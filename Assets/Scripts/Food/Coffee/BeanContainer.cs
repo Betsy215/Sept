@@ -19,7 +19,7 @@ public class BeanContainer : MonoBehaviour
         UpdateDisplay();
     }
 
-    private void OnMouseUpAsButton()
+    public void RefillToFull()
     {
         // Refill beans to full
         currentBeanLevel = 6;

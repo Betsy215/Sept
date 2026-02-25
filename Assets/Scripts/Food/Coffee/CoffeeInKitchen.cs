@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CoffeeInKitchen : MonoBehaviour
 {
@@ -6,7 +7,7 @@ public class CoffeeInKitchen : MonoBehaviour
 
     [Header("Debug")] public bool enableDebugLogs = true;
 
-    private void OnMouseUpAsButton()
+    private void OnPointerClick(PointerEventData eventData)
     {
         DebugLog("Coffee clicked - refilling beans...");
 
@@ -21,15 +22,10 @@ public class CoffeeInKitchen : MonoBehaviour
         var beanContainer = FindObjectOfType<BeanContainer>();
 
         if (beanContainer != null)
-        {
             // Refill beans by calling its OnMouseUpAsButton (which sets beans to 6)
-            beanContainer.SendMessage("OnMouseUpAsButton");
-            DebugLog("Beans refilled to full!");
-        }
+            beanContainer.RefillToFull();
         else
-        {
             DebugLog("ERROR: BeanContainer not found!");
-        }
     }
 
     private void DebugLog(string message)

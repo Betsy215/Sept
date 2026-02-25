@@ -2,39 +2,45 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Attach this to a button to make it close the kitchen scene
-/// Automatically finds KitchenSceneManager singleton
+/// Attach to the backButton in the KitchenScene.
+/// Unity's Button handles the pressed sprite via Sprite Swap transition.
+/// This script adds click sound.
+///
+/// SETUP:
+/// - Button component Transition = Sprite Swap
+/// - Assign your pressed sprite in Button's Pressed Sprite field
+/// - Assign clickSound in Inspector
 /// </summary>
 public class CloseKitchenButton : MonoBehaviour
 {
+    [Header("Audio")] public AudioClip clickSound;
+
+    [Header("Debug")] public bool enableDebugLogs = true;
+
     private Button button;
 
     private void Start()
     {
-        // Get the button component on this GameObject
         button = GetComponent<Button>();
 
         if (button == null)
         {
-            Debug.LogError("CloseKitchenButton: No Button component found on this GameObject!");
+            Debug.LogError("CloseKitchenButton: No Button component found!");
             return;
         }
 
-        // Wire up the button click event
         button.onClick.AddListener(OnButtonClick);
-
-        Debug.Log("CloseKitchenButton: Successfully wired to button");
+        DebugLog("CloseKitchenButton initialized");
     }
 
-    /// <summary>
-    /// Called when button is clicked
-    /// </summary>
     private void OnButtonClick()
     {
-        // Find the singleton manager
+        if (clickSound != null && AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(clickSound);
+
         if (KitchenSceneManager.Instance != null)
         {
-            Debug.Log("CloseKitchenButton: Closing kitchen...");
+            DebugLog("Closing kitchen...");
             KitchenSceneManager.Instance.CloseKitchen();
         }
         else
@@ -43,12 +49,13 @@ public class CloseKitchenButton : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Cleanup when destroyed
-    /// </summary>
+    private void DebugLog(string message)
+    {
+        if (enableDebugLogs) Debug.Log($"[CloseKitchenButton] {message}");
+    }
+
     private void OnDestroy()
     {
-        // Remove listener to prevent memory leaks
         if (button != null) button.onClick.RemoveListener(OnButtonClick);
     }
 }
