@@ -4,16 +4,20 @@ using UnityEngine.UI;
 /// <summary>
 /// Attach to the KitchenButton in the game scene.
 /// Unity's Button handles the pressed sprite via Sprite Swap transition.
-/// This script adds click sound.
+/// This script adds click sound and dismisses the kitchen tutorial on click.
 ///
 /// SETUP:
 /// - Button component Transition = Sprite Swap
 /// - Assign your pressed sprite in Button's Pressed Sprite field
 /// - Assign clickSound in Inspector
+/// - LevelManager is auto-found at Start (or assign manually in Inspector)
 /// </summary>
 public class OpenKitchenButton : MonoBehaviour
 {
     [Header("Audio")] public AudioClip clickSound;
+
+    [Header("References")] [Tooltip("Auto-found at Start if not assigned")]
+    public LevelManager levelManager;
 
     [Header("Debug")] public bool enableDebugLogs = true;
 
@@ -29,6 +33,10 @@ public class OpenKitchenButton : MonoBehaviour
             return;
         }
 
+        // Auto-find LevelManager if not assigned in Inspector
+        if (levelManager == null)
+            levelManager = FindObjectOfType<LevelManager>();
+
         button.onClick.AddListener(OnButtonClick);
         DebugLog("OpenKitchenButton initialized");
     }
@@ -37,6 +45,9 @@ public class OpenKitchenButton : MonoBehaviour
     {
         if (clickSound != null && AudioManager.Instance != null)
             AudioManager.Instance.PlaySFX(clickSound);
+
+        // Dismiss the kitchen button tutorial when the player taps this button
+        levelManager?.DismissKitchenButtonTutorial();
 
         if (KitchenSceneManager.Instance != null)
         {

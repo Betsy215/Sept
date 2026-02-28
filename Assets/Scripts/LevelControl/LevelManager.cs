@@ -47,7 +47,6 @@ public class LevelManager : MonoBehaviour
     [Header("Tutorial")] public GameObject refillTutorialPanel;
     public Button closeButton;
 
-
     // Current level tracking
     private int currentLevelIndex = 0;
     private LevelData currentLevelData;
@@ -126,39 +125,55 @@ public class LevelManager : MonoBehaviour
             SessionManager.Instance.OnSessionCompleted += OnSessionCompleted;
     }
 
-    public void ShowRefillTutorial()
+    #region Tutorial
+
+    /// <summary>
+    /// Called by GamePhaseManager on every arrangement phase start.
+    /// The session flag (refillTutorialShown) is the sole guard —
+    /// shows only once per session regardless of level.
+    /// RefillTutorialPanel should be a child of KitchenButton in the
+    /// hierarchy so it automatically follows the button position.
+    /// </summary>
+    public void ShowKitchenButtonTutorial()
     {
-        // Check SessionManager instead of local flag
-        if (SessionManager.Instance != null && SessionManager.Instance.GetCurrentSession().refillTutorialShown)
+        if (SessionManager.Instance != null &&
+            SessionManager.Instance.GetCurrentSession().refillTutorialShown)
         {
-            Debug.Log("Tutorial already shown this session - returning early");
+            Debug.Log("LevelManager: Kitchen button tutorial already shown this session — skipping");
             return;
         }
 
-        Debug.Log("Showing tutorial for first time this session");
-
-        // Show tutorial panel
-        if (popupCanvas != null)
-            popupCanvas.SetActive(true);
         refillTutorialPanel.SetActive(true);
 
-        // Mark as shown in SESSION DATA
-        if (SessionManager.Instance != null) SessionManager.Instance.GetCurrentSession().refillTutorialShown = true;
-        // Optionally save the session to persist this flag
-        // SessionManager.Instance.SaveSession();
-        Debug.Log("Tutorial flag set in session data");
+        // Mark as shown for the rest of this session
+        if (SessionManager.Instance != null)
+            SessionManager.Instance.GetCurrentSession().refillTutorialShown = true;
+
+        Debug.Log("LevelManager: Kitchen button tutorial shown");
     }
 
+    /// <summary>
+    /// Hides the kitchen button tutorial.
+    /// Called by closeButton (Inspector wiring) and by OpenKitchenButton on click.
+    /// The session flag stays true so the tutorial never re-appears this session.
+    /// </summary>
     public void DismissRefillTutorial()
     {
-        // Just hide the tutorial panel
-        refillTutorialPanel.SetActive(false);
+        if (refillTutorialPanel != null)
+            refillTutorialPanel.SetActive(false);
 
-        popupCanvas.SetActive(false);
-
-        Debug.Log("Tutorial dismissed");
+        Debug.Log("LevelManager: Kitchen button tutorial dismissed");
     }
 
+    /// <summary>
+    /// Alias for DismissRefillTutorial so OpenKitchenButton can use a clear method name.
+    /// </summary>
+    public void DismissKitchenButtonTutorial()
+    {
+        DismissRefillTutorial();
+    }
+
+    #endregion
 
     private void SetupLevelCompleteUI()
     {
@@ -400,7 +415,6 @@ public class LevelManager : MonoBehaviour
         UpdateLevelInfoDisplay();
     }
 
-    // REPLACE: ApplyServeableItemSettings method with this cleaner version
     private void ApplyServeableItemSettings()
     {
         // Check if SessionManager is available
@@ -439,7 +453,6 @@ public class LevelManager : MonoBehaviour
             $"Level {currentLevelIndex + 1}: Activated {activatedCount} serveable items with upgrade levels applied");
     }
 
-// ADD: Unified upgrade level application
     private void ApplyUpgradeLevels()
     {
         var upgradeableItems = FindObjectsOfType<MonoBehaviour>().OfType<IUpgradeable>();
@@ -456,7 +469,6 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-// ADD: Helper to determine upgrade level for any object
     private int GetUpgradeLevelForObject(GameObject obj)
     {
         // For ServeableItems, use food type
@@ -471,15 +483,12 @@ public class LevelManager : MonoBehaviour
         return SessionManager.Instance.GetFoodUpgradeLevel(obj.name);
     }
 
-// ADD: Set default levels for all IUpgradeable objects
     private void SetDefaultUpgradeLevels()
     {
         var upgradeableItems = FindObjectsOfType<MonoBehaviour>().OfType<IUpgradeable>();
 
         foreach (var item in upgradeableItems) item.SetUpgradeLevel(1); // Default level 1
     }
-
-// ADD: using System.Linq at the top if not already there
 
     private void ApplyVisualSettings()
     {
@@ -498,17 +507,15 @@ public class LevelManager : MonoBehaviour
     {
         gamePhaseManager.StartArrangementPhase();
         scoreManager.ResetScore();
-        StartArrangementMusic(); // NEW: Start arrangement music when level starts
+        StartArrangementMusic();
     }
 
-    // NEW: Method to start arrangement music
     private void StartArrangementMusic()
     {
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayArrangementMusic();
     }
 
-    // EXISTING: Method to start gameplay music (now uses playlist)
     private void StartGameplayMusic()
     {
         if (AudioManager.Instance != null)
@@ -517,7 +524,7 @@ public class LevelManager : MonoBehaviour
 
     public void StartGamePlay()
     {
-        StartGameplayMusic(); // NEW: Transition to gameplay music when gameplay starts
+        StartGameplayMusic();
 
         if (orderSystem != null)
         {
@@ -565,6 +572,7 @@ public class LevelManager : MonoBehaviour
     private IEnumerator ShowLevelCompletePopup()
     {
         refillTutorialPanel.SetActive(false);
+
         // Wait for the specified delay
         yield return new WaitForSeconds(3f);
 
@@ -595,20 +603,17 @@ public class LevelManager : MonoBehaviour
         var isLastLevel = currentLevelIndex + 1 >= allLevels.Length;
         if (isLastLevel)
         {
-            yield return new WaitForSeconds(0.5f); // Small pause after animations
+            yield return new WaitForSeconds(0.5f);
             ShowFinalCompletionMessage();
         }
     }
 
     private void ShowFinalCompletionMessage()
     {
-        // Get total score from session
         var totalScore = SessionManager.Instance.GetTotalScore();
         var highScore = SessionManager.Instance.GetHighScore();
         var isNewRecord = SessionManager.Instance.CheckAndSaveHighScore();
 
-
-        // Override the text elements to show completion message
         if (todaySale != null)
             todaySale.text = "\nCongrats!\nYou finished all levels!";
         todayTip.text = "";
@@ -621,7 +626,7 @@ public class LevelManager : MonoBehaviour
 
         Debug.Log($"🎉 All levels completed! Total score: {totalScore}");
 
-        // FIX: Mark session as completed when all levels are finished
+        // Mark session as completed when all levels are finished
         if (SessionManager.Instance != null)
         {
             SessionManager.Instance.CompleteSession();
@@ -635,7 +640,6 @@ public class LevelManager : MonoBehaviour
 
         if (SessionManager.Instance == null || !SessionManager.Instance.HasActiveSession())
         {
-            // No session, show zeros
             unlockedItemsText.text = "";
             return;
         }
@@ -643,7 +647,6 @@ public class LevelManager : MonoBehaviour
         // Get REMAINING items to unlock (total - purchased)
         var (remainingFood, remainingCharacters) = SessionManager.Instance.GetUnpurchasedItemsCount();
 
-        // Update UI to show remaining items
         unlockedItemsText.text = $"Unlocked Food: {remainingFood}\nUnlocked Customers: {remainingCharacters}";
 
         Debug.Log($"Level Complete: Remaining to unlock - Food: {remainingFood}, Customers: {remainingCharacters}");
@@ -713,7 +716,6 @@ public class LevelManager : MonoBehaviour
         if (currentLevelData == null || serveableItems == null)
             return new ServeableItem[0];
 
-        // Return all active (enabled) items
         var activeItems = new List<ServeableItem>();
 
         foreach (var item in serveableItems)
