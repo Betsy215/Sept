@@ -1,10 +1,10 @@
 using UnityEngine;
 using System.Collections;
 
-public class Juice : MonoBehaviour
+public class Apple : MonoBehaviour
 {
     // Sprites in ascending order: index 0 = empty, last index = full
-    [SerializeField] private Sprite[] juiceSprites;
+    [SerializeField] private Sprite[] appleSprites;
     [SerializeField] [Min(1)] private int countPerSpriteChange = 1;
 
     private RefillableItem refillableItem;
@@ -43,9 +43,9 @@ public class Juice : MonoBehaviour
     private void UpdateSprite(int count)
     {
         var consumed = refillableItem.GetMaxCount() - count;
-        var index = juiceSprites.Length - 1 - consumed / countPerSpriteChange;
-        index = Mathf.Clamp(index, 0, juiceSprites.Length - 1);
-        if (juiceSprites[index] != null)
-            spriteRenderer.sprite = juiceSprites[index];
+        var index = appleSprites.Length - 1 - consumed / countPerSpriteChange;
+        index = Mathf.Clamp(index, 0, appleSprites.Length - 1);
+        if (appleSprites[index] != null)
+            spriteRenderer.sprite = appleSprites[index];
     }
 }

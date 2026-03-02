@@ -145,10 +145,6 @@ public class LevelManager : MonoBehaviour
 
         refillTutorialPanel.SetActive(true);
 
-        // Mark as shown for the rest of this session
-        if (SessionManager.Instance != null)
-            SessionManager.Instance.GetCurrentSession().refillTutorialShown = true;
-
         Debug.Log("LevelManager: Kitchen button tutorial shown");
     }
 
@@ -157,20 +153,13 @@ public class LevelManager : MonoBehaviour
     /// Called by closeButton (Inspector wiring) and by OpenKitchenButton on click.
     /// The session flag stays true so the tutorial never re-appears this session.
     /// </summary>
-    public void DismissRefillTutorial()
+    public void DismissKitchenButtonTutorial()
     {
         if (refillTutorialPanel != null)
             refillTutorialPanel.SetActive(false);
 
-        Debug.Log("LevelManager: Kitchen button tutorial dismissed");
-    }
-
-    /// <summary>
-    /// Alias for DismissRefillTutorial so OpenKitchenButton can use a clear method name.
-    /// </summary>
-    public void DismissKitchenButtonTutorial()
-    {
-        DismissRefillTutorial();
+        if (SessionManager.Instance != null)
+            SessionManager.Instance.GetCurrentSession().refillTutorialShown = true;
     }
 
     #endregion

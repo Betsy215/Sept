@@ -206,7 +206,8 @@ public class RefillableItem : MonoBehaviour
         {
             currentCount = Mathf.Max(0, currentCount - 1);
             OnCountChanged?.Invoke(currentCount, maxCount);
-
+            if (currentCount <= 0)
+                isOutOfStock = true;
             DebugLog($"Item served correctly. Count: {currentCount}/{maxCount}");
         }
         else
@@ -455,6 +456,14 @@ public class RefillableItem : MonoBehaviour
         DebugLog("Testing hold detection manually...");
         OnPointerDown();
         StartCoroutine(TestHoldCoroutine());
+    }
+
+    public void RefillToFull()
+    {
+        if (currentCount == maxCount) return;
+        currentCount = maxCount;
+        isOutOfStock = false;
+        OnCountChanged?.Invoke(currentCount, maxCount);
     }
 
     public void OverrideMaxCount(int newMaxCount)
