@@ -44,7 +44,6 @@ public class LevelManager : MonoBehaviour
 
     public GamePhaseManager gamePhaseManager;
 
-    [Header("Tutorial")] public GameObject refillTutorialPanel;
     public Button closeButton;
 
     // Current level tracking
@@ -125,44 +124,6 @@ public class LevelManager : MonoBehaviour
             SessionManager.Instance.OnSessionCompleted += OnSessionCompleted;
     }
 
-    #region Tutorial
-
-    /// <summary>
-    /// Called by GamePhaseManager on every arrangement phase start.
-    /// The session flag (refillTutorialShown) is the sole guard —
-    /// shows only once per session regardless of level.
-    /// RefillTutorialPanel should be a child of KitchenButton in the
-    /// hierarchy so it automatically follows the button position.
-    /// </summary>
-    public void ShowKitchenButtonTutorial()
-    {
-        if (SessionManager.Instance != null &&
-            SessionManager.Instance.GetCurrentSession().refillTutorialShown)
-        {
-            Debug.Log("LevelManager: Kitchen button tutorial already shown this session — skipping");
-            return;
-        }
-
-        refillTutorialPanel.SetActive(true);
-
-        Debug.Log("LevelManager: Kitchen button tutorial shown");
-    }
-
-    /// <summary>
-    /// Hides the kitchen button tutorial.
-    /// Called by closeButton (Inspector wiring) and by OpenKitchenButton on click.
-    /// The session flag stays true so the tutorial never re-appears this session.
-    /// </summary>
-    public void DismissKitchenButtonTutorial()
-    {
-        if (refillTutorialPanel != null)
-            refillTutorialPanel.SetActive(false);
-
-        if (SessionManager.Instance != null)
-            SessionManager.Instance.GetCurrentSession().refillTutorialShown = true;
-    }
-
-    #endregion
 
     private void SetupLevelCompleteUI()
     {
@@ -560,8 +521,6 @@ public class LevelManager : MonoBehaviour
 
     private IEnumerator ShowLevelCompletePopup()
     {
-        refillTutorialPanel.SetActive(false);
-
         // Wait for the specified delay
         yield return new WaitForSeconds(3f);
 

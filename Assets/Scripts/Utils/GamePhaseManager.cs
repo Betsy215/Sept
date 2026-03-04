@@ -85,9 +85,6 @@ public class GamePhaseManager : MonoBehaviour
 
         if (refillSystem != null)
             refillSystem.NotifyPhaseChange(currentPhase);
-
-        // Show kitchen button tutorial (session flag inside guards against re-showing)
-        TryShowKitchenButtonTutorial();
     }
 
     /// <summary>
@@ -255,25 +252,6 @@ public class GamePhaseManager : MonoBehaviour
                     DebugLog($"Loaded saved position for {item.GetFoodType()}: ({savedPos.x:F2}, {savedPos.y:F2})");
                 }
             }
-    }
-
-    /// <summary>
-    /// Triggers the kitchen button tutorial via LevelManager.
-    /// No level-number check here — the session flag inside
-    /// ShowKitchenButtonTutorial() is the sole guard, so this
-    /// is safe to call on every arrangement phase start.
-    /// </summary>
-    private void TryShowKitchenButtonTutorial()
-    {
-        if (levelManager != null)
-            StartCoroutine(ShowKitchenTutorialAfterDelay(0.35f));
-    }
-
-    private IEnumerator ShowKitchenTutorialAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        levelManager.ShowKitchenButtonTutorial();
-        DebugLog("Kitchen button tutorial check triggered");
     }
 
     private void DebugLog(string message)

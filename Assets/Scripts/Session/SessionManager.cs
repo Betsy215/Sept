@@ -14,7 +14,6 @@ public class SessionData
 
     public List<string> purchasedFoodItems;
     public List<string> purchasedCharacters;
-    public bool refillTutorialShown = false;
     public Dictionary<string, int> foodUpgradeLevels;
 
     [Serializable]
@@ -46,7 +45,7 @@ public class SessionData
         sessionStartTime = DateTime.Now;
         isActive = true;
 
-        purchasedFoodItems = new List<string> { "Juice", "Choux", "Bread", "Apple", "Coffee", "Cake" };
+        purchasedFoodItems = new List<string> { "Coffee" };
         foodUpgradeLevels = new Dictionary<string, int>()
         {
             { "Coffee", 1 },

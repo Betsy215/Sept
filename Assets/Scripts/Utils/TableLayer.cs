@@ -15,7 +15,7 @@ public class TableLayer : MonoBehaviour
     [Header("Table Coverage Settings")]
     [Tooltip("What percentage of the screen height should the tablecloth cover from bottom")]
     [Range(0.3f, 1f)]
-    public float screenCoveragePercent = 0.45f; // Cover 45% of screen from bottom
+    public float screenCoveragePercent = 0.5f;
 
     [Header("References")] [Tooltip("Reference to LevelManager to get active serveable items")]
     public LevelManager levelManager;

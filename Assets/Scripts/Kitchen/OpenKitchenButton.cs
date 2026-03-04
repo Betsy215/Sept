@@ -46,8 +46,6 @@ public class OpenKitchenButton : MonoBehaviour
         if (clickSound != null && AudioManager.Instance != null)
             AudioManager.Instance.PlaySFX(clickSound);
 
-        // Dismiss the kitchen button tutorial when the player taps this button
-        levelManager?.DismissKitchenButtonTutorial();
 
         if (KitchenSceneManager.Instance != null)
         {
