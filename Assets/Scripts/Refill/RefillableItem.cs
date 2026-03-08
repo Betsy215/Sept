@@ -225,6 +225,7 @@ public class RefillableItem : MonoBehaviour
 
         if (currentCount != oldCount)
         {
+            isOutOfStock = false;
             OnCountChanged?.Invoke(currentCount, maxCount);
             DebugLog($"Count increased by {amount}. New count: {currentCount}/{maxCount}");
         }
