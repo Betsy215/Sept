@@ -36,7 +36,6 @@ public class Cake : MonoBehaviour
 
     private void Start()
     {
-        // Get components
         refillableItem = GetComponent<RefillableItem>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         serveableItem = GetComponent<ServeableItem>();
@@ -50,93 +49,73 @@ public class Cake : MonoBehaviour
         if (serveableItem == null)
             Debug.LogWarning("Cake: ServeableItem component not found!");
 
-        // Validate sprites
         ValidateSpriteArray();
-
-        // Wait for RefillableItem to be initialized
         StartCoroutine(InitializeAfterRefillableItem());
     }
 
-    /// <summary>
-    /// Wait for RefillableItem to be initialized by RefillSystem before setting up Cake
-    /// </summary>
     private IEnumerator InitializeAfterRefillableItem()
     {
-        // Wait one frame for RefillableItem.Start() and RefillSystem initialization
         yield return null;
 
-        // Subscribe to count change events
         refillableItem.OnCountChanged += HandleCountChanged;
-
-        // Initialize with current count (now properly initialized)
         previousCount = refillableItem.GetCurrentCount();
         UpdateCakeSprite(previousCount);
 
         DebugLog($"Cake initialized with count: {previousCount}/{refillableItem.GetMaxCount()}");
 
-        // Verify settings
         VerifySettings();
     }
 
     private void OnDestroy()
     {
-        // Unsubscribe to prevent memory leaks
         if (refillableItem != null)
             refillableItem.OnCountChanged -= HandleCountChanged;
     }
 
     /// <summary>
-    /// Verifies RefillableItem settings are correct
+    /// Called by CakeOvenInKitchen to refill cake to full.
     /// </summary>
+    public void RefillToFull()
+    {
+        refillableItem?.RefillToFull();
+    }
+
     private void VerifySettings()
     {
         if (refillableItem == null) return;
 
-        // Check max count is 6
         if (refillableItem.GetMaxCount() != 6)
             Debug.LogWarning(
                 $"Cake: maxCount is {refillableItem.GetMaxCount()}, expected 6. Set customMaxCount to 6 in RefillableItem.");
 
-        // Check enableRefill is TRUE (required for count tracking)
         if (!refillableItem.enableRefill)
             Debug.LogError(
                 "Cake: enableRefill MUST be TRUE for count tracking to work! Check RefillableItem component.");
 
-        // Check enableHoldToRefill is FALSE (cake doesn't use hold gesture)
         if (refillableItem.enableHoldToRefill)
             Debug.LogWarning(
-                "Cake: enableHoldToRefill should be FALSE (cake uses different refill mechanism). Check RefillableItem component.");
+                "Cake: enableHoldToRefill should be FALSE. Check RefillableItem component.");
 
         DebugLog("Settings verified");
     }
 
-    /// <summary>
-    /// Event handler - called when RefillableItem count changes
-    /// </summary>
     private void HandleCountChanged(int currentCount, int maxCount)
     {
         var wasServed = currentCount < previousCount;
         var wasRefilled = currentCount > previousCount;
         previousCount = currentCount;
 
-        DebugLog(
-            $"Count changed: {currentCount}/{maxCount} ({(wasServed ? "served" : wasRefilled ? "refilled" : "changed")})");
+        DebugLog($"Count changed: {currentCount}/{maxCount} ({(wasServed ? "served" : wasRefilled ? "refilled" : "changed")})");
 
-        // Update sprite
         UpdateCakeSprite(currentCount);
     }
 
-    /// <summary>
-    /// Updates the sprite based on current count
-    /// </summary>
     private void UpdateCakeSprite(int currentCount)
     {
         if (spriteRenderer == null) return;
 
-        // Clamp to valid range
         currentCount = Mathf.Clamp(currentCount, 0, 6);
 
-        // Set sprite
         if (currentCount < cakeSprites.Length && cakeSprites[currentCount] != null)
         {
             spriteRenderer.sprite = cakeSprites[currentCount];
@@ -148,9 +127,6 @@ public class Cake : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Validates all sprites are assigned
-    /// </summary>
     private void ValidateSpriteArray()
     {
         for (var i = 0; i <= 6; i++)
@@ -165,50 +141,27 @@ public class Cake : MonoBehaviour
     }
 
     #region Editor Testing
-
 #if UNITY_EDITOR
     [ContextMenu("Test: Show 0 Pieces (Empty)")]
-    private void Test0Pieces()
-    {
-        UpdateCakeSprite(0);
-    }
+    private void Test0Pieces() { UpdateCakeSprite(0); }
 
     [ContextMenu("Test: Show 1 Piece")]
-    private void Test1Piece()
-    {
-        UpdateCakeSprite(1);
-    }
+    private void Test1Piece() { UpdateCakeSprite(1); }
 
     [ContextMenu("Test: Show 2 Pieces")]
-    private void Test2Pieces()
-    {
-        UpdateCakeSprite(2);
-    }
+    private void Test2Pieces() { UpdateCakeSprite(2); }
 
     [ContextMenu("Test: Show 3 Pieces")]
-    private void Test3Pieces()
-    {
-        UpdateCakeSprite(3);
-    }
+    private void Test3Pieces() { UpdateCakeSprite(3); }
 
     [ContextMenu("Test: Show 4 Pieces")]
-    private void Test4Pieces()
-    {
-        UpdateCakeSprite(4);
-    }
+    private void Test4Pieces() { UpdateCakeSprite(4); }
 
     [ContextMenu("Test: Show 5 Pieces")]
-    private void Test5Pieces()
-    {
-        UpdateCakeSprite(5);
-    }
+    private void Test5Pieces() { UpdateCakeSprite(5); }
 
     [ContextMenu("Test: Show 6 Pieces (Full)")]
-    private void Test6Pieces()
-    {
-        UpdateCakeSprite(6);
-    }
+    private void Test6Pieces() { UpdateCakeSprite(6); }
 #endif
-
     #endregion
 }

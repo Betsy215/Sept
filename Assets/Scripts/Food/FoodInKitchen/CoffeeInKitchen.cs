@@ -1,13 +1,13 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CoffeeInKitchen : MonoBehaviour
+public class CoffeeInKitchen : MonoBehaviour, IPointerClickHandler
 {
     [Header("Audio")] public AudioClip refillSound;
 
     [Header("Debug")] public bool enableDebugLogs = true;
 
-    private void OnPointerClick(PointerEventData eventData)
+    public void OnPointerClick(PointerEventData eventData)
     {
         DebugLog("Coffee clicked - refilling beans...");
 

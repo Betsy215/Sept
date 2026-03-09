@@ -29,12 +29,9 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
 
-        // ✅ DISABLE animator at start - only enable during brewing
+        // Disable animator at start — it only runs during brewing
         if (animator != null)
-        {
-            animator.enabled = true;
-            Debug.Log("🔴 Animator disabled at Start - will enable only during brewing");
-        }
+            animator.enabled = false;
     }
 
     private void OnMouseUpAsButton()
@@ -56,29 +53,26 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable
         isBrewing = true;
         cupsBrewedThisSession = 0;
 
+        // Always consume exactly 1 bean per click
         beanContainer.ConsumeBeans(1);
+        Debug.Log($"☕ Consumed 1 bean. Level {currentUpgradeLevel} machine starting...");
 
-        // ✅ Enable animator ONLY when brewing starts
         if (animator != null)
         {
-            // animator.enabled = true;
+            animator.enabled = true;
 
-            // Set BrewingLevel based on available space
+            // Level 2 with only 1 space left → animate as level 1 (brew 1 cup only)
             var brewingLevel = currentUpgradeLevel;
-
-            // Level 2 machine with only 1 space left → brew as Level 1
-            if (currentUpgradeLevel == 2 && coffeeRefillableItem.HasSpace(1) && !coffeeRefillableItem.HasSpace(2))
+            if (currentUpgradeLevel == 2 && !coffeeRefillableItem.HasSpace(2))
             {
                 brewingLevel = 1;
-                Debug.Log("☕ Level 2 machine but only 1 space - brewing 1 cup");
+                Debug.Log("☕ Level 2 machine but only 1 space - animating as Level 1");
             }
 
             animator.SetInteger("BrewingLevel", brewingLevel);
             animator.SetTrigger("StartBrewing");
-            Debug.Log($"🟢 Animator enabled for brewing - BrewingLevel set to {brewingLevel}");
+            Debug.Log($"🟢 Animator enabled for brewing - BrewingLevel: {brewingLevel}");
         }
-
-        Debug.Log($"☕ Brewing started... Level {currentUpgradeLevel} machine");
     }
 
     public void OnFinish1Cup()
@@ -88,27 +82,15 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable
         if (coffeeRefillableItem != null)
             coffeeRefillableItem.IncreaseCount(1);
 
-        Debug.Log($"☕ First cup complete! Cups brewed this session: {cupsBrewedThisSession}");
+        Debug.Log($"☕ Cup 1 done! Cups this session: {cupsBrewedThisSession}");
 
-        // Level 1 machine: Finish brewing after 1 cup
         if (currentUpgradeLevel == 1)
-        {
             CompleteBrewing();
-        }
-        // Level 2+ machine: Continue brewing for second cup
-        else
-        {
-            if (beanContainer != null && beanContainer.HasEnoughBeans(1))
-            {
-                beanContainer.ConsumeBeans(1);
-                Debug.Log("☕ Continuing to brew second cup...");
-            }
-        }
+        // Level 2: animation continues automatically to OnFinish2Cup — no extra bean consumed
     }
 
     public void OnFinish2Cup()
     {
-        // Only called for Level 2+ machines
         if (currentUpgradeLevel >= 2)
         {
             cupsBrewedThisSession++;
@@ -116,7 +98,7 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable
             if (coffeeRefillableItem != null)
                 coffeeRefillableItem.IncreaseCount(1);
 
-            Debug.Log($"☕ Second cup complete! Total cups brewed: {cupsBrewedThisSession}");
+            Debug.Log($"☕ Cup 2 done! Total cups brewed: {cupsBrewedThisSession}");
         }
 
         CompleteBrewing();
@@ -126,13 +108,37 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable
     {
         isBrewing = false;
 
-        // ✅ Disable animator after brewing completes
+        // ✅ Disable animator so it doesn't snap back to its default idle state
+        // (which would flash the Level 1 sprite on a Level 2 machine)
         if (animator != null)
-            // animator.enabled = false;
-            Debug.Log("🔴 Animator disabled after brewing");
+            animator.enabled = false;
 
-        Debug.Log($"✅ Brewing complete! Level {currentUpgradeLevel} machine finished {cupsBrewedThisSession} cups.");
+        // ✅ Immediately restore the correct sprite for the current upgrade level
+        RestoreUpgradeSprite();
+
+        Debug.Log($"✅ Brewing complete! Level {currentUpgradeLevel} machine finished {cupsBrewedThisSession} cup(s).");
         cupsBrewedThisSession = 0;
+    }
+
+    /// <summary>
+    /// Re-applies the correct idle sprite after the animator is disabled,
+    /// preventing a 1-frame flash of the wrong sprite.
+    /// </summary>
+    private void RestoreUpgradeSprite()
+    {
+        if (spriteRenderer == null) return;
+
+        switch (currentUpgradeLevel)
+        {
+            case 2:
+                if (level2Sprite != null)
+                    spriteRenderer.sprite = level2Sprite;
+                break;
+            case 1:
+            default:
+                // Level 1 sprite is the SpriteRenderer's default — nothing to override
+                break;
+        }
     }
 
     public void SetUpgradeLevel(int level)
@@ -145,7 +151,6 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        // Change sprite (animator is already disabled from Start)
         if (spriteRenderer != null)
             switch (currentUpgradeLevel)
             {

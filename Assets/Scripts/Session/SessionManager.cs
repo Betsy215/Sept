@@ -45,11 +45,11 @@ public class SessionData
         sessionStartTime = DateTime.Now;
         isActive = true;
 
-        purchasedFoodItems = new List<string> { "Coffee" };
+        purchasedFoodItems = new List<string> { "Coffee", "Juice", "Apple" };
         foodUpgradeLevels = new Dictionary<string, int>()
         {
-            { "Coffee", 1 },
-            { "CoffeeMachine", 1 }
+            { "Coffee", 2 },
+            { "CoffeeMachine", 2 }
         };
         purchasedCharacters = new List<string> { "Girl" };
         savedFoodPositions = new List<FoodItemPosition>();
