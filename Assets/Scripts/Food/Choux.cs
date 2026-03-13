@@ -32,11 +32,13 @@ public class Choux : MonoBehaviour
 
     public void RefillToFull()
     {
+        Debug.Log($"[Choux] count={refillableItem.GetCurrentCount()}, max={refillableItem.GetMaxCount()}");
         refillableItem?.RefillToFull();
     }
 
     private void OnCountChanged(int currentCount, int maxCount)
     {
+        Debug.Log($"[Choux] OnCountChanged received: {currentCount}/{maxCount}");
         UpdateSprite(currentCount);
     }
 

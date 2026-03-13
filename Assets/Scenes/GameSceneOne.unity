@@ -420,7 +420,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 100, y: 100}
-  m_SizeDelta: {x: 150, y: 150}
+  m_SizeDelta: {x: 180, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &185177636
 MonoBehaviour:
@@ -1551,6 +1551,7 @@ MonoBehaviour:
   shakeIntensity: 0.15
   shakeDuration: 0.4
   shakeCount: 3
+  serveSound: {fileID: 0}
   enableDebugLogs: 1
 --- !u!212 &579974207
 SpriteRenderer:
@@ -1679,7 +1680,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 016d62bcad190454a99de3f817eef1d1, type: 3}
   - {fileID: 21300000, guid: 0f2505986a0b44610945d57828f976ed, type: 3}
   - {fileID: 21300000, guid: 1613e5409d25a464ba6899e69d0d3d51, type: 3}
-  - {fileID: 21300000, guid: debac55cea3fc4525b5a06ade9bbda8f, type: 3}
+  - {fileID: 21300000, guid: bb670d1bb92294ed7bf3f721bdf9d4e7, type: 3}
 --- !u!1 &592377076
 GameObject:
   m_ObjectHideFlags: 0
@@ -1967,6 +1968,7 @@ MonoBehaviour:
   shakeIntensity: 0.15
   shakeDuration: 0.4
   shakeCount: 3
+  serveSound: {fileID: 0}
   enableDebugLogs: 1
 --- !u!212 &676287865
 SpriteRenderer:
@@ -2481,7 +2483,6 @@ GameObject:
   m_Component:
   - component: {fileID: 753882335}
   - component: {fileID: 753882334}
-  - component: {fileID: 753882336}
   m_Layer: 0
   m_Name: GamePhaseManager
   m_TagString: Untagged
@@ -2529,20 +2530,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &753882336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 753882333}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 297c3610766e4f46b64428c9e37b6e55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  breadSprites: []
-  countPerSpriteChange: 2
 --- !u!1 &784244162
 GameObject:
   m_ObjectHideFlags: 0
@@ -2687,6 +2674,7 @@ MonoBehaviour:
   shakeIntensity: 0.15
   shakeDuration: 0.4
   shakeCount: 3
+  serveSound: {fileID: 0}
   enableDebugLogs: 1
 --- !u!4 &792063517
 Transform:
@@ -2744,7 +2732,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 7507be4f56cd04123899f58562dc0eaf, type: 3}
   - {fileID: 21300000, guid: 68a790a06ed724d77b723ad66a8e631f, type: 3}
   - {fileID: 21300000, guid: 45e285c4bd6dd4da5b6d2e6b081c52d0, type: 3}
-  - {fileID: 21300000, guid: 58dea169e88844463a6a7f5b83f37858, type: 3}
+  - {fileID: 21300000, guid: e939d7b3b32e64d5b8b20eef7b984c70, type: 3}
   enableDebugLogs: 1
 --- !u!1 &848596945
 GameObject:
@@ -2858,6 +2846,7 @@ MonoBehaviour:
   shakeIntensity: 0.15
   shakeDuration: 0.4
   shakeCount: 3
+  serveSound: {fileID: 0}
   enableDebugLogs: 1
 --- !u!4 &848596949
 Transform:
@@ -2988,6 +2977,7 @@ MonoBehaviour:
   shakeIntensity: 0.15
   shakeDuration: 0.4
   shakeCount: 3
+  serveSound: {fileID: 8300000, guid: 119930a7ddfd0469199ca0e07c48b19d, type: 3}
   enableDebugLogs: 0
 --- !u!4 &857287322
 Transform:
@@ -3535,37 +3525,6 @@ RectTransform:
   m_AnchoredPosition: {x: -38, y: 86}
   m_SizeDelta: {x: 1000, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1047774209
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1047774210}
-  m_Layer: 0
-  m_Name: AudioPreviewer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1047774210
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1047774209}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1073917561
 GameObject:
   m_ObjectHideFlags: 0
@@ -4747,6 +4706,7 @@ MonoBehaviour:
   shakeIntensity: 0.15
   shakeDuration: 0.4
   shakeCount: 3
+  serveSound: {fileID: 0}
   enableDebugLogs: 1
 --- !u!4 &1420048313
 Transform:
@@ -5726,8 +5686,8 @@ GameObject:
   - component: {fileID: 1820549556}
   - component: {fileID: 1820549555}
   - component: {fileID: 1820549558}
-  - component: {fileID: 1820549559}
   - component: {fileID: 1820549560}
+  - component: {fileID: 1820549561}
   m_Layer: 0
   m_Name: Bread
   m_TagString: Untagged
@@ -5806,6 +5766,7 @@ MonoBehaviour:
   shakeIntensity: 0.15
   shakeDuration: 0.4
   shakeCount: 3
+  serveSound: {fileID: 0}
   enableDebugLogs: 1
 --- !u!4 &1820549557
 Transform:
@@ -5843,28 +5804,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3, y: 3, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1820549559
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1820549554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbf6c566b0a7490e950634b68741f1ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enableRefill: 1
-  enableHoldToRefill: 0
-  customMaxCount: 9
-  customStartingCount: -1
-  customRefillTime: -1
-  refillBar: {fileID: 0}
-  fill: {fileID: 0}
-  bar: {fileID: 0}
-  serveableItem: {fileID: 0}
-  enableDebugLogs: 1
 --- !u!114 &1820549560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5883,6 +5822,28 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 6ef5f4580c3334b5a9c4585354ffef62, type: 3}
   - {fileID: 21300000, guid: b27d5ae4eb4754fdb9d8db9c5e14cdaf, type: 3}
   countPerSpriteChange: 3
+--- !u!114 &1820549561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820549554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbf6c566b0a7490e950634b68741f1ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableRefill: 1
+  enableHoldToRefill: 0
+  customMaxCount: 9
+  customStartingCount: -1
+  customRefillTime: 0
+  refillBar: {fileID: 0}
+  fill: {fileID: 0}
+  bar: {fileID: 0}
+  serveableItem: {fileID: 0}
+  enableDebugLogs: 1
 --- !u!1 &1880290211
 GameObject:
   m_ObjectHideFlags: 0
@@ -6460,4 +6421,3 @@ SceneRoots:
   - {fileID: 185986378}
   - {fileID: 540696951}
   - {fileID: 1942776060}
-  - {fileID: 1047774210}

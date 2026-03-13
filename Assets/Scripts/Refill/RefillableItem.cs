@@ -464,6 +464,8 @@ public class RefillableItem : MonoBehaviour
         if (currentCount == maxCount) return;
         currentCount = maxCount;
         isOutOfStock = false;
+        Debug.Log(
+            $"[RefillableItem] Firing OnCountChanged. Listeners: {OnCountChanged?.GetInvocationList().Length ?? 0}");
         OnCountChanged?.Invoke(currentCount, maxCount);
     }
 

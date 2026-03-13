@@ -24,6 +24,8 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     [Tooltip("How many times the item shakes")]
     public int shakeCount = 3;
 
+    public AudioClip serveSound;
+
     [Header("Debug")] public bool enableDebugLogs = true;
 
     [Header("Phase Management")] private bool servingEnabled = true;
@@ -210,12 +212,8 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     // Called when item was successfully served
     private void OnItemServedSuccessfully()
     {
-        // ✅ SUCCESS FEEDBACK: Order items already pop and disappear via ServedItemVisual
-        // The visual feedback happens on the order display items, not on the serveable item
-        // This is correct behavior - player sees the order item disappear with pop effect
-
-        DebugLog($"{foodType}: Item served successfully - order item will pop and disappear");
-
+        if (serveSound != null && AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(serveSound);
         // NEW: Notify refill system that item was served correctly
         if (refillSystem != null) refillSystem.OnItemServed(foodType, true);
 

@@ -45,6 +45,7 @@ public class Bread : MonoBehaviour
         var consumed = refillableItem.GetMaxCount() - count;
         var index = breadSprites.Length - 1 - consumed / countPerSpriteChange;
         index = Mathf.Clamp(index, 0, breadSprites.Length - 1);
+        Debug.Log($"[Bread] count={count}, maxCount={refillableItem.GetMaxCount()}, consumed={consumed}, arrayLength={breadSprites.Length}, index={index}, sprite={breadSprites[index]?.name ?? "NULL"}");
         if (breadSprites[index] != null)
             spriteRenderer.sprite = breadSprites[index];
     }

@@ -22,6 +22,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
     [Tooltip("The oven's baking sprite")] public Sprite bakingSprite;
 
     [Header("Audio")] public AudioClip interactSound;
+    public AudioClip bakeCompleteSound;
 
     [Header("Bake Time")] [Tooltip("How long the oven bakes before refilling the food item")]
     public float bakeTime = 10f;
@@ -114,6 +115,8 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         DebugLog("Bake complete!");
         OnRefill();
         SetSprite(defaultSprite);
+        if (bakeCompleteSound != null && AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(bakeCompleteSound);
         CooldownRegistry.ClearPickTime(GetCooldownKey());
     }
 
