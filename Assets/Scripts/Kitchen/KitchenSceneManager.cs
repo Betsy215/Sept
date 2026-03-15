@@ -171,28 +171,6 @@ public class KitchenSceneManager : MonoBehaviour
         DebugLog($"Re-enabled {enabledCount} colliders in {duration:F2}ms");
     }
 
-    /// <summary>
-    /// Call this if you spawn new objects at runtime
-    /// </summary>
-    public void RefreshColliderCache()
-    {
-        DebugLog("Refreshing collider cache...");
-        CacheGameColliders();
-    }
-
-    public void ToggleKitchen()
-    {
-        if (isKitchenOpen)
-            CloseKitchen();
-        else
-            OpenKitchen();
-    }
-
-    public bool IsKitchenOpen()
-    {
-        return isKitchenOpen;
-    }
-
     private void DebugLog(string message)
     {
         if (enableDebugLogs) Debug.Log($"[KitchenSceneManager] {message}");
@@ -201,5 +179,27 @@ public class KitchenSceneManager : MonoBehaviour
     private void OnDestroy()
     {
         if (Instance == this) Instance = null;
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (mode == LoadSceneMode.Single)
+        {
+            isKitchenOpen = false;
+            isCached = false;
+            cachedGameColliders.Clear();
+            cachedGameColliders3D.Clear();
+            DebugLog($"Scene '{scene.name}' loaded — kitchen state and collider cache reset.");
+        }
     }
 }

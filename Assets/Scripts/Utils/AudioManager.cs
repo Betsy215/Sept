@@ -19,6 +19,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip itemPickupSFX;
     public AudioClip levelWinSFX;
     public AudioClip wrongItemSFX;
+    public AudioClip customerWalkInSFX;
 
     [Header("Audio Settings")] [Range(0f, 1f)]
     public float musicVolume = 0.7f;
@@ -138,6 +139,11 @@ public class AudioManager : MonoBehaviour
             // Fallback to main menu music if arrangement music not assigned
             PlayMainMenuMusic();
         }
+    }
+
+    public void PlayCustomerWalkIn()
+    {
+        PlaySFX(customerWalkInSFX);
     }
 
     // NEW: Gameplay playlist functionality

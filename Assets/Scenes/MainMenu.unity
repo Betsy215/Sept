@@ -1407,7 +1407,7 @@ PrefabInstance:
       objectReference: {fileID: 8300000, guid: 4e68af47cdf714c9da1604968637a240, type: 3}
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: musicVolume
-      value: 0.6
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: gameplayMusic
@@ -1426,6 +1426,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: 8f9fcbccc551b456db1dbe5c7520d2b3, type: 3}
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
+      propertyPath: customerWalkInSFX
+      value: 
+      objectReference: {fileID: 8300000, guid: 92c145c119f07401da71320921e46b93, type: 3}
+    - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: levelCompleteMusic
       value: 
       objectReference: {fileID: 0}
@@ -1439,7 +1443,7 @@ PrefabInstance:
       objectReference: {fileID: 8300000, guid: f2eb21ea00c1641bda71c1cbcded26cd, type: 3}
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: autoStartMainMenuMusic
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: gameplayPlaylist.Array.data[0]

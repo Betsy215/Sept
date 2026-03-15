@@ -4,37 +4,33 @@ using System.Collections.Generic;
 
 public class CustomerManager : MonoBehaviour
 {
-    [Header("Customer Management")]
-    public CustomerController[] customerPrefabs;
+    [Header("Customer Management")] public CustomerController[] customerPrefabs;
     public Transform spawnPoint;
-    
-    [Header("References")]
-    public OrderSystem orderSystem;
+
+    [Header("References")] public OrderSystem orderSystem;
     public LevelManager levelManager;
-    
-    [Header("Timing Settings")]
-    [Tooltip("Delay between customer exit and spawning next customer")]
+
+    [Header("Timing Settings")] [Tooltip("Delay between customer exit and spawning next customer")]
     public float nextCustomerSpawnDelay = 2.0f;
-    
-    [Header("Debug")]
-    public bool enableDebugLogs = true;
-    
+
+    [Header("Debug")] public bool enableDebugLogs = true;
+
     // Current state
     private CustomerController currentCustomer;
     private bool isProcessingCustomer = false;
     private int currentLevelIndex = 0;
-    
+
     // CRITICAL: Prevent duplicate order generation
     private bool hasOrderBeenGenerated = false;
-    
+
     // Events for integration
     public System.Action<CustomerController> OnCustomerSpawned;
     public System.Action<CustomerController> OnCustomerCompleted;
-    
-    void Start()
+
+    private void Start()
     {
         ValidateSetup();
-        
+
         // Get current level
         if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
         {
@@ -49,23 +45,23 @@ public class CustomerManager : MonoBehaviour
             currentLevelIndex = 0;
             DebugLog("No level information found, defaulting to level 1");
         }
-        
+
         DebugLog($"CustomerManager initialized for level {currentLevelIndex + 1}");
     }
-    
-    void OnDisable()
+
+    private void OnDisable()
     {
         if (currentCustomer != null)
         {
             Destroy(currentCustomer.gameObject);
             currentCustomer = null;
         }
-        
+
         // Reset state
         isProcessingCustomer = false;
         hasOrderBeenGenerated = false;
     }
-    
+
     public void SpawnCustomerForCurrentLevel()
     {
         if (isProcessingCustomer)
@@ -73,18 +69,14 @@ public class CustomerManager : MonoBehaviour
             DebugLog("Already processing a customer, skipping spawn request");
             return;
         }
-        
-        CustomerController customerPrefab = SelectCustomerForLevel(currentLevelIndex);
+
+        var customerPrefab = SelectCustomerForLevel(currentLevelIndex);
         if (customerPrefab != null)
-        {
             SpawnCustomer(customerPrefab);
-        }
         else
-        {
             Debug.LogError($"No customer available for level {currentLevelIndex + 1}");
-        }
     }
-    
+
     public void HandleOrderServed(bool perfect)
     {
         if (currentCustomer != null)
@@ -111,22 +103,22 @@ public class CustomerManager : MonoBehaviour
             Debug.LogWarning("HandleOrderExpired called but no current customer!");
         }
     }
-    
+
     public void OnLevelLoaded(int levelIndex)
     {
         currentLevelIndex = levelIndex;
-        
+
         if (currentCustomer != null)
         {
             Destroy(currentCustomer.gameObject);
             currentCustomer = null;
         }
-        
+
         isProcessingCustomer = false;
         hasOrderBeenGenerated = false;
         DebugLog($"CustomerManager ready for level {levelIndex + 1}");
     }
-    
+
     public void OnCustomerReachedService(CustomerController customer)
     {
         if (customer == currentCustomer)
@@ -139,7 +131,7 @@ public class CustomerManager : MonoBehaviour
             DebugLog($"Customer {customer.name} reached service but is not current customer - ignoring");
         }
     }
-    
+
     public void OnCustomerExited(CustomerController customer)
     {
         if (customer == currentCustomer)
@@ -148,10 +140,10 @@ public class CustomerManager : MonoBehaviour
             currentCustomer = null;
             isProcessingCustomer = false;
             hasOrderBeenGenerated = false; // Reset for next customer
-            
+
             OnCustomerCompleted?.Invoke(customer);
             DebugLog("Customer exited - checking if we should spawn next customer");
-            
+
             // FIXED: Check if we need to spawn the next customer
             CheckForNextCustomer();
         }
@@ -160,27 +152,27 @@ public class CustomerManager : MonoBehaviour
             DebugLog($"Customer {customer.name} exited but was not current customer");
         }
     }
-    
+
     // NEW: Check if we should spawn the next customer
-    void CheckForNextCustomer()
+    private void CheckForNextCustomer()
     {
         if (orderSystem == null)
         {
             Debug.LogError("OrderSystem reference missing!");
             return;
         }
-        
+
         // Wait a bit, then spawn next customer
         DebugLog("Waiting before spawning next customer");
         StartCoroutine(DelayedNextCustomerSpawn());
     }
-    
+
     // NEW: Delayed spawning of next customer
-    IEnumerator DelayedNextCustomerSpawn()
+    private IEnumerator DelayedNextCustomerSpawn()
     {
         // Wait 2 seconds before spawning next customer
         yield return new WaitForSeconds(nextCustomerSpawnDelay);
-        
+
         // Check if we should still spawn (no current customer)
         if (currentCustomer == null)
         {
@@ -192,7 +184,7 @@ public class CustomerManager : MonoBehaviour
             DebugLog("Not spawning next customer - customer already exists");
         }
     }
-    
+
     private CustomerController SelectCustomerForLevel(int levelIndex)
     {
         // Check if SessionManager is available
@@ -202,39 +194,36 @@ public class CustomerManager : MonoBehaviour
             Debug.LogWarning("No active session found, using first customer as fallback");
             return customerPrefabs.Length > 0 ? customerPrefabs[0] : null;
         }
-    
+
         // Get purchased characters from session
-        List<string> purchasedCharacters = SessionManager.Instance.GetCurrentSession().purchasedCharacters;
-        List<CustomerController> availableCustomers = new List<CustomerController>();
-    
+        var purchasedCharacters = SessionManager.Instance.GetCurrentSession().purchasedCharacters;
+        var availableCustomers = new List<CustomerController>();
+
         // Check each customer prefab against purchased characters
-        for (int i = 0; i < customerPrefabs.Length; i++)
-        {
+        for (var i = 0; i < customerPrefabs.Length; i++)
             if (customerPrefabs[i] != null)
             {
                 // Extract character name from prefab name (e.g., "CustomerGirl" -> "Girl")
-                string customerName = customerPrefabs[i].name.Replace("Customer", "").Replace("Prefab", "").Trim();
-            
-                if (purchasedCharacters.Contains(customerName))
-                {
-                    availableCustomers.Add(customerPrefabs[i]);
-                }
+                var customerName = customerPrefabs[i].name.Replace("Customer", "").Replace("Prefab", "").Trim();
+
+                if (purchasedCharacters.Contains(customerName)) availableCustomers.Add(customerPrefabs[i]);
             }
-        }
-    
+
         if (availableCustomers.Count == 0)
         {
-            Debug.LogWarning($"No purchased customers available. Purchased: [{string.Join(", ", purchasedCharacters)}]");
+            Debug.LogWarning(
+                $"No purchased customers available. Purchased: [{string.Join(", ", purchasedCharacters)}]");
             return null;
         }
-    
-        int randomIndex = Random.Range(0, availableCustomers.Count);
-        CustomerController selected = availableCustomers[randomIndex];
-    
-        DebugLog($"Selected {selected.name} from {availableCustomers.Count} purchased customers: [{string.Join(", ", purchasedCharacters)}]");
+
+        var randomIndex = Random.Range(0, availableCustomers.Count);
+        var selected = availableCustomers[randomIndex];
+
+        DebugLog(
+            $"Selected {selected.name} from {availableCustomers.Count} purchased customers: [{string.Join(", ", purchasedCharacters)}]");
         return selected;
     }
-    
+
     private void SpawnCustomer(CustomerController customerPrefab)
     {
         if (spawnPoint == null)
@@ -242,15 +231,18 @@ public class CustomerManager : MonoBehaviour
             Debug.LogError("Spawn point not set!");
             return;
         }
-        
+
         currentCustomer = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation);
         isProcessingCustomer = true;
         hasOrderBeenGenerated = false; // Reset for new customer
-        
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayCustomerWalkIn();
+
         DebugLog($"Spawned {currentCustomer.name} at {spawnPoint.position}");
         OnCustomerSpawned?.Invoke(currentCustomer);
     }
-    
+
     private IEnumerator HandleCustomerOrderDelay(CustomerController customer)
     {
         // CRITICAL FIX: Check if order already generated to prevent duplicates
@@ -259,29 +251,29 @@ public class CustomerManager : MonoBehaviour
             DebugLog($"Order already generated for {customer.name} - skipping duplicate generation", true);
             yield break;
         }
-        
-        float delay = customer.OrderDelay;
+
+        var delay = customer.OrderDelay;
         DebugLog($"Waiting {delay}s before generating order for {customer.name}");
-        
+
         yield return new WaitForSeconds(delay);
-        
+
         // CRITICAL FIX: Double-check before generating order
         if (hasOrderBeenGenerated)
         {
             DebugLog($"Order was generated while waiting for {customer.name} - aborting", true);
             yield break;
         }
-        
+
         // Check if customer is still current and valid
         if (customer != currentCustomer || currentCustomer == null)
         {
             DebugLog($"Customer {customer.name} is no longer current customer - aborting order generation");
             yield break;
         }
-        
+
         // Set flag to prevent duplicate generation
         hasOrderBeenGenerated = true;
-        
+
         if (orderSystem != null)
         {
             DebugLog("Customer delay complete - requesting order generation");
@@ -294,76 +286,68 @@ public class CustomerManager : MonoBehaviour
             hasOrderBeenGenerated = false; // Reset flag on error
         }
     }
-    
+
     private void ValidateSetup()
     {
-        bool isValid = true;
-        
+        var isValid = true;
+
         if (customerPrefabs == null || customerPrefabs.Length == 0)
         {
             Debug.LogError("No customer prefabs assigned!");
             isValid = false;
         }
-        
+
         if (spawnPoint == null)
         {
             Debug.LogError("Spawn point not assigned!");
             isValid = false;
         }
-        
+
         if (orderSystem == null)
         {
             Debug.LogError("OrderSystem reference missing!");
             isValid = false;
         }
-        
+
         if (!isValid)
-        {
             Debug.LogError("CustomerManager setup is incomplete!");
-        }
         else
-        {
             DebugLog("CustomerManager setup validated successfully");
-        }
     }
-    
+
     private void DebugLog(string message, bool isWarning = false)
     {
         if (enableDebugLogs)
         {
-            string formattedMessage = $"[CustomerManager] {message}";
+            var formattedMessage = $"[CustomerManager] {message}";
             if (isWarning)
-            {
                 Debug.LogWarning(formattedMessage);
-            }
             else
-            {
                 Debug.Log(formattedMessage);
-            }
         }
     }
-    
+
     // Public getters for debugging
     public CustomerController GetCurrentCustomer()
     {
         return currentCustomer;
     }
-    
+
     public bool IsProcessingCustomer()
     {
         return isProcessingCustomer && currentCustomer != null;
     }
-    
+
     public bool HasCustomerAtService()
     {
         return currentCustomer != null && currentCustomer.HasReachedServicePoint();
     }
-    
+
     public bool HasOrderBeenGenerated()
     {
         return hasOrderBeenGenerated;
     }
-    
+
     [ContextMenu("Debug Customer Manager State")]
     public void DebugCustomerManagerState()
     {
@@ -377,6 +361,7 @@ public class CustomerManager : MonoBehaviour
             Debug.Log($"Customer at Service: {currentCustomer.HasReachedServicePoint()}");
             Debug.Log($"Customer Waiting: {currentCustomer.IsWaitingForOrder()}");
         }
+
         Debug.Log($"=============================");
     }
 }

@@ -79,6 +79,7 @@ public class SessionManager : MonoBehaviour
     // Events for UI updates
     public Action<float> OnTotalScoreChanged;
     public Action OnSessionCompleted;
+    public Action<string> OnFoodItemPurchased;
 
     private void Awake()
     {
@@ -130,6 +131,13 @@ public class SessionManager : MonoBehaviour
             if (levelManager != null)
                 Debug.Log("LevelManager reference found");
         }
+    }
+
+    public bool IsFoodItemPurchased(string foodType)
+    {
+        if (string.IsNullOrEmpty(foodType)) return true;
+        if (currentSession == null || currentSession.purchasedFoodItems == null) return true;
+        return currentSession.purchasedFoodItems.Contains(foodType);
     }
 
     public void UpdateFoodPositions(ServeableItem[] foodItems)
@@ -406,6 +414,7 @@ public class SessionManager : MonoBehaviour
         {
             currentSession.purchasedFoodItems.Add(foodType);
             SaveSession();
+            OnFoodItemPurchased?.Invoke(foodType);
             Debug.Log($"Purchased food item: {foodType}");
             return true;
         }
@@ -457,12 +466,6 @@ public class SessionManager : MonoBehaviour
     {
         if (currentSession == null) return false;
 
-        var currentLevel = GetFoodUpgradeLevel(foodType);
-        if (currentLevel >= 3)
-        {
-            Debug.Log($"Food item {foodType} already at max level");
-            return false;
-        }
 
         if (cost > 0 && !DeductScore(cost)) return false;
 

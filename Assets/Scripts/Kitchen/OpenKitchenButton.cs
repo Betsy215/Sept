@@ -48,14 +48,7 @@ public class OpenKitchenButton : MonoBehaviour
 
 
         if (KitchenSceneManager.Instance != null)
-        {
-            DebugLog("Opening kitchen...");
             KitchenSceneManager.Instance.OpenKitchen();
-        }
-        else
-        {
-            Debug.LogError("OpenKitchenButton: KitchenSceneManager.Instance is null!");
-        }
     }
 
     private void DebugLog(string message)

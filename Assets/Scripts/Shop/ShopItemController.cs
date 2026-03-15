@@ -8,6 +8,10 @@ public class ShopItemController : MonoBehaviour
     public int price;
     public ItemType itemType;
 
+    [Header("Upgrade")]
+    [Tooltip("SessionManager key to upgrade (e.g. 'Coffee', 'CoffeeMachine'). Only used when ItemType = Upgrade.")]
+    public string upgradeFoodType;
+
     [Header("Popup Display")] [TextArea(2, 4)]
     public string popupInfoText = "Fresh bread attracts more customers!";
 
