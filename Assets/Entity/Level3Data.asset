@@ -15,7 +15,7 @@ MonoBehaviour:
   levelNumber: 3
   levelName: Day  3
   ordersPerLevel: 6
-  orderDisplayTime: 4
+  orderDisplayTime: 5
   timeBetweenOrders: 3
   minOrderItems: 2
   maxOrderItems: 4
