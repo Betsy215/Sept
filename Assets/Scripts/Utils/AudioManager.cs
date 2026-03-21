@@ -171,7 +171,7 @@ public class AudioManager : MonoBehaviour
         StopPlaylist();
         currentMusicType = "gameplay";
         isPlaylistActive = true;
-        currentPlaylistIndex = 0;
+        currentPlaylistIndex = Random.Range(0, gameplayPlaylist.Length);
         playlistCoroutine = StartCoroutine(PlaylistCoroutine());
         Debug.Log("AudioManager: Starting gameplay playlist");
     }
@@ -263,7 +263,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlayOrderComplete()
     {
-        PlaySFX(orderCompleteSFX);
+        sfxSource.PlayOneShot(orderCompleteSFX, sfxVolume * 0.7f);
     }
 
     public void PlayPurchaseSound()

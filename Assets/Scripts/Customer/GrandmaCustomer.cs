@@ -13,7 +13,7 @@ public class GrandmaCustomer : CustomerController
     public override float PatienceLevel => toadPatienceLevel;
     public override string[] PreferredFoods => toadPreferredFoods;
     public override float OrderDelay => toadOrderDelay;
-
+    public override float TipMultiplier => 2f; 
     protected override void Awake()
     {
         base.Awake();

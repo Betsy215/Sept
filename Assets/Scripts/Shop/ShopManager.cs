@@ -220,9 +220,19 @@ public class ShopManager : MonoBehaviour
 
         foreach (var shopItem in shopItems)
             if (shopItem.itemType == ItemType.Food && purchasedFoods.Contains(shopItem.itemName))
+            {
                 shopItem.MarkAsPurchased();
+            }
             else if (shopItem.itemType == ItemType.Character && purchasedCharacters.Contains(shopItem.itemName))
+            {
                 shopItem.MarkAsPurchased();
+            }
+            else if (shopItem.itemType == ItemType.Upgrade)
+            {
+                var currentLevel = SessionManager.Instance.GetFoodUpgradeLevel(shopItem.upgradeFoodType);
+                if (currentLevel > 1) // was upgraded at least once
+                    shopItem.MarkAsPurchased();
+            }
     }
 
     private void UpdateScoreDisplay()

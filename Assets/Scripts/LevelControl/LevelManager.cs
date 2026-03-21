@@ -50,6 +50,10 @@ public class LevelManager : MonoBehaviour
     private int currentLevelIndex = 0;
     private LevelData currentLevelData;
 
+    [Header("--- DEBUG ONLY ---")] public bool debugMode = false;
+
+    public int debugStartLevel = 13;
+
     // Pause state
     private bool isPaused = false;
 
@@ -57,6 +61,16 @@ public class LevelManager : MonoBehaviour
     {
         // IMPORTANT: Ensure AudioManager exists (create if missing)
         EnsureAudioManagerExists();
+
+        // DEBUG: bypass session level and jump to specific level
+        if (debugMode)
+        {
+            Debug.Log($"[DEBUG] Jumping directly to level {debugStartLevel + 1}");
+            if (SessionManager.Instance != null)
+                SessionManager.Instance.SetCurrentLevel(debugStartLevel);
+            LoadLevel(debugStartLevel);
+            return;
+        }
 
         // Register this LevelManager with SessionManager
         if (SessionManager.Instance != null)

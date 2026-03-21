@@ -8,6 +8,7 @@ public class CustomerManager : MonoBehaviour
     public Transform spawnPoint;
 
     [Header("References")] public OrderSystem orderSystem;
+    public ScoreManager scoreManager;
     public LevelManager levelManager;
 
     [Header("Timing Settings")] [Tooltip("Delay between customer exit and spawning next customer")]
@@ -124,11 +125,22 @@ public class CustomerManager : MonoBehaviour
         if (customer == currentCustomer)
         {
             DebugLog($"{customer.name} reached service point, starting order delay");
+
+            // Apply this customer's min order size to OrderSystem
+            if (orderSystem != null)
+            {
+                orderSystem.minOrderItems = customer.MinOrderItems;
+                DebugLog($"Set minOrderItems to {customer.MinOrderItems} for {customer.name}");
+            }
+
+            // Apply this customer's tip multiplier to ScoreManager
+            if (scoreManager != null)
+            {
+                scoreManager.SetCurrentTipMultiplier(customer.TipMultiplier);
+                DebugLog($"Set tip multiplier to {customer.TipMultiplier}x for {customer.name}");
+            }
+
             StartCoroutine(HandleCustomerOrderDelay(customer));
-        }
-        else
-        {
-            DebugLog($"Customer {customer.name} reached service but is not current customer - ignoring");
         }
     }
 
@@ -232,6 +244,8 @@ public class CustomerManager : MonoBehaviour
             return;
         }
 
+        if (orderSystem != null) orderSystem.minOrderItems = 1;
+        if (scoreManager != null) scoreManager.SetCurrentTipMultiplier(1.0f);
         currentCustomer = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation);
         isProcessingCustomer = true;
         hasOrderBeenGenerated = false; // Reset for new customer

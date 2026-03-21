@@ -41,6 +41,7 @@ public class ScoreManager : MonoBehaviour
     private float currentScore = 0; // Level score (for star progress)
     public float currentOrderItemPoints = 0; // Track points for current order items
     private float totalTipsEarned = 0f;
+    private float currentTipMultiplier = 1.0f;
 
     [Serializable]
     public class ItemPointValues
@@ -129,6 +130,11 @@ public class ScoreManager : MonoBehaviour
         Debug.Log("Score reset for new level");
     }
 
+    public void SetCurrentTipMultiplier(float multiplier)
+    {
+        currentTipMultiplier = multiplier;
+        Debug.Log($"ScoreManager: Tip multiplier set to {multiplier}x");
+    }
 
     public void AwardItemPoints(string itemType)
     {
@@ -144,7 +150,7 @@ public class ScoreManager : MonoBehaviour
     public void AwardOrderCompletionBonus(float remainingTime, float basepoints)
     {
         var timeBonusPoints = remainingTime * timeBonusMultiplier;
-        var tipRaw = basepoints * timeBonusPoints / 100f;
+        var tipRaw = basepoints * timeBonusPoints / 100f * currentTipMultiplier;
         var tip = (float)Math.Round(tipRaw, 2, MidpointRounding.AwayFromZero);
         totalTipsEarned += tip;
 

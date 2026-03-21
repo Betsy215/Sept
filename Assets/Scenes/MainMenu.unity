@@ -1446,6 +1446,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
+      propertyPath: gameplayPlaylist.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: gameplayPlaylist.Array.data[0]
       value: 
       objectReference: {fileID: 8300000, guid: 443bd507ff1ed440091d2b36c14a0a7e, type: 3}
@@ -1453,6 +1457,10 @@ PrefabInstance:
       propertyPath: gameplayPlaylist.Array.data[1]
       value: 
       objectReference: {fileID: 8300000, guid: 2b09f624931cb40d9a513924816e3ae1, type: 3}
+    - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
+      propertyPath: gameplayPlaylist.Array.data[2]
+      value: 
+      objectReference: {fileID: 8300000, guid: 315df158017224fa1b6cfa0f7f122378, type: 3}
     - target: {fileID: 7093737043879858966, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.3222182

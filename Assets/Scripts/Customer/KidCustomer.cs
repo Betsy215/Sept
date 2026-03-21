@@ -13,7 +13,7 @@ public class KidCustomer : CustomerController
     public override float PatienceLevel => girlPatienceLevel;
     public override string[] PreferredFoods => girlPreferredFoods;
     public override float OrderDelay => girlOrderDelay;
-
+    public override int MinOrderItems => 4; 
     protected override void Awake()
     {
         base.Awake();

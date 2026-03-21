@@ -28,6 +28,9 @@ public abstract class CustomerController : MonoBehaviour
     public abstract string[] PreferredFoods { get; }
     public abstract float OrderDelay { get; }
 
+    public virtual float TipMultiplier => 1.0f; // 1.0 = normal tip
+    public virtual int MinOrderItems => 1;
+
     protected virtual void Awake()
     {
         animator = GetComponent<Animator>();
