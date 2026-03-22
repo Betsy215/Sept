@@ -1442,9 +1442,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: f2eb21ea00c1641bda71c1cbcded26cd, type: 3}
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
+      propertyPath: defaultOrderDoneSound
+      value: 
+      objectReference: {fileID: 8300000, guid: b69079fb1909948c688fc9740c9b15a9, type: 3}
+    - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: autoStartMainMenuMusic
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
+      propertyPath: defaultPerfectOrderSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 8f9fcbccc551b456db1dbe5c7520d2b3, type: 3}
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: gameplayPlaylist.Array.size
       value: 3
