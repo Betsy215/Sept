@@ -21,6 +21,11 @@ public class AudioManager : MonoBehaviour
     public AudioClip wrongItemSFX;
     public AudioClip customerWalkInSFX;
 
+    [Header("Order Complete Sounds - Defaults")]
+    public AudioClip defaultPerfectOrderSound;
+
+    public AudioClip defaultOrderDoneSound;
+
     [Header("Audio Settings")] [Range(0f, 1f)]
     public float musicVolume = 0.7f;
 

@@ -23,6 +23,9 @@ public abstract class CustomerController : MonoBehaviour
     // CRITICAL: Prevent multiple walk-out attempts
     protected bool hasProcessedOrder = false;
 
+    [Header("Order Sounds")] public AudioClip perfectOrderSound; // plays when order completed with time bonus
+    public AudioClip orderDoneSound;
+
     // Abstract properties for variants to override
     public abstract float PatienceLevel { get; }
     public abstract string[] PreferredFoods { get; }
@@ -68,6 +71,18 @@ public abstract class CustomerController : MonoBehaviour
             Debug.Log($"{gameObject.name}: Order already processed, ignoring duplicate call");
             return;
         }
+
+        if (perfect)
+        {
+            var sound = perfectOrderSound ?? AudioManager.Instance.defaultPerfectOrderSound;
+            if (sound != null) AudioManager.Instance.PlaySFX(sound);
+        }
+        else
+        {
+            var sound = orderDoneSound ?? AudioManager.Instance.defaultOrderDoneSound;
+            if (sound != null) AudioManager.Instance.PlaySFX(sound);
+        }
+
 
         hasProcessedOrder = true;
         isWaitingForOrder = false;

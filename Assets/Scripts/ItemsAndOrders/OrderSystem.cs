@@ -397,8 +397,8 @@ public class OrderSystem : MonoBehaviour
             scoreManager.AwardOrderCompletionBonus(remainingTime, orderBasePoints);
         }
 
-        // Play order complete sound
-        PlayOrderCompleteSound();
+        var isPerfect = orderTimer > 0;
+        customerManager.HandleOrderServed(isPerfect);
 
         // Count as completed
         ordersCompleted++;

@@ -84,7 +84,7 @@ public class CustomerManager : MonoBehaviour
         {
             // CLEANED: In your system, this should always be true (orders always completed correctly)
             DebugLog($"Order served perfectly - notifying customer");
-            currentCustomer.OnOrderServed(true); // Always true in your system
+            currentCustomer.OnOrderServed(perfect); // Always true in your system
         }
         else
         {
