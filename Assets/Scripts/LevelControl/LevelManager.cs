@@ -300,6 +300,7 @@ public class LevelManager : MonoBehaviour
 
         if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
         {
+            SessionManager.Instance.RestoreScoreToSnapshot();
             SessionManager.Instance.SetCurrentLevel(currentLevelIndex);
             Debug.Log($"RestartLevel: Reset session to level {currentLevelIndex}");
         }
@@ -469,6 +470,7 @@ public class LevelManager : MonoBehaviour
 
     private void StartLevel()
     {
+        SessionManager.Instance.SnapshotScoreBeforeLevel();
         gamePhaseManager.StartArrangementPhase();
         scoreManager.ResetScore();
         StartArrangementMusic();

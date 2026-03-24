@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelNumber: 1
   levelName: Day  1
-  ordersPerLevel: 3
+  ordersPerLevel: 5
   orderDisplayTime: 5
   timeBetweenOrders: 3
   minOrderItems: 1

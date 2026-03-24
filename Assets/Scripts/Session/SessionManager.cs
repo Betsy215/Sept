@@ -115,6 +115,25 @@ public class SessionManager : MonoBehaviour
         FindGameReferences();
     }
 
+    private float scoreAtLevelStart = 0f;
+
+    public void SnapshotScoreBeforeLevel()
+    {
+        scoreAtLevelStart = currentSession.totalScore;
+        Debug.Log($"Score snapshot taken: {scoreAtLevelStart}");
+    }
+
+    public void RestoreScoreToSnapshot()
+    {
+        if (currentSession != null)
+        {
+            currentSession.totalScore = scoreAtLevelStart;
+            SaveSession();
+            OnTotalScoreChanged?.Invoke(currentSession.totalScore);
+            Debug.Log($"Score restored to: {scoreAtLevelStart}");
+        }
+    }
+
     // NEW: Method to find game components when entering game scene
     public void FindGameReferences()
     {
