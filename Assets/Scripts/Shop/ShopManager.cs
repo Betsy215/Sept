@@ -235,6 +235,13 @@ public class ShopManager : MonoBehaviour
             }
     }
 
+    // Add anywhere in ShopManager.cs — called by RewardedAdButton after granting coins
+    public void RefreshScoreDisplay()
+    {
+        UpdateScoreDisplay(); // updates the coins text at the top
+        RefreshShopDisplay(); // re-checks which items are now affordable
+    }
+
     private void UpdateScoreDisplay()
     {
         if (playerScoreText != null)

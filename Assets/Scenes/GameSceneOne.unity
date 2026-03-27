@@ -396,9 +396,7 @@ GameObject:
   - component: {fileID: 185177637}
   - component: {fileID: 185177636}
   - component: {fileID: 185177639}
-  - component: {fileID: 185177641}
-  - component: {fileID: 185177640}
-  - component: {fileID: 185177642}
+  - component: {fileID: 185177643}
   m_Layer: 5
   m_Name: KitchenButton
   m_TagString: Untagged
@@ -522,7 +520,7 @@ MonoBehaviour:
   clickSound: {fileID: 8300000, guid: 2abcbc550456a4d328731d5aba8ea4ab, type: 3}
   levelManager: {fileID: 905501929}
   enableDebugLogs: 1
---- !u!114 &185177640
+--- !u!114 &185177643
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -531,40 +529,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 185177633}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 052b5a7e3cda45ac98eaf8f88912d21d, type: 3}
+  m_Script: {fileID: 11500000, guid: db12cc666a344ecc86f7bc7baa01e335, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shineImage: {fileID: 0}
-  sweepDuration: 1
-  sweepInterval: 2.5
-  startX: -300
-  endX: 300
---- !u!114 &185177641
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 185177633}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ea2671a69ee46cd88c0ec856135dc75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enableDebugLogs: 1
---- !u!114 &185177642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 185177633}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ShowMaskGraphic: 1
+  _posXIntensity: 5
+  _posYIntensity: 1
+  _posFreq: 1
+  _rotIntensity: 1
+  _rotFreq: 1
+  _scaleIntensity: 0.01
+  _scaleFreq: 1
 --- !u!1 &185986374
 GameObject:
   m_ObjectHideFlags: 0
