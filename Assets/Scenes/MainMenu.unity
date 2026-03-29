@@ -750,7 +750,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _iOSGameId: 6074412
-  _testMode: 1
+  _testMode: 0
 --- !u!1 &1455117234
 GameObject:
   m_ObjectHideFlags: 0

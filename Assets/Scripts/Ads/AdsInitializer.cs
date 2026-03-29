@@ -1,13 +1,22 @@
 using UnityEngine;
 using UnityEngine.Advertisements;
 
+#if UNITY_IOS
+using Unity.Advertisement.IosSupport;
+#endif
+
 public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
 {
     [SerializeField] private string _iOSGameId = "6074412";
-    [SerializeField] private bool _testMode = true; // KEEP THIS TRUE WHILE TESTING!
+    [SerializeField] private bool _testMode = false;
 
     private void Awake()
     {
+#if UNITY_IOS
+        if (ATTrackingStatusBinding.GetAuthorizationTrackingStatus() ==
+            ATTrackingStatusBinding.AuthorizationTrackingStatus.NOT_DETERMINED)
+            ATTrackingStatusBinding.RequestAuthorizationTracking();
+#endif
         InitializeAds();
     }
 
