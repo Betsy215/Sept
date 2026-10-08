@@ -663,7 +663,12 @@ public class LevelManager : MonoBehaviour
         if (AudioManager.Instance != null)
             AudioManager.Instance.StopMusic();
 
-        SceneTransitionManager.Instance.TransitionToScene("Shop");
+        // Between-level interstitial. If no ad is loaded the Shop opens immediately.
+        InterstitialAdService.Instance.ShowAfterLevelThen(() =>
+        {
+            if (SceneTransitionManager.Instance != null)
+                SceneTransitionManager.Instance.TransitionToScene("Shop");
+        });
     }
 
     private void OnAllLevelsComplete()

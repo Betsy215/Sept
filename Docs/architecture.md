@@ -51,9 +51,9 @@ One JSON blob under the PlayerPrefs key `FoodTruckSession`, written synchronousl
 
 ## Ads
 
-`Ads/AdsInitializer.cs` (MainMenu) requests App Tracking Transparency and initialises Unity Ads with the iOS game ID. `Ads/RewardedAdButton.cs` (Shop) loads `Rewarded_iOS`, retries with backoff, shows on tap, and adds coins only when the ad completed and a session is active. `Assets/Editor/IOSPostBuild.cs` writes the tracking usage string into Info.plist on every export.
+`Ads/AdsInitializer.cs` (MainMenu) requests App Tracking Transparency, initialises Unity Ads with the iOS game ID, and preloads the interstitial. `Ads/RewardedAdButton.cs` (Shop) loads `Rewarded_iOS`, retries with backoff, shows on tap, and adds coins only when the ad completed and a session is active. `Ads/InterstitialAdService.cs` is a persistent object created on first use; `LevelManager.LoadNextLevel` asks it to show `Interstitial_iOS` and then opens the Shop, or opens the Shop at once when no ad is ready. `Assets/Editor/IOSPostBuild.cs` writes the tracking usage string and the export-compliance key into Info.plist on every export.
 
-Adding a banner: load `Banner_iOS` in `AdsInitializer.OnInitializationComplete`, show it in Shop and MainMenu, hide it in `SceneTransitionManager.TransitionToScene`. Keep banners off GameSceneOne; the table sits at the bottom edge and the order bubble at the top.
+Banners were considered and parked: they earn roughly a hundredth of an interstitial per impression and would cover the table or the order bubble in GameSceneOne. If ever added, show them only in Shop and MainMenu and hide them in `SceneTransitionManager.TransitionToScene`.
 
 ## Where to change things
 

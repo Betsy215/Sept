@@ -29,6 +29,9 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
     public void OnInitializationComplete()
     {
         Debug.Log("Unity Ads successfully initialized!");
+
+        // Have the first between-level interstitial ready before the player finishes Day 1
+        InterstitialAdService.Instance.Preload();
     }
 
     public void OnInitializationFailed(UnityAdsInitializationError error, string message)

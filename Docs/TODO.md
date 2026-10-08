@@ -23,9 +23,10 @@ Status as of 7 October 2026. Done items are kept for a while so the history is v
 - [x] iOS build number set to 1 in Player Settings (bundle ID was already set)
 - [x] Second pass (7 October, evening): refill holds cannot serve or be hijacked by a second finger; coffee upgrades apply regardless of start order; the coffee machine uses EventSystem clicks and respects pause; kitchen open/close guarded against double taps; new game clears kitchen timers; drags owned by one finger and ended on phase switch; table bounds use the real safe-area rect; scene transitions always reset; shop buttons no longer fire twice; purchase popup blocks the buttons beneath it; camera far clip moved off the UI plane
 
-## Needs a decision from you
+## In progress
 
-- [ ] **Banner, interstitial, or both.** Parked. Rough US iOS eCPM: rewarded $10 to $20, interstitial $5 to $10, banner $0.50 to $1.30. Recommendation: one interstitial every two or three levels in the gap before the level-complete popup. Only the rewarded ad unit exists on the Unity Ads dashboard; create Interstitial_iOS or Banner_iOS there first.
+- [ ] **Interstitial ads between level and Shop.** Code is in (`InterstitialAdService`, called from `LevelManager.LoadNextLevel`), shows after every level by default. Needs the `Interstitial_iOS` ad unit created on the Unity Ads dashboard, then a device test: finish Day 1, tap Next Level, the ad plays, the Shop opens after it or after skip. Also confirm the Shop opens with no delay when offline.
+- [ ] **Refill review.** Catalogue each food item's counts, timers, hold-to-refill flag and kitchen source (see Docs/maintenance.md, Refill system) before deciding whether hold-to-refill should be enabled on more than Melon.
 
 ## Leave alone (owner's decision, 7 October 2026)
 
