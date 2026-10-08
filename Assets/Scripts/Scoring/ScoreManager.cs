@@ -126,7 +126,8 @@ public class ScoreManager : MonoBehaviour
         if (clearPopupOnLevelStart) ClearScorePopup();
 
         UpdateScoreUI();
-        starProgressBar.UpdateDisplay(0);
+        if (starProgressBar != null)
+            starProgressBar.UpdateDisplay(0);
         Debug.Log("Score reset for new level");
     }
 
@@ -143,7 +144,8 @@ public class ScoreManager : MonoBehaviour
         currentScore += points;
         currentOrderItemPoints += points; // Accumulate but don't add to session yet
 
-        starProgressBar.UpdateDisplay(currentScore);
+        if (starProgressBar != null)
+            starProgressBar.UpdateDisplay(currentScore);
         PlayPointsSound();
     }
 
@@ -162,7 +164,8 @@ public class ScoreManager : MonoBehaviour
             SessionManager.Instance.AddScoreImmediately(totalPoints);
 
         UpdateScoreUI(); // Score display updates here
-        starProgressBar.UpdateDisplay(currentScore);
+        if (starProgressBar != null)
+            starProgressBar.UpdateDisplay(currentScore);
 
         StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints, tip));
         PlayBonusSound();
@@ -210,7 +213,7 @@ public class ScoreManager : MonoBehaviour
     // UPDATED: Show level score instead of session total score
     private void UpdateScoreUI()
     {
-        var displayScore = SessionManager.Instance.GetTotalScore();
+        var displayScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : 0f;
 
         var scoreDisplayText = "$ " + displayScore.ToString("F2");
 
@@ -309,7 +312,8 @@ public class ScoreManager : MonoBehaviour
             SessionManager.Instance.AddScoreImmediately(points);
 
         UpdateScoreUI();
-        starProgressBar.UpdateDisplay(currentScore);
+        if (starProgressBar != null)
+            starProgressBar.UpdateDisplay(currentScore);
     }
 
     // Helper method to show feedback text

@@ -24,8 +24,12 @@ public static class IOSPostBuild
 
         plist.root.SetString("NSUserTrackingUsageDescription", TrackingUsageDescription);
 
+        // The game only uses standard HTTPS, so it is exempt from export compliance.
+        // Answering here keeps TestFlight builds from sitting in "Missing Compliance".
+        plist.root.SetBoolean("ITSAppUsesNonExemptEncryption", false);
+
         plist.WriteToFile(plistPath);
-        UnityEngine.Debug.Log("[IOSPostBuild] Added NSUserTrackingUsageDescription to Info.plist");
+        UnityEngine.Debug.Log("[IOSPostBuild] Added NSUserTrackingUsageDescription and ITSAppUsesNonExemptEncryption to Info.plist");
     }
 }
 #endif

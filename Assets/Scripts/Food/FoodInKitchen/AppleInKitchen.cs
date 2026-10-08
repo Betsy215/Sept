@@ -16,13 +16,26 @@ public class AppleInKitchen : KitchenItemWithTimer
 
     protected override void Awake()
     {
-        base.Awake();
+        // Capture before base.Awake(), which may deactivate this object if still on cooldown.
         originalScale = transform.localScale;
+        base.Awake();
     }
 
     protected override void OnClick()
     {
         StartCoroutine(PopEffect());
+    }
+
+    // Keep the item active until the pop has rendered; the base class hides it afterwards.
+    protected override float GetHideDelay()
+    {
+        return popDuration + returnDuration;
+    }
+
+    private void OnDisable()
+    {
+        // Pop may be cut short if something else deactivates us; never leave a stretched scale behind.
+        transform.localScale = originalScale;
     }
 
     protected override void OnRefill()

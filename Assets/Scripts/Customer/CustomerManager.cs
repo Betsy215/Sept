@@ -24,6 +24,15 @@ public class CustomerManager : MonoBehaviour
     // CRITICAL: Prevent duplicate order generation
     private bool hasOrderBeenGenerated = false;
 
+    // Baseline minimum order size from LevelData (applied to OrderSystem by LevelManager before OnLevelLoaded).
+    // Customer-specific minimums raise this per customer and it is restored on the next spawn. -1 = not captured yet.
+    private int levelMinOrderItems = -1;
+
+    // Tracked coroutines so disabling the manager can stop future spawns/orders
+    // (disabling a component does NOT stop its running coroutines)
+    private Coroutine nextCustomerSpawnCoroutine;
+    private Coroutine customerOrderDelayCoroutine;
+
     // Events for integration
     public System.Action<CustomerController> OnCustomerSpawned;
     public System.Action<CustomerController> OnCustomerCompleted;
@@ -52,15 +61,55 @@ public class CustomerManager : MonoBehaviour
 
     private void OnDisable()
     {
+        // Stop future spawns / pending order generation. The current customer is intentionally NOT destroyed here:
+        // LevelManager disables this component synchronously inside the final CompleteOrder, and the customer must
+        // still finish its reaction and walk-out (it destroys itself via OnReachedExit -> OnCustomerExited).
+        StopSpawnCoroutines();
+
+        if (currentCustomer == null)
+        {
+            // No customer in flight - safe to reset state now. Otherwise OnCustomerExited resets it when the customer leaves.
+            isProcessingCustomer = false;
+            hasOrderBeenGenerated = false;
+        }
+        else
+        {
+            DebugLog($"CustomerManager disabled - letting {currentCustomer.name} finish its walk-out");
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // Scene reload / teardown: make sure nothing is left behind
+        StopSpawnCoroutines();
+
         if (currentCustomer != null)
         {
             Destroy(currentCustomer.gameObject);
             currentCustomer = null;
         }
+    }
 
-        // Reset state
-        isProcessingCustomer = false;
-        hasOrderBeenGenerated = false;
+    private void StopSpawnCoroutines()
+    {
+        if (nextCustomerSpawnCoroutine != null)
+        {
+            StopCoroutine(nextCustomerSpawnCoroutine);
+            nextCustomerSpawnCoroutine = null;
+        }
+
+        if (customerOrderDelayCoroutine != null)
+        {
+            StopCoroutine(customerOrderDelayCoroutine);
+            customerOrderDelayCoroutine = null;
+        }
+    }
+
+    // Clamp a requested minimum order size so Random.Range in OrderSystem never gets min > max
+    private int ClampMinOrderItems(int requestedMin)
+    {
+        var max = orderSystem != null ? Mathf.Max(1, orderSystem.maxOrderItems) : int.MaxValue;
+        return Mathf.Clamp(requestedMin, 1, max);
     }
 
     public void SpawnCustomerForCurrentLevel()
@@ -109,10 +158,19 @@ public class CustomerManager : MonoBehaviour
     {
         currentLevelIndex = levelIndex;
 
+        StopSpawnCoroutines();
+
         if (currentCustomer != null)
         {
             Destroy(currentCustomer.gameObject);
             currentCustomer = null;
+        }
+
+        // LevelManager applies LevelData.minOrderItems to OrderSystem before calling this - capture it as the baseline
+        if (orderSystem != null)
+        {
+            levelMinOrderItems = orderSystem.minOrderItems;
+            DebugLog($"Captured level baseline minOrderItems = {levelMinOrderItems}");
         }
 
         isProcessingCustomer = false;
@@ -126,11 +184,14 @@ public class CustomerManager : MonoBehaviour
         {
             DebugLog($"{customer.name} reached service point, starting order delay");
 
-            // Apply this customer's min order size to OrderSystem
+            // Apply this customer's min order size to OrderSystem: never below the level's own minimum,
+            // and clamped to the level's maxOrderItems (e.g. KidCustomer wants 4 on a level with max 2)
             if (orderSystem != null)
             {
-                orderSystem.minOrderItems = customer.MinOrderItems;
-                DebugLog($"Set minOrderItems to {customer.MinOrderItems} for {customer.name}");
+                var baseline = levelMinOrderItems >= 0 ? levelMinOrderItems : orderSystem.minOrderItems;
+                var clampedMin = ClampMinOrderItems(Mathf.Max(baseline, customer.MinOrderItems));
+                orderSystem.minOrderItems = clampedMin;
+                DebugLog($"Set minOrderItems to {clampedMin} for {customer.name} (customer wants {customer.MinOrderItems}, level min {baseline}, level max {orderSystem.maxOrderItems})");
             }
 
             // Apply this customer's tip multiplier to ScoreManager
@@ -140,7 +201,7 @@ public class CustomerManager : MonoBehaviour
                 DebugLog($"Set tip multiplier to {customer.TipMultiplier}x for {customer.name}");
             }
 
-            StartCoroutine(HandleCustomerOrderDelay(customer));
+            customerOrderDelayCoroutine = StartCoroutine(HandleCustomerOrderDelay(customer));
         }
     }
 
@@ -174,9 +235,17 @@ public class CustomerManager : MonoBehaviour
             return;
         }
 
+        // Disabled (e.g. level complete) - the last customer just left, do not spawn another
+        if (!enabled)
+        {
+            DebugLog("CustomerManager is disabled - not spawning next customer");
+            return;
+        }
+
         // Wait a bit, then spawn next customer
         DebugLog("Waiting before spawning next customer");
-        StartCoroutine(DelayedNextCustomerSpawn());
+        if (nextCustomerSpawnCoroutine != null) StopCoroutine(nextCustomerSpawnCoroutine);
+        nextCustomerSpawnCoroutine = StartCoroutine(DelayedNextCustomerSpawn());
     }
 
     // NEW: Delayed spawning of next customer
@@ -185,8 +254,14 @@ public class CustomerManager : MonoBehaviour
         // Wait 2 seconds before spawning next customer
         yield return new WaitForSeconds(nextCustomerSpawnDelay);
 
-        // Check if we should still spawn (no current customer)
-        if (currentCustomer == null)
+        nextCustomerSpawnCoroutine = null;
+
+        // Check if we should still spawn (enabled, and no current customer)
+        if (!enabled)
+        {
+            DebugLog("Not spawning next customer - CustomerManager is disabled");
+        }
+        else if (currentCustomer == null)
         {
             DebugLog("Spawning next customer after delay");
             SpawnCustomerForCurrentLevel();
@@ -244,7 +319,14 @@ public class CustomerManager : MonoBehaviour
             return;
         }
 
-        if (orderSystem != null) orderSystem.minOrderItems = 1;
+        // Restore the level's own minimum (NOT a hard-coded 1, which silently overrode LevelData.minOrderItems).
+        // A customer-specific minimum is applied later in OnCustomerReachedService.
+        if (orderSystem != null)
+        {
+            if (levelMinOrderItems < 0) levelMinOrderItems = orderSystem.minOrderItems; // first spawn without OnLevelLoaded
+            orderSystem.minOrderItems = ClampMinOrderItems(levelMinOrderItems);
+        }
+
         if (scoreManager != null) scoreManager.SetCurrentTipMultiplier(1.0f);
         currentCustomer = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation);
         isProcessingCustomer = true;
@@ -287,6 +369,7 @@ public class CustomerManager : MonoBehaviour
 
         // Set flag to prevent duplicate generation
         hasOrderBeenGenerated = true;
+        customerOrderDelayCoroutine = null;
 
         if (orderSystem != null)
         {

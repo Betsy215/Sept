@@ -63,3 +63,6 @@ ignore.conf
 
 # macOS
 .DS_Store
+
+# VS Code workspace files (Unity regenerates them per folder name)
+*.code-workspace

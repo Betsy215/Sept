@@ -48,6 +48,13 @@ public class ButtonGlowEffect : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        // Unity stops the coroutine when the object is deactivated; clear our handle too,
+        // otherwise EnableGlow() would early-return forever after re-activation.
+        DisableGlow();
+    }
+
     private IEnumerator SweepLoop(int count)
     {
         var completed = 0;

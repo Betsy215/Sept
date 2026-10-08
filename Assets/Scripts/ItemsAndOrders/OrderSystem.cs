@@ -18,6 +18,11 @@ public class OrderSystem : MonoBehaviour
     public int ordersPerLevel = 3; // Configurable orders for current level
 
     public float orderDisplayTime = 5f; // How long each order is shown
+
+    [Tooltip("Fraction of orderDisplayTime that must still be remaining when an order is completed for it to count as 'perfect' (plays the perfect-order sound). 0.5 = at least half the time left. Orders finished later play the normal order-done sound.")]
+    [Range(0f, 1f)]
+    public float perfectTimeFraction = 0.5f;
+
     public float timeBetweenOrders = 2f; // Time between orders
     public int minOrderItems = 1; // Minimum items in an order
     public int maxOrderItems = 4; // Maximum items in an order
@@ -57,6 +62,9 @@ public class OrderSystem : MonoBehaviour
     private Coroutine orderCycleCoroutine;
     private Coroutine orderTimerCoroutine;
 
+    // Running serve-item effect coroutines, so ClearOrderDisplay can stop them before destroying their targets
+    private readonly List<Coroutine> activeServeEffects = new();
+
     // ADD THESE LINES:
     [Header("Speech Bubbles - Different Sizes")] [Tooltip("Speech bubble for 1 item orders")]
     public GameObject speechBubble1;
@@ -77,6 +85,9 @@ public class OrderSystem : MonoBehaviour
     private bool isUsingCustomerFlow = false;
     private bool isInitialized = false;
     private bool isProcessingCustomerOrder = false;
+
+    // Guard so Start/OnEnable/InitializeForCustomerFlow only run initialization once per enable cycle
+    private bool hasInitializedSinceEnable = false;
 
 
     // NEW: Class to track individual order items (for multiple quantities)
@@ -105,11 +116,27 @@ public class OrderSystem : MonoBehaviour
         // Reset when re-enabled by LevelManager
         ordersCompleted = 0;
         isProcessingCustomerOrder = false;
+        hasInitializedSinceEnable = false;
         InitializeOrderSystem();
+    }
+
+    private void OnDisable()
+    {
+        // Allow a fresh initialization when re-enabled (level settings may have changed)
+        hasInitializedSinceEnable = false;
     }
 
     private void InitializeOrderSystem()
     {
+        // Idempotent: Start, OnEnable and InitializeForCustomerFlow may all call this in the same enable cycle
+        if (hasInitializedSinceEnable)
+        {
+            DebugLog("OrderSystem already initialized for this enable cycle - skipping duplicate initialization");
+            return;
+        }
+
+        hasInitializedSinceEnable = true;
+
         // Determine which flow to use
         isUsingCustomerFlow = customerManager != null;
 
@@ -137,28 +164,28 @@ public class OrderSystem : MonoBehaviour
     private void ActivateSpeechBubbleForOrderSize(int itemCount)
     {
         // Deactivate all bubbles first
-        speechBubble1.SetActive(false);
-        speechBubble2.SetActive(false);
+        if (speechBubble1 != null) speechBubble1.SetActive(false);
+        if (speechBubble2 != null) speechBubble2.SetActive(false);
         // speechBubble3 removed - don't reference it
-        speechBubble4.SetActive(false);
+        if (speechBubble4 != null) speechBubble4.SetActive(false);
 
         // Activate the appropriate bubble based on item count
         switch (itemCount)
         {
             case 1:
-                speechBubble1.SetActive(true);
+                if (speechBubble1 != null) speechBubble1.SetActive(true);
                 break;
             case 2:
-                speechBubble2.SetActive(true);
+                if (speechBubble2 != null) speechBubble2.SetActive(true);
                 break;
             case 3:
             case 4:
                 // Both 3 and 4 item orders use speechBubble4
-                speechBubble4.SetActive(true);
+                if (speechBubble4 != null) speechBubble4.SetActive(true);
                 break;
             default:
                 // Fallback: use speechBubble4
-                speechBubble4.SetActive(true);
+                if (speechBubble4 != null) speechBubble4.SetActive(true);
                 Debug.LogWarning($"Order size {itemCount} exceeds available bubbles, using speechBubble4");
                 break;
         }
@@ -222,8 +249,10 @@ public class OrderSystem : MonoBehaviour
         // Clear previous order
         ClearOrderDisplay();
 
-        // Generate random order items
-        var orderSize = Random.Range(minOrderItems, maxOrderItems + 1);
+        // Generate random order items (clamp so min can never exceed max, e.g. a customer-specific minimum on a small level)
+        var safeMax = Mathf.Max(1, maxOrderItems);
+        var safeMin = Mathf.Clamp(minOrderItems, 1, safeMax);
+        var orderSize = Random.Range(safeMin, safeMax + 1);
         currentOrderItems.Clear();
 
         // REMOVED: Allow duplicate food items in orders
@@ -329,8 +358,10 @@ public class OrderSystem : MonoBehaviour
             // Mark as served
             itemToServe.isServed = true;
 
-            // Play served item visual effect and remove
-            StartCoroutine(ServeItemWithEffect(itemToServe));
+            // Play served item visual effect and remove (tracked so ClearOrderDisplay can stop it)
+            Coroutine effectHandle = null;
+            effectHandle = StartCoroutine(ServeItemWithEffect(itemToServe, () => activeServeEffects.Remove(effectHandle)));
+            if (effectHandle != null) activeServeEffects.Add(effectHandle);
 
             // Award points for this item
             if (scoreManager != null) scoreManager.AwardItemPoints(foodType);
@@ -349,16 +380,24 @@ public class OrderSystem : MonoBehaviour
         return false;
     }
 
-    private IEnumerator ServeItemWithEffect(OrderItemInstance item)
+    private IEnumerator ServeItemWithEffect(OrderItemInstance item, System.Action onFinished = null)
     {
-        if (item.displayObject != null)
+        try
         {
-            // Get the visual component and play pop effect
-            var visual = item.displayObject.GetComponent<ServedItemVisual>();
-            if (visual != null) yield return StartCoroutine(visual.PlayServedEffect());
+            if (item.displayObject != null)
+            {
+                // Get the visual component and play pop effect.
+                // Yield the enumerator directly (not a nested StartCoroutine) so stopping this coroutine stops the effect too.
+                var visual = item.displayObject.GetComponent<ServedItemVisual>();
+                if (visual != null) yield return visual.PlayServedEffect();
 
-            // Destroy the display object
-            Destroy(item.displayObject);
+                // Destroy the display object if it still exists (ClearOrderDisplay may have destroyed it mid-animation)
+                if (item.displayObject != null) Destroy(item.displayObject);
+            }
+        }
+        finally
+        {
+            onFinished?.Invoke();
         }
     }
 
@@ -397,19 +436,19 @@ public class OrderSystem : MonoBehaviour
             scoreManager.AwardOrderCompletionBonus(remainingTime, orderBasePoints);
         }
 
-        var isPerfect = orderTimer > 0;
-        customerManager.HandleOrderServed(isPerfect);
+        // Perfect = finished with at least perfectTimeFraction of the display time still remaining
+        // (expiry fires at <= 0, so "orderTimer > 0" would always be true here)
+        var isPerfect = orderTimer >= orderDisplayTime * perfectTimeFraction;
 
         // Count as completed
         ordersCompleted++;
         UpdateOrderProgress();
 
-        // CUSTOMER INTEGRATION: Notify customer manager
+        // CUSTOMER INTEGRATION: Notify customer manager (once, null-guarded)
         if (isUsingCustomerFlow && customerManager != null)
         {
-            // CLEANED: Always call with true since orders are always completed correctly
-            customerManager.HandleOrderServed(true);
-            DebugLog("Notified CustomerManager - Order completed perfectly");
+            customerManager.HandleOrderServed(isPerfect);
+            DebugLog($"Notified CustomerManager - Order completed (perfect: {isPerfect}, time left: {orderTimer:F2}s)");
 
             // Reset the processing flag to allow next customer orders
             isProcessingCustomerOrder = false;
@@ -494,6 +533,14 @@ public class OrderSystem : MonoBehaviour
 
     private void ClearOrderDisplay()
     {
+        // Stop any in-flight serve effects first so they never touch a destroyed display object.
+        // Snapshot + clear before stopping: stopping disposes the coroutine, whose finally block removes itself from the list.
+        var effectsToStop = activeServeEffects.ToArray();
+        activeServeEffects.Clear();
+        foreach (var effect in effectsToStop)
+            if (effect != null)
+                StopCoroutine(effect);
+
         // Destroy all display objects
         foreach (var displayObj in orderDisplayObjects)
             if (displayObj != null)
@@ -648,12 +695,18 @@ public class ServedItemVisual : MonoBehaviour
 
     public IEnumerator PlayServedEffect()
     {
+        // This coroutine may be driven by another MonoBehaviour (OrderSystem), so it keeps running
+        // after this object is destroyed. Check the target each iteration and bail out safely.
+        if (this == null) yield break;
+
         var originalScale = transform.localScale;
 
         // Pop effect - scale up quickly
         var elapsed = 0f;
         while (elapsed < popDuration)
         {
+            if (this == null) yield break; // target destroyed mid-animation
+
             elapsed += Time.deltaTime;
             var progress = elapsed / popDuration;
 
@@ -663,6 +716,8 @@ public class ServedItemVisual : MonoBehaviour
             yield return null;
         }
 
+        if (this == null) yield break;
+
         // Fade out effect
         var canvasGroup = GetComponent<CanvasGroup>();
         if (canvasGroup == null)
@@ -671,6 +726,8 @@ public class ServedItemVisual : MonoBehaviour
         elapsed = 0f;
         while (elapsed < fadeDuration)
         {
+            if (this == null || canvasGroup == null) yield break; // target destroyed mid-animation
+
             elapsed += Time.deltaTime;
             var progress = elapsed / fadeDuration;
 

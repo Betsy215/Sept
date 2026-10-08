@@ -132,10 +132,14 @@ public abstract class CustomerController : MonoBehaviour
     // CLEANED: Sad reaction using only Animator Controller parameters
     protected virtual void PlaySadReaction()
     {
-        animator.SetBool("IsHappy", false);
-        animator.SetTrigger("TriggerReaction");
         Debug.Log($"{gameObject.name}: Playing sad reaction");
         SetSpriteState(false);
+
+        if (animator != null)
+        {
+            animator.SetBool("IsHappy", false);
+            animator.SetTrigger("TriggerReaction");
+        }
     }
 
     // CLEANED: Happy walk out - single path, no conflicts

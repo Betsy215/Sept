@@ -13,6 +13,8 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     public AudioSource _source;
     public string _sceneName;
 
+    private bool launching; // Set on the first valid tap so a double-tap cannot continue the session twice
+
     private void Start()
     {
         UpdateButtonState();
@@ -60,23 +62,26 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (launching) return;
         var button = GetComponent<Button>();
         if (button != null && !button.interactable) return;
 
-        _img.sprite = _pressed;
+        if (_img != null && _pressed != null) _img.sprite = _pressed;
         if (_source != null && _compressClip != null)
             _source.PlayOneShot(_compressClip);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (launching) return;
         var button = GetComponent<Button>();
         if (button != null && !button.interactable) return;
 
-        _img.sprite = _default;
+        if (_img != null && _default != null) _img.sprite = _default;
         if (_source != null && _uncompressClip != null)
             _source.PlayOneShot(_uncompressClip);
 
+        launching = true;
         StartCoroutine(WaitForDelay(2));
     }
 

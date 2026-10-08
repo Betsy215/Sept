@@ -100,7 +100,8 @@ public class StarProgressBar : MonoBehaviour
                 starStates[i] = newStarStates[i];
                 UpdateStarVisual(i, newStarStates[i]);
                 
-                if (newStarStates[i] && useAnimations)
+                // StartCoroutine throws if the GameObject is inactive in the hierarchy
+                if (newStarStates[i] && useAnimations && gameObject.activeInHierarchy)
                 {
                     StartCoroutine(AnimateStarEarned(i));
                 }
@@ -112,9 +113,9 @@ public class StarProgressBar : MonoBehaviour
     {
         // Use Image component instead of SpriteRenderer
         Image starImage = GetStarImage(starIndex);
-      
-       starImage.sprite = isEarned ? starFilledSprite : starUnfilledSprite;
-        
+        if (starImage == null) return;
+
+        starImage.sprite = isEarned ? starFilledSprite : starUnfilledSprite;
     }
     
     // New method to get Image component instead of SpriteRenderer

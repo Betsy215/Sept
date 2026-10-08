@@ -41,6 +41,10 @@ public class GamePhaseManager : MonoBehaviour
     private GamePhase currentPhase = GamePhase.ARRANGEMENT;
     private ServeableItem[] allFoodItems;
 
+    // Draggable objects in the scene (ServeableItem + CoffeeMachine). Rebuilt on each phase change
+    // instead of scanning every MonoBehaviour in the scene on every drag/overlap callback.
+    private readonly List<IDraggable> draggableItems = new();
+
     private void Start()
     {
         InitializeGamePhase();
@@ -69,6 +73,8 @@ public class GamePhaseManager : MonoBehaviour
     {
         currentPhase = GamePhase.ARRANGEMENT;
         DebugLog("=== ARRANGEMENT PHASE STARTED ===");
+
+        RefreshDraggableCache();
 
         tutorialPanel.SetActive(true);
 
@@ -148,36 +154,58 @@ public class GamePhaseManager : MonoBehaviour
         arrangmentUI.gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Collect the draggable components (the concrete IDraggable implementers) once per phase change.
+    /// </summary>
+    private void RefreshDraggableCache()
+    {
+        draggableItems.Clear();
+
+        var serveables = allFoodItems != null && allFoodItems.Length > 0
+            ? allFoodItems
+            : FindObjectsOfType<ServeableItem>();
+        foreach (var item in serveables)
+            if (item != null) draggableItems.Add(item);
+
+        foreach (var machine in FindObjectsOfType<CoffeeMachine>())
+            if (machine != null) draggableItems.Add(machine);
+
+        DebugLog($"Cached {draggableItems.Count} draggable items");
+    }
+
+    private static bool IsLive(IDraggable item)
+    {
+        var behaviour = item as MonoBehaviour;
+        return behaviour != null && behaviour.gameObject.activeInHierarchy;
+    }
+
     private void EnableArrangementMode()
     {
-        // Find all IDraggable objects
-        var draggableItems = FindObjectsOfType<MonoBehaviour>().OfType<IDraggable>();
-
         foreach (var item in draggableItems)
         {
-            var gameObject = ((MonoBehaviour)item).gameObject;
+            if (!IsLive(item)) continue;
 
-            if (gameObject != null && gameObject.activeInHierarchy)
-            {
-                item.InitializeDragging(tableLayer, this, allFoodItems);
-                item.SetDraggingEnabled(true);
+            item.InitializeDragging(tableLayer, this, allFoodItems);
+            item.SetDraggingEnabled(true);
 
-                DebugLog($"Enabled arrangement mode for {gameObject.name}");
-            }
+            DebugLog($"Enabled arrangement mode for {((MonoBehaviour)item).gameObject.name}");
         }
     }
 
     private void DisableArrangementMode()
     {
-        var draggableItems = FindObjectsOfType<MonoBehaviour>().OfType<IDraggable>();
-
-        foreach (var item in draggableItems) item.SetDraggingEnabled(false);
+        foreach (var item in draggableItems)
+            if (item is MonoBehaviour behaviour && behaviour != null) // skip destroyed objects
+                item.SetDraggingEnabled(false);
     }
 
     private bool AnyItemsOverlapping()
     {
-        var draggableItems = FindObjectsOfType<MonoBehaviour>().OfType<IDraggable>();
-        return draggableItems.Any(item => item.HasOverlap());
+        foreach (var item in draggableItems)
+            if (IsLive(item) && item.HasOverlap())
+                return true;
+
+        return false;
     }
 
     public void OnItemOverlapChanged()

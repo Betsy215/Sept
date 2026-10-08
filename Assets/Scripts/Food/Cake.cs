@@ -36,8 +36,6 @@ public class Cake : MonoBehaviour
 
     private void Start()
     {
-        refillableItem = GetComponent<RefillableItem>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
         serveableItem = GetComponent<ServeableItem>();
 
         if (refillableItem == null)
@@ -50,26 +48,38 @@ public class Cake : MonoBehaviour
             Debug.LogWarning("Cake: ServeableItem component not found!");
 
         ValidateSpriteArray();
-        StartCoroutine(InitializeAfterRefillableItem());
     }
 
-    private IEnumerator InitializeAfterRefillableItem()
+    // Subscribe in OnEnable/OnDisable (not a Start coroutine) so the subscription survives the
+    // object being toggled off and on by LevelManager / KitchenFoodGate.
+    private void OnEnable()
+    {
+        if (refillableItem == null) refillableItem = GetComponent<RefillableItem>();
+        if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+        if (refillableItem == null) return;
+
+        refillableItem.OnCountChanged -= HandleCountChanged; // never double-subscribe
+        refillableItem.OnCountChanged += HandleCountChanged;
+        StartCoroutine(RefreshAfterRefillableItem());
+    }
+
+    private void OnDisable()
+    {
+        if (refillableItem != null)
+            refillableItem.OnCountChanged -= HandleCountChanged;
+    }
+
+    // RefillableItem gets its counts from RefillSystem during Start, so read them a frame later.
+    private IEnumerator RefreshAfterRefillableItem()
     {
         yield return null;
 
-        refillableItem.OnCountChanged += HandleCountChanged;
         previousCount = refillableItem.GetCurrentCount();
         UpdateCakeSprite(previousCount);
 
         DebugLog($"Cake initialized with count: {previousCount}/{refillableItem.GetMaxCount()}");
 
         VerifySettings();
-    }
-
-    private void OnDestroy()
-    {
-        if (refillableItem != null)
-            refillableItem.OnCountChanged -= HandleCountChanged;
     }
 
     /// <summary>

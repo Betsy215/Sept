@@ -32,10 +32,18 @@ public class ShopManager : MonoBehaviour
 
     private ShopItemController currentPurchaseItem;
 
+    // Feedback shown in the score label: a serial lets an older restore skip if a newer message replaced it
+    private int scoreMessageSerial = 0;
+    private Color playerScoreOriginalColor = Color.white;
+
     private void Start()
     {
+        if (playerScoreText != null)
+            playerScoreOriginalColor = playerScoreText.color;
+
         SetupButtonListeners();
-        AudioManager.Instance.PlayShopMusic();
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayShopMusic();
 
         // FIX: Wait for all ShopItemController.Start() methods to complete
         StartCoroutine(DelayedInitializeShop());
@@ -100,112 +108,159 @@ public class ShopManager : MonoBehaviour
     private void RefreshShopDisplay()
     {
         var allShopItems = GetAllShopItems();
-        var currentScore = SessionManager.Instance.GetTotalScore();
+        var session = SessionManager.Instance; // null when the Shop scene is opened directly in the editor
 
         // Show all items and check affordability only
         foreach (var shopItem in allShopItems)
             if (shopItem != null)
             {
                 shopItem.gameObject.SetActive(true);
-                var canAfford = SessionManager.Instance.CanAfford(shopItem.price);
+                var canAfford = session != null && session.CanAfford(shopItem.price);
                 shopItem.UpdateAffordability(canAfford);
             }
     }
 
+    // Kept void for scene button bindings; the bool version drives the popup flow.
     public void PurchaseItem(ShopItemController item)
     {
+        TryPurchaseItem(item);
+    }
+
+    /// Returns true when the purchase went through. On failure the confirmation
+    /// popup (if open) stays open showing the reason, so the player can cancel.
+    private bool TryPurchaseItem(ShopItemController item)
+    {
+        if (item == null) return false;
+
+        var session = SessionManager.Instance;
+
         // Check if SessionManager is available
-        if (SessionManager.Instance == null || !SessionManager.Instance.HasActiveSession())
+        if (session == null || !session.HasActiveSession())
         {
             ShowPurchaseFailedFeedback("No active session!");
-            return;
+            return false;
         }
 
         // Check if already purchased
         if (item.isPurchased)
         {
             ShowPurchaseFailedFeedback("Already purchased!");
-            return;
+            return false;
         }
 
-        // Get current score from session
-        var currentScore = SessionManager.Instance.GetTotalScore();
+        // Upgrades have a max level (SessionManager default: 3)
+        if (item.itemType == ItemType.Upgrade && !session.CanUpgradeFood(item.upgradeFoodType))
+        {
+            item.MarkAsPurchased(); // show a maxed upgrade like an owned item
+            ShowPurchaseFailedFeedback("Max level reached!");
+            return false;
+        }
 
         // Check if player has enough score
-        if (!SessionManager.Instance.CanAfford(item.price))
+        if (!session.CanAfford(item.price))
         {
-            ShowPurchaseFailedFeedback($"Not enough points!\nNeed: {item.price} | Have: {currentScore}");
-            return;
+            var currentScore = session.GetTotalScore();
+            ShowPurchaseFailedFeedback($"Not enough points!\nNeed: {item.price} | Have: {currentScore:F2}");
+            return false;
         }
 
-        // Proceed with purchase
-        var purchaseSuccess = false;
-
-        // Purchase based on item type
-        if (item.itemType == ItemType.Food)
-            purchaseSuccess = SessionManager.Instance.PurchaseFoodItem(item.itemName);
-        else if (item.itemType == ItemType.Character)
-            purchaseSuccess = SessionManager.Instance.PurchaseCharacter(item.itemName);
-        else if (item.itemType == ItemType.Upgrade)
-            purchaseSuccess = SessionManager.Instance.UpgradeFood(item.upgradeFoodType);
-
-        if (purchaseSuccess)
+        // Pay FIRST, so an app kill between the two steps can never hand out a free item
+        if (!session.DeductScore(item.price))
         {
-            // Deduct score from session
-            SessionManager.Instance.DeductScore(item.price);
-
-            // Update score display
             UpdateScoreDisplay();
+            RefreshShopDisplay();
+            ShowPurchaseFailedFeedback("Not enough points!");
+            return false;
+        }
 
-            // Mark as purchased in UI
-            item.MarkAsPurchased();
-            AudioManager.Instance.PlayPurchaseSound();
+        // Record the purchase based on item type
+        var purchaseSuccess = false;
+        if (item.itemType == ItemType.Food)
+            purchaseSuccess = session.PurchaseFoodItem(item.itemName);
+        else if (item.itemType == ItemType.Character)
+            purchaseSuccess = session.PurchaseCharacter(item.itemName);
+        else if (item.itemType == ItemType.Upgrade)
+            purchaseSuccess = session.UpgradeFood(item.upgradeFoodType);
 
-            // Refresh all items to update affordability
+        if (!purchaseSuccess)
+        {
+            // Refund what we just took
+            session.AddScoreImmediately(item.price);
+            UpdateScoreDisplay();
             RefreshShopDisplay();
 
-            Debug.Log($"Successfully purchased {item.itemName} for {item.price} points!");
+            Debug.LogError($"Failed to purchase {item.itemName} - refunded {item.price} points");
+            ShowPurchaseFailedFeedback("Purchase failed!");
+            return false;
+        }
 
-            // Close popup on success
+        // Update score display
+        UpdateScoreDisplay();
+
+        // Mark as purchased in UI
+        item.MarkAsPurchased();
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayPurchaseSound();
+
+        // Refresh all items to update affordability
+        RefreshShopDisplay();
+
+        Debug.Log($"Successfully purchased {item.itemName} for {item.price} points!");
+
+        // Close popup on success
+        if (purchaseConfirmationPopup != null)
             purchaseConfirmationPopup.SetActive(false);
 
-            // Show success feedback
-            ShowPurchaseSuccessFeedback($"Purchased {item.itemName}!");
-        }
-        else
-        {
-            Debug.LogError($"Failed to purchase {item.itemName}");
-            ShowPurchaseFailedFeedback("Purchase failed!");
-        }
+        // Show success feedback in the (always visible) score label
+        ShowPurchaseSuccessFeedback($"Purchased {item.itemName}!");
+        return true;
     }
 
 
     private void ShowPurchaseFailedFeedback(string message)
     {
-        purchaseConfirmationPopup.SetActive(false);
-        StartCoroutine(ShowTemporaryMessage(message, Color.red));
+        // The info label lives inside the popup: keep the popup open and write the reason there.
+        // ShowPurchasePopup resets the text/color the next time an item is opened.
+        if (purchaseConfirmationPopup != null && purchaseConfirmationPopup.activeInHierarchy && popupItemInfo != null)
+        {
+            popupItemInfo.text = message;
+            popupItemInfo.color = Color.red;
+            return;
+        }
+
+        // Popup not open: fall back to the score label
+        ShowScoreLabelMessage(message, Color.red);
     }
 
     private void ShowPurchaseSuccessFeedback(string message)
     {
-        StartCoroutine(ShowTemporaryMessage(message, Color.green));
+        ShowScoreLabelMessage(message, Color.green);
     }
 
-    private IEnumerator ShowTemporaryMessage(string message, Color color)
+    private void ShowScoreLabelMessage(string message, Color color)
     {
-        if (popupItemInfo != null)
+        if (playerScoreText == null)
         {
-            var originalText = popupItemInfo.text;
-            var originalColor = popupItemInfo.color;
-
-            popupItemInfo.text = message;
-            popupItemInfo.color = color;
-
-            yield return new WaitForSeconds(2f);
-
-            popupItemInfo.text = originalText;
-            popupItemInfo.color = originalColor;
+            Debug.Log($"Shop feedback: {message}");
+            return;
         }
+
+        scoreMessageSerial++;
+        StartCoroutine(ShowTemporaryScoreMessage(message, color, scoreMessageSerial));
+    }
+
+    private IEnumerator ShowTemporaryScoreMessage(string message, Color color, int serial)
+    {
+        playerScoreText.text = message;
+        playerScoreText.color = color;
+
+        yield return new WaitForSeconds(2f);
+
+        // A newer message replaced this one; let it finish on its own
+        if (serial != scoreMessageSerial || playerScoreText == null) yield break;
+
+        playerScoreText.color = playerScoreOriginalColor;
+        UpdateScoreDisplay(); // restores the live score instead of a stale snapshot
     }
 
     private void UpdatePurchasedItemsUI()
@@ -230,7 +285,8 @@ public class ShopManager : MonoBehaviour
             else if (shopItem.itemType == ItemType.Upgrade)
             {
                 var currentLevel = SessionManager.Instance.GetFoodUpgradeLevel(shopItem.upgradeFoodType);
-                if (currentLevel > 1) // was upgraded at least once
+                var maxed = !SessionManager.Instance.CanUpgradeFood(shopItem.upgradeFoodType);
+                if (currentLevel > 1 || maxed) // was upgraded at least once, or at max level
                     shopItem.MarkAsPurchased();
             }
     }
@@ -248,6 +304,8 @@ public class ShopManager : MonoBehaviour
         {
             var currentScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : 0;
             playerScoreText.text = $"EARNED: $ {currentScore:F2}";
+            playerScoreText.color = playerScoreOriginalColor;
+            scoreMessageSerial++; // any pending feedback restore is now stale
         }
     }
 
@@ -383,15 +441,20 @@ public class ShopManager : MonoBehaviour
 
     public void ShowPurchasePopup(ShopItemController item)
     {
+        if (item == null || purchaseConfirmationPopup == null) return;
+
         currentPurchaseItem = item;
 
         var iconTransform = item.transform.Find("ItemIcon");
-        var iconImage = iconTransform.GetComponent<Image>();
-        popupItemIcon.sprite = iconImage.sprite;
+        var iconImage = iconTransform != null ? iconTransform.GetComponent<Image>() : null;
+        if (popupItemIcon != null && iconImage != null)
+        {
+            popupItemIcon.sprite = iconImage.sprite;
 
-        var iconRect = iconTransform.GetComponent<RectTransform>();
-        var popupIconRect = popupItemIcon.rectTransform;
-        popupIconRect.sizeDelta = iconRect.sizeDelta;
+            var iconRect = iconTransform.GetComponent<RectTransform>();
+            if (iconRect != null)
+                popupItemIcon.rectTransform.sizeDelta = iconRect.sizeDelta;
+        }
 
         if (popupItemInfo != null)
         {
@@ -411,17 +474,21 @@ public class ShopManager : MonoBehaviour
 
     public void ConfirmPurchase()
     {
-        if (currentPurchaseItem != null)
+        if (currentPurchaseItem == null) return;
+
+        // On failure the popup stays open with the reason; the player cancels it
+        if (TryPurchaseItem(currentPurchaseItem))
         {
-            PurchaseItem(currentPurchaseItem);
-            purchaseConfirmationPopup.SetActive(false);
+            if (purchaseConfirmationPopup != null)
+                purchaseConfirmationPopup.SetActive(false);
             currentPurchaseItem = null;
         }
     }
 
     public void CancelPurchase()
     {
-        purchaseConfirmationPopup.SetActive(false);
+        if (purchaseConfirmationPopup != null)
+            purchaseConfirmationPopup.SetActive(false);
         currentPurchaseItem = null;
     }
 }

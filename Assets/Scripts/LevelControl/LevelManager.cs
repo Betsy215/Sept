@@ -135,7 +135,18 @@ public class LevelManager : MonoBehaviour
     private void SetupSessionEvents()
     {
         if (SessionManager.Instance != null)
+        {
+            // Remove first so a re-entry never double-subscribes
+            SessionManager.Instance.OnSessionCompleted -= OnSessionCompleted;
             SessionManager.Instance.OnSessionCompleted += OnSessionCompleted;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // SessionManager is DontDestroyOnLoad; drop our delegate so it does not leak per level
+        if (SessionManager.Instance != null)
+            SessionManager.Instance.OnSessionCompleted -= OnSessionCompleted;
     }
 
 
@@ -230,6 +241,14 @@ public class LevelManager : MonoBehaviour
     public void PauseGame()
     {
         if (isPaused) return;
+
+        // Ignore pause once the level-complete popup is up; otherwise a paused
+        // timeScale can leak into the Shop scene through paths other than LoadNextLevel
+        if (IsAnyPopupActive())
+        {
+            Debug.Log("PauseGame ignored: level complete popup is showing");
+            return;
+        }
 
         isPaused = true;
         Time.timeScale = 0f;
@@ -540,7 +559,8 @@ public class LevelManager : MonoBehaviour
         // Wait for the specified delay
         yield return new WaitForSeconds(3f);
 
-        AudioManager.Instance.PlayLevelCompleteMusic();
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayLevelCompleteMusic();
 
         if (popupCanvas != null)
             popupCanvas.SetActive(true);
@@ -548,18 +568,27 @@ public class LevelManager : MonoBehaviour
         if (levelCompletePanel != null)
             levelCompletePanel.SetActive(true);
 
+        // GetCurrentScore() already includes tips, so split it: order sale + tips = level score.
+        // Each amount is transferred into "Earned" exactly once.
         var tips = scoreManager.GetTotalTipsEarned();
-        todayTip.text = $"Tips Earned: $ {tips:F2}";
         var todayScore = scoreManager.GetCurrentScore();
-        todaySale.text = $"Today Sale: $ {todayScore:F2}";
-        var totalScore = SessionManager.Instance.GetTotalScore();
-        totalEarned.text = $"Earned: $ 0.00";
+        var orderSale = Mathf.Max(0f, todayScore - tips);
+        var totalScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : todayScore;
+        var earnedBeforeLevel = Mathf.Max(0f, totalScore - todayScore);
+        var earnedAfterSale = totalScore - tips;
+
+        if (todayTip != null)
+            todayTip.text = $"Tips Earned: $ {tips:F2}";
+        if (todaySale != null)
+            todaySale.text = $"Today Sale: $ {orderSale:F2}";
+        if (totalEarned != null)
+            totalEarned.text = $"Earned: $ {earnedBeforeLevel:F2}";
 
         SetupLevelCompleteButtons();
         UpdateUnlockedItemsDisplay();
         yield return new WaitForSeconds(1f);
         yield return StartCoroutine(AnimateFullTransfer(todaySale, totalEarned, "Order Sale: $ ", "Earned: $ ",
-            todayScore, totalScore));
+            orderSale, earnedAfterSale));
         yield return new WaitForSeconds(1f);
         yield return StartCoroutine(AnimateFullTransfer(todayTip, totalEarned, "Tips: $ ", "Earned: $ ", tips,
             totalScore));
@@ -718,6 +747,11 @@ public class LevelManager : MonoBehaviour
         var elapsedTime = 0f;
         var nextSoundTime = 1f;
 
+        // Highlight the target while counting, then restore its original color
+        var targetOriginalColor = targetText != null ? targetText.color : Color.white;
+        if (targetText != null)
+            targetText.color = Color.red;
+
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
@@ -733,12 +767,12 @@ public class LevelManager : MonoBehaviour
                 sourceText.text = $"{sourcePrefix}{currentSource:F0}";
             if (targetText != null)
                 targetText.text = $"{targetPrefix}{currentTarget:F0}";
-            targetText.color = Color.red;
 
             // Play sound every second
             if (elapsedTime >= nextSoundTime)
             {
-                AudioManager.Instance.PlayMoneyCount();
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlayMoneyCount();
                 nextSoundTime += 1f;
             }
 
@@ -749,8 +783,12 @@ public class LevelManager : MonoBehaviour
         if (sourceText != null)
             sourceText.text = $"{sourcePrefix}0";
         if (targetText != null)
+        {
             targetText.text = $"{targetPrefix}{targetFinalAmount:F0}";
+            targetText.color = targetOriginalColor;
+        }
 
-        AudioManager.Instance.PlayMoneyTransferComplete();
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayMoneyTransferComplete();
     }
 }

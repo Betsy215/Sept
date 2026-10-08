@@ -8,17 +8,15 @@ public class KitchenSceneManager : MonoBehaviour
 
     [Header("Kitchen Scene Settings")] public string kitchenSceneName = "KitchenScene";
 
-    [Header("Performance")] [Tooltip("Cache colliders on start for maximum performance")]
-    public bool cacheCollidersOnStart = true;
-
     [Header("Debug")] public bool enableDebugLogs = true;
 
     private bool isKitchenOpen = false;
 
-    // CACHED list of all game colliders (not Kitchen layer)
-    private List<Collider2D> cachedGameColliders = new();
-    private List<Collider> cachedGameColliders3D = new();
-    private bool isCached = false;
+    // Game colliders (not Kitchen layer) that were ENABLED when the kitchen opened and that we
+    // disabled. Rebuilt on every OpenKitchen so objects spawned later are covered, and only these
+    // are re-enabled on close so colliders that were deliberately off stay off.
+    private readonly List<Collider2D> disabledGameColliders = new();
+    private readonly List<Collider> disabledGameColliders3D = new();
 
     private void Awake()
     {
@@ -32,42 +30,6 @@ public class KitchenSceneManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-    }
-
-    private void Start()
-    {
-        if (cacheCollidersOnStart) CacheGameColliders();
-    }
-
-    /// <summary>
-    /// Cache all game colliders ONCE on start (expensive but only once)
-    /// </summary>
-    private void CacheGameColliders()
-    {
-        var startTime = Time.realtimeSinceStartup;
-
-        cachedGameColliders.Clear();
-        cachedGameColliders3D.Clear();
-
-        var kitchenLayer = LayerMask.NameToLayer("Kitchen");
-
-        // Find all 2D colliders NOT on Kitchen layer
-        var all2D = FindObjectsOfType<Collider2D>(true); // true = include inactive
-        foreach (var col in all2D)
-            if (col.gameObject.layer != kitchenLayer)
-                cachedGameColliders.Add(col);
-
-        // Find all 3D colliders NOT on Kitchen layer
-        var all3D = FindObjectsOfType<Collider>(true);
-        foreach (var col in all3D)
-            if (col.gameObject.layer != kitchenLayer)
-                cachedGameColliders3D.Add(col);
-
-        isCached = true;
-
-        var duration = (Time.realtimeSinceStartup - startTime) * 1000f;
-        DebugLog(
-            $"Cached {cachedGameColliders.Count} 2D + {cachedGameColliders3D.Count} 3D colliders in {duration:F2}ms");
     }
 
     public void OpenKitchen()
@@ -111,39 +73,39 @@ public class KitchenSceneManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Disable all game colliders (uses cache if available)
+    /// Disable every currently-enabled game collider (not on the Kitchen layer), remembering
+    /// exactly which ones we turned off. Scans the scene each time so later-spawned objects are included.
     /// </summary>
     private void DisableGameInteractions()
     {
         var startTime = Time.realtimeSinceStartup;
 
-        // If not cached, cache now
-        if (!isCached) CacheGameColliders();
+        disabledGameColliders.Clear();
+        disabledGameColliders3D.Clear();
 
-        var disabledCount = 0;
+        var kitchenLayer = LayerMask.NameToLayer("Kitchen");
 
-        // Disable cached 2D colliders
-        foreach (var col in cachedGameColliders)
-            if (col != null && col.enabled) // Check for destroyed objects
+        foreach (var col in FindObjectsOfType<Collider2D>(true)) // true = include inactive
+            if (col.enabled && col.gameObject.layer != kitchenLayer)
             {
                 col.enabled = false;
-                disabledCount++;
+                disabledGameColliders.Add(col);
             }
 
-        // Disable cached 3D colliders
-        foreach (var col in cachedGameColliders3D)
-            if (col != null && col.enabled)
+        foreach (var col in FindObjectsOfType<Collider>(true))
+            if (col.enabled && col.gameObject.layer != kitchenLayer)
             {
                 col.enabled = false;
-                disabledCount++;
+                disabledGameColliders3D.Add(col);
             }
 
         var duration = (Time.realtimeSinceStartup - startTime) * 1000f;
-        DebugLog($"Disabled {disabledCount} colliders in {duration:F2}ms");
+        DebugLog(
+            $"Disabled {disabledGameColliders.Count} 2D + {disabledGameColliders3D.Count} 3D colliders in {duration:F2}ms");
     }
 
     /// <summary>
-    /// Re-enable all game colliders
+    /// Re-enable only the colliders that DisableGameInteractions turned off.
     /// </summary>
     private void EnableGameInteractions()
     {
@@ -151,21 +113,22 @@ public class KitchenSceneManager : MonoBehaviour
 
         var enabledCount = 0;
 
-        // Re-enable cached 2D colliders
-        foreach (var col in cachedGameColliders)
+        foreach (var col in disabledGameColliders)
+            if (col != null) // Check for destroyed objects
+            {
+                col.enabled = true;
+                enabledCount++;
+            }
+
+        foreach (var col in disabledGameColliders3D)
             if (col != null)
             {
                 col.enabled = true;
                 enabledCount++;
             }
 
-        // Re-enable cached 3D colliders
-        foreach (var col in cachedGameColliders3D)
-            if (col != null)
-            {
-                col.enabled = true;
-                enabledCount++;
-            }
+        disabledGameColliders.Clear();
+        disabledGameColliders3D.Clear();
 
         var duration = (Time.realtimeSinceStartup - startTime) * 1000f;
         DebugLog($"Re-enabled {enabledCount} colliders in {duration:F2}ms");
@@ -196,10 +159,9 @@ public class KitchenSceneManager : MonoBehaviour
         if (mode == LoadSceneMode.Single)
         {
             isKitchenOpen = false;
-            isCached = false;
-            cachedGameColliders.Clear();
-            cachedGameColliders3D.Clear();
-            DebugLog($"Scene '{scene.name}' loaded — kitchen state and collider cache reset.");
+            disabledGameColliders.Clear();
+            disabledGameColliders3D.Clear();
+            DebugLog($"Scene '{scene.name}' loaded — kitchen state and collider list reset.");
         }
     }
 }

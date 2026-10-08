@@ -47,6 +47,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private bool isDragging = false;
     private bool isTouched = false;
     private bool isWiggling = false;
+    private bool isWigglePaused = false; // Paused for a drag; resumes when the drag ends
     private bool hasOverlap = false;
 
     // Transform values
@@ -247,9 +248,10 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     private void StopWiggle()
     {
-        if (!isWiggling) return;
+        if (!isWiggling && !isWigglePaused) return;
 
         isWiggling = false;
+        isWigglePaused = false;
 
         if (wiggleCoroutine != null)
         {
@@ -266,6 +268,12 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     private void PauseWiggle()
     {
+        if (!isWiggling) return;
+
+        // Clear the running flag so ResumeWiggle/StartWiggle can restart the coroutine later.
+        isWiggling = false;
+        isWigglePaused = true;
+
         if (wiggleCoroutine != null)
         {
             StopCoroutine(wiggleCoroutine);
@@ -278,6 +286,8 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     private void ResumeWiggle()
     {
+        isWigglePaused = false;
+
         if (isDraggingEnabled && enableWiggle && !isWiggling)
             StartWiggle();
     }

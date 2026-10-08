@@ -10,24 +10,30 @@ public class Bread : MonoBehaviour
     private RefillableItem refillableItem;
     private SpriteRenderer spriteRenderer;
 
-    private void Start()
+    // Subscribe in OnEnable/OnDisable (not a Start coroutine) so the subscription survives the
+    // object being toggled off and on by LevelManager / KitchenFoodGate.
+    private void OnEnable()
     {
-        refillableItem = GetComponent<RefillableItem>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        StartCoroutine(Initialize());
-    }
+        if (refillableItem == null) refillableItem = GetComponent<RefillableItem>();
+        if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+        if (refillableItem == null) return;
 
-    private IEnumerator Initialize()
-    {
-        yield return null;
+        refillableItem.OnCountChanged -= OnCountChanged; // never double-subscribe
         refillableItem.OnCountChanged += OnCountChanged;
-        UpdateSprite(refillableItem.GetCurrentCount());
+        StartCoroutine(RefreshSpriteNextFrame());
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (refillableItem != null)
             refillableItem.OnCountChanged -= OnCountChanged;
+    }
+
+    // RefillableItem gets its counts from RefillSystem during Start, so read them a frame later.
+    private IEnumerator RefreshSpriteNextFrame()
+    {
+        yield return null;
+        UpdateSprite(refillableItem.GetCurrentCount());
     }
 
     public void RefillToFull()

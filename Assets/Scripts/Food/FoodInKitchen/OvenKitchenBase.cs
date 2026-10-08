@@ -30,7 +30,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
     [Header("Debug")] public bool enableDebugLogs = true;
 
     private Image image;
-    private MonoBehaviour coroutineRunner;
+    private KitchenTimerHelper timerHelper;
 
     protected virtual void Awake()
     {
@@ -40,35 +40,14 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         if (defaultSprite == null && image != null)
             defaultSprite = image.sprite;
 
-        SetupCoroutineRunner();
+        // The bake timer must outlive the kitchen scene, so it always runs on the persistent helper.
+        timerHelper = KitchenTimerHelper.GetOrCreate($"[OvenHelper] {GetCooldownKey()}");
         CheckBakingStateOnWake();
     }
 
-    private void SetupCoroutineRunner()
-    {
-        if (transform.parent != null && transform.parent.gameObject.activeInHierarchy)
-            coroutineRunner = transform.parent.GetComponent<MonoBehaviour>();
-
-        if (coroutineRunner == null || coroutineRunner == this)
-        {
-            var helperName = $"[OvenHelper] {GetCooldownKey()}";
-            var existing = GameObject.Find(helperName);
-            if (existing != null)
-            {
-                coroutineRunner = existing.GetComponent<KitchenTimerHelper>();
-            }
-            else
-            {
-                var helper = new GameObject(helperName);
-                DontDestroyOnLoad(helper);
-                coroutineRunner = helper.AddComponent<KitchenTimerHelper>();
-                DebugLog($"Created OvenHelper '{helperName}'");
-            }
-        }
-    }
-
     /// <summary>
-    /// On scene reload: if still baking, restore baking sprite and resume remaining timer.
+    /// On scene reload: if still baking, restore the baking sprite and re-attach to the running
+    /// timer (or resume the remaining time if no timer is running).
     /// </summary>
     private void CheckBakingStateOnWake()
     {
@@ -81,7 +60,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         {
             DebugLog($"Still baking ({remaining:F1}s remaining) — restoring baking sprite");
             SetSprite(bakingSprite);
-            coroutineRunner.StartCoroutine(BakeCoroutine(remaining));
+            timerHelper.StartTimer(GetCooldownKey(), remaining, OnBakeComplete);
         }
         else
         {
@@ -105,19 +84,17 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
 
         SetSprite(bakingSprite);
         CooldownRegistry.RecordPickTime(GetCooldownKey());
-        coroutineRunner.StartCoroutine(BakeCoroutine(bakeTime));
+        timerHelper.StartTimer(GetCooldownKey(), bakeTime, OnBakeComplete);
     }
 
-    private IEnumerator BakeCoroutine(float duration)
+    private void OnBakeComplete()
     {
-        yield return new WaitForSecondsRealtime(duration);
-
         DebugLog("Bake complete!");
+        CooldownRegistry.ClearPickTime(GetCooldownKey());
         OnRefill();
         SetSprite(defaultSprite);
         if (bakeCompleteSound != null && AudioManager.Instance != null)
             AudioManager.Instance.PlaySFX(bakeCompleteSound);
-        CooldownRegistry.ClearPickTime(GetCooldownKey());
     }
 
     private void SetSprite(Sprite sprite)

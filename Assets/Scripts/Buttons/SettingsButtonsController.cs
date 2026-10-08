@@ -51,27 +51,24 @@ public class SettingsButtonsController : MonoBehaviour
     
     void InitializeSettings()
     {
-       
+        if (settingsAnimator == null)
             settingsAnimator = GetComponent<Animator>();
-        
-        
-        
+
+        if (audioButtonImage == null && audioButton != null)
             audioButtonImage = audioButton.GetComponent<Image>();
-        
-        
-        
+
+        if (musicButtonImage == null && musicButton != null)
             musicButtonImage = musicButton.GetComponent<Image>();
-        
-        
-        
+
+        if (audioButtonImage != null)
             originalAudioColor = audioButtonImage.color;
-        
-        
-      
+        else
+            Debug.LogWarning("SettingsButtonsController: Audio button Image not found!");
+
+        if (musicButtonImage != null)
             originalMusicColor = musicButtonImage.color;
-        
-        
-       
+        else
+            Debug.LogWarning("SettingsButtonsController: Music button Image not found!");
     }
     
     void LoadGlobalSettings()
@@ -95,11 +92,15 @@ public class SettingsButtonsController : MonoBehaviour
     
     void ApplySettingsToAudioManager()
     {
-       
-            AudioManager.Instance.SetSFXEnabled(isAudioOn);
-            AudioManager.Instance.SetMusicEnabled(isMusicOn);
-            Debug.Log("SettingsButtonsController: Applied settings to AudioManager");
-        
+        if (AudioManager.Instance == null)
+        {
+            Debug.LogWarning("SettingsButtonsController: AudioManager not found, settings not applied");
+            return;
+        }
+
+        AudioManager.Instance.SetSFXEnabled(isAudioOn);
+        AudioManager.Instance.SetMusicEnabled(isMusicOn);
+        Debug.Log("SettingsButtonsController: Applied settings to AudioManager");
     }
     
    
