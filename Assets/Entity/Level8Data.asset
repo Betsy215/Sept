@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Level8Data
   m_EditorClassIdentifier: 
   levelNumber: 8
-  levelName: Day  8
+  levelName: Day 8
   ordersPerLevel: 8
   orderDisplayTime: 4
   timeBetweenOrders: 3

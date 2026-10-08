@@ -23,7 +23,7 @@ MonoBehaviour:
     - UnityUseAPSReleaseEnvironment
     - UnityUseLocationNotificationTrigger
     values:
-    - True
+    - False
     - 7
     - False
     - False
