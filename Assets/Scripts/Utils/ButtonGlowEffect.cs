@@ -28,6 +28,7 @@ public class ButtonGlowEffect : MonoBehaviour
     {
         if (shineImage == null) return;
         if (sweepLoopCoroutine != null) return;
+        if (!isActiveAndEnabled) return; // StartCoroutine throws on an inactive object
 
         shineImage.gameObject.SetActive(true);
         sweepLoopCoroutine = StartCoroutine(SweepLoop(sweepCount));

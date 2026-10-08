@@ -266,6 +266,10 @@ public class SessionManager : MonoBehaviour
         currentSession = new SessionData();
         SaveSession();
 
+        // Kitchen bakes and cooldowns live in static/persistent helpers; a new game starts them fresh
+        KitchenTimerHelper.CancelAll();
+        CooldownRegistry.ClearAll();
+
         Debug.Log("New session started!");
 
         // Notify UI of score change

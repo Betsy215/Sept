@@ -47,6 +47,10 @@ public class RefillableItem : MonoBehaviour
     private bool isGameplayMode = false;
     private bool isRefilling = false;
 
+    // Set by OverrideMaxCount (upgrades). LevelManager may apply upgrades before RefillSystem
+    // calls Initialize, so Initialize must not clobber an override that already happened.
+    private bool hasMaxCountOverride = false;
+
     // Hold detection
     private bool isHolding = false;
 
@@ -55,6 +59,7 @@ public class RefillableItem : MonoBehaviour
     private float holdStartTime;
     private Coroutine refillCoroutine;
     private Coroutine holdDetectionCoroutine;
+    private Coroutine statusBarCoroutine;
 
     private void Awake()
     {
@@ -127,13 +132,15 @@ public class RefillableItem : MonoBehaviour
         refillSystem = system;
         DebugLog($"Initialize called with RefillSystem: {refillSystem != null}");
 
-        // Set up refill parameters
-        maxCount = customMaxCount > 0 ? customMaxCount : refillSystem.GetDefaultMaxCount();
+        // Set up refill parameters (keep an upgrade override that was applied before we were initialized)
+        if (!hasMaxCountOverride)
+            maxCount = customMaxCount > 0 ? customMaxCount : refillSystem.GetDefaultMaxCount();
         refillTimePerCount = customRefillTime > 0 ? customRefillTime : refillSystem.GetRefillTimePerCount();
         if (customStartingCount == -1)
             currentCount = maxCount; // Default: start full
         else
             currentCount = Mathf.Clamp(customStartingCount, 0, maxCount); // Custom starting count
+        isOutOfStock = currentCount <= 0;
 
         DebugLog(
             $"Parameters set - maxCount: {maxCount}, refillTime: {refillTimePerCount}, currentCount: {currentCount}");
@@ -155,15 +162,44 @@ public class RefillableItem : MonoBehaviour
         // Status bar stays hidden unless actively refilling
         SetStatusBarVisible(false);
 
-        // Stop any ongoing refill when leaving gameplay mode
-        if (!gameplayMode && refillCoroutine != null)
+        // Stop any ongoing hold or refill when leaving gameplay mode
+        if (!gameplayMode)
+            ResetHoldState();
+
+        DebugLog($"Gameplay mode set to: {gameplayMode}");
+    }
+
+    private void OnDisable()
+    {
+        // Coroutines die with the object; make sure the flags and the bar do not outlive them,
+        // otherwise the next press on this item is treated as a hold that never ends.
+        ResetHoldState();
+    }
+
+    /// Cancel hold detection, refilling and the bar animation, and clear every hold flag.
+    private void ResetHoldState()
+    {
+        if (holdDetectionCoroutine != null)
+        {
+            StopCoroutine(holdDetectionCoroutine);
+            holdDetectionCoroutine = null;
+        }
+
+        if (refillCoroutine != null)
         {
             StopCoroutine(refillCoroutine);
             refillCoroutine = null;
-            isRefilling = false;
         }
 
-        DebugLog($"Gameplay mode set to: {gameplayMode}");
+        if (statusBarCoroutine != null)
+        {
+            StopCoroutine(statusBarCoroutine);
+            statusBarCoroutine = null;
+        }
+
+        isHolding = false;
+        isRefilling = false;
+        SetStatusBarVisible(false);
     }
 
     private void SetUIVisible(bool visible)
@@ -253,6 +289,14 @@ public class RefillableItem : MonoBehaviour
             return;
         }
 
+        // A second finger on the same item must not spawn a second detection coroutine; the
+        // first one would lose its handle and start a refill that no pointer-up can stop.
+        if (holdDetectionCoroutine != null || isHolding)
+        {
+            DebugLog("Hold already in progress - ignoring extra pointer");
+            return;
+        }
+
         DebugLog("Starting hold detection...");
         holdStartTime = Time.time;
         holdDetectionCoroutine = StartCoroutine(HoldDetectionCoroutine());
@@ -282,8 +326,9 @@ public class RefillableItem : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
 
         DebugLog("Hold threshold reached, checking if still valid...");
+        holdDetectionCoroutine = null;
 
-        if (!isHolding && currentCount < maxCount)
+        if (!isHolding && isGameplayMode && currentCount < maxCount)
         {
             DebugLog("Valid hold detected, starting refill!");
             StartRefilling();
@@ -303,15 +348,31 @@ public class RefillableItem : MonoBehaviour
 
         // Show status bar with animation
         SetStatusBarVisible(true);
-        StartCoroutine(AnimateStatusBar(refillTimePerCount));
+        RestartStatusBarAnimation();
 
         refillCoroutine = StartCoroutine(RefillCoroutine());
         DebugLog("Started refilling");
     }
 
+    private void RestartStatusBarAnimation()
+    {
+        if (statusBarCoroutine != null)
+            StopCoroutine(statusBarCoroutine);
+        statusBarCoroutine = StartCoroutine(AnimateStatusBar(refillTimePerCount));
+    }
+
     private void StopRefilling()
     {
+        // Called from OnPointerUp: the press is over, so the hold is over too.
         isHolding = false;
+        FinishRefilling();
+        DebugLog("Stopped refilling");
+    }
+
+    /// Stop the refill itself but keep isHolding, so the press that filled the item is still
+    /// reported as consumed by the refill and the release does not serve a cup.
+    private void FinishRefilling()
+    {
         isRefilling = false;
 
         if (refillCoroutine != null)
@@ -322,8 +383,6 @@ public class RefillableItem : MonoBehaviour
 
         // Hide status bar
         SetStatusBarVisible(false);
-
-        DebugLog("Stopped refilling");
     }
 
     private IEnumerator RefillCoroutine()
@@ -341,13 +400,14 @@ public class RefillableItem : MonoBehaviour
 
                 // Restart status bar animation for next count
                 if (currentCount < maxCount)
-                    StartCoroutine(AnimateStatusBar(refillTimePerCount));
+                    RestartStatusBarAnimation();
             }
         }
 
-        // Stop refilling when full
-        if (currentCount >= maxCount)
-            StopRefilling();
+        // Full: stop the refill but keep the hold flag until the finger lifts (see FinishRefilling)
+        refillCoroutine = null;
+        FinishRefilling();
+        DebugLog("Refill complete - item is full");
     }
 
     private IEnumerator AnimateStatusBar(float duration)
@@ -365,6 +425,7 @@ public class RefillableItem : MonoBehaviour
         SetStatusBarFill(1f);
         yield return new WaitForSeconds(0.1f);
 
+        statusBarCoroutine = null;
         if (!isRefilling)
             SetStatusBarVisible(false);
     }
@@ -474,7 +535,10 @@ public class RefillableItem : MonoBehaviour
 
     public void OverrideMaxCount(int newMaxCount)
     {
+        if (newMaxCount <= 0) return;
+
         maxCount = newMaxCount;
+        hasMaxCountOverride = true;
 
         // ✅ If item was set to start full (customStartingCount = -1), update currentCount to new max
         if (customStartingCount == -1)
@@ -487,6 +551,7 @@ public class RefillableItem : MonoBehaviour
         {
             // Otherwise clamp current count to new max (in case new max is lower)
             currentCount = Mathf.Clamp(currentCount, 0, maxCount);
+            isOutOfStock = currentCount <= 0;
             OnCountChanged?.Invoke(currentCount, maxCount);
             DebugLog($"Max count overridden to {maxCount}, current count clamped to {currentCount}");
         }

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class PauseButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class PauseButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
 {
     [Header("Press Effect Settings")]
     [Range(0.5f, 1f)]
@@ -135,6 +135,24 @@ public class PauseButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         }
     }
     
+    // Finger slid off the button while held: cancel the press so the pressed look is not left stuck
+    // and the release does not toggle pause (same semantics as a Button click).
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (!isPressed) return;
+
+        isPressed = false;
+
+        if (buttonImage != null)
+            buttonImage.color = originalColor;
+
+        if (rectTransform != null)
+            rectTransform.anchoredPosition3D = originalPosition;
+
+        if (enableDebugLogs)
+            Debug.Log("PauseButton: Pointer left while pressed - press cancelled");
+    }
+
     IEnumerator WaitForDelay(float delayTime)
     {
         yield return new WaitForSecondsRealtime(delayTime); // Use realtime so it works during pause

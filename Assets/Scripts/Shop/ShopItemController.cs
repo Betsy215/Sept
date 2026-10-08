@@ -21,6 +21,14 @@ public class ShopItemController : MonoBehaviour
 
     private ShopManager shopManager;
 
+    private void Awake()
+    {
+        // These are matched by exact string against SessionManager keys ("Bread", "CoffeeMachine");
+        // a stray space typed in the inspector would silently make the purchase never register.
+        itemName = itemName?.Trim();
+        upgradeFoodType = upgradeFoodType?.Trim();
+    }
+
     private void Start()
     {
         shopManager = FindObjectOfType<ShopManager>();
@@ -32,7 +40,7 @@ public class ShopItemController : MonoBehaviour
 
     private void SetupClickHandler()
     {
-        var iconButton = transform.Find("ItemIcon").GetComponent<Button>();
+        var iconButton = transform.Find("ItemIcon")?.GetComponent<Button>();
         if (iconButton != null)
         {
             iconButton.onClick.RemoveAllListeners();

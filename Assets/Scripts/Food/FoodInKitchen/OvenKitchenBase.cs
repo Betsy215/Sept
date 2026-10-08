@@ -74,6 +74,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (Time.timeScale == 0f) return; // paused: UI taps still arrive, gameplay must not
         if (eventData.pointerCurrentRaycast.gameObject != gameObject) return;
         if (CooldownRegistry.IsOnCooldown(GetCooldownKey(), bakeTime)) return;
 

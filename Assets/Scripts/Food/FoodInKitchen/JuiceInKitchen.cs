@@ -22,6 +22,8 @@ public class JuiceInKitchen : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (Time.timeScale == 0f) return; // paused: UI taps still arrive, gameplay must not
+
         DebugLog("Juice clicked - refilling juice...");
 
         // Play sound
@@ -57,7 +59,7 @@ public class JuiceInKitchen : MonoBehaviour, IPointerClickHandler
         var elapsed = 0f;
         while (elapsed < popDuration)
         {
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             var t = Mathf.SmoothStep(0f, 1f, elapsed / popDuration);
             transform.localScale = Vector3.LerpUnclamped(originalScale, targetScale, t);
             yield return null;
@@ -69,7 +71,7 @@ public class JuiceInKitchen : MonoBehaviour, IPointerClickHandler
         elapsed = 0f;
         while (elapsed < returnDuration)
         {
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             var t = Mathf.SmoothStep(0f, 1f, elapsed / returnDuration);
             transform.localScale = Vector3.LerpUnclamped(targetScale, originalScale, t);
             yield return null;

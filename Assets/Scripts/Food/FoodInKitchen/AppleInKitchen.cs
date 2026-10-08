@@ -59,7 +59,7 @@ public class AppleInKitchen : KitchenItemWithTimer
         var elapsed = 0f;
         while (elapsed < popDuration)
         {
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             var t = Mathf.SmoothStep(0f, 1f, elapsed / popDuration);
             transform.localScale = Vector3.LerpUnclamped(originalScale, targetScale, t);
             yield return null;
@@ -70,7 +70,7 @@ public class AppleInKitchen : KitchenItemWithTimer
         elapsed = 0f;
         while (elapsed < returnDuration)
         {
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             var t = Mathf.SmoothStep(0f, 1f, elapsed / returnDuration);
             transform.localScale = Vector3.LerpUnclamped(targetScale, originalScale, t);
             yield return null;

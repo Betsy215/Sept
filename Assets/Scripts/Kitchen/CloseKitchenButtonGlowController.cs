@@ -35,7 +35,7 @@ public class CloseKitchenButtonGlowController : MonoBehaviour
     private void OnCustomerSpawned(CustomerController customer)
     {
         DebugLog("Customer walked in — enabling glow.");
-        glowEffect.EnableGlow(3);
+        if (glowEffect != null) glowEffect.EnableGlow(3);
     }
 
     private void OnDestroy()

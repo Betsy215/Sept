@@ -8,7 +8,8 @@ public class BeanContainer : MonoBehaviour
     [Header("References")] [SerializeField]
     private SpriteRenderer spriteRenderer;
 
-    private int currentBeanLevel = 6;
+    private const int MaxBeanLevel = 6;
+    private int currentBeanLevel = MaxBeanLevel;
 
     private void Start()
     {
@@ -22,7 +23,7 @@ public class BeanContainer : MonoBehaviour
     public void RefillToFull()
     {
         // Refill beans to full
-        currentBeanLevel = 6;
+        currentBeanLevel = MaxBeanLevel;
         UpdateDisplay();
         Debug.Log("Beans refilled!");
     }
@@ -34,7 +35,8 @@ public class BeanContainer : MonoBehaviour
 
     public void ConsumeBeans(int amount)
     {
-        currentBeanLevel = Mathf.Max(0, currentBeanLevel - amount);
+        if (amount <= 0) return;
+        currentBeanLevel = Mathf.Clamp(currentBeanLevel - amount, 0, MaxBeanLevel);
         UpdateDisplay();
         Debug.Log($"Consumed {amount} beans. Level: {currentBeanLevel}");
     }
@@ -49,11 +51,12 @@ public class BeanContainer : MonoBehaviour
                 spriteRenderer.sprite = null;
                 // OR: spriteRenderer.enabled = false;
             }
-            else if (currentBeanLevel <= beanLevelSprites.Length)
+            else if (beanLevelSprites != null && beanLevelSprites.Length > 0)
             {
-                // Show corresponding bean level sprite
-                // Array index = currentBeanLevel - 1
-                spriteRenderer.sprite = beanLevelSprites[currentBeanLevel - 1];
+                // Show corresponding bean level sprite (array index = currentBeanLevel - 1).
+                // The scene wires 6 sprites; clamp so a shorter array never leaves a stale sprite.
+                var index = Mathf.Clamp(currentBeanLevel, 1, beanLevelSprites.Length) - 1;
+                spriteRenderer.sprite = beanLevelSprites[index];
                 spriteRenderer.enabled = true;
             }
         }

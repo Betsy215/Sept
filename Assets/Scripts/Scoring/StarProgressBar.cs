@@ -33,12 +33,32 @@ public class StarProgressBar : MonoBehaviour
     private float lastDisplayedScore = -1;
     private bool[] starStates = new bool[3];
     private Vector3[] originalStarScales = new Vector3[3];
-    
-    void Start()
+    private Coroutine[] starAnimations = new Coroutine[3];
+    private bool originalScalesStored = false;
+
+    // Awake, not Start: LevelManager.Start() calls Initialize() -> UpdateDisplay(0) before this
+    // component's Start() ran, and an animation started then lerped from an all-zero
+    // originalStarScales, leaving the star invisible.
+    void Awake()
     {
         StoreOriginalStarScales();
         AutoFindComponents();
+    }
+
+    void Start()
+    {
         InitializeStars();
+    }
+
+    void OnDisable()
+    {
+        // Coroutines die when the object is deactivated; don't leave a star frozen mid-pop
+        for (int i = 0; i < 3; i++)
+        {
+            starAnimations[i] = null;
+            Transform star = GetStarTransform(i);
+            if (star != null && originalScalesStored) star.localScale = originalStarScales[i];
+        }
     }
     
     void AutoFindComponents()
@@ -58,32 +78,40 @@ public class StarProgressBar : MonoBehaviour
     {
         currentLevelData = levelData;
         InitializeStars();
-        UpdateDisplay(0);
+
+        // Stars whose threshold is 0 (or that a level starts with already met) are shown filled
+        // without the "earned" pop; the pop is for stars earned during play.
+        UpdateDisplay(0, animate: false);
     }
-    
+
     void InitializeStars()
     {
         SetAllStarsUnfilled();
     }
-    
+
     void StoreOriginalStarScales()
     {
+        if (originalScalesStored) return;
         originalStarScales[0] = star1 != null ? star1.localScale : Vector3.one;
         originalStarScales[1] = star2 != null ? star2.localScale : Vector3.one;
         originalStarScales[2] = star3 != null ? star3.localScale : Vector3.one;
+        originalScalesStored = true;
     }
-    
+
     public void UpdateDisplay(float currentScore)
     {
+        UpdateDisplay(currentScore, useAnimations);
+    }
 
-        
+    void UpdateDisplay(float currentScore, bool animate)
+    {
         lastDisplayedScore = currentScore;
-        
-        UpdateStars(currentScore);
+
+        UpdateStars(currentScore, animate);
         UpdateTexts(currentScore);
     }
-    
-    void UpdateStars(float currentScore)
+
+    void UpdateStars(float currentScore, bool animate)
     {
         if (currentLevelData == null) return;
         
@@ -101,9 +129,12 @@ public class StarProgressBar : MonoBehaviour
                 UpdateStarVisual(i, newStarStates[i]);
                 
                 // StartCoroutine throws if the GameObject is inactive in the hierarchy
-                if (newStarStates[i] && useAnimations && gameObject.activeInHierarchy)
+                if (newStarStates[i] && animate && useAnimations && gameObject.activeInHierarchy)
                 {
-                    StartCoroutine(AnimateStarEarned(i));
+                    // Equal thresholds / a reset-then-earn in quick succession can re-trigger the
+                    // same star while its pop is still running; restart instead of stacking.
+                    if (starAnimations[i] != null) StopCoroutine(starAnimations[i]);
+                    starAnimations[i] = StartCoroutine(AnimateStarEarned(i));
                 }
             }
         }
@@ -190,8 +221,10 @@ public class StarProgressBar : MonoBehaviour
     {
         Transform starTransform = GetStarTransform(starIndex);
         if (starTransform == null) yield break;
-        
+
+        StoreOriginalStarScales();
         Vector3 originalScale = originalStarScales[starIndex];
+        if (originalScale == Vector3.zero) originalScale = Vector3.one; // never animate a star to nothing
         Vector3 targetScale = originalScale * 1.2f;
         
         // Scale up
@@ -215,8 +248,9 @@ public class StarProgressBar : MonoBehaviour
             elapsed += Time.deltaTime;
             yield return null;
         }
-        
+
         starTransform.localScale = originalScale;
+        starAnimations[starIndex] = null;
     }
     
     Transform GetStarTransform(int starIndex)

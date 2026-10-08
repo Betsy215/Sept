@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class SettingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class SettingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
 {
     [Header("Visual Feedback Settings")]
     public Image targetImage; // The image to change color on

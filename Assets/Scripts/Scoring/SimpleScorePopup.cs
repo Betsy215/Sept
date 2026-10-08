@@ -31,6 +31,7 @@ public class SimpleScorePopup : MonoBehaviour
     private CanvasGroup canvasGroup;
     private Vector3 startPosition;
     private bool isAnimationComplete = false;
+    private bool isDestroying = false;
 
     // Static reference to track current popup
     private static SimpleScorePopup currentPopup;
@@ -71,7 +72,8 @@ public class SimpleScorePopup : MonoBehaviour
 
         if (bonusPoints > 0)
         {
-            popupText = $" ${basePoints}\n Tips: $ {bonusPoints:F2}";
+            // Money is whole cents; "$1.5" next to "Tips: $ 0.25" looked like a different unit
+            popupText = $" ${basePoints:F2}\n Tips: $ {bonusPoints:F2}";
             textColor = Color.black;
         }
         else
@@ -155,6 +157,19 @@ public class SimpleScorePopup : MonoBehaviour
     /// </summary>
     public void DestroyPopup()
     {
+        // ClearCurrentPopup() and the auto-disappear timer can both land on the same popup;
+        // only one fade-out should run.
+        if (isDestroying) return;
+        isDestroying = true;
+
+        if (!gameObject.activeInHierarchy)
+        {
+            // Can't run a coroutine on an inactive object (e.g. canvas hidden at level end)
+            if (currentPopup == this) currentPopup = null;
+            Destroy(gameObject);
+            return;
+        }
+
         // Quick fade out before destroying
         StartCoroutine(FadeOutAndDestroy());
     }

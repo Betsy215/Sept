@@ -26,7 +26,8 @@ public class SceneTransitionManager : MonoBehaviour
     public bool autoCreateTransitionUI = true;
     
     private bool isTransitioning = false;
-    
+    private Coroutine transitionCoroutine;
+
     void Awake()
     {
         // Singleton pattern with DontDestroyOnLoad
@@ -59,7 +60,13 @@ public class SceneTransitionManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    
+
+    void OnDestroy()
+    {
+        // Never leave a stale static pointing at a destroyed manager (callers null-check Instance)
+        if (Instance == this) Instance = null;
+    }
+
     void CreateTransitionUI()
     {
         Debug.Log("SceneTransitionManager: Creating transition UI");
@@ -105,51 +112,75 @@ public class SceneTransitionManager : MonoBehaviour
             Debug.LogWarning("SceneTransitionManager: Already transitioning, ignoring request");
             return;
         }
-        
-        StartCoroutine(TransitionCoroutine(sceneName));
+
+        if (string.IsNullOrEmpty(sceneName))
+        {
+            Debug.LogError("SceneTransitionManager: TransitionToScene called with an empty scene name");
+            return;
+        }
+
+        if (!isActiveAndEnabled)
+        {
+            // StartCoroutine would throw and the scene change would be lost; load directly instead
+            Debug.LogWarning("SceneTransitionManager: Inactive, loading scene without a fade");
+            SceneManager.LoadScene(sceneName);
+            return;
+        }
+
+        transitionCoroutine = StartCoroutine(TransitionCoroutine(sceneName));
     }
-    
+
     IEnumerator TransitionCoroutine(string sceneName)
     {
         isTransitioning = true;
-        
+
         Debug.Log($"SceneTransitionManager: Starting transition to {sceneName}");
-        
-        // Ensure transition UI is active and can block raycasts during transition
-        if (transitionCanvas != null)
+
+        try
         {
-            transitionCanvas.gameObject.SetActive(true);
+            // Ensure transition UI is active and can block raycasts during transition
+            if (transitionCanvas != null)
+            {
+                transitionCanvas.gameObject.SetActive(true);
+            }
+
+            if (fadeImage != null)
+            {
+                fadeImage.raycastTarget = true; // Enable raycast blocking during transition
+            }
+
+            // Phase 1: Fade OUT (scene becomes invisible)
+            yield return StartCoroutine(FadeOut());
+
+            // Phase 2: Load new scene
+            Debug.Log($"SceneTransitionManager: Loading scene {sceneName}");
+            SceneManager.LoadScene(sceneName);
+
+            // Phase 3: Fade IN (new scene becomes visible)
+            yield return StartCoroutine(FadeIn());
+
+            Debug.Log($"SceneTransitionManager: Transition to {sceneName} complete");
         }
-        
-        if (fadeImage != null)
+        finally
         {
-            fadeImage.raycastTarget = true; // Enable raycast blocking during transition
+            // Runs on completion and when the coroutine is stopped or the iterator disposed, so a
+            // transition can never leave the opaque, raycast-blocking canvas up with
+            // isTransitioning stuck true (which would also reject every later transition).
+            SetFadeAlpha(0f);
+
+            if (fadeImage != null)
+            {
+                fadeImage.raycastTarget = false; // Disable raycast blocking
+            }
+
+            if (transitionCanvas != null)
+            {
+                transitionCanvas.gameObject.SetActive(false); // Hide the canvas completely
+            }
+
+            transitionCoroutine = null;
+            isTransitioning = false;
         }
-        
-        // Phase 1: Fade OUT (scene becomes invisible)
-        yield return StartCoroutine(FadeOut());
-        
-        // Phase 2: Load new scene
-        Debug.Log($"SceneTransitionManager: Loading scene {sceneName}");
-        SceneManager.LoadScene(sceneName);
-        
-        // Phase 3: Fade IN (new scene becomes visible)
-        yield return StartCoroutine(FadeIn());
-        
-        // IMPORTANT: Disable canvas and raycast blocking after transition
-        if (fadeImage != null)
-        {
-            fadeImage.raycastTarget = false; // Disable raycast blocking
-        }
-        
-        if (transitionCanvas != null)
-        {
-            transitionCanvas.gameObject.SetActive(false); // Hide the canvas completely
-        }
-        
-        isTransitioning = false;
-        
-        Debug.Log($"SceneTransitionManager: Transition to {sceneName} complete");
     }
     
     IEnumerator FadeOut()
@@ -207,6 +238,14 @@ public class SceneTransitionManager : MonoBehaviour
     // Method to manually hide transition (useful for debugging)
     public void HideTransition()
     {
+        // Resetting the flag while the coroutine is still running would let a second transition
+        // start on top of it; stop the running one first.
+        if (transitionCoroutine != null)
+        {
+            StopCoroutine(transitionCoroutine);
+            transitionCoroutine = null;
+        }
+
         if (fadeImage != null)
         {
             SetFadeAlpha(0f);

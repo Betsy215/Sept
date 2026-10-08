@@ -86,6 +86,12 @@ public class BalatroWobble : MonoBehaviour
         _rectTransform.localScale = _initialScale * scalePulse;
     }
 
+    // Don't leave the button frozen at a random jitter offset when it is hidden mid-wobble
+    private void OnDisable()
+    {
+        ResetTransform();
+    }
+
     public void ResetTransform()
     {
         _rectTransform.anchoredPosition = _initialAnchoredPosition;

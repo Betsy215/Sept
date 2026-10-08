@@ -73,6 +73,12 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     // Collision detection
     private float itemRadius;
     private Coroutine overlapCheckCoroutine;
+    private static readonly WaitForSeconds OverlapCheckInterval = new(0.1f); // no per-tick allocation
+
+    // Multi-touch: only the finger that pressed this item may drag it. A second finger landing on
+    // the item mid-drag used to overwrite the offset and end the drag early.
+    private const int NoPointer = int.MinValue;
+    private int activePointerId = NoPointer;
 
     // NEW: Refill system integration
     private RefillableItem refillableItem;
@@ -178,6 +184,12 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
         else
         {
+            // Phase switched to PLAYING while a finger was still dragging: finish the drag now,
+            // otherwise the item stays enlarged at the drag Z and OnEndDrag is ignored forever.
+            if (isDragging) StopDragging();
+            isTouched = false;
+            activePointerId = NoPointer;
+
             // ✅ Stop checking coroutine when disabled
             if (overlapCheckCoroutine != null)
             {
@@ -185,7 +197,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 overlapCheckCoroutine = null;
             }
 
-            if (isWiggling)
+            if (isWiggling || isWigglePaused)
                 StopWiggle();
 
             // ✅ Clear overlap state when disabling
@@ -216,7 +228,7 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         while (isDraggingEnabled)
         {
             CheckAndUpdateOverlapState();
-            yield return new WaitForSeconds(0.1f); // Check every 100ms
+            yield return OverlapCheckInterval; // Check every 100ms
         }
     }
 
@@ -339,8 +351,10 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             // Check if overlap would occur
             if (distance < minDistance)
             {
-                DebugLog(
-                    $"Overlap detected with {otherItem.GetFoodType()} - Distance: {distance:F2}, MinDistance: {minDistance:F2}");
+                // Runs every drag frame: only build the string when it will be logged
+                if (enableDebugLogs)
+                    DebugLog(
+                        $"Overlap detected with {otherItem.GetFoodType()} - Distance: {distance:F2}, MinDistance: {minDistance:F2}");
                 return true;
             }
         }
@@ -392,9 +406,20 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     // === DRAG FUNCTIONALITY ===
 
+    private bool EnsureCamera()
+    {
+        if (mainCamera == null) mainCamera = Camera.main;
+        return mainCamera != null;
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
         if (!isDraggingEnabled) return;
+        if (Time.timeScale == 0f) return; // paused during arrangement: ignore like ServeableItem does
+        if (activePointerId != NoPointer && eventData.pointerId != activePointerId) return; // second finger
+        if (!EnsureCamera()) return;
+
+        activePointerId = eventData.pointerId;
         isTouched = true;
         ApplyTouchedVisuals();
 
@@ -405,20 +430,33 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (!isDraggingEnabled) return;
+        if (eventData.pointerId != activePointerId) return;
         isTouched = false;
-        if (!isDragging) RestoreOriginalVisuals();
+
+        if (isDragging) return; // OnEndDrag (fired after OnPointerUp) finishes the drag and releases the pointer
+
+        activePointerId = NoPointer;
+        if (!isDraggingEnabled) return;
+
+        // A tap without a drag must keep the red overlap tint; the periodic check only
+        // repaints on state *changes*, so restoring unconditionally lost it until the next move.
+        if (hasOverlap) ApplyOverlapVisuals();
+        else RestoreOriginalVisuals();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!isDraggingEnabled) return;
+        if (eventData.pointerId != activePointerId) return; // pointer down was rejected (paused / second finger)
+        if (isDragging) return;
         StartDragging();
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         if (!isDraggingEnabled || !isDragging) return;
+        if (eventData.pointerId != activePointerId) return;
+        if (!EnsureCamera()) return;
 
         var worldPos = mainCamera.ScreenToWorldPoint(eventData.position);
         worldPos.z = originalZ;
@@ -466,8 +504,12 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!isDraggingEnabled) return;
-        StopDragging();
+        if (eventData.pointerId != activePointerId) return;
+        activePointerId = NoPointer;
+
+        // Not gated on isDraggingEnabled: if dragging was disabled mid-drag the drag was already
+        // finished in SetDraggingEnabled(false) and isDragging is false here.
+        if (isDragging) StopDragging();
     }
 
     private void StartDragging()
@@ -484,7 +526,6 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private void StopDragging()
     {
         isDragging = false;
-        hasOverlap = false;
         transform.localScale = originalScale;
 
         // Snap to last valid position
@@ -498,7 +539,11 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         // Resume wiggle if still enabled
         ResumeWiggle();
 
-        if (!isTouched) RestoreOriginalVisuals();
+        // Re-evaluate overlap where the item actually landed and paint it right away
+        hasOverlap = CheckOverlapAtPosition(finalPosition);
+        if (hasOverlap) ApplyOverlapVisuals();
+        else if (isTouched) ApplyTouchedVisuals();
+        else RestoreOriginalVisuals();
 
         // Final check after drag ends
         if (gamePhaseManager != null) gamePhaseManager.OnItemOverlapChanged();
@@ -526,6 +571,23 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     private void OnDisable()
     {
+        // Deactivated mid-drag: settle the item without StopDragging(), which would try to
+        // restart the wiggle coroutine on an object that is no longer active.
+        if (isDragging)
+        {
+            isDragging = false;
+            transform.localScale = originalScale;
+            var finalPosition = lastValidPosition;
+            finalPosition.z = originalZ;
+            transform.position = finalPosition;
+            UpdateOriginalPosition();
+        }
+
+        isTouched = false;
+        hasOverlap = false;
+        activePointerId = NoPointer;
+        RestoreOriginalVisuals();
+
         // ✅ Stop overlap check coroutine if running
         if (overlapCheckCoroutine != null)
         {

@@ -42,6 +42,12 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     // True when the current press turned into a hold-to-refill, so releasing must not serve.
     private bool pressConsumedByRefill;
 
+    // Pointer (finger) that owns the current press. Other fingers are ignored until it lifts,
+    // so a second tap cannot cancel a hold-to-refill in progress.
+    private const int NoPointer = int.MinValue;
+    private int activePointerId = NoPointer;
+    private int lastReleasedPointerId = NoPointer;
+
     private Coroutine shakeRoutine;
     private Vector3 restPosition;
 
@@ -83,6 +89,10 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     private void OnDisable()
     {
+        activePointerId = NoPointer;
+        lastReleasedPointerId = NoPointer;
+        pressConsumedByRefill = false;
+
         if (shakeRoutine != null)
         {
             StopCoroutine(shakeRoutine);
@@ -114,7 +124,10 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (activePointerId != NoPointer) return; // another finger already owns this item
+        activePointerId = eventData.pointerId;
         pressConsumedByRefill = false;
+
         if (!CanAcceptInput()) return;
 
         // Start hold-to-refill detection
@@ -123,6 +136,10 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (eventData.pointerId != activePointerId) return;
+        lastReleasedPointerId = activePointerId;
+        activePointerId = NoPointer;
+
         if (refillableItem == null) return;
 
         // Remember whether this press became a refill before the refill logic clears its state.
@@ -133,6 +150,10 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     // Fires only when the finger went down and came back up on this same item.
     public void OnPointerClick(PointerEventData eventData)
     {
+        // Only the finger that owned the press may serve. OnPointerUp has already cleared the owner,
+        // so compare against the id it recorded on the way down.
+        if (eventData.pointerId != lastReleasedPointerId) return;
+
         if (pressConsumedByRefill)
         {
             pressConsumedByRefill = false;

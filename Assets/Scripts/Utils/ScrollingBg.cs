@@ -11,6 +11,10 @@ public class ScrollingBg : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _image.uvRect = new Rect(_image.uvRect.position + new Vector2(_x, _y) * Time.deltaTime, _image.uvRect.size);
+        if (_image == null) return;
+
+        // Unscaled: the menu background must keep moving even if a paused timeScale leaked in.
+        var uv = _image.uvRect;
+        _image.uvRect = new Rect(uv.position + new Vector2(_x, _y) * Time.unscaledDeltaTime, uv.size);
     }
 }

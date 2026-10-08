@@ -12,6 +12,10 @@ public class KitchenSceneManager : MonoBehaviour
 
     private bool isKitchenOpen = false;
 
+    // In-flight unload from the last CloseKitchen; a second additive load while it runs would
+    // give two kitchen scenes (and two sets of timers re-attaching to the same cooldown keys).
+    private AsyncOperation unloadOperation;
+
     // Game colliders (not Kitchen layer) that were ENABLED when the kitchen opened and that we
     // disabled. Rebuilt on every OpenKitchen so objects spawned later are covered, and only these
     // are re-enabled on close so colliders that were deliberately off stay off.
@@ -40,6 +44,18 @@ public class KitchenSceneManager : MonoBehaviour
             return;
         }
 
+        if (unloadOperation != null && !unloadOperation.isDone)
+        {
+            DebugLog("Kitchen is still unloading - ignoring open");
+            return;
+        }
+
+        if (SceneManager.GetSceneByName(kitchenSceneName).isLoaded)
+        {
+            DebugLog("Kitchen scene already loaded - ignoring open");
+            return;
+        }
+
         DebugLog($"Opening kitchen scene: {kitchenSceneName}");
 
         // Disable game interactions (FAST if cached!)
@@ -65,7 +81,11 @@ public class KitchenSceneManager : MonoBehaviour
         // Re-enable game interactions (FAST!)
         EnableGameInteractions();
 
-        SceneManager.UnloadSceneAsync(kitchenSceneName);
+        // UnloadSceneAsync throws if the scene is not loaded (e.g. a Single scene load already
+        // removed it), so check first.
+        var kitchenScene = SceneManager.GetSceneByName(kitchenSceneName);
+        if (kitchenScene.isLoaded)
+            unloadOperation = SceneManager.UnloadSceneAsync(kitchenScene);
 
         isKitchenOpen = false;
 
@@ -159,6 +179,7 @@ public class KitchenSceneManager : MonoBehaviour
         if (mode == LoadSceneMode.Single)
         {
             isKitchenOpen = false;
+            unloadOperation = null;
             disabledGameColliders.Clear();
             disabledGameColliders3D.Clear();
             DebugLog($"Scene '{scene.name}' loaded — kitchen state and collider list reset.");

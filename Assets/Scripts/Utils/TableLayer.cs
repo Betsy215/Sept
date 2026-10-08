@@ -32,7 +32,17 @@ public class TableLayer : MonoBehaviour
     // Store initial scales for reference only - NO SCALING APPLIED
     private Dictionary<Transform, Vector3> initialItemScales = new();
 
-    private void Start()
+    // World-space size of the tablecloth after UpdateTableCloth (zero until computed)
+    private Vector2 clothWorldSize;
+
+    // Drag bounds in world space, computed directly so clamping never waits for the
+    // physics transform sync that Collider2D.bounds depends on.
+    private Bounds cachedTableBounds;
+    private bool hasCachedBounds;
+
+    // Awake (not Start) so the bounds exist before GamePhaseManager/LevelManager Start()
+    // load saved food positions and clamp them to the table.
+    private void Awake()
     {
         Initialize();
     }
@@ -85,6 +95,12 @@ public class TableLayer : MonoBehaviour
         if (tableClothSprite == null || mainCamera == null)
             return;
 
+        if (tableClothSprite.sprite == null)
+        {
+            Debug.LogError("TableLayer: tableClothSprite has no sprite assigned!");
+            return;
+        }
+
         // Get screen dimensions in world space
         var screenHeight = mainCamera.orthographicSize * 2f;
         var screenWidth = screenHeight * mainCamera.aspect;
@@ -116,6 +132,8 @@ public class TableLayer : MonoBehaviour
         newPosition.x = mainCamera.transform.position.x; // Center horizontally
         newPosition.y = screenBottom + spriteHalfHeight;
         tableClothSprite.transform.position = newPosition;
+
+        clothWorldSize = new Vector2(originalSpriteWidth * requiredScaleX, scaledSpriteHeight);
 
         if (showDebugInfo)
         {
@@ -159,39 +177,64 @@ public class TableLayer : MonoBehaviour
     {
         if (tableBounds == null || tableClothSprite == null || mainCamera == null) return;
 
-        // Keep tablecloth dimensions as-is for visual reference
+        // Screen rect in world space
         var screenHeight = mainCamera.orthographicSize * 2f;
         var screenWidth = screenHeight * mainCamera.aspect;
-        var tableclothHeight = screenHeight * screenCoveragePercent;
+        var cameraPos = mainCamera.transform.position;
+        var screenLeft = cameraPos.x - screenWidth / 2f;
+        var screenBottom = cameraPos.y - mainCamera.orthographicSize;
 
-        // SAFE AREA CALCULATION FOR BOUNDS
-        // Get Unity's safe area (handles notches, gestures automatically)
+        // Tablecloth rect in world space (fallback to renderer bounds if UpdateTableCloth bailed out)
+        var clothCenter = tableClothSprite.transform.position;
+        var clothSize = clothWorldSize.sqrMagnitude > 0f ? clothWorldSize : (Vector2)tableClothSprite.bounds.size;
+        var clothMinX = clothCenter.x - clothSize.x / 2f;
+        var clothMaxX = clothCenter.x + clothSize.x / 2f;
+        var clothMinY = clothCenter.y - clothSize.y / 2f;
+        var clothMaxY = clothCenter.y + clothSize.y / 2f;
+
+        // Safe area converted to the same world space. Screen.safeArea is a pixel rect with its
+        // origin at the bottom-left, so on a notched iPhone safeArea.y is the home-indicator inset
+        // and (height - yMax) the notch inset. The old code scaled the table height by
+        // safeArea.height / Screen.height, which mixed both insets into one ratio and ignored
+        // where they actually are; this offsets each edge by its real inset instead.
         var safeArea = Screen.safeArea;
-        var safeWidthRatio = safeArea.width / Screen.width;
-        var safeHeightRatio = safeArea.height / Screen.height;
+        var unitsPerPixelX = screenWidth / Mathf.Max(1, Screen.width);
+        var unitsPerPixelY = screenHeight / Mathf.Max(1, Screen.height);
+        var safeMinX = screenLeft + safeArea.xMin * unitsPerPixelX;
+        var safeMaxX = screenLeft + safeArea.xMax * unitsPerPixelX;
+        var safeMinY = screenBottom + safeArea.yMin * unitsPerPixelY;
+        var safeMaxY = screenBottom + safeArea.yMax * unitsPerPixelY;
 
-        // Calculate safe bounds dimensions
-        var safeBoundsWidth = screenWidth * safeWidthRatio;
-        var safeBoundsHeight = tableclothHeight * safeHeightRatio;
+        // Interactive area = tablecloth ∩ safe area, inset by the comfort padding
+        var minX = Mathf.Max(clothMinX, safeMinX) + tableBoundsPadding;
+        var maxX = Mathf.Min(clothMaxX, safeMaxX) - tableBoundsPadding;
+        var minY = Mathf.Max(clothMinY, safeMinY) + tableBoundsPadding;
+        var maxY = Mathf.Min(clothMaxY, safeMaxY) - tableBoundsPadding;
 
-        // Add additional padding for comfort (your existing padding)
-        var boundsWidth = safeBoundsWidth - tableBoundsPadding * 2f;
-        var boundsHeight = safeBoundsHeight - tableBoundsPadding * 2f;
+        // Degenerate (padding larger than the available area): collapse to the centre line
+        if (maxX < minX) minX = maxX = (minX + maxX) / 2f;
+        if (maxY < minY) minY = maxY = (minY + maxY) / 2f;
 
-        // Position bounds to align top edges
-        var boundsPosition = tableClothSprite.transform.position;
-        boundsPosition.y += (tableClothSprite.bounds.size.y - boundsHeight) / 2f; // Align top edges
+        var center = new Vector3((minX + maxX) / 2f, (minY + maxY) / 2f, tableBounds.transform.position.z);
+        var size = new Vector2(maxX - minX, maxY - minY);
 
-        tableBounds.transform.position = boundsPosition;
-        tableBounds.size = new Vector2(boundsWidth, boundsHeight);
+        // Keep the collider in sync for anything that still reads it (gizmos, physics queries)
+        tableBounds.offset = Vector2.zero;
+        tableBounds.transform.position = center;
+        var scale = tableBounds.transform.lossyScale;
+        tableBounds.size = new Vector2(
+            size.x / (Mathf.Approximately(scale.x, 0f) ? 1f : Mathf.Abs(scale.x)),
+            size.y / (Mathf.Approximately(scale.y, 0f) ? 1f : Mathf.Abs(scale.y)));
+
+        cachedTableBounds = new Bounds(center, new Vector3(size.x, size.y, 0f));
+        hasCachedBounds = true;
 
         if (showDebugInfo)
         {
-            Debug.Log($"Screen safe area: {safeArea}");
-            Debug.Log($"Safe width ratio: {safeWidthRatio:F3}, Safe height ratio: {safeHeightRatio:F3}");
-            Debug.Log($"Tablecloth size: {screenWidth:F2} x {tableclothHeight:F2} (visual)");
-            Debug.Log($"Bounds size: {boundsWidth:F2} x {boundsHeight:F2} (interactive)");
-            Debug.Log($"Top edges aligned: Tablecloth and bounds both at Y = {tableClothSprite.bounds.max.y:F2}");
+            Debug.Log($"Screen safe area: {safeArea} (screen {Screen.width}x{Screen.height})");
+            Debug.Log($"Safe area world rect: x [{safeMinX:F2}, {safeMaxX:F2}] y [{safeMinY:F2}, {safeMaxY:F2}]");
+            Debug.Log($"Tablecloth size: {clothSize.x:F2} x {clothSize.y:F2} (visual)");
+            Debug.Log($"Bounds: center {center} size {size.x:F2} x {size.y:F2} (interactive)");
         }
     }
 
@@ -230,6 +273,13 @@ public class TableLayer : MonoBehaviour
     /// </summary>
     public bool IsPositionOnTable(Vector3 worldPosition)
     {
+        if (hasCachedBounds)
+        {
+            var b = cachedTableBounds;
+            return worldPosition.x >= b.min.x && worldPosition.x <= b.max.x &&
+                   worldPosition.y >= b.min.y && worldPosition.y <= b.max.y;
+        }
+
         if (tableBounds == null) return false;
         return tableBounds.bounds.Contains(worldPosition);
     }
@@ -239,9 +289,9 @@ public class TableLayer : MonoBehaviour
     /// </summary>
     public Vector3 ClampToTableBounds(Vector3 worldPosition)
     {
-        if (tableBounds == null) return worldPosition;
+        if (!hasCachedBounds && tableBounds == null) return worldPosition;
 
-        var bounds = tableBounds.bounds;
+        var bounds = hasCachedBounds ? cachedTableBounds : tableBounds.bounds;
         return new Vector3(
             Mathf.Clamp(worldPosition.x, bounds.min.x, bounds.max.x),
             Mathf.Clamp(worldPosition.y, bounds.min.y, bounds.max.y),

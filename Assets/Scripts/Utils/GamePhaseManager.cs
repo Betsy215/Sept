@@ -106,8 +106,9 @@ public class GamePhaseManager : MonoBehaviour
 
         var currentLevel = GetCurrentLevel();
 
-        // Calculate message index with rotation based on array length
-        var messageIndex = (currentLevel - 1) % levelTutorialMessages.Length;
+        // Calculate message index with rotation based on array length (non-negative modulo)
+        var count = levelTutorialMessages.Length;
+        var messageIndex = ((currentLevel - 1) % count + count) % count;
 
         // Get the message and format it with the current level number
         var tutorialMessage = string.Format(levelTutorialMessages[messageIndex], currentLevel);
@@ -241,8 +242,11 @@ public class GamePhaseManager : MonoBehaviour
 
     public void OnDoneButtonClicked()
     {
-        tutorialPanel.SetActive(false);
-        SessionManager.Instance.UpdateFoodPositions(allFoodItems);
+        // A second tap in the same frame (or a double-wired button) must not start play twice
+        if (currentPhase == GamePhase.PLAYING) return;
+
+        if (tutorialPanel != null) tutorialPanel.SetActive(false);
+        if (SessionManager.Instance != null) SessionManager.Instance.UpdateFoodPositions(allFoodItems);
         StartPlayPhase();
     }
 
@@ -275,7 +279,14 @@ public class GamePhaseManager : MonoBehaviour
                 {
                     // Preserve the original Z position for layering
                     var originalZ = item.transform.position.z;
-                    item.transform.position = savedPos.ToVector3(originalZ);
+                    var position = savedPos.ToVector3(originalZ);
+
+                    // Positions were saved on whatever device/safe area the player had then;
+                    // keep them inside the current table's drag bounds.
+                    if (tableLayer != null)
+                        position = tableLayer.ClampToTableBounds(position);
+
+                    item.transform.position = position;
 
                     DebugLog($"Loaded saved position for {item.GetFoodType()}: ({savedPos.x:F2}, {savedPos.y:F2})");
                 }

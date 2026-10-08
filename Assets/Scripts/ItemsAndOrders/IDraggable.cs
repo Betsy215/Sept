@@ -23,7 +23,13 @@ public interface IDraggable
 
     void InitializeDragging(TableLayer tableLayer, GamePhaseManager gamePhaseManager, ServeableItem[] allFoodItems)
     {
-        var draggable = ((MonoBehaviour)this).GetComponent<DraggableFood>();
-        if (draggable != null) draggable.Initialize(tableLayer, gamePhaseManager, allFoodItems);
+        // DraggableFood is added at runtime (never in a scene or prefab). GamePhaseManager calls
+        // InitializeDragging before SetDraggingEnabled, so create the component here too; otherwise the
+        // first arrangement phase ran with no table bounds and no overlap list.
+        var gameObject = ((MonoBehaviour)this).gameObject;
+        var draggable = gameObject.GetComponent<DraggableFood>();
+        if (draggable == null) draggable = gameObject.AddComponent<DraggableFood>();
+
+        draggable.Initialize(tableLayer, gamePhaseManager, allFoodItems);
     }
 }

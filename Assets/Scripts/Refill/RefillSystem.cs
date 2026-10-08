@@ -66,6 +66,9 @@ public class RefillSystem : MonoBehaviour
         {
             refillableItems.Add(item);
             item.Initialize(this);
+            // Items that register after the phase changed (delayed rescan, late Start) must still
+            // learn the current phase or they can never be served or refilled.
+            item.SetGameplayMode(isGameplayMode);
             DebugLog($"Registered refillable item: {item.name}");
         }
     }
@@ -95,7 +98,8 @@ public class RefillSystem : MonoBehaviour
         if (!isGameplayMode) return;
 
         foreach (var item in refillableItems)
-            if (item != null && item.GetFoodType() == foodType)
+            if (item != null && string.Equals(item.GetFoodType()?.Trim(), foodType?.Trim(),
+                    System.StringComparison.OrdinalIgnoreCase))
             {
                 item.OnItemServed(wasCorrect);
                 break;

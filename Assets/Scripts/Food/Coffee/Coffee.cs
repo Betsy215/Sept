@@ -14,28 +14,47 @@ public class Coffee : MonoBehaviour, IUpgradeable
 
     private void Start()
     {
-        // Get components
-        refillableItem = GetComponent<RefillableItem>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        EnsureComponents();
 
         if (refillableItem != null)
-            // Subscribe to count change events
+        {
+            // Subscribe to count change events (never twice: SetUpgradeLevel may have run first)
+            refillableItem.OnCountChanged -= HandleCountChanged;
             refillableItem.OnCountChanged += HandleCountChanged;
+        }
         else
+        {
             Debug.LogError("Coffee: RefillableItem component not found!");
+        }
+
+        // If LevelManager has not applied an upgrade level yet, show the level-1 sprite set now
+        // instead of leaving the cup sprite frozen until the first count change.
+        if (currentSpriteArray == null)
+            SetupSpriteArrayForUpgradeLevel();
+        if (refillableItem != null)
+            HandleCountChanged(refillableItem.GetCurrentCount(), refillableItem.GetMaxCount());
 
         Debug.Log($"Coffee: Start() - Level: {currentUpgradeLevel}");
     }
 
+    // Start order between LevelManager and this component is undefined, so look the
+    // components up lazily rather than relying on Start having run first.
+    private void EnsureComponents()
+    {
+        if (refillableItem == null) refillableItem = GetComponent<RefillableItem>();
+        if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
     public void SetUpgradeLevel(int level)
     {
-        currentUpgradeLevel = level;
-        Debug.Log($"Coffee: Upgrade level set to {level}");
+        currentUpgradeLevel = Mathf.Max(1, level);
+        Debug.Log($"Coffee: Upgrade level set to {currentUpgradeLevel}");
         ApplyUpgradeLevel();
     }
 
     private void ApplyUpgradeLevel()
     {
+        EnsureComponents();
         if (refillableItem == null) return;
 
         var maxCount = currentUpgradeLevel == 1 ? 2 : 3;
@@ -71,6 +90,12 @@ public class Coffee : MonoBehaviour, IUpgradeable
     private void ValidateSpriteArrays(int maxCount)
     {
         // Validate sprites
+        if (currentSpriteArray == null)
+        {
+            Debug.LogError("Coffee: Sprite array not assigned");
+            return;
+        }
+
         for (var i = 0; i <= maxCount; i++)
             if (i >= currentSpriteArray.Length || currentSpriteArray[i] == null)
                 Debug.LogError($"Coffee: Missing sprite at index {i}");
@@ -91,7 +116,7 @@ public class Coffee : MonoBehaviour, IUpgradeable
 
     private void UpdateCoffeeSprite(int currentCount, int maxCount)
     {
-        if (spriteRenderer == null || currentSpriteArray == null) return;
+        if (spriteRenderer == null || currentSpriteArray == null || currentSpriteArray.Length == 0) return;
 
         // Get the sprite index (0, 1, 2 for level 1; 0, 1, 2, 3 for level 2)
         var spriteIndex = Mathf.Clamp(currentCount, 0, currentSpriteArray.Length - 1);

@@ -62,6 +62,7 @@ public abstract class KitchenItemWithTimer : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (Time.timeScale == 0f) return; // paused: UI taps still arrive, gameplay must not
         if (eventData.pointerCurrentRaycast.gameObject != gameObject) return;
         if (CooldownRegistry.IsOnCooldown(GetCooldownKey(), respawnDelay)) return;
 
@@ -176,6 +177,12 @@ public static class CooldownRegistry
     {
         pickTimes.Remove(key);
     }
+
+    /// Forget every cooldown. Called when a new game starts so ovens from the previous game start empty.
+    public static void ClearAll()
+    {
+        pickTimes.Clear();
+    }
 }
 
 /// <summary>
@@ -188,6 +195,31 @@ public class KitchenTimerHelper : MonoBehaviour
 {
     private readonly System.Collections.Generic.Dictionary<string, Coroutine> running = new();
     private readonly System.Collections.Generic.Dictionary<string, System.Action> callbacks = new();
+
+    // Every live helper, so a new game can cancel all timers at once
+    private static readonly System.Collections.Generic.List<KitchenTimerHelper> instances = new();
+
+    private void Awake()
+    {
+        instances.Add(this);
+    }
+
+    private void OnDestroy()
+    {
+        instances.Remove(this);
+    }
+
+    /// Stop every running timer on every helper and drop their callbacks. Used when a new game starts.
+    public static void CancelAll()
+    {
+        foreach (var helper in instances.ToArray())
+        {
+            if (helper == null) continue;
+            helper.StopAllCoroutines();
+            helper.running.Clear();
+            helper.callbacks.Clear();
+        }
+    }
 
     /// <summary>
     /// Find the persistent helper GameObject with this name, or create it.
