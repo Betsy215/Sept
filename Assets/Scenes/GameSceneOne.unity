@@ -4615,6 +4615,10 @@ MonoBehaviour:
     points: 35
   - itemType: Log Cake
     points: 35
+  - itemType: Cake
+    points: 35
+  - itemType: Choux
+    points: 35
   enableScorePopups: 1
   gameCanvas: {fileID: 1907019807}
   popupFont: {fileID: 11400000, guid: 0361640937a4447a09258110a454af31, type: 2}
