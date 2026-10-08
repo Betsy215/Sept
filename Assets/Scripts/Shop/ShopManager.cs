@@ -61,42 +61,29 @@ public class ShopManager : MonoBehaviour
 
     private void SetupButtonListeners()
     {
-        if (confirmPurchaseButton != null)
-        {
-            confirmPurchaseButton.onClick.RemoveAllListeners();
-            confirmPurchaseButton.onClick.AddListener(ConfirmPurchase);
-        }
-
-        if (cancelPurchaseButton != null)
-        {
-            cancelPurchaseButton.onClick.RemoveAllListeners();
-            cancelPurchaseButton.onClick.AddListener(CancelPurchase);
-        }
-
-        if (scrollUpButton != null)
-        {
-            scrollUpButton.onClick.RemoveAllListeners();
-            scrollUpButton.onClick.AddListener(ScrollUp);
-        }
-
-        if (scrollDownButton != null)
-        {
-            scrollDownButton.onClick.RemoveAllListeners();
-            scrollDownButton.onClick.AddListener(ScrollDown);
-        }
-
-        if (nextLevelButton != null)
-        {
-            nextLevelButton.onClick.RemoveAllListeners();
-            nextLevelButton.onClick.AddListener(OnNextLevelClicked);
-        }
-
-        if (mainMenuButton != null)
-        {
-            mainMenuButton.onClick.RemoveAllListeners();
-            mainMenuButton.onClick.AddListener(OnMainMenuClicked);
-        }
+        Wire(confirmPurchaseButton, ConfirmPurchase);
+        Wire(cancelPurchaseButton, CancelPurchase);
+        Wire(scrollUpButton, ScrollUp);
+        Wire(scrollDownButton, ScrollDown);
+        Wire(nextLevelButton, OnNextLevelClicked);
+        Wire(mainMenuButton, OnMainMenuClicked);
     }
+
+    /// Adds a runtime listener only when the button has no persistent (Inspector) call.
+    /// RemoveAllListeners never removes Inspector calls, so Next Level, Purchase and Cancel
+    /// used to fire twice per tap in the Shop scene.
+    private static void Wire(Button button, UnityEngine.Events.UnityAction action)
+    {
+        if (button == null) return;
+        button.onClick.RemoveAllListeners();
+        if (button.onClick.GetPersistentEventCount() == 0)
+            button.onClick.AddListener(action);
+    }
+
+    /// True while the purchase confirmation popup is showing. The popup does not cover the
+    /// bottom buttons, so they check this before acting.
+    public bool IsPurchasePopupOpen =>
+        purchaseConfirmationPopup != null && purchaseConfirmationPopup.activeInHierarchy;
 
     private ShopItemController[] GetAllShopItems()
     {
@@ -339,6 +326,7 @@ public class ShopManager : MonoBehaviour
 
     public void LoadNextGameLevel()
     {
+        if (IsPurchasePopupOpen) return;
         AudioManager.Instance.PlayGameplayMusic();
         SceneTransitionManager.Instance.TransitionToScene("GameSceneOne");
     }

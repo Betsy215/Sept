@@ -26,6 +26,19 @@ public class LevelData : ScriptableObject
     public bool useSpecificFoodTypes = false;
     public float difficultyMultiplier = 1.0f;
     
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        ordersPerLevel = Mathf.Max(1, ordersPerLevel);
+        orderDisplayTime = Mathf.Max(0.5f, orderDisplayTime);
+        minOrderItems = Mathf.Max(1, minOrderItems);
+        maxOrderItems = Mathf.Max(minOrderItems, maxOrderItems);
+
+        if (starThreshold1 > starThreshold2 || starThreshold2 > starThreshold3)
+            Debug.LogWarning($"{name}: star thresholds should rise ({starThreshold1}, {starThreshold2}, {starThreshold3})", this);
+    }
+#endif
+
     public int GetStarsEarned(float currentScore)
     {
         if (currentScore >= starThreshold3) return 3;

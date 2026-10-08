@@ -126,6 +126,7 @@ public class RewardedAdButton : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
     private void OnButtonClicked()
     {
         if (!_adReady) return;
+        if (_shopManager != null && _shopManager.IsPurchasePopupOpen) return;
         _adReady = false;
         SetButtonReady(false, "Showing ad...");
         Advertisement.Show(_adUnitId, this);

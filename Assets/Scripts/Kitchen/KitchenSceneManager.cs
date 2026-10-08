@@ -38,6 +38,8 @@ public class KitchenSceneManager : MonoBehaviour
 
     public void OpenKitchen()
     {
+        if (Time.timeScale == 0f) return; // paused: the kitchen button is still tappable under the pause panel
+
         if (isKitchenOpen)
         {
             DebugLog("Kitchen already open");

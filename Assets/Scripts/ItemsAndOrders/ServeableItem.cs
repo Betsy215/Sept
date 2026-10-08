@@ -84,6 +84,13 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         refillableItem = GetComponent<RefillableItem>();
         refillSystem = FindObjectOfType<RefillSystem>();
 
+        // The scene leaves this unassigned on every item; LevelManager knows the popup canvas.
+        if (popupCanvas == null)
+        {
+            var levelManager = FindObjectOfType<LevelManager>();
+            if (levelManager != null) popupCanvas = levelManager.popupCanvas;
+        }
+
         DebugLog($"ServeableItem {foodType} initialized successfully");
     }
 
