@@ -39,7 +39,7 @@ Everything else is per scene.
 | Table | `Utils/TableLayer.cs` | Sizes the table to the camera and safe area; defines drag bounds. |
 | Customers | `Customer/CustomerManager.cs`, `CustomerController.cs`, `*Customer.cs` | Spawns one customer at a time from the purchased characters, plays walk-in and walk-out, and asks OrderSystem for an order. Each customer type can tweak order size. |
 | Orders | `ItemsAndOrders/OrderSystem.cs` | Builds an order of 1 to 4 purchased foods, shows it in a speech bubble with a countdown, accepts served items, completes or expires the order. |
-| Food items | `ItemsAndOrders/ServeableItem.cs`, `DraggableFood.cs`, `Refill/RefillableItem.cs`, `Refill/RefillSystem.cs` | A tap serves; a 0.3 s hold refills; dragging only in arrangement. Stock counts and out-of-stock state. |
+| Food items | `ItemsAndOrders/ServeableItem.cs`, `DraggableFood.cs`, `Refill/RefillableItem.cs`, `Refill/RefillSystem.cs` | A tap serves; dragging only in arrangement. A 0.3 s hold refills, but only Melon has that enabled and Melon is inactive, so in practice stock comes from the kitchen. See Docs/maintenance.md for the per-item catalogue. Stock counts and out-of-stock state. |
 | Scoring | `Scoring/ScoreManager.cs`, `StarProgressBar.cs`, `SimpleScorePopup.cs` | Points per item plus a time-based tip per order, star thresholds per level, popups. Money goes to SessionManager when an order completes or expires. |
 | Kitchen | `Kitchen/*`, `Food/FoodInKitchen/*` | Ovens and machines with timers that refill stock; timers survive closing the kitchen via a persistent helper. |
 

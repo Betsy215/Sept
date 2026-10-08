@@ -16,7 +16,7 @@ Notes for whoever maintains this project next, including Claude in a future sess
 
 ## Scoring
 
-Per order: sum of item points, plus a tip of `remainingSeconds x 10` rounded to cents. Item points (ScoreManager in GameSceneOne): Coffee 10, Bread 15, Apple 15, Juice 20, Melon 25, Pie 30, Mont Blanc 35, Log Cake 35. Expired orders still pay item points but no tip. Stars come from `LevelData` thresholds against the level score. Money goes to `SessionManager` at order completion or expiry; Restart rolls money back to the level-start snapshot.
+Per order: sum of item points, plus a tip of `remainingSeconds x 10` rounded to cents. Item points (ScoreManager in GameSceneOne): Coffee 10, Bread 15, Apple 15, Juice 20, Melon 25, Cake 35, Choux 35. The table also holds Pie 30, Mont Blanc 35 and Log Cake 35, which match no item in the game and look like the old names for Cake and Choux; Cake and Choux had no entry at all until 7 October, so they scored 0. The fallback for an unlisted food is 0 points, so any new food must be added to this table. Expired orders still pay item points but no tip. Stars come from `LevelData` thresholds against the level score. Money goes to `SessionManager` at order completion or expiry; Restart rolls money back to the level-start snapshot.
 
 Level tuning after 7 October (orders, display seconds, items, stars):
 
@@ -64,7 +64,29 @@ Two refill paths exist:
 1. **Hold-to-refill** on the table: press for 0.3 s and keep holding; a count is added every `refillTimePerCount` seconds. Only enabled on Melon in the scene. A hold that reaches the maximum stops refilling but still counts as a hold, so lifting the finger does not serve.
 2. **Kitchen**: ovens and machines in KitchenScene (`OvenKitchenBase`, `KitchenItemWithTimer` subclasses) run a bake or respawn timer on a persistent `KitchenTimerHelper` keyed by the item, so closing the kitchen does not lose the timer. Completion calls the matching table item's refill. `CooldownRegistry` is static and keyed the same way. A new game clears both. The coffee machine consumes beans from `BeanContainer` and brews one or two cups depending on its upgrade level.
 
-Per-item behaviour (counts and timers are scene values on each `RefillableItem` and kitchen object, not in code) has not yet been catalogued item by item. That review is the open task before changing hold-to-refill settings.
+### Per-item catalogue (verified 7 October 2026)
+
+Effective values: `customMaxCount` 0 means the `RefillSystem` default of 5; `customRefillTime` 0 or -1 means 1 second; `customStartingCount` -1 means start full.
+
+| Item | Unlock | Max | Hold? | Refill source | Delay | Sprites vs max | Points |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Bread | owned from start | 9 | no | kitchen `oven2` bake, refills to full | 8 s | 4 sprites, 1 per 3 counts, exact | 15 |
+| Coffee | owned from start | 2, or 3 once upgraded | no | table coffee machine, 1 bean per brew, 1 cup (2 when upgraded) | animation | 3 sprites, 4 when upgraded, exact | 10 |
+| Juice | shop $150 | 4 | no | kitchen `juice` tap, refills to full | instant, no cooldown | 5 sprites, 1 per count, exact | 20 |
+| Apple | shop $350 | 8 | no | kitchen `apples` tap, refills to full | instant, 8 s before re-tap | 5 sprites, 1 per 2 counts | 15 |
+| Choux | shop $750 | 4 | no | kitchen `oven1` bake, refills to full | 10 s | 5 sprites, exact | 35 (was 0, fixed) |
+| Cake | shop $750 | 6 | no | kitchen `oven3` bake, refills to full | 15 s | 7 sprites, exact | 35 (was 0, fixed) |
+| Melon | not in the shop | 3 | **yes** | hold only, no kitchen object | 1.5 s per count | no sprite script | 25 |
+
+Coffee beans come from the kitchen `coffee` object: tapping refills beans to 6 instantly with no cooldown. `BeanContainer` resets each level.
+
+**No playable item can run out permanently.** Every one has an always-available source, and each level starts its items full.
+
+**Melon is a dead object.** It is inactive in the scene, absent from `LevelManager.serveableItems`, absent from `OrderSystem.availableFoods`, and not sold in the shop, yet it is the only item with `enableHoldToRefill` on. So hold-to-refill ships in the game but no player can reach it. The code default tutorial message "Hold on item to refill" is overridden in the scene by two messages that never mention holding, so nothing tells players about it either.
+
+**Recommendation: do not enable hold-to-refill more widely.** It is mechanically safe (counts clamp, a pending bake cannot double-fill) but it would be redundant with the kitchen on Bread, Apple, Juice, Choux and Cake, and on Coffee it would bypass the bean and machine loop entirely. Enabling it would also need: a `RefillBar` child with `Fill` and `Bar` sprites on each item (none exist, so holds give no visual feedback), a deliberate `customRefillTime` per item (the 1 second default outpaces an 8 to 15 second bake), a tutorial message restored in the scene, and a decision on whether Melon becomes a real item or is deleted.
+
+**Kitchen timers run on real time** (`CooldownRegistry` uses `realtimeSinceStartup`), so bakes continue while the game is paused and while the player is in the Shop. A bake that completes in the Shop looks for its table item, finds nothing, and logs an error; the refill is lost. This has no player impact because every level starts its items full.
 
 ## Ads
 

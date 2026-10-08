@@ -19,6 +19,8 @@ Status as of 7 October 2026. Done items are kept for a while so the history is v
 - [x] Deleted 83 unreferenced images, audio clips, prefabs and template leftovers (10.9 MB)
 - [x] Five 2048 px Choux sprites capped at 1024 px (about 7 MB off the app); music clips set to streaming at 70 percent quality (about 10 MB off the app, about 80 MB less RAM)
 - [x] Stale SampleScene and Menu entries removed from Build Settings; level names no longer have a double space
+- [x] Cake and Choux awarded 0 points when served (missing from the ScoreManager points table, fallback 0). Now 35 each
+- [x] Refill catalogue completed for every food item; recommendation recorded in Docs/maintenance.md (do not widen hold-to-refill)
 - [x] Days 10 to 14 re-tuned: orders 9, 9, 10, 10, 11 with star thresholds rising 50 per day from 450/550/650 to 650/750/850
 - [x] iOS build number set to 1 in Player Settings (bundle ID was already set)
 - [x] Second pass (7 October, evening): refill holds cannot serve or be hijacked by a second finger; coffee upgrades apply regardless of start order; the coffee machine uses EventSystem clicks and respects pause; kitchen open/close guarded against double taps; new game clears kitchen timers; drags owned by one finger and ended on phase switch; table bounds use the real safe-area rect; scene transitions always reset; shop buttons no longer fire twice; purchase popup blocks the buttons beneath it; camera far clip moved off the UI plane
@@ -26,7 +28,6 @@ Status as of 7 October 2026. Done items are kept for a while so the history is v
 ## In progress
 
 - [ ] **Interstitial ads between level and Shop.** Code is in (`InterstitialAdService`, called from `LevelManager.LoadNextLevel`), shows after every level by default. Needs the `Interstitial_iOS` ad unit created on the Unity Ads dashboard, then a device test: finish Day 1, tap Next Level, the ad plays, the Shop opens after it or after skip. Also confirm the Shop opens with no delay when offline.
-- [ ] **Refill review.** Catalogue each food item's counts, timers, hold-to-refill flag and kitchen source (see Docs/maintenance.md, Refill system) before deciding whether hold-to-refill should be enabled on more than Melon.
 
 ## Leave alone (owner's decision, 7 October 2026)
 
@@ -40,7 +41,9 @@ The game is live and working. These were reviewed and the owner chose not to cha
 - Debug flag defaults: leave.
 - Buttons under the notch and home indicator: leave for now. `SafeAreaFitter` exists if this changes.
 - AudioManager prefab vs scene overrides: fine, not every clip is meant to be wired.
-- Hold-to-refill enabled only on Melon: do not change until each food item's refill behaviour has been reviewed and understood in detail (see Docs/maintenance.md, refill notes).
+- Hold-to-refill enabled only on Melon, and Melon is an inactive object no player can reach: reviewed 7 October, recommendation is to leave it (redundant with the kitchen, and it would need refill-bar art and tutorial text). Details in Docs/maintenance.md.
+- Orphan entries Pie, Mont Blanc and Log Cake in the ScoreManager points table: harmless, no item uses those names.
+- Kitchen bakes continuing through pause and into the Shop: logs an error when a bake lands in the Shop, but no player impact because levels start full.
 - Small scene leftovers (missing script on MainMenu Canvas, dead Inspector call on kitchen back button, silent pause button, four unreferenced scripts): leave unless they break something.
 - Upgrade shop items are one-shot by design (verified: see maintenance notes).
 
@@ -67,7 +70,6 @@ Found by the scene wiring audit. Each is a few clicks in the Inspector.
 - [ ] **Apply the AudioManager overrides to the prefab.** The prefab asset has only seven clips; shop music, arrangement music, the gameplay playlist, walk-in, wrong-item, money sounds and volume 0.4 exist only as overrides on the MainMenu scene instance. Select that instance, Overrides, Apply All. Until then, GameSceneOne launched directly in the editor plays no music.
 - [ ] **Main menu music and level-complete music are set to None** on the MainMenu scene instance (see Needs a decision).
 - [ ] **Missing script on MainMenu's Canvas.** A disabled component with an unknown script GUID sits on Main Camera/Canvas. Remove it (Inspector shows "Missing (Mono Script)").
-- [ ] **Hold-to-refill is off on every item except Melon**, and no refill bar objects exist, so the "Hold on item to refill" tutorial text is wrong for most foods. Either enable Enable Hold To Refill on each RefillableItem and add a RefillBar child, or change the tutorial text.
 - [ ] **Kitchen back button has a dead Inspector call** (target None). Harmless; the code wires it. Remove the entry for tidiness.
 - [ ] **PauseButton has no AudioSource or clips**, so it is silent. Add a source and the compress/uncompress clips if you want the click sound.
 - [ ] **Tablecloth sits flush to the screen bottom**, under the home indicator. The drag bounds now respect the safe area, but the cloth art does not move. Lift it if you want a visible margin.
