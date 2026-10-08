@@ -19,6 +19,11 @@ Status as of 7 October 2026. Done items are kept for a while so the history is v
 - [x] Deleted 83 unreferenced images, audio clips, prefabs and template leftovers (10.9 MB)
 - [x] Five 2048 px Choux sprites capped at 1024 px (about 7 MB off the app); music clips set to streaming at 70 percent quality (about 10 MB off the app, about 80 MB less RAM)
 - [x] Stale SampleScene and Menu entries removed from Build Settings; level names no longer have a double space
+- [x] Oven centre taps did nothing: each oven's bread-note sticker caught the tap and the oven rejected it (live since March). Fixed in code
+- [x] Finishing Day 14 and leaving the popup early left a broken save (Continue then looped Day 1 with purchases failing). The session now completes when the last order ends; old broken saves are treated as finished
+- [x] Pause blocked during the 3 s between the last order and the level-complete popup
+- [x] GamePhaseManager food list no longer depends on Start order (a wrong order would have made every tap fail for a day)
+- [x] Tracking (ATT) prompt now waits for the app to be active; it never showed in the March build and would have shown late with the new plist key
 - [x] Cake and Choux awarded 0 points when served (missing from the ScoreManager points table, fallback 0). Now 35 each
 - [x] Refill catalogue completed for every food item; recommendation recorded in Docs/maintenance.md (do not widen hold-to-refill)
 - [x] Days 10 to 14 re-tuned: orders 9, 9, 10, 10, 11 with star thresholds rising 50 per day from 450/550/650 to 650/750/850
@@ -35,7 +40,7 @@ The game is live and working. These were reviewed and the owner chose not to cha
 
 - Main menu music set to None in the MainMenu scene (silent menu is accepted).
 - Unused packages (Visual Scripting, XR Management, Mobile feature set, 2D feature set extras, Timeline): keep, they may be needed for the Xcode export.
-- `Assets/Plugins/iOS/NSUserTrackingUsageDescription.plist`: leave.
+- `Assets/Plugins/iOS/NSUserTrackingUsageDescription.plist`: leave. (It never reaches the Xcode export at all; harmless.)
 - Choux sprite cropping: cannot be tested on device yet; stays below under Someday.
 - MP3 sound effects re-encoded to Vorbis: fine as is.
 - Debug flag defaults: leave.
@@ -47,7 +52,7 @@ The game is live and working. These were reviewed and the owner chose not to cha
 - Small scene leftovers (missing script on MainMenu Canvas, dead Inspector call on kitchen back button, silent pause button, four unreferenced scripts): leave unless they break something.
 - Upgrade shop items are one-shot by design (verified: see maintenance notes).
 
-## Packages to remove (do this in Unity, Window > Package Manager)
+## Unused packages (reference only: the owner chose to keep them, see Leave alone)
 
 Removing editor-only packages changes nothing in the app; the first three do shrink the iOS build.
 
@@ -62,7 +67,7 @@ Removing editor-only packages changes nothing in the app; the first three do shr
 
 Keep: Unity Ads, Unity Ads iOS Support, TextMeshPro, uGUI, 2D Pixel Perfect, and `Assets/MobileDependencyResolver` (it generates the Podfile that pulls the Unity Ads framework into Xcode).
 
-## Scene edits needed in the Unity Editor (code cannot do these)
+## Scene edits found by the audit (reference: most are on the Leave alone list)
 
 Found by the scene wiring audit. Each is a few clicks in the Inspector.
 
@@ -84,11 +89,37 @@ Found by the scene wiring audit. Each is a few clicks in the Inspector.
 - [ ] Food, character and upgrade names are string-matched across scripts, scene data and shop items. A rename in one place breaks purchases silently. A shared `FoodType` constants class would make this safer.
 - [ ] Git history is 722 MB because the Library folder was committed early on. Only worth rewriting if you clone the repo again.
 
+## Known issues, documented and not fixed
+
+Found in the deep review of 7 to 8 October. Each is functional but minor, or a judgement call. Details and file:line references are in Docs/systems.
+
+- Double-tapping Next Level while an interstitial is pending can run the Shop transition twice (the Shop slide-in replays). Fix: disable the button on the first tap. (01, 06, 07)
+- "Unlocked Food" on the level-complete popup counts against `totalFoodItems: 8` on the MainMenu SessionManager; only 6 foods exist, so it never reaches 0. Fix: set it to 6. (01, 05, 07)
+- Leaving a level through Pause, Main Menu (or killing the app) keeps the coins earned so far and the day replays, so coins can be farmed; Restart rolls them back. Design choice. (02, 05)
+- Returning players from 26.03.29 lost bought coffee upgrades on every app restart in that build (it never saved them). The new build saves them, but those players see the upgrades for sale again. No fix possible; nothing was saved. (05)
+- The level-complete count-up shows whole dollars while the rest of the game shows cents, and the labels change wording mid-animation. Cosmetic. (02)
+- The item-served sound plays twice per correct serve; on perfect orders two identical clips stack. (02)
+- Bread and Cake reject a wrong tap silently (Use Audio Manager is off on both); other foods buzz. (03)
+- The coffee machine's table position is not saved; food is not overlap-checked against the machine, only the machine turns red. (03)
+- Shop Next Level briefly plays gameplay music before arrangement music. (01, 06)
+- Play and Continue button clicks ignore Sound Off. (06)
+- Kitchen bake timers carry over through Restart and Main Menu; the oven ding can play in the Shop. Harmless. (04)
+- Rewarded ad status labels ("Loading ad...", "+$5 coins added!") are unassigned in the Shop scene, so they never show. (05)
+- `drag.anim` has an animation event with an empty function name; the editor logs an error every 4 s during the tutorial hand. (02, 07)
+- Several clips were deleted before March and are unassigned (button click, item pickup, wrong item, level win). Leave-alone list covers AudioManager clips. (06, 07)
+- Settings panel animator runs on scaled time, so it freezes while paused. (06)
+- The iPhone ringer switch mutes the game (Ambient audio session). Standard for casual games. (06)
+
 ## Someday (only with device testing available)
 
 - [ ] Crop the Choux source art (`Untitled_Artwork 5` to `9`, 2048 x 2048 with the drawing in a 1259 x 1018 area) so it can sit at 512 px. Changes on-screen placement, so it needs a device check.
 
 ## Testing checklist for the next build
+
+- [ ] Fresh install (delete the app first): the tracking prompt appears over the menu within a second or two of launch
+- [ ] Kitchen: tap the middle of each oven window (the bread note); it starts baking
+- [ ] Finish Day 14 and tap Main Menu while the money is still counting: Continue is greyed out, Play starts fresh
+- [ ] Day 2 onwards: table positions load and every food can be served
 
 - [ ] Fresh install: tracking prompt appears once; no notification prompt
 - [ ] Buy an upgrade, kill the app, reopen: upgrade still owned
