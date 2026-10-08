@@ -45,9 +45,25 @@ public class GamePhaseManager : MonoBehaviour
     // instead of scanning every MonoBehaviour in the scene on every drag/overlap callback.
     private readonly List<IDraggable> draggableItems = new();
 
+    private void Awake()
+    {
+        // Fill the item list before any Start runs. LevelManager.Start also calls StartArrangementPhase,
+        // and Unity does not guarantee which Start runs first; with an empty list, loading saved
+        // positions would throw and abort LevelManager.Start (popup canvas left up, every tap refused).
+        EnsureFoodItems();
+    }
+
     private void Start()
     {
         InitializeGamePhase();
+    }
+
+    private void EnsureFoodItems()
+    {
+        if (allFoodItems != null && allFoodItems.Length > 0) return;
+        allFoodItems = levelManager != null && levelManager.serveableItems != null && levelManager.serveableItems.Length > 0
+            ? levelManager.serveableItems
+            : FindObjectsOfType<ServeableItem>();
     }
 
     private void InitializeGamePhase()
@@ -268,6 +284,8 @@ public class GamePhaseManager : MonoBehaviour
 
         var sessionData = SessionManager.Instance.GetCurrentSession();
         var savedPositions = sessionData.savedFoodPositions;
+
+        EnsureFoodItems();
 
         foreach (var item in allFoodItems)
             if (item != null && item.gameObject.activeInHierarchy)

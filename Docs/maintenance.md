@@ -53,7 +53,7 @@ Nine items in Shop.unity, all instances of `ShopItemPrefab` with overrides:
 
 Bread and Coffee are owned from the start (`SessionData` constructor). Upgrades are one-shot by design: `UpdatePurchasedItemsUI` marks an upgrade item owned once its level is above 1. The session stores upgrade levels up to 3, but nothing in the shop sells a second step. Purchases pay first, then record; a failed record refunds.
 
-Upgrade consumers: `Coffee` (cup sprite set per level), `CoffeeMachine` (brews one or two cups), `Cake` (IUpgradeable, check the script before relying on it). Food and character identifiers are plain strings matched across `SessionData`, `ShopItemController.itemName`, `ServeableItem.foodType`, `KitchenFoodGate.associatedFoodType`, and the `ScoreManager` points table. A rename must hit every one.
+Upgrade consumers: `Coffee` (cup sprite set per level), `CoffeeMachine` (brews one or two cups). Nothing else implements IUpgradeable (Cake.cs says so explicitly). Food and character identifiers are plain strings matched across `SessionData`, `ShopItemController.itemName`, `ServeableItem.foodType`, `KitchenFoodGate.associatedFoodType`, and the `ScoreManager` points table. A rename must hit every one.
 
 ## Refill system (read before touching)
 
