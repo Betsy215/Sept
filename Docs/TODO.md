@@ -19,6 +19,7 @@ Status as of 7 October 2026. Done items are kept for a while so the history is v
 - [x] Deleted 83 unreferenced images, audio clips, prefabs and template leftovers (10.9 MB)
 - [x] Five 2048 px Choux sprites capped at 1024 px (about 7 MB off the app); music clips set to streaming at 70 percent quality (about 10 MB off the app, about 80 MB less RAM)
 - [x] Stale SampleScene and Menu entries removed from Build Settings; level names no longer have a double space
+- [x] Second pass (7 October, evening): refill holds cannot serve or be hijacked by a second finger; coffee upgrades apply regardless of start order; the coffee machine uses EventSystem clicks and respects pause; kitchen open/close guarded against double taps; new game clears kitchen timers; drags owned by one finger and ended on phase switch; table bounds use the real safe-area rect; scene transitions always reset; shop buttons no longer fire twice; purchase popup blocks the buttons beneath it; camera far clip moved off the UI plane
 
 ## Needs a decision from you
 
@@ -42,12 +43,28 @@ Removing editor-only packages changes nothing in the app; the first three do shr
 
 Keep: Unity Ads, Unity Ads iOS Support, TextMeshPro, uGUI, 2D Pixel Perfect, and `Assets/MobileDependencyResolver` (it generates the Podfile that pulls the Unity Ads framework into Xcode).
 
+## Scene edits needed in the Unity Editor (code cannot do these)
+
+Found by the scene wiring audit. Each is a few clicks in the Inspector.
+
+- [ ] **Buttons under the notch and home indicator.** On iPhones with a Dynamic Island, the pause button (60 to 180 px from the top in the 1080 x 1920 design), the settings button, the Shop's Next Level and Get 5 Coins buttons (bottom 400 px), and the kitchen back button all sit in the inset zones. Fix: add an empty full-stretch panel under each Canvas, put the new `SafeAreaFitter` component on it, and re-parent those buttons under the panel. No other change needed.
+- [ ] **Apply the AudioManager overrides to the prefab.** The prefab asset has only seven clips; shop music, arrangement music, the gameplay playlist, walk-in, wrong-item, money sounds and volume 0.4 exist only as overrides on the MainMenu scene instance. Select that instance, Overrides, Apply All. Until then, GameSceneOne launched directly in the editor plays no music.
+- [ ] **Main menu music and level-complete music are set to None** on the MainMenu scene instance (see Needs a decision).
+- [ ] **Missing script on MainMenu's Canvas.** A disabled component with an unknown script GUID sits on Main Camera/Canvas. Remove it (Inspector shows "Missing (Mono Script)").
+- [ ] **Hold-to-refill is off on every item except Melon**, and no refill bar objects exist, so the "Hold on item to refill" tutorial text is wrong for most foods. Either enable Enable Hold To Refill on each RefillableItem and add a RefillBar child, or change the tutorial text.
+- [ ] **Kitchen back button has a dead Inspector call** (target None). Harmless; the code wires it. Remove the entry for tidiness.
+- [ ] **PauseButton has no AudioSource or clips**, so it is silent. Add a source and the compress/uncompress clips if you want the click sound.
+- [ ] **Tablecloth sits flush to the screen bottom**, under the home indicator. The drag bounds now respect the safe area, but the cloth art does not move. Lift it if you want a visible margin.
+- [ ] **Four scripts are not used by any scene**: KitchenButtonGlowController, CloseKitchenButtonGlowController, ButtonGlowEffect, StartButtonScript. Wire them up or delete them.
+- [ ] **Player Settings**: Scripting Backend and Architecture are not pinned (defaults resolve to IL2CPP and ARM64, which is fine); Metal API Validation is on, which only affects development builds. Android and Standalone bundle IDs still carry the template value; harmless for iOS.
+
 ## Code and project clean-up
 
 - [ ] `Assets/Plugins/iOS/NSUserTrackingUsageDescription.plist` is never merged into Info.plist (Unity copies loose plists as resources). Its SKAdNetwork list is redundant with what the Unity Ads iOS Support package adds (77 IDs were present in the March export). Delete it to avoid confusion.
 - [ ] Crop the Choux source art. `Untitled_Artwork 5` to `9` are 2048 x 2048 with the drawing in a 1259 x 1018 area. Cropping the PNGs to the drawing (and re-checking their position in GameSceneOne) would let them sit at 512 px.
 - [ ] Short sound effects stored as MP3 (cash, coin, cha-ching, Inn) are re-encoded to Vorbis on import. Replace with WAV originals if you have them.
 - [ ] Set the iOS Bundle Identifier and Build number in Player Settings so exports do not depend on Xcode edits (see the release guide).
+- [ ] `StartArrangementPhase` runs twice per level load (LevelManager and GamePhaseManager). Harmless now that it is idempotent, but one call should go.
 - [ ] `ScoreManager` and `SessionManager` both hold money-related state. Level score and stars live in ScoreManager; coins live in SessionManager. Fine for now, but any new money feature should go through SessionManager only.
 - [ ] Food, character and upgrade names are string-matched across scripts, scene data and shop items. A rename in one place breaks purchases silently. A shared `FoodType` constants class would make this safer.
 - [ ] Git history is 722 MB because the Library folder was committed early on. Only worth rewriting if you clone the repo again.
