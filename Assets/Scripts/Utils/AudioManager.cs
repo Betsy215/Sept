@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class AudioManager : MonoBehaviour
@@ -32,6 +33,8 @@ public class AudioManager : MonoBehaviour
     [Range(0f, 1f)] public float sfxVolume = 0.8f;
 
     [Header("Auto-Start Settings")] public bool autoStartMainMenuMusic = true;
+    [Tooltip("Main-menu music starts automatically whenever this scene is loaded.")]
+    public string mainMenuSceneName = "MainMenu";
 
     [Header("Money/Counting Sounds")] public AudioClip moneyCountSound;
     public AudioClip moneyCompleteSound;
@@ -65,9 +68,23 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("AudioManager: Start called!");
+        if (Instance != this) return;
 
-        if (autoStartMainMenuMusic) PlayMainMenuMusic();
+        // Start is only called once on the persistent instance, so scene-driven music
+        // (main menu) is handled through sceneLoaded instead.
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (mode != LoadSceneMode.Single) return;
+        if (autoStartMainMenuMusic && scene.name == mainMenuSceneName) PlayMainMenuMusic();
     }
 
     private void InitializeAudioManager()
@@ -268,6 +285,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlayOrderComplete()
     {
+        if (orderCompleteSFX == null || sfxSource == null || !sfxEnabled) return;
         sfxSource.PlayOneShot(orderCompleteSFX, sfxVolume * 0.7f);
     }
 
@@ -304,12 +322,19 @@ public class AudioManager : MonoBehaviour
     // Settings methods
     public void SetMusicEnabled(bool enabled)
     {
+        // Settings re-apply on every scene load; ignore no-op calls so the current track is not restarted.
+        if (enabled == musicEnabled) return;
+
         musicEnabled = enabled;
         Debug.Log($"AudioManager: Music {(enabled ? "enabled" : "disabled")}");
 
         if (!enabled)
-            StopMusic();
-        else if (enabled)
+        {
+            // Stop playback but keep currentMusicType so re-enabling resumes the right music.
+            StopPlaylist();
+            if (musicSource != null) musicSource.Stop();
+        }
+        else
             // Resume appropriate music based on what was playing
             switch (currentMusicType)
             {

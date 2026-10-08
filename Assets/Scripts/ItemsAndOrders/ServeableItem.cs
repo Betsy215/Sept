@@ -1,7 +1,13 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDraggable
+/// <summary>
+/// A food item on the table that can be tapped to serve the current order, or held to refill.
+/// All input goes through the EventSystem (Physics2DRaycaster on the camera), so it behaves
+/// the same for mouse and touch and is ignored while the game is paused.
+/// </summary>
+public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler, IDraggable
 {
     [Header("Item Settings")] [Tooltip("Type of food this item represents (must match OrderSystem food types)")]
     public string foodType = ""; // e.g., "Bread", "Apple", "Juice", etc.
@@ -9,7 +15,7 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     [Header("References")] [Tooltip("Reference to OrderSystem - will auto-find if not assigned")]
     public OrderSystem orderSystem;
 
-    [Header("Visual Feedback")] [Tooltip("Canvas used for UI popup detection")]
+    [Header("Visual Feedback")] [Tooltip("Canvas that holds the pause / level-complete popups. Taps are ignored while it is active.")]
     public GameObject popupCanvas;
 
     [Header("Audio Feedback")] [Tooltip("Play rejection sound through AudioManager (recommended)")]
@@ -28,11 +34,16 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     [Header("Debug")] public bool enableDebugLogs = true;
 
-    [Header("Phase Management")] private bool servingEnabled = true;
+    private bool servingEnabled = true;
 
-    // NEW: Refill system integration
     private RefillableItem refillableItem;
     private RefillSystem refillSystem;
+
+    // True when the current press turned into a hold-to-refill, so releasing must not serve.
+    private bool pressConsumedByRefill;
+
+    private Coroutine shakeRoutine;
+    private Vector3 restPosition;
 
     public void SetDraggingEnabled(bool enabled)
     {
@@ -54,7 +65,6 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     private void Initialize()
     {
-        // Auto-find OrderSystem if not assigned
         if (orderSystem == null)
         {
             orderSystem = FindObjectOfType<OrderSystem>();
@@ -65,19 +75,26 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             }
         }
 
-        // NEW: Get refill components
         refillableItem = GetComponent<RefillableItem>();
         refillSystem = FindObjectOfType<RefillSystem>();
 
-        // Audio setup is handled by AudioManager - no individual AudioSource needed
         DebugLog($"ServeableItem {foodType} initialized successfully");
+    }
+
+    private void OnDisable()
+    {
+        if (shakeRoutine != null)
+        {
+            StopCoroutine(shakeRoutine);
+            shakeRoutine = null;
+            transform.position = restPosition;
+        }
     }
 
     public void SetServingEnabled(bool enabled)
     {
         servingEnabled = enabled;
-
-        if (enableDebugLogs) Debug.Log($"{foodType}: Serving {(enabled ? "enabled" : "disabled")}");
+        DebugLog($"Serving {(enabled ? "enabled" : "disabled")}");
     }
 
     public string GetFoodType()
@@ -85,188 +102,132 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         return foodType;
     }
 
-    // NEW: IPointerDownHandler implementation for hold detection
-    // NOTE: This works with both 2D and 3D colliders
+    #region Input
+
+    private bool CanAcceptInput()
+    {
+        if (!servingEnabled) return false;
+        if (Time.timeScale == 0f) return false; // paused
+        if (popupCanvas != null && popupCanvas.activeInHierarchy) return false; // pause / level-complete popup is up
+        return true;
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
-        DebugLog($"ServeableItem OnPointerDown - servingEnabled:{servingEnabled}");
+        pressConsumedByRefill = false;
+        if (!CanAcceptInput()) return;
 
-        if (!servingEnabled) return;
-
-        // Check if UI popup is blocking
-        if (IsUIBlocking())
-        {
-            DebugLog("UI blocking, ignoring pointer down");
-            return;
-        }
-
-        // Forward to refillable item for hold detection
-        if (refillableItem != null)
-        {
-            DebugLog("Forwarding OnPointerDown to RefillableItem");
-            refillableItem.OnPointerDown();
-        }
-        else
-        {
-            DebugLog("No RefillableItem found to forward to");
-        }
-
-        DebugLog($"{foodType}: Pointer down detected");
+        // Start hold-to-refill detection
+        if (refillableItem != null) refillableItem.OnPointerDown();
     }
 
-    // NEW: IPointerUpHandler implementation for hold detection
     public void OnPointerUp(PointerEventData eventData)
     {
-        DebugLog($"ServeableItem OnPointerUp - servingEnabled:{servingEnabled}");
+        if (refillableItem == null) return;
 
-        if (!servingEnabled) return;
-
-        // Forward to refillable item
-        if (refillableItem != null)
-        {
-            DebugLog("Forwarding OnPointerUp to RefillableItem");
-            refillableItem.OnPointerUp();
-        }
-        else
-        {
-            DebugLog("No RefillableItem found to forward to");
-        }
-
-        // Check if it was a click (not a hold)
-        // This will be handled by the OnMouseUpAsButton method
-        DebugLog($"{foodType}: Pointer up detected");
+        // Remember whether this press became a refill before the refill logic clears its state.
+        pressConsumedByRefill = refillableItem.IsRefilling;
+        refillableItem.OnPointerUp();
     }
 
-    // Keep existing OnMouseUpAsButton for click detection
-    private void OnMouseUpAsButton()
+    // Fires only when the finger went down and came back up on this same item.
+    public void OnPointerClick(PointerEventData eventData)
     {
-        if (!servingEnabled) return;
-
-        // Check if UI popup is blocking
-        if (IsUIBlocking()) return;
-
-        // Check if item is out of stock
-        if (refillableItem != null && refillableItem.IsOutOfStock())
+        if (pressConsumedByRefill)
         {
-            DebugLog($"{foodType}: Cannot serve - out of stock!");
-            OnItemRejected(); // Play rejection feedback
+            pressConsumedByRefill = false;
             return;
         }
 
-        // Process the item click
+        if (!CanAcceptInput()) return;
+
+        if (refillableItem != null && refillableItem.IsOutOfStock())
+        {
+            DebugLog("Cannot serve - out of stock!");
+            OnItemRejected();
+            return;
+        }
+
         OnItemClicked();
     }
 
-    private bool IsUIBlocking()
-    {
-        // Check if clicking over UI elements
-        var overUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-        var popupActive = popupCanvas != null && popupCanvas.activeInHierarchy;
+    #endregion
 
-        DebugLog($"{foodType}: UI Check - Over UI: {overUI}, Popup active: {popupActive}");
-
-        // Block clicks if over UI AND popup is active
-        if (overUI && popupActive)
-        {
-            DebugLog($"{foodType}: Click blocked by popup");
-            return true;
-        }
-
-        return false;
-    }
-
-    // Main logic for serving this item
     private void OnItemClicked()
     {
-        DebugLog($"Player clicked on {foodType}");
-
-        // Check if OrderSystem is available
         if (orderSystem == null)
         {
             Debug.LogError($"{foodType}: OrderSystem reference is missing!");
             return;
         }
 
-        // Check if there's an active order
         if (!orderSystem.IsOrderActive())
         {
-            DebugLog($"{foodType}: No active order to serve");
+            DebugLog("No active order to serve");
             return;
         }
 
-        // Try to serve this item to the current order
-        var itemServed = orderSystem.TryServeItem(foodType);
-
-        if (itemServed)
+        if (orderSystem.TryServeItem(foodType))
         {
-            DebugLog($"{foodType}: Successfully served!");
+            DebugLog("Successfully served!");
             OnItemServedSuccessfully();
         }
         else
         {
-            DebugLog($"{foodType}: Not needed in current order");
+            DebugLog("Not needed in current order");
             OnItemRejected();
         }
     }
 
-    // Called when item was successfully served
     private void OnItemServedSuccessfully()
     {
         if (serveSound != null && AudioManager.Instance != null)
             AudioManager.Instance.PlaySFX(serveSound);
-        // NEW: Notify refill system that item was served correctly
+
         if (refillSystem != null) refillSystem.OnItemServed(foodType, true);
 
         SendMessage("OnServedSuccessfully", SendMessageOptions.DontRequireReceiver);
     }
 
-    // Called when item was not needed for current order
     private void OnItemRejected()
     {
-        // ❌ REJECTION FEEDBACK: Shake the item and play rejection sound
-        DebugLog($"{foodType}: Item rejected - playing shake and sound feedback");
+        DebugLog("Item rejected - playing shake and sound feedback");
 
-        // NEW: Notify refill system that item was clicked but not served
         if (refillSystem != null) refillSystem.OnItemServed(foodType, false);
 
-        // Start shake animation
-        StartCoroutine(ShakeAnimation());
+        // Restart the shake from the resting position so rapid taps cannot drift the item.
+        if (shakeRoutine != null)
+        {
+            StopCoroutine(shakeRoutine);
+            transform.position = restPosition;
+        }
 
-        // Play rejection sound
+        shakeRoutine = StartCoroutine(ShakeAnimation());
         PlayRejectionSound();
     }
 
-    private System.Collections.IEnumerator ShakeAnimation()
+    private IEnumerator ShakeAnimation()
     {
-        var originalPosition = transform.position;
+        restPosition = transform.position;
+        var step = shakeDuration / (shakeCount * 2f);
 
         for (var i = 0; i < shakeCount; i++)
         {
-            // Shake left
-            transform.position = originalPosition + Vector3.right * shakeIntensity;
-            yield return new WaitForSeconds(shakeDuration / (shakeCount * 2f));
+            transform.position = restPosition + Vector3.right * shakeIntensity;
+            yield return new WaitForSeconds(step);
 
-            // Shake right  
-            transform.position = originalPosition + Vector3.left * shakeIntensity;
-            yield return new WaitForSeconds(shakeDuration / (shakeCount * 2f));
+            transform.position = restPosition + Vector3.left * shakeIntensity;
+            yield return new WaitForSeconds(step);
         }
 
-        // Return to original position
-        transform.position = originalPosition;
+        transform.position = restPosition;
+        shakeRoutine = null;
     }
 
     private void PlayRejectionSound()
     {
         if (useAudioManager && AudioManager.Instance != null)
-        {
-            // AudioManager should have a rejection sound clip
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.GetComponent<AudioSource>()?.clip);
-            DebugLog($"{foodType}: Playing rejection sound via AudioManager");
-        }
-        else
-        {
-            DebugLog($"{foodType}: AudioManager not available for rejection sound");
-        }
+            AudioManager.Instance.PlayWrongItemSFX();
     }
 
     private void DebugLog(string message)

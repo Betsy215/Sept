@@ -14,7 +14,11 @@ public class SessionData
 
     public List<string> purchasedFoodItems;
     public List<string> purchasedCharacters;
-    public Dictionary<string, int> foodUpgradeLevels;
+    // JsonUtility cannot serialize a Dictionary, so upgrade levels are mirrored
+    // into two parallel lists around every save and load (see Sync methods).
+    [NonSerialized] public Dictionary<string, int> foodUpgradeLevels;
+    public List<string> foodUpgradeKeys;
+    public List<int> foodUpgradeValues;
 
     [Serializable]
     public class FoodItemPosition
@@ -53,6 +57,35 @@ public class SessionData
         };
         purchasedCharacters = new List<string> { "Girl" };
         savedFoodPositions = new List<FoodItemPosition>();
+        SyncUpgradesToLists();
+    }
+
+    /// Copy the upgrade dictionary into the serializable lists. Call before saving.
+    public void SyncUpgradesToLists()
+    {
+        foodUpgradeKeys = new List<string>();
+        foodUpgradeValues = new List<int>();
+        if (foodUpgradeLevels == null) return;
+        foreach (var kv in foodUpgradeLevels)
+        {
+            foodUpgradeKeys.Add(kv.Key);
+            foodUpgradeValues.Add(kv.Value);
+        }
+    }
+
+    /// Rebuild the upgrade dictionary from the serialized lists. Call after loading.
+    public void SyncUpgradesFromLists()
+    {
+        foodUpgradeLevels = new Dictionary<string, int>();
+        if (foodUpgradeKeys != null && foodUpgradeValues != null)
+        {
+            var n = Math.Min(foodUpgradeKeys.Count, foodUpgradeValues.Count);
+            for (var i = 0; i < n; i++) foodUpgradeLevels[foodUpgradeKeys[i]] = foodUpgradeValues[i];
+        }
+
+        // Defaults for sessions saved before upgrades were persisted
+        if (!foodUpgradeLevels.ContainsKey("Coffee")) foodUpgradeLevels["Coffee"] = 1;
+        if (!foodUpgradeLevels.ContainsKey("CoffeeMachine")) foodUpgradeLevels["CoffeeMachine"] = 1;
     }
 }
 
@@ -282,14 +315,27 @@ public class SessionManager : MonoBehaviour
         return isNewRecord;
     }
 
-    public void AddScoreImmediately(float points)
+    /// Adds coins to the active session. Returns false when there is no active
+    /// session, so callers (e.g. the rewarded ad button) can tell the player.
+    public bool AddScoreImmediately(float points)
     {
-        if (currentSession != null && currentSession.isActive)
-        {
-            currentSession.totalScore += points;
-            SaveSession();
-            OnTotalScoreChanged?.Invoke(currentSession.totalScore);
-        }
+        if (currentSession == null || !currentSession.isActive) return false;
+
+        currentSession.totalScore = RoundToCents(currentSession.totalScore + points);
+        SaveSession();
+        OnTotalScoreChanged?.Invoke(currentSession.totalScore);
+        return true;
+    }
+
+    /// Money is a float; keep it at whole cents so "$50.00" really is 50.
+    private static float RoundToCents(float value)
+    {
+        return Mathf.Round(value * 100f) / 100f;
+    }
+
+    public bool CanAfford(int amount)
+    {
+        return currentSession != null && currentSession.totalScore + 0.005f >= amount;
     }
 
     public (int unpurchasedFood, int unpurchasedCharacters) GetUnpurchasedItemsCount()
@@ -376,6 +422,7 @@ public class SessionManager : MonoBehaviour
     {
         if (currentSession != null)
         {
+            currentSession.SyncUpgradesToLists();
             var jsonData = JsonUtility.ToJson(currentSession);
             PlayerPrefs.SetString(SESSION_SAVE_KEY, jsonData);
             PlayerPrefs.Save();
@@ -397,11 +444,7 @@ public class SessionManager : MonoBehaviour
                 if (currentSession.purchasedCharacters == null)
                     currentSession.purchasedCharacters = new List<string> { "Girl" };
 
-                if (currentSession.foodUpgradeLevels == null)
-                    currentSession.foodUpgradeLevels = new Dictionary<string, int>()
-                    {
-                        { "Coffee", 1 }
-                    };
+                currentSession.SyncUpgradesFromLists();
                 // NEW: Handle legacy sessions without saved positions
                 if (currentSession.savedFoodPositions == null)
                 {
@@ -466,9 +509,9 @@ public class SessionManager : MonoBehaviour
     {
         if (currentSession == null) return false;
 
-        if (currentSession.totalScore >= amount)
+        if (CanAfford(amount))
         {
-            currentSession.totalScore -= amount;
+            currentSession.totalScore = RoundToCents(currentSession.totalScore - amount);
             SaveSession();
             OnTotalScoreChanged?.Invoke(currentSession.totalScore);
             Debug.Log($"Deducted {amount} points. New total: {currentSession.totalScore}");

@@ -627,6 +627,10 @@ public class LevelManager : MonoBehaviour
 
     public void LoadNextLevel()
     {
+        // Never carry a paused time scale into the Shop scene
+        Time.timeScale = 1f;
+        isPaused = false;
+
         if (AudioManager.Instance != null)
             AudioManager.Instance.StopMusic();
 

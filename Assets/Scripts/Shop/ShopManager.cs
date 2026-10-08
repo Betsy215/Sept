@@ -107,7 +107,7 @@ public class ShopManager : MonoBehaviour
             if (shopItem != null)
             {
                 shopItem.gameObject.SetActive(true);
-                var canAfford = currentScore >= shopItem.price;
+                var canAfford = SessionManager.Instance.CanAfford(shopItem.price);
                 shopItem.UpdateAffordability(canAfford);
             }
     }
@@ -132,7 +132,7 @@ public class ShopManager : MonoBehaviour
         var currentScore = SessionManager.Instance.GetTotalScore();
 
         // Check if player has enough score
-        if (currentScore < item.price)
+        if (!SessionManager.Instance.CanAfford(item.price))
         {
             ShowPurchaseFailedFeedback($"Not enough points!\nNeed: {item.price} | Have: {currentScore}");
             return;
@@ -288,6 +288,7 @@ public class ShopManager : MonoBehaviour
 
     public void OnMainMenuClicked()
     {
+        if (AudioManager.Instance != null) AudioManager.Instance.StopMusic();
         SceneTransitionManager.Instance.TransitionToScene("MainMenu");
     }
 

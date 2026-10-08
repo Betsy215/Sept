@@ -49,6 +49,9 @@ public class RefillableItem : MonoBehaviour
 
     // Hold detection
     private bool isHolding = false;
+
+    /// True while a hold-to-refill is in progress for the current press.
+    public bool IsRefilling => isRefilling || isHolding;
     private float holdStartTime;
     private Coroutine refillCoroutine;
     private Coroutine holdDetectionCoroutine;
