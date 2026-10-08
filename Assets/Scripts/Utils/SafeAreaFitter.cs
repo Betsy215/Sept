@@ -9,10 +9,10 @@ using UnityEngine;
 [RequireComponent(typeof(RectTransform))]
 public class SafeAreaFitter : MonoBehaviour
 {
-    [Tooltip("Ignore the top inset (notch). Leave on for panels that hold top buttons.")]
+    [Tooltip("Keep the panel below the top inset (notch, Dynamic Island). Leave on for panels that hold top buttons.")]
     public bool applyTop = true;
 
-    [Tooltip("Ignore the bottom inset (home indicator). Leave on for panels that hold bottom buttons.")]
+    [Tooltip("Keep the panel above the bottom inset (home indicator). Leave on for panels that hold bottom buttons.")]
     public bool applyBottom = true;
 
     private RectTransform rect;
