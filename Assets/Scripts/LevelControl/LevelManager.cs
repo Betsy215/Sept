@@ -57,6 +57,13 @@ public class LevelManager : MonoBehaviour
     // Pause state
     private bool isPaused = false;
 
+    // Set once the level's last order is done. Blocks pausing during the 3 s before the popup,
+    // where Main Menu would skip the Shop (and, on the final day, leave the save half-finished).
+    private bool isLevelEnding = false;
+
+    // Final day: the high-score result is decided when the level ends, then only displayed later.
+    private bool finalRunIsNewRecord = false;
+
     private void Start()
     {
         // IMPORTANT: Ensure AudioManager exists (create if missing)
@@ -244,9 +251,9 @@ public class LevelManager : MonoBehaviour
 
         // Ignore pause once the level-complete popup is up; otherwise a paused
         // timeScale can leak into the Shop scene through paths other than LoadNextLevel
-        if (IsAnyPopupActive())
+        if (IsAnyPopupActive() || isLevelEnding)
         {
-            Debug.Log("PauseGame ignored: level complete popup is showing");
+            Debug.Log("PauseGame ignored: level is ending or the level complete popup is showing");
             return;
         }
 
@@ -364,6 +371,9 @@ public class LevelManager : MonoBehaviour
         else
         {
             Debug.Log("All levels completed!");
+            // Saves from before the final-day fix can point one past the last level.
+            // Treat that as the final day so the popup shows the finished state and Main Menu.
+            currentLevelIndex = allLevels.Length - 1;
             OnAllLevelsComplete();
         }
     }
@@ -547,6 +557,16 @@ public class LevelManager : MonoBehaviour
         //    SessionManager.Instance.AddLevelScore(levelScore);
         SessionManager.Instance.OnLevelCompleted(currentLevelIndex);
 
+        // Final day: finish the game in the save right now. Previously this only happened at the end
+        // of the popup animation, so leaving early (Main Menu, app killed) left an active session
+        // pointing past the last level, and Continue then loaded a broken state.
+        if (currentLevelIndex + 1 >= allLevels.Length)
+        {
+            finalRunIsNewRecord = SessionManager.Instance.CheckAndSaveHighScore();
+            SessionManager.Instance.CompleteSession();
+        }
+
+        isLevelEnding = true;
         var totalAfter = SessionManager.Instance.GetTotalScore();
 
         customerManager.enabled = false;
@@ -604,8 +624,7 @@ public class LevelManager : MonoBehaviour
     private void ShowFinalCompletionMessage()
     {
         var totalScore = SessionManager.Instance.GetTotalScore();
-        var highScore = SessionManager.Instance.GetHighScore();
-        var isNewRecord = SessionManager.Instance.CheckAndSaveHighScore();
+        var isNewRecord = finalRunIsNewRecord; // decided and saved in OnLevelComplete
 
         if (todaySale != null)
             todaySale.text = "\nCongrats!\nYou finished all levels!";
@@ -618,13 +637,7 @@ public class LevelManager : MonoBehaviour
             totalEarned.text = $"Final Score: ${totalScore:F2}";
 
         Debug.Log($"🎉 All levels completed! Total score: {totalScore}");
-
-        // Mark session as completed when all levels are finished
-        if (SessionManager.Instance != null)
-        {
-            SessionManager.Instance.CompleteSession();
-            Debug.Log("Session marked as completed - Continue button should now be disabled");
-        }
+        // The session was already completed in OnLevelComplete.
     }
 
     private void UpdateUnlockedItemsDisplay()

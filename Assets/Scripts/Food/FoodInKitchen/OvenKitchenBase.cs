@@ -75,7 +75,10 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         if (Time.timeScale == 0f) return; // paused: UI taps still arrive, gameplay must not
-        if (eventData.pointerCurrentRaycast.gameObject != gameObject) return;
+        // Accept taps on the oven or any of its decorations (the bread-note sticker covers the
+        // middle of each oven window; rejecting it made centre taps do nothing).
+        var hit = eventData.pointerCurrentRaycast.gameObject;
+        if (hit == null || !hit.transform.IsChildOf(transform)) return;
         if (CooldownRegistry.IsOnCooldown(GetCooldownKey(), bakeTime)) return;
 
         DebugLog($"{gameObject.name} clicked — starting bake!");
