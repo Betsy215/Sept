@@ -98,5 +98,4 @@ Found by the scene wiring audit. Each is a few clicks in the Inspector.
 - [ ] Finish a level: last customer walks out, Today Sale counts each amount once
 - [ ] Shop: try to buy with too few coins, message is visible; buy an item, coins drop once
 - [ ] Watch a rewarded ad: coins added and shown; airplane mode: button shows Loading then retries
-- [ ] Return to main menu from the shop: shop music stops
 - [ ] Open and close the kitchen mid-bake: the bake completes once

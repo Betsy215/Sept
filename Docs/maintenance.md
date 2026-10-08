@@ -16,7 +16,7 @@ Notes for whoever maintains this project next, including Claude in a future sess
 
 ## Scoring
 
-Per order: sum of item points, plus a tip of `remainingSeconds x 10` rounded to cents. Item points (ScoreManager in GameSceneOne): Coffee 10, Bread 15, Apple 15, Juice 20, Melon 25, Cake 35, Choux 35. The table also holds Pie 30, Mont Blanc 35 and Log Cake 35, which match no item in the game and look like the old names for Cake and Choux; Cake and Choux had no entry at all until 7 October, so they scored 0. The fallback for an unlisted food is 0 points, so any new food must be added to this table. Expired orders still pay item points but no tip. Stars come from `LevelData` thresholds against the level score. Money goes to `SessionManager` at order completion or expiry; Restart rolls money back to the level-start snapshot.
+Per order: sum of item points, plus a tip of `itemPoints x secondsLeft x 10 / 100 x customerTipMultiplier`, rounded to cents (`ScoreManager.AwardOrderCompletionBonus`; the 10 is `timeBonusMultiplier` in the scene, and the customer multiplier is 2 for Grandma, 1 for everyone else). Example: a 50-point order finished with 3 s left from a normal customer tips 15.00. Item points (ScoreManager in GameSceneOne): Coffee 10, Bread 15, Apple 15, Juice 20, Melon 25, Cake 35, Choux 35. The table also holds Pie 30, Mont Blanc 35 and Log Cake 35, which match no item in the game and look like the old names for Cake and Choux; Cake and Choux had no entry at all until 7 October, so they scored 0. The fallback for an unlisted food is 0 points, so any new food must be added to this table. Expired orders still pay item points but no tip. Stars come from `LevelData` thresholds against the level score. Money goes to `SessionManager` at order completion or expiry; Restart rolls money back to the level-start snapshot.
 
 Level tuning after 7 October (orders, display seconds, items, stars):
 
@@ -86,7 +86,7 @@ Coffee beans come from the kitchen `coffee` object: tapping refills beans to 6 i
 
 **Recommendation: do not enable hold-to-refill more widely.** It is mechanically safe (counts clamp, a pending bake cannot double-fill) but it would be redundant with the kitchen on Bread, Apple, Juice, Choux and Cake, and on Coffee it would bypass the bean and machine loop entirely. Enabling it would also need: a `RefillBar` child with `Fill` and `Bar` sprites on each item (none exist, so holds give no visual feedback), a deliberate `customRefillTime` per item (the 1 second default outpaces an 8 to 15 second bake), a tutorial message restored in the scene, and a decision on whether Melon becomes a real item or is deleted.
 
-**Kitchen timers run on real time** (`CooldownRegistry` uses `realtimeSinceStartup`), so bakes continue while the game is paused and while the player is in the Shop. A bake that completes in the Shop looks for its table item, finds nothing, and logs an error; the refill is lost. This has no player impact because every level starts its items full.
+**Kitchen timers run on real time** (`CooldownRegistry` uses `realtimeSinceStartup`), so bakes continue while the game is paused and while the player is in the Shop. A bake that completes in the Shop looks for its table item, finds nothing, and writes a normal log line containing the word ERROR (not a real error); the refill is lost, and the oven ding plays in the Shop. This has no player impact because every level starts its items full.
 
 ## Ads
 

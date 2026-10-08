@@ -688,8 +688,13 @@ public class LevelManager : MonoBehaviour
     {
         Debug.Log("🎉 All levels completed! Session finished!");
 
+        isLevelEnding = true; // no pause during the 3 s before the popup on this path either
+
         if (SessionManager.Instance != null)
+        {
+            finalRunIsNewRecord = SessionManager.Instance.CheckAndSaveHighScore();
             SessionManager.Instance.CompleteSession();
+        }
 
         StartCoroutine(ShowLevelCompletePopup());
     }
