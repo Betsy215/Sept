@@ -6,6 +6,8 @@ Read `Docs/architecture.md` before touching gameplay code and `Docs/ios-testing-
 
 ## Working rules
 
+- **This game is live on the App Store and works.** Change code only to fix a real, confirmed bug. No refactors, no re-tuning, no clean-ups for their own sake; write those up in `Docs/TODO.md` instead. Keep every fix surgical and compile it (command below).
+- Things the owner has explicitly said to leave alone are listed under "Leave alone" in `Docs/TODO.md`.
 - Keep public method names used by scene buttons stable (`LoadNextLevel`, `RestartLevel`, `GoToMainMenu`, `TogglePause`, `OnNextLevelClicked`, `OnMainMenuClicked`, `PurchaseItem`, `ToggleAudio`, `ToggleMusic`). They are wired in scene YAML.
 - Serialized field names on MonoBehaviours are also wired in scenes and prefabs; renaming one loses the reference. Add fields rather than rename.
 - Input goes through the EventSystem; no `OnMouse*` handlers.

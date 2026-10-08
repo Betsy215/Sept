@@ -19,14 +19,29 @@ Status as of 7 October 2026. Done items are kept for a while so the history is v
 - [x] Deleted 83 unreferenced images, audio clips, prefabs and template leftovers (10.9 MB)
 - [x] Five 2048 px Choux sprites capped at 1024 px (about 7 MB off the app); music clips set to streaming at 70 percent quality (about 10 MB off the app, about 80 MB less RAM)
 - [x] Stale SampleScene and Menu entries removed from Build Settings; level names no longer have a double space
+- [x] Days 10 to 14 re-tuned: orders 9, 9, 10, 10, 11 with star thresholds rising 50 per day from 450/550/650 to 650/750/850
+- [x] iOS build number set to 1 in Player Settings (bundle ID was already set)
 - [x] Second pass (7 October, evening): refill holds cannot serve or be hijacked by a second finger; coffee upgrades apply regardless of start order; the coffee machine uses EventSystem clicks and respects pause; kitchen open/close guarded against double taps; new game clears kitchen timers; drags owned by one finger and ended on phase switch; table bounds use the real safe-area rect; scene transitions always reset; shop buttons no longer fire twice; purchase popup blocks the buttons beneath it; camera far clip moved off the UI plane
 
 ## Needs a decision from you
 
-- [ ] **Banner, interstitial, or both.** Banners earn little but are always visible; one interstitial every two or three levels in the three-second gap before the level-complete popup earns more with no layout change. Code plan is in `Docs/architecture.md` under Ads. Check the Unity Ads dashboard for `Banner_iOS` and `Interstitial_iOS` ad units first.
-- [ ] **Main menu music is off.** The AudioManager prefab assigns `3-20. Inn.mp3`, but the MainMenu scene overrides Main Menu Music and Level Complete Music to None, so the menu is silent and Inn.mp3 ships unused. Re-assign in the scene or remove the clip.
-- [ ] **Days 10 to 14 are a copy of each other.** Orders per level drop from 9 on Day 9 to 6 on Day 10 while star thresholds stay at 400/500/600, so the last five days are harder to three-star than Day 9 and have no progression. Days 6 to 8 are also identical. Suggested curve: orders 9, 9, 10, 10, 11 for Days 10 to 14 with thresholds rising about 50 per day. Edit `Assets/Entity/Level10Data.asset` to `Level14Data.asset`.
-- [ ] **Upgrade shop items.** Each upgrade item is one-shot in the UI once its level is above 1, even though the session allows level 3. Decide whether an upgrade can be bought three times (then change the "owned" rule in ShopManager.UpdatePurchasedItemsUI) or stays one-shot.
+- [ ] **Banner, interstitial, or both.** Parked. Rough US iOS eCPM: rewarded $10 to $20, interstitial $5 to $10, banner $0.50 to $1.30. Recommendation: one interstitial every two or three levels in the gap before the level-complete popup. Only the rewarded ad unit exists on the Unity Ads dashboard; create Interstitial_iOS or Banner_iOS there first.
+
+## Leave alone (owner's decision, 7 October 2026)
+
+The game is live and working. These were reviewed and the owner chose not to change them. Do not "fix" them.
+
+- Main menu music set to None in the MainMenu scene (silent menu is accepted).
+- Unused packages (Visual Scripting, XR Management, Mobile feature set, 2D feature set extras, Timeline): keep, they may be needed for the Xcode export.
+- `Assets/Plugins/iOS/NSUserTrackingUsageDescription.plist`: leave.
+- Choux sprite cropping: cannot be tested on device yet; stays below under Someday.
+- MP3 sound effects re-encoded to Vorbis: fine as is.
+- Debug flag defaults: leave.
+- Buttons under the notch and home indicator: leave for now. `SafeAreaFitter` exists if this changes.
+- AudioManager prefab vs scene overrides: fine, not every clip is meant to be wired.
+- Hold-to-refill enabled only on Melon: do not change until each food item's refill behaviour has been reviewed and understood in detail (see Docs/maintenance.md, refill notes).
+- Small scene leftovers (missing script on MainMenu Canvas, dead Inspector call on kitchen back button, silent pause button, four unreferenced scripts): leave unless they break something.
+- Upgrade shop items are one-shot by design (verified: see maintenance notes).
 
 ## Packages to remove (do this in Unity, Window > Package Manager)
 
@@ -61,14 +76,14 @@ Found by the scene wiring audit. Each is a few clicks in the Inspector.
 ## Code and project clean-up
 
 - [ ] `Assets/Plugins/iOS/NSUserTrackingUsageDescription.plist` is never merged into Info.plist (Unity copies loose plists as resources). Its SKAdNetwork list is redundant with what the Unity Ads iOS Support package adds (77 IDs were present in the March export). Delete it to avoid confusion.
-- [ ] Crop the Choux source art. `Untitled_Artwork 5` to `9` are 2048 x 2048 with the drawing in a 1259 x 1018 area. Cropping the PNGs to the drawing (and re-checking their position in GameSceneOne) would let them sit at 512 px.
-- [ ] Short sound effects stored as MP3 (cash, coin, cha-ching, Inn) are re-encoded to Vorbis on import. Replace with WAV originals if you have them.
-- [ ] Set the iOS Bundle Identifier and Build number in Player Settings so exports do not depend on Xcode edits (see the release guide).
 - [ ] `StartArrangementPhase` runs twice per level load (LevelManager and GamePhaseManager). Harmless now that it is idempotent, but one call should go.
 - [ ] `ScoreManager` and `SessionManager` both hold money-related state. Level score and stars live in ScoreManager; coins live in SessionManager. Fine for now, but any new money feature should go through SessionManager only.
 - [ ] Food, character and upgrade names are string-matched across scripts, scene data and shop items. A rename in one place breaks purchases silently. A shared `FoodType` constants class would make this safer.
 - [ ] Git history is 722 MB because the Library folder was committed early on. Only worth rewriting if you clone the repo again.
-- [ ] Debug flags (`enableDebugLogs`) default to true on most components. Logs are now filtered in release, but turning the defaults off would quiet the editor console too.
+
+## Someday (only with device testing available)
+
+- [ ] Crop the Choux source art (`Untitled_Artwork 5` to `9`, 2048 x 2048 with the drawing in a 1259 x 1018 area) so it can sit at 512 px. Changes on-screen placement, so it needs a device check.
 
 ## Testing checklist for the next build
 
