@@ -204,20 +204,20 @@ All have `timeBetweenOrders` 3 (unused in the customer flow), `backgroundSprite`
 
 | Asset | Name | Orders | Timer s | Items | Stars 1 / 2 / 3 |
 | --- | --- | --- | --- | --- | --- |
-| Level1Data | Day 1 | 5 | 5 | 1 to 2 | 50 / 100 / 150 |
-| Level2Data | Day 2 | 5 | 5 | 1 to 3 | 100 / 200 / 300 |
-| Level3Data | Day 3 | 6 | 5 | 2 to 3 | 150 / 250 / 350 |
-| Level4Data | Day 4 | 6 | 5 | 2 to 4 | 150 / 250 / 350 |
-| Level5Data | Day 5 | 7 | 5 | 2 to 4 | 300 / 400 / 500 |
-| Level6Data | Day 6 | 8 | 4 | 2 to 4 | 350 / 450 / 550 |
-| Level7Data | Day 7 | 8 | 4 | 2 to 4 | 350 / 450 / 550 |
-| Level8Data | Day 8 | 8 | 4 | 2 to 4 | 350 / 450 / 550 |
-| Level9Data | Day 9 | 9 | 4 | 2 to 4 | 400 / 500 / 600 |
-| Level10Data | Day 10 | 9 | 4 | 2 to 4 | 450 / 550 / 650 |
-| Level11Data | Day 11 | 9 | 4 | 2 to 4 | 500 / 600 / 700 |
-| Level12Data | Day 12 | 10 | 4 | 2 to 4 | 550 / 650 / 750 |
-| Level13Data | Day 13 | 10 | 4 | 2 to 4 | 600 / 700 / 800 |
-| Level14Data | Day 14 | 11 | 4 | 2 to 4 | 650 / 750 / 850 |
+| Level1Data | Day 1 | 7 | 5 | 1 to 2 | 70 / 140 / 210 |
+| Level2Data | Day 2 | 7 | 5 | 1 to 3 | 140 / 280 / 420 |
+| Level3Data | Day 3 | 8 | 5 | 2 to 3 | 200 / 330 / 470 |
+| Level4Data | Day 4 | 8 | 5 | 2 to 4 | 200 / 330 / 470 |
+| Level5Data | Day 5 | 9 | 5 | 2 to 4 | 390 / 510 / 640 |
+| Level6Data | Day 6 | 10 | 4 | 2 to 4 | 440 / 560 / 690 |
+| Level7Data | Day 7 | 10 | 4 | 2 to 4 | 440 / 560 / 690 |
+| Level8Data | Day 8 | 10 | 4 | 2 to 4 | 440 / 560 / 690 |
+| Level9Data | Day 9 | 11 | 4 | 2 to 4 | 490 / 610 / 730 |
+| Level10Data | Day 10 | 11 | 4 | 2 to 4 | 550 / 670 / 790 |
+| Level11Data | Day 11 | 11 | 4 | 2 to 4 | 610 / 730 / 860 |
+| Level12Data | Day 12 | 12 | 4 | 2 to 4 | 660 / 780 / 900 |
+| Level13Data | Day 13 | 12 | 4 | 2 to 4 | 720 / 840 / 960 |
+| Level14Data | Day 14 | 13 | 4 | 2 to 4 | 770 / 890 / 1000 |
 
 ## 6. One order, start to finish (Day 1, Girl, Bread + Coffee)
 

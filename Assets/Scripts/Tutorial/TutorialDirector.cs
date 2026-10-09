@@ -9,11 +9,10 @@ using UnityEngine.UI;
 /// <summary>
 /// Level 0: a self-playing demo of one order before the first real day.
 ///
-/// The player cannot tap during it. A pointing hand shows each thing the game is about to do and a
-/// one-line caption says what is happening. The director drives the real systems (customer, order,
-/// serving, coffee machine, kitchen, oven) through the same code paths a real tap uses, so the demo
-/// always matches real behaviour. At the end two buttons offer "Let's go!" (start Day 1) and
-/// "Replay tutorial".
+/// A bouncing arrow shows the next thing to tap and a one-line caption says why; the game waits until
+/// the player taps that thing (taps anywhere else are swallowed), then drives the real handler the way a
+/// normal tap would (customer, order, serving, coffee machine, kitchen, oven), so the demo always matches
+/// real behaviour. At the end two buttons offer "Let's go!" (start Day 1) and "Replay tutorial".
 ///
 /// Everything it needs on screen is built at runtime on its own overlay canvas; no scene wiring.
 /// Added by LevelManager.Start when <see cref="IsDue"/> says so.
@@ -30,7 +29,6 @@ public class TutorialDirector : MonoBehaviour
         return s != null && s.isActive && !s.tutorialSeen && s.levelsCompleted == 0;
     }
 
-    private const float HoldOnPointer = 1.4f;   // seconds the hand rests on a target before the "tap"
 
     private LevelManager levelManager;
     private GamePhaseManager phaseManager;
@@ -43,8 +41,13 @@ public class TutorialDirector : MonoBehaviour
     private TextMeshProUGUI caption;
     private RectTransform captionBox;
     private RectTransform hand;
+    private Vector2 handBase;
     private GameObject endCard;
     private Coroutine pulse;
+
+    // Set while a step waits for the player: returns true when a tap at that screen point hits the target
+    private System.Func<Vector2, bool> awaitingHit;
+    private bool tapped;
 
     public void Begin(LevelManager lm, GamePhaseManager gpm, OrderSystem os, CustomerManager cm)
     {
@@ -82,11 +85,14 @@ public class TutorialDirector : MonoBehaviour
 
         Say("Tap the bread to serve it");
         yield return PointAtWorld(bread.transform.position);
+        yield return WaitForTapOnWorld(bread.transform);
         Tap(bread);
-        yield return new WaitForSeconds(1.0f);
+        HideHand();
+        yield return new WaitForSeconds(0.8f);
 
         Say("Now tap the coffee");
         yield return PointAtWorld(coffee.transform.position);
+        yield return WaitForTapOnWorld(coffee.transform);
         Tap(coffee);
 
         // No more customers after this one; the current one still finishes its walk-out
@@ -102,7 +108,9 @@ public class TutorialDirector : MonoBehaviour
         {
             Say("Coffee ran low? Tap the machine");
             yield return PointAtWorld(machine.transform.position);
+            yield return WaitForTapOnWorld(machine.transform);
             TapMachine(machine);
+            HideHand();
             yield return new WaitForSeconds(2.5f);
         }
 
@@ -111,6 +119,7 @@ public class TutorialDirector : MonoBehaviour
         {
             Say("Out of bread? Tap Kitchen");
             yield return PointAtRect(kitchenButton.GetComponent<RectTransform>());
+            yield return WaitForTapOnRect(kitchenButton.GetComponent<RectTransform>());
             HideHand();
             KitchenSceneManager.Instance.OpenKitchen();
             yield return new WaitUntil(() => SceneManager.GetSceneByName("KitchenScene").isLoaded);
@@ -121,8 +130,11 @@ public class TutorialDirector : MonoBehaviour
             {
                 Say("Tap the oven to bake more bread");
                 yield return PointAtRect(oven.GetComponent<RectTransform>());
+                yield return WaitForTapOnRect(oven.GetComponent<RectTransform>());
                 var ovenScript = oven.GetComponent<OvenKitchenBase>();
                 if (ovenScript != null) ovenScript.OnPointerClick(EventFor(oven));
+                HideHand();
+                Say("Bread is baking");
                 yield return new WaitForSeconds(2.5f);
             }
 
@@ -166,6 +178,60 @@ public class TutorialDirector : MonoBehaviour
     private static void TapMachine(CoffeeMachine machine)
     {
         machine.OnPointerClick(EventFor(machine.gameObject));
+    }
+
+    #endregion
+
+    #region Waiting for the player's tap
+
+    /// Sits on the blocker image; every tap on screen lands here while the tutorial runs.
+    public class TapCatcher : MonoBehaviour, IPointerClickHandler
+    {
+        public System.Action<Vector2> OnTap;
+        public void OnPointerClick(PointerEventData eventData) => OnTap?.Invoke(eventData.position);
+    }
+
+    private void HandleTap(Vector2 screen)
+    {
+        if (awaitingHit == null || !awaitingHit(screen)) return; // not waiting, or missed the target
+        awaitingHit = null;
+        tapped = true;
+    }
+
+    private IEnumerator WaitForTap(System.Func<Vector2, bool> hit)
+    {
+        tapped = false;
+        awaitingHit = hit;
+        yield return new WaitUntil(() => tapped);
+    }
+
+    private IEnumerator WaitForTapOnWorld(Transform target)
+    {
+        return WaitForTap(screen => HitsWorld(screen, target));
+    }
+
+    private IEnumerator WaitForTapOnRect(RectTransform target)
+    {
+        return WaitForTap(screen =>
+        {
+            if (target == null) return false;
+            var targetCanvas = target.GetComponentInParent<Canvas>();
+            var cam = targetCanvas != null && targetCanvas.renderMode != RenderMode.ScreenSpaceOverlay ? targetCanvas.worldCamera : null;
+            return RectTransformUtility.RectangleContainsScreenPoint(target, screen, cam);
+        });
+    }
+
+    /// True when a tap at this screen point lands on the target's collider (3D or 2D) or one of its children.
+    private static bool HitsWorld(Vector2 screen, Transform target)
+    {
+        var cam = Camera.main;
+        if (cam == null || target == null) return false;
+        var ray = cam.ScreenPointToRay(screen);
+        foreach (var h in Physics.RaycastAll(ray, 1000f))
+            if (h.transform == target || h.transform.IsChildOf(target)) return true;
+        foreach (var h in Physics2D.GetRayIntersectionAll(ray, 1000f))
+            if (h.transform == target || h.transform.IsChildOf(target)) return true;
+        return false;
     }
 
     #endregion
@@ -237,12 +303,13 @@ public class TutorialDirector : MonoBehaviour
     {
         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screen, null, out var local);
         hand.gameObject.SetActive(true);
-        // The fingertip is the sprite's top-centre (its pivot), so it lands on the target; a small
-        // offset keeps the finger from hiding the item it points at
-        hand.anchoredPosition = local + new Vector2(18f, -10f);
+        // The arrow tip is the sprite's bottom-centre (its pivot), so it points down at the target
+        // from just above it and never covers the item
+        handBase = local + new Vector2(0f, 60f);
+        hand.anchoredPosition = handBase;
         if (pulse != null) StopCoroutine(pulse);
         pulse = StartCoroutine(Pulse());
-        yield return new WaitForSeconds(HoldOnPointer);
+        yield return null;
     }
 
     private IEnumerator Pulse()
@@ -250,8 +317,8 @@ public class TutorialDirector : MonoBehaviour
         var t = 0f;
         while (true)
         {
-            t += Time.unscaledDeltaTime * 4f;
-            hand.localScale = Vector3.one * (1f + 0.08f * Mathf.Sin(t));
+            t += Time.unscaledDeltaTime * 5f;
+            hand.anchoredPosition = handBase + new Vector2(0f, 14f + 14f * Mathf.Sin(t));
             yield return null;
         }
     }
@@ -269,7 +336,7 @@ public class TutorialDirector : MonoBehaviour
     private void BuildUi()
     {
         var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF");
-        var handSprite = Resources.Load<Sprite>("Tutorial/hand");
+        var handSprite = Resources.Load<Sprite>("Tutorial/arrow");
 
         var go = new GameObject("TutorialCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         canvas = go.GetComponent<Canvas>();
@@ -285,6 +352,7 @@ public class TutorialDirector : MonoBehaviour
         blocker = NewImage("Blocker", canvasRect, new Color(0, 0, 0, 0f));
         Stretch(blocker.rectTransform);
         blocker.raycastTarget = true;
+        blocker.gameObject.AddComponent<TapCatcher>().OnTap = HandleTap;
 
         // Caption at the top
         var box = NewImage("CaptionBox", canvasRect, new Color(0.12f, 0.08f, 0.06f, 0.82f));
@@ -299,12 +367,12 @@ public class TutorialDirector : MonoBehaviour
         caption.alignment = TextAlignmentOptions.Center;
         caption.enableWordWrapping = true;
 
-        // Pointing hand
+        // Pointing arrow
         var handImage = NewImage("Hand", canvasRect, Color.white);
         hand = handImage.rectTransform;
         hand.anchorMin = hand.anchorMax = new Vector2(0.5f, 0.5f);
-        hand.pivot = new Vector2(0.5f, 1f);
-        hand.sizeDelta = new Vector2(220f, 220f);
+        hand.pivot = new Vector2(0.5f, 0f);
+        hand.sizeDelta = new Vector2(150f, 150f);
         handImage.sprite = handSprite;
         handImage.preserveAspect = true;
         handImage.raycastTarget = false;

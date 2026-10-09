@@ -37,8 +37,7 @@ Lifetime: 55 downloads since 29 Nov 2025, all from App Store search, 0.9 percent
 ## Next
 
 - [ ] Ship 26.10.09 (fixes + interstitial): TestFlight phone test, App Privacy tracking declaration, then submit on the owner's explicit go
-- [ ] Level 0 tutorial: built and editor-tested on branch feature/tutorial-level (9 Oct). Decide which release it goes into; needs a phone test first
-- [ ] Two more customers per day and night mode: demos in the report, waiting for a yes
+- [ ] Next build (branch feature/tutorial-level, 9 Oct): interactive Level 0 tutorial with arrow, two more customers per day with star thresholds scaled, evening and night tint (main scene and kitchen window). Editor-tested by Claude and the owner; needs a phone test, then merge and TestFlight on the owner's go
 - [ ] App preview video for the store page: storyboard and shot list (Claude), gameplay capture (owner or editor), edit in iMovie or CapCut; 15 to 30 s portrait, Apple specs per device size
 - [ ] Marketing discovery: plan with cost and effort for keyword work, Apple Search Ads test, short-video clips, cozy-game communities, Apple featuring request
 - [ ] Store page text: title, subtitle, keyword field
@@ -128,7 +127,7 @@ Found in the deep review of 7 to 8 October. Each is functional but minor, or a j
 - Play and Continue button clicks ignore Sound Off. (06)
 - Kitchen bake timers carry over through Restart and Main Menu; the oven ding can play in the Shop. Harmless. (04)
 - Rewarded ad status labels ("Loading ad...", "+$5 coins added!") are unassigned in the Shop scene, so they never show. (05)
-- `drag.anim` has an animation event with an empty function name; the editor logs an error every 4 s during the tutorial hand. (02, 07)
+- `drag.anim` has an animation event with an empty function name; the editor logs an error every 4 s while the old scene TutorialPanel hand animation plays. (02, 07)
 - Several clips were deleted before March and are unassigned (button click, item pickup, wrong item, level win). Leave-alone list covers AudioManager clips. (06, 07)
 - Settings panel animator runs on scaled time, so it freezes while paused. (06)
 - The iPhone ringer switch mutes the game (Ambient audio session). Standard for casual games. (06)

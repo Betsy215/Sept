@@ -32,6 +32,9 @@ public class OrderSystem : MonoBehaviour
 
     private int ordersCompleted = 0;
 
+    /// Orders finished or expired so far this day (read by DayNightTint).
+    public int OrdersCompleted => ordersCompleted;
+
     [Header("Order Display UI")] public Text orderProgressText; // "Orders: 2/3"
     public Transform orderContainer; // Parent object to hold order items
     public Text orderTitleText; // Text showing "Order:" or similar

@@ -111,6 +111,9 @@ public class LevelManager : MonoBehaviour
         if (currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance))
             gameObject.AddComponent<TutorialDirector>().Begin(this, gamePhaseManager, orderSystem, customerManager);
 
+        // Evening and night over the last two customers; draws only on the background image
+        if (orderSystem != null) gameObject.AddComponent<DayNightTint>().Begin(orderSystem);
+
         // REMOVED: StartGameplayMusic(); - Music now handled by phase transitions
     }
 

@@ -19,7 +19,11 @@ Scene changes go through `SceneTransitionManager.TransitionToScene`, which fades
 
 ## Level 0 tutorial (branch feature/tutorial-level)
 
-`Tutorial/TutorialDirector.cs` is added to the LevelManager object at start when the session has not seen the tutorial (`SessionData.tutorialSeen`) or `TutorialDirector.ReplayRequested` is set. It builds its own overlay canvas (blocker, caption, hand, end card), skips arrangement, forces a coffee-and-bread order (`OrderSystem.forcedNextOrder`), freezes the order timer (`OrderSystem.freezeTimer`), and drives the real tap handlers for bread, coffee, the coffee machine, the kitchen button and the bread oven. Let's go! restores the coin snapshot, marks the tutorial seen and reloads into Day 1; Replay reloads with the flag set. Sprites live in `Resources/Tutorial`.
+`Tutorial/TutorialDirector.cs` is added to the LevelManager object at start when the session has not seen the tutorial (`SessionData.tutorialSeen`) or `TutorialDirector.ReplayRequested` is set. It builds its own overlay canvas (blocker, caption, arrow, end card), skips arrangement, forces a coffee-and-bread order (`OrderSystem.forcedNextOrder`) and freezes the order timer (`OrderSystem.freezeTimer`). Each step points the arrow at one thing (bread, coffee, coffee machine, kitchen button, bread oven) and waits for the player to tap it: the blocker catches every tap (`TapCatcher`), a tap that hits the target's collider or rect is forwarded to the real handler, anything else is ignored. Let's go! restores the coin snapshot, marks the tutorial seen and reloads into Day 1; Replay reloads with the flag set. Sprites live in `Resources/Tutorial` (arrow, moon).
+
+## Evening and night (branch feature/tutorial-level)
+
+`LevelControl/DayNightTint.cs` is added to the LevelManager object every level. It reads `OrderSystem.OrdersCompleted` each frame: with two orders left it fades the main Canvas `bg` image to a dusk blue over 3 s and shows a faint moon; with one left it deepens to night with moon and stars (runtime-built `NightSky` object right above `bg`). While the kitchen is open it overlays the painted window in the kitchen background (`NightWindow`, anchored to the pane's share of the `bg` rect) with the same stage. Nothing else is tinted. The scene reload at Restart or the next day brings daylight back. Days shorter than 4 orders never get night.
 
 ## Persistent objects
 
@@ -63,7 +67,7 @@ Banners were considered and parked: they earn roughly a hundredth of an intersti
 
 | Want to | Go to |
 | --- | --- |
-| Tune a level (orders, timer, order size, star thresholds) | `Assets/Entity/Level<N>Data.asset` |
+| Tune a level (orders, timer, order size, star thresholds) | `Assets/Entity/Level<N>Data.asset` (9 October: every day got 2 more orders, thresholds scaled by the same ratio) |
 | Add a level | Duplicate a LevelData asset, add it to the `allLevels` array on LevelManager in GameSceneOne |
 | Add a shop item | Shop scene, duplicate a ShopItemPrefab under the item container, set type, name, price |
 | Add a food | Prefab under `Assets/Prefabs`, a `ServeableItem` + `RefillableItem` on it, matching `foodType` string in OrderSystem's list, shop item to unlock it |

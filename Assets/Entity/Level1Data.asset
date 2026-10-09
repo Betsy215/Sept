@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelNumber: 1
   levelName: Day 1
-  ordersPerLevel: 5
+  ordersPerLevel: 7
   orderDisplayTime: 5
   timeBetweenOrders: 3
   minOrderItems: 1
   maxOrderItems: 2
-  starThreshold1: 50
-  starThreshold2: 100
-  starThreshold3: 150
+  starThreshold1: 70
+  starThreshold2: 140
+  starThreshold3: 210
   maxPossibleScore: 0
   backgroundSprite: {fileID: 0}
   useSpecificFoodTypes: 0
