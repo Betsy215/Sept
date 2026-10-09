@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.gamelovers.mcp-unity": "https://github.com/CoderGamester/mcp-unity.git",
+    "com.coplaydev.unity-mcp": "https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#v10.3.0",
     "com.unity.ads": "4.17.0",
     "com.unity.ads.ios-support": "1.0.1",
     "com.unity.collab-proxy": "2.5.2",
