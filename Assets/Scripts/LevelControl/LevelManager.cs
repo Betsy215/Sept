@@ -107,6 +107,10 @@ public class LevelManager : MonoBehaviour
         SetupPauseUI();
         SetupSessionEvents();
 
+        // Level 0: a self-playing tutorial before the first real day (or a requested replay)
+        if (currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance))
+            gameObject.AddComponent<TutorialDirector>().Begin(this, gamePhaseManager, orderSystem, customerManager);
+
         // REMOVED: StartGameplayMusic(); - Music now handled by phase transitions
     }
 

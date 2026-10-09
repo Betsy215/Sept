@@ -14,6 +14,9 @@ public class SessionData
 
     public List<string> purchasedFoodItems;
     public List<string> purchasedCharacters;
+
+    // True once the player has watched (or skipped past) the Level 0 tutorial for this game
+    public bool tutorialSeen;
     // JsonUtility cannot serialize a Dictionary, so upgrade levels are mirrored
     // into two parallel lists around every save and load (see Sync methods).
     [NonSerialized] public Dictionary<string, int> foodUpgradeLevels;
@@ -397,6 +400,13 @@ public class SessionManager : MonoBehaviour
     public bool HasActiveSession()
     {
         return currentSession != null && currentSession.isActive;
+    }
+
+    public void MarkTutorialSeen()
+    {
+        if (currentSession == null) return;
+        currentSession.tutorialSeen = true;
+        SaveSession();
     }
 
     public float GetTotalScore()

@@ -233,7 +233,7 @@ public class OrderSystem : MonoBehaviour
 
     private void UpdateOrderTimer()
     {
-        orderTimer -= Time.deltaTime;
+        if (!freezeTimer) orderTimer -= Time.deltaTime;
 
         if (orderTimer <= 0)
         {
@@ -242,6 +242,14 @@ public class OrderSystem : MonoBehaviour
         }
     }
 
+    /// When set, the next generated order uses exactly these food types (in this order) instead of a
+    /// random pick, then clears itself. Used by the Level 0 tutorial to show a coffee and a bread.
+    [System.NonSerialized] public List<string> forcedNextOrder;
+
+    /// While true the order countdown does not run (the tutorial holds the order open while it
+    /// explains). The tip is still computed from the remaining time, so it stays realistic.
+    [System.NonSerialized] public bool freezeTimer;
+
     public void GenerateNewOrder()
     {
         if (orderActive) return;
@@ -249,11 +257,23 @@ public class OrderSystem : MonoBehaviour
         // Clear previous order
         ClearOrderDisplay();
 
+        currentOrderItems.Clear();
+
+        if (forcedNextOrder != null && forcedNextOrder.Count > 0)
+        {
+            var forced = forcedNextOrder;
+            forcedNextOrder = null;
+            for (var i = 0; i < forced.Count; i++)
+                CreateOrderItemInstance(forced[i], i, forced.Count);
+            DisplayOrder();
+            Debug.Log($"New forced order generated with {currentOrderItems.Count} items");
+            return;
+        }
+
         // Generate random order items (clamp so min can never exceed max, e.g. a customer-specific minimum on a small level)
         var safeMax = Mathf.Max(1, maxOrderItems);
         var safeMin = Mathf.Clamp(minOrderItems, 1, safeMax);
         var orderSize = Random.Range(safeMin, safeMax + 1);
-        currentOrderItems.Clear();
 
         // REMOVED: Allow duplicate food items in orders
         // orderSize = Mathf.Min(orderSize, activeFoodTypes.Count);
