@@ -43,6 +43,13 @@ Lifetime: 55 downloads since 29 Nov 2025, all from App Store search, 0.9 percent
 - [ ] Store page text: title, subtitle, keyword field
 - [ ] Re-read retention and conversion in November, then decide on content
 
+Backlog from the owner, 9 October (after the goals above):
+
+- [ ] More default customers; purchased customers carry a bonus (bigger orders, better tips, more patience) so buying feels like progress. Needs a plan and new sprites
+- [ ] Main scene visual pass: more detail, more harmonious palette (kitchen stays as is). Ideas with mock-ups
+- [ ] Marketing plan and app page improvements; TikTok account is the owner's to create, Claude writes the plan and captions
+- [ ] Country breakdown of downloads and play (App Store Connect Territory filter, Unity Ads country view) into the report
+
 ## Backlog (needed, no rush)
 
 - [ ] Unity Ads payout profile
