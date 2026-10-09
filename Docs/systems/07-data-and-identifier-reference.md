@@ -149,7 +149,7 @@ No event names a method that no longer exists. Unused receivers kept for future 
 | Fade | 1 s total (0.5 out + 0.5 in) | 1 | MainMenu TransitionSetup :1088 | scene transitions |
 | Shop slide-in | 3 s | 1 | Shop :3788 | |
 | Shop scroll | 800 px over 1 s, clamp -38..2000 | same | ShopManager | |
-| Play / Continue delay | 2 s; start-over confirm window 4 s | | `ClickPlay.cs:26,53`, `ClickContinue` | |
+| Play / Continue delay | 2 s (no start-over confirm since 9 October) | | `ClickPlay.cs:26,53`, `ClickContinue` | |
 | Pause press | 0.1 s realtime | | `PauseButton.cs:130` | |
 | Score popup | 1 s anim, stays 4 s, fade 0.5 s, 0.2 s delay | | SimpleScorePopup, `ScoreManager.cs:184` | |
 | Feedback text hide | 2 s | | `ScoreManager.cs:329` | |

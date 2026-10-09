@@ -297,7 +297,7 @@ Failures go into `PopupItemInfo` in red while the popup is open (the popup stays
 
 ### Play (`Scripts/Buttons/ClickPlay.cs`, MainMenu object `play`)
 
-1. Pointer up. If there is saved progress (active session with `levelsCompleted >= 1` or wallet > 0, :56-62) and the button is not armed, show "This erases your saved game. Tap PLAY again to start over." for 4 s (real time) and stop.
+1. Pointer up. Play starts a new game on one tap even with saved progress (the 4 s confirm notice was removed on 9 October at the owner's request).
 2. Otherwise (no session, a finished session, or a second tap within 4 s): lock, wait 2 s, `StartNewSession`, stop music, transition to GameSceneOne (:125-140).
 3. GameSceneOne `LevelManager.Start` loads day index 0.
 

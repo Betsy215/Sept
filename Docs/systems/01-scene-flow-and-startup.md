@@ -216,7 +216,7 @@ Order dependency: an item hidden in Awake (cooldown running) skips its gate's St
 2. Pointer up: `launching = true`, `WaitForDelay(2)`.
 3. After 2 s: `ContinueSession()` (the cached `levelManager` is dead, so it only fires `OnTotalScoreChanged`), `StopMusic`, `TransitionToScene("GameSceneOne")` (`ClickContinue.cs:88-115`). `LevelManager.Start` loads `currentLevel` from the session.
 
-Play and Continue have separate `launching` flags. With saved progress, tapping Continue and then Play twice within 2 s runs both coroutines; the later one's transition is ignored, but if Play's runs it erases the save first. That needs two deliberate taps on a button that shows a warning, so it is left as is.
+Play and Continue have separate `launching` flags. With saved progress, tapping Continue and then Play twice within 2 s runs both coroutines; the later one's transition is ignored, but if Play's runs it erases the save first. Since 9 October Play starts over on a single tap (the confirm notice was removed at the owner's request), so this is now one mis-tap away; left as is because the owner asked for the one-tap Play.
 
 ### Restart (GameSceneOne: pause panel any time, level-complete panel on levels 1 to 13)
 `RestartLevel` (`LevelManager.cs:301-332`): `timeScale = 1`, clear the score popup, hide every panel, `RestoreScoreToSnapshot()` (money back to the value at `StartLevel`), `SetCurrentLevel(currentLevelIndex)` (undoes the advance `OnLevelCompleted` made, but `levelsCompleted` stays advanced), `StopMusic`, `TransitionToScene(active scene)`. Kitchen timers are not reset.
@@ -265,7 +265,7 @@ Unity Ads listeners (`IUnityAdsLoadListener`/`IUnityAdsShowListener`) are passed
 
 **Who sets it.** Only `LevelManager`: `PauseGame` 0 (`LevelManager.cs:254`); `ResumeGame` 1 (`:274`); `RestartLevel` 1 (`:306`); `LoadNextLevel` 1 (`:660`); `GoToMainMenu` 1 (`:692`). Every exit from GameSceneOne resets it to 1, and pause is refused while the level-complete panel is showing (`:247-251`), so a 0 cannot leak into another scene through the buttons.
 
-**Uses unscaled or real time (keeps running while paused):** scene fades (`SceneTransitionManager.cs:195, 213`); `PauseButton` 0.1 s delay (`PauseButton.cs:158`); `ClickPlay` confirm window (`ClickPlay.cs:80`); interstitial and rewarded load/retry/watchdog timers; kitchen timers and cooldowns (`KitchenItemWithTimer.cs:93, 162-173, 262`, `OvenKitchenBase.cs:57`); kitchen pop effects (`JuiceInKitchen`, `AppleInKitchen`, `CoffeeInKitchen`); `ScrollingBg`, `BalatroWobble`, `Balatrorhythm` animation.
+**Uses unscaled or real time (keeps running while paused):** scene fades (`SceneTransitionManager.cs:195, 213`); `PauseButton` 0.1 s delay (`PauseButton.cs:158`); interstitial and rewarded load/retry/watchdog timers; kitchen timers and cooldowns (`KitchenItemWithTimer.cs:93, 162-173, 262`, `OvenKitchenBase.cs:57`); kitchen pop effects (`JuiceInKitchen`, `AppleInKitchen`, `CoffeeInKitchen`); `ScrollingBg`, `BalatroWobble`, `Balatrorhythm` animation.
 
 **Uses scaled time (freezes while paused):** order and customer timers, `WaitForSeconds` in `ShowLevelCompletePopup` (the 3 s delay before the panel) and the money count-up, `ClickPlay`/`ClickContinue` 2 s launch delay, `ClickContinue` Invoke, RefillSystem rescan, AudioManager playlist track waits, Shop slide and scroll, Animators in Normal update mode (CoffeeMachine, Settings).
 

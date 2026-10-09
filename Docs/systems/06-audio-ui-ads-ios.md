@@ -169,7 +169,7 @@ All CanvasScalers: Scale With Screen Size, 1080 x 1920, match 0.5.
 
 | Script | Where | What it does |
 | --- | --- | --- |
-| `ClickPlay` | MainMenu `Canvas/play` (`MainMenu.unity:283`) | Press and release sprites and clicks; with saved progress the first tap only arms a 4 s realtime confirm (45-49, 64-83); then `WaitForSeconds(2)` (**scaled**, 127), `StartNewSession`, `StopMusic`, transition to `GameSceneOne`. `launching` blocks repeats. |
+| `ClickPlay` | MainMenu `Canvas/play` (`MainMenu.unity:283`) | Press and release sprites and clicks; then `WaitForSeconds(2)` (**scaled**), `StartNewSession`, `StopMusic`, transition to `GameSceneOne`. `launching` blocks repeats. One tap starts over even with saved progress: the two-tap confirm notice was removed on 9 October at the owner's request. |
 | `ClickContinue` | MainMenu `ContinueButton` (972) | Interactable only if `levelsCompleted >= 1` (29-61, re-checked 0.1 s after `OnEnable`); release waits 2 s scaled (90), then `ContinueSession` or `StartNewSession`, `StopMusic`, transition. Its compress clip is (missing). |
 | `PauseButton` | GameSceneOne `Canvas/PauseButton` (6052) | Darken plus Z press; release calls `TogglePause` after 0.1 s realtime (156-174); slide-off cancels (140-154). Silent: no source. |
 | `SettingButton` | Added component on the Settings prefab's gear in both scenes (MainMenu 1295, GameSceneOne 5573) | Darkens on press only. |
