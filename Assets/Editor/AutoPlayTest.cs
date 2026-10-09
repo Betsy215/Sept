@@ -139,9 +139,9 @@ public static class AutoPlayTest
             if (EditorApplication.timeSinceStartup - stateSince < 1.5) { Wait(0.5f); return; }
             daysDone++;
             Note($"Day {session.currentLevel + 1} done: money={session.totalScore:F2}, completed={session.levelsCompleted}");
-            if (session.levelsCompleted >= 14 || session.currentLevel >= 13)
+            if (session.currentLevel + 1 >= lm.allLevels.Length)
             {
-                Note("ALL 14 DAYS COMPLETE");
+                Note("ALL DAYS COMPLETE");
                 done = true; Stop(); return;
             }
             lm.LoadNextLevel();

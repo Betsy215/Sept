@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 636e6bf237c24bc2989b08069202de0c, type: 3}
+  m_Name: Level20Data
+  m_EditorClassIdentifier: 
+  levelNumber: 20
+  levelName: Day 20
+  ordersPerLevel: 16
+  orderDisplayTime: 4
+  timeBetweenOrders: 3
+  minOrderItems: 2
+  maxOrderItems: 4
+  starThreshold1: 1090
+  starThreshold2: 1220
+  starThreshold3: 1350
+  maxPossibleScore: 50
+  backgroundSprite: {fileID: 0}
+  useSpecificFoodTypes: 0
+  difficultyMultiplier: 1

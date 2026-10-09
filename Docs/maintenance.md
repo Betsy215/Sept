@@ -12,7 +12,7 @@ Notes for whoever maintains this project next, including Claude in a future sess
 - `PopupCanvas` in GameSceneOne is Screen Space Overlay, sorting order 1, above the camera-space `Canvas`. The pause panel does not cover the whole screen; the pause button and kitchen button remain tappable while paused, which is handled in code (toggle and guard).
 - `DraggableFood` exists in no scene or prefab; it is added at runtime by `ServeableItem.SetDraggingEnabled(true)`.
 - `KitchenScene` loads additively over GameSceneOne. It has no EventSystem and no AudioListener on purpose. Its camera is depth 1, culling only layer 6 (Kitchen).
-- Level data assets 1 to 14 are wired in order on `LevelManager.allLevels` in GameSceneOne.
+- Level data assets 1 to 24 are wired in order on `LevelManager.allLevels` in GameSceneOne (Days 15 to 24 added 9 October: 13 to 18 orders, 4 s timer, 2 to 4 items, stars rising to 1320/1460/1600). The last day in the list ends the session; nothing else hard-codes the count.
 
 ## Scoring
 

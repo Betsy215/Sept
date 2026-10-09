@@ -8,7 +8,7 @@ Verified against the code, `GameSceneOne.unity`, the four customer prefabs, `Cus
 
 | Field | Scene value | Used? |
 | --- | --- | --- |
-| `allLevels` | Level1Data to Level14Data, in order (GUIDs checked against the `.meta` files) | yes |
+| `allLevels` | Level1Data to Level24Data, in order (GUIDs checked against the `.meta` files) | yes |
 | `orderSystem`, `scoreManager`, `customerManager`, `gamePhaseManager` | the scene singletons | yes |
 | `serveableItems` | Apple, Choux, Juice, Bread, Cake, Coffee (six; Melon is not in the list) | yes |
 | `backgroundRenderer` | None | `ApplyVisualSettings` (LM:477) does nothing; every `LevelData.backgroundSprite` is None too |
@@ -218,6 +218,16 @@ All have `timeBetweenOrders` 3 (unused in the customer flow), `backgroundSprite`
 | Level12Data | Day 12 | 12 | 4 | 2 to 4 | 660 / 780 / 900 |
 | Level13Data | Day 13 | 12 | 4 | 2 to 4 | 720 / 840 / 960 |
 | Level14Data | Day 14 | 13 | 4 | 2 to 4 | 770 / 890 / 1000 |
+| Level15Data | Day 15 | 13 | 4 | 2 to 4 | 820 / 940 / 1050 |
+| Level16Data | Day 16 | 14 | 4 | 2 to 4 | 870 / 990 / 1110 |
+| Level17Data | Day 17 | 14 | 4 | 2 to 4 | 920 / 1040 / 1160 |
+| Level18Data | Day 18 | 15 | 4 | 2 to 4 | 980 / 1100 / 1230 |
+| Level19Data | Day 19 | 15 | 4 | 2 to 4 | 1030 / 1150 / 1280 |
+| Level20Data | Day 20 | 16 | 4 | 2 to 4 | 1090 / 1220 / 1350 |
+| Level21Data | Day 21 | 16 | 4 | 2 to 4 | 1140 / 1270 / 1400 |
+| Level22Data | Day 22 | 17 | 4 | 2 to 4 | 1200 / 1340 / 1480 |
+| Level23Data | Day 23 | 17 | 4 | 2 to 4 | 1250 / 1390 / 1530 |
+| Level24Data | Day 24 | 18 | 4 | 2 to 4 | 1320 / 1460 / 1600 |
 
 ## 6. One order, start to finish (Day 1, Girl, Bread + Coffee)
 
