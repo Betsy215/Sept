@@ -37,7 +37,6 @@ Lifetime: 55 downloads since 29 Nov 2025, all from App Store search, 0.9 percent
 ## Next
 
 - [x] Days 15 to 24 added (9 Oct), see Docs/systems/02 for the table
-- [ ] **REVERT before any release build:** shop characters temporarily cost 1 coin (commit f13d4d9, 9 Oct) so the owner can test unlocks. Real prices: Grandma 300, Chef 300, Yoga 500, Businessman 700
 - [ ] Ship 26.10.09 (fixes + interstitial): TestFlight phone test, App Privacy tracking declaration, then submit on the owner's explicit go
 - [ ] Next build (branch feature/tutorial-level, 9 Oct): interactive Level 0 tutorial with arrow, two more customers per day with star thresholds scaled, evening and night tint (main scene and kitchen window). Editor-tested by Claude and the owner; needs a phone test, then merge and TestFlight on the owner's go
 - [ ] App preview video for the store page: storyboard and shot list (Claude), gameplay capture (owner or editor), edit in iMovie or CapCut; 15 to 30 s portrait, Apple specs per device size

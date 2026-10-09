@@ -647,7 +647,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_text
-      value: $ 1
+      value: $ 500
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_fontAsset
@@ -707,7 +707,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 1
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -735,13 +735,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
-      value: '$ 1
+      value: '$ 500
 
         Never in a hurry: 50% more time'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
-      value: $ 1
+      value: $ 500
       objectReference: {fileID: 0}
     - target: {fileID: 9095678449651516868, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Sprite
@@ -2587,7 +2587,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_text
-      value: $ 1
+      value: $ 300
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_margin.y
@@ -2651,7 +2651,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 1
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -2679,13 +2679,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
-      value: '$ 1
+      value: '$ 300
 
         Big orders: one extra item'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
-      value: $ 1
+      value: $ 300
       objectReference: {fileID: 0}
     - target: {fileID: 9095678449651516868, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Sprite
@@ -3118,7 +3118,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_text
-      value: $ 1
+      value: $ 300
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_fontAsset
@@ -3194,7 +3194,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 1
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -3222,13 +3222,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
-      value: '$ 1
+      value: '$ 300
 
         Tips double'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
-      value: $ 1
+      value: $ 300
       objectReference: {fileID: 0}
     - target: {fileID: 9095678449651516868, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Sprite
@@ -3933,7 +3933,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_text
-      value: $ 1
+      value: $ 700
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_fontAsset
@@ -3981,7 +3981,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 1
+      value: 700
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemName
@@ -3993,13 +3993,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
-      value: '$ 1
+      value: '$ 700
 
         Tips triple, but he is in a hurry'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
-      value: $ 1
+      value: $ 700
       objectReference: {fileID: 0}
     - target: {fileID: 9095678449651516868, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Sprite
