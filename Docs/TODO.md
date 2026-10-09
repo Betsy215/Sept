@@ -37,6 +37,8 @@ Lifetime: 55 downloads since 29 Nov 2025, all from App Store search, 0.9 percent
 ## Next
 
 - [ ] Ship 26.10.09 (fixes + interstitial): TestFlight phone test, App Privacy tracking declaration, then submit on the owner's explicit go
+- [ ] Level 0 tutorial: built and editor-tested on branch feature/tutorial-level (9 Oct). Decide which release it goes into; needs a phone test first
+- [ ] Two more customers per day and night mode: demos in the report, waiting for a yes
 - [ ] App preview video for the store page: storyboard and shot list (Claude), gameplay capture (owner or editor), edit in iMovie or CapCut; 15 to 30 s portrait, Apple specs per device size
 - [ ] Marketing discovery: plan with cost and effort for keyword work, Apple Search Ads test, short-video clips, cozy-game communities, Apple featuring request
 - [ ] Store page text: title, subtitle, keyword field

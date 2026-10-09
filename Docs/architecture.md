@@ -17,6 +17,10 @@ MainMenu ──Play / Continue──▶ GameSceneOne ──level complete──�
 
 Scene changes go through `SceneTransitionManager.TransitionToScene`, which fades to black on its own canvas and uses unscaled time so it works while paused.
 
+## Level 0 tutorial (branch feature/tutorial-level)
+
+`Tutorial/TutorialDirector.cs` is added to the LevelManager object at start when the session has not seen the tutorial (`SessionData.tutorialSeen`) or `TutorialDirector.ReplayRequested` is set. It builds its own overlay canvas (blocker, caption, hand, end card), skips arrangement, forces a coffee-and-bread order (`OrderSystem.forcedNextOrder`), freezes the order timer (`OrderSystem.freezeTimer`), and drives the real tap handlers for bread, coffee, the coffee machine, the kitchen button and the bread oven. Let's go! restores the coin snapshot, marks the tutorial seen and reloads into Day 1; Replay reloads with the flag set. Sprites live in `Resources/Tutorial`.
+
 ## Persistent objects
 
 Created in MainMenu, marked DontDestroyOnLoad, and deduplicated when a scene that also contains them is reloaded.
