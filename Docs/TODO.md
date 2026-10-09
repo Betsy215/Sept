@@ -30,6 +30,27 @@ Status as of 7 October 2026. Done items are kept for a while so the history is v
 - [x] iOS build number set to 1 in Player Settings (bundle ID was already set)
 - [x] Second pass (7 October, evening): refill holds cannot serve or be hijacked by a second finger; coffee upgrades apply regardless of start order; the coffee machine uses EventSystem clicks and respects pause; kitchen open/close guarded against double taps; new game clears kitchen timers; drags owned by one finger and ended on phase switch; table bounds use the real safe-area rect; scene transitions always reset; shop buttons no longer fire twice; purchase popup blocks the buttons beneath it; camera far clip moved off the UI plane
 
+## Direction (decided 9 October 2026)
+
+Lifetime: 55 downloads since 29 Nov 2025, all from App Store search, 0.9 percent page conversion, ad revenue in cents. The game is undiscovered, not under-monetised. Stay free, ship the interstitial, no paid version or Remove Ads purchase until downloads reach a few hundred a month. Next work is the store page and marketing, not more levels.
+
+## Next
+
+- [ ] Ship 26.10.09 (fixes + interstitial): TestFlight phone test, App Privacy tracking declaration, then submit on the owner's explicit go
+- [ ] App preview video for the store page: storyboard and shot list (Claude), gameplay capture (owner or editor), edit in iMovie or CapCut; 15 to 30 s portrait, Apple specs per device size
+- [ ] Marketing discovery: plan with cost and effort for keyword work, Apple Search Ads test, short-video clips, cozy-game communities, Apple featuring request
+- [ ] Store page text: title, subtitle, keyword field
+- [ ] Re-read retention and conversion in November, then decide on content
+
+## Backlog (needed, no rush)
+
+- [ ] Unity Ads payout profile
+- [ ] Merge Unity's SKAdNetwork ID list into IOSPostBuild.cs (dashboard reports missing IDs)
+- [ ] Paid Apps Agreement, bank and tax forms (only before adding a purchase; approval takes days)
+- [ ] Remove Ads purchase (later)
+- [ ] Interstitial frequency review once retention data exists
+- [ ] Write the automated release chain into Docs/ios-testing-and-release.md after the first full release
+
 ## In progress
 
 - [ ] **Interstitial ads between level and Shop.** Code is in (`InterstitialAdService`, called from `LevelManager.LoadNextLevel`), shows after every level by default. Needs the `Interstitial_iOS` ad unit created on the Unity Ads dashboard, then a device test: finish Day 1, tap Next Level, the ad plays, the Shop opens after it or after skip. Also confirm the Shop opens with no delay when offline.
