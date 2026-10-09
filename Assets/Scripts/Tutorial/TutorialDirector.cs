@@ -144,7 +144,8 @@ public class TutorialDirector : MonoBehaviour
                 // While it bakes, point at every other kitchen section the player can unlock later
                 Say("More kitchen upgrades available as you progress!");
                 var sections = new List<RectTransform>();
-                foreach (var name in new[] { "apples", "juice", "coffee", "cake", "cutboard", "oven1", "oven3" })
+                // Slots rather than the items: unpurchased items are inactive, their slots are always there
+                foreach (var name in new[] { "windowleft", "cableft", "coffee", "tableleft", "tableright", "spot2", "spot3" })
                 {
                     var go = FindInScene("KitchenScene", name);
                     if (go != null) sections.Add(go.GetComponent<RectTransform>());
@@ -330,7 +331,7 @@ public class TutorialDirector : MonoBehaviour
         var scene = SceneManager.GetSceneByName(sceneName);
         if (!scene.isLoaded) return null;
         foreach (var root in scene.GetRootGameObjects())
-            foreach (var t in root.GetComponentsInChildren<Transform>(false))
+            foreach (var t in root.GetComponentsInChildren<Transform>(true))
                 if (t.name == name) return t.gameObject;
         return null;
     }
