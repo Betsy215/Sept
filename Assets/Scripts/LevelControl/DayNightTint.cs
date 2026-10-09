@@ -112,9 +112,9 @@ public class DayNightTint : MonoBehaviour
         // The window pane's share of the kitchen background image (measured on the painting)
         var go = new GameObject("NightWindow", typeof(RectTransform), typeof(Image));
         go.transform.SetParent(bg, false);
-        go.transform.SetAsLastSibling();
+        go.transform.SetAsFirstSibling(); // under the shelf, ovens and basket that sit in front of the window
         var rt = (RectTransform)go.transform;
-        rt.anchorMin = new Vector2(0.492f, 0.556f);
+        rt.anchorMin = new Vector2(0.515f, 0.556f);
         rt.anchorMax = new Vector2(0.9325f, 0.803f);
         rt.offsetMin = Vector2.zero;
         rt.offsetMax = Vector2.zero;
