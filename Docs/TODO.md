@@ -119,7 +119,9 @@ Found by the scene wiring audit. Each is a few clicks in the Inspector.
 - [ ] Food, character and upgrade names are string-matched across scripts, scene data and shop items. A rename in one place breaks purchases silently. A shared `FoodType` constants class would make this safer.
 - [ ] Git history is 722 MB because the Library folder was committed early on. Only worth rewriting if you clone the repo again.
 
-## Known issues, documented and not fixed
+## Known issues
+
+- On tall phones (iPhone 6.9 inch, 1320 x 2868) the Shop's "EARNED: $ 1320.00" label wraps onto two lines once earnings reach four digits (seen in the editor at that size on 9 Oct). Cosmetic; fix is a smaller font or auto-size on that text., documented and not fixed
 
 Found in the deep review of 7 to 8 October. Each is functional but minor, or a judgement call. Details and file:line references are in Docs/systems.
 
