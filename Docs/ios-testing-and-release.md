@@ -116,3 +116,19 @@ iPad screenshots are required because the project supports iPad. If you only eve
 - [ ] Build visible in TestFlight, tested on a real phone
 - [ ] Draft for this version exists under Distribution, build attached, submitted
 - [ ] Git: changes committed and pushed, export folder not committed
+
+## Automated chain from Claude Code (used for every 26.10.09 build)
+
+The whole TestFlight path runs from the terminal and the Unity editor link; only the store submission waits for the owner's go.
+
+1. **Bump**: `ProjectSettings/ProjectSettings.asset`, `bundleVersion` for the version and `buildNumber: iPhone:` for the build. Ask Unity to refresh (MCP `refresh_unity`) and confirm with `PlayerSettings.iOS.buildNumber` through `execute_code`.
+2. **Export**: MCP `manage_build` with target `ios` to `Desktop/Sept/Builds/iOS-<version>-<build>` (a new folder per build; an incremental export takes about 20 s, a fresh one a few minutes). Play mode must be off. Do not run git checkouts while it runs. After a long export the MCP status call can time out for a minute; the Editor.log line "Build Finished, Result: Success." is the real signal.
+3. **Verify** before archiving: `PlistBuddy -c "Print :CFBundleVersion" Info.plist` and `grep -l <NewClassName> Il2CppOutputProject/Source/il2cppOutput/Assembly-CSharp*.cpp` for a class added in this build.
+4. **Archive** (background, 10 to 15 minutes, log in `Builds/archives`):
+   `xcodebuild -workspace Unity-iPhone.xcworkspace -scheme Unity-iPhone -configuration Release -destination generic/platform=iOS -archivePath ../archives/FoodTruckCafe-<version>-<build>.xcarchive archive -allowProvisioningUpdates DEVELOPMENT_TEAM=XY39924J9T CODE_SIGN_STYLE=Automatic ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO`
+   The last flag is required: without it App Store validation rejects a nested Frameworks folder inside UnityFramework.
+5. **Upload**: `xcodebuild -exportArchive -archivePath <xcarchive> -exportOptionsPlist Builds/archives/exportOptions-upload.plist -exportPath <scratch> -allowProvisioningUpdates` (method app-store-connect, destination upload). This uses the Apple ID signed into Xcode; the API key cannot create the distribution certificate.
+6. **Processing**: poll `GET /v1/builds?filter[app]=6755611355&sort=-uploadedDate` with the App Store Connect API (brackets URL-encoded) until `processingState` is `VALID`, usually 10 to 20 minutes. The internal TestFlight group receives it automatically.
+7. **Submission** (owner's explicit go only): create the version in App Store Connect, attach the build, What's New, screenshots, App Privacy check, submit.
+
+Editor notes: Unity Ads shows a placeholder ad in play mode after Next Level (Skip and Close buttons on a DontDestroyOnLoad object called Placeholder); the game continues underneath it. Closing it fires the ad-finished callback, which reloads the Shop.

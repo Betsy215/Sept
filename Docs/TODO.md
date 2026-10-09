@@ -58,7 +58,7 @@ Backlog from the owner, 9 October (after the goals above):
 - [ ] Paid Apps Agreement, bank and tax forms (only before adding a purchase; approval takes days)
 - [ ] Remove Ads purchase (later)
 - [ ] Interstitial frequency review once retention data exists
-- [ ] Write the automated release chain into Docs/ios-testing-and-release.md after the first full release
+- [x] Automated release chain written into Docs/ios-testing-and-release.md (9 Oct)
 
 ## In progress
 
