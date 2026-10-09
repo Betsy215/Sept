@@ -114,8 +114,8 @@ public class DayNightTint : MonoBehaviour
         go.transform.SetParent(bg, false);
         go.transform.SetAsFirstSibling(); // under the shelf, ovens and basket that sit in front of the window
         var rt = (RectTransform)go.transform;
-        rt.anchorMin = new Vector2(0.515f, 0.556f);
-        rt.anchorMax = new Vector2(0.9325f, 0.803f);
+        rt.anchorMin = new Vector2(0.502f, 0.556f);
+        rt.anchorMax = new Vector2(0.922f, 0.803f);
         rt.offsetMin = Vector2.zero;
         rt.offsetMax = Vector2.zero;
         kitchenWindow = go.GetComponent<Image>();
@@ -186,7 +186,7 @@ public class DayNightTint : MonoBehaviour
         sky.blocksRaycasts = false;
 
         var moon = Resources.Load<Sprite>("Tutorial/moon");
-        if (moon != null) MakeImage(rt, "Moon", moon, new Vector2(330f, 470f), new Vector2(170f, 170f));
+        if (moon != null) MakeImage(rt, "Moon", moon, new Vector2(40f, 540f), new Vector2(150f, 150f)); // open sky between the bubble and the customer, under the day board
 
         // A handful of stars in the sky gap of the background; positions are in the 1080x1920 canvas space
         Vector3[] spots =

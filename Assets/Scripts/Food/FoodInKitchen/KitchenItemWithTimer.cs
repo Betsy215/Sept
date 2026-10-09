@@ -257,6 +257,23 @@ public class KitchenTimerHelper : MonoBehaviour
         running[key] = StartCoroutine(Run(key, delay));
     }
 
+    /// <summary>
+    /// Finish a running timer now: stop it and fire its callback. Used by the tutorial to
+    /// fast-forward a bake. Returns false when no timer runs for the key.
+    /// </summary>
+    public bool CompleteNow(string key)
+    {
+        if (!running.TryGetValue(key, out var co)) return false;
+        StopCoroutine(co);
+        running.Remove(key);
+        if (callbacks.TryGetValue(key, out var onComplete))
+        {
+            callbacks.Remove(key);
+            onComplete?.Invoke();
+        }
+        return true;
+    }
+
     private IEnumerator Run(string key, float delay)
     {
         yield return new WaitForSecondsRealtime(delay); // Realtime so it works across scene loads

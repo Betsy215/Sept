@@ -91,6 +91,16 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         timerHelper.StartTimer(GetCooldownKey(), bakeTime, OnBakeComplete);
     }
 
+    /// True while this oven's bake is running.
+    public bool IsBaking => CooldownRegistry.IsOnCooldown(GetCooldownKey(), bakeTime);
+
+    /// Finish the current bake immediately (the tutorial fast-forwards a long bake).
+    public void FinishBakeNow()
+    {
+        if (!IsBaking) return;
+        if (timerHelper == null || !timerHelper.CompleteNow(GetCooldownKey())) OnBakeComplete();
+    }
+
     private void OnBakeComplete()
     {
         DebugLog("Bake complete!");

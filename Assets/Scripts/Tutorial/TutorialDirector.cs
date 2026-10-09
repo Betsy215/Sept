@@ -135,7 +135,18 @@ public class TutorialDirector : MonoBehaviour
                 if (ovenScript != null) ovenScript.OnPointerClick(EventFor(oven));
                 HideHand();
                 Say("Bread is baking");
-                yield return new WaitForSeconds(2.5f);
+
+                // Let the bake run, but never make the player wait more than 3 s for the demo
+                var waited = 0f;
+                while (ovenScript != null && ovenScript.IsBaking && waited < 3f)
+                {
+                    waited += Time.unscaledDeltaTime;
+                    yield return null;
+                }
+                if (ovenScript != null && ovenScript.IsBaking) ovenScript.FinishBakeNow();
+
+                Say("Fresh bread, back to the counter");
+                yield return new WaitForSeconds(1.5f);
             }
 
             HideHand();
