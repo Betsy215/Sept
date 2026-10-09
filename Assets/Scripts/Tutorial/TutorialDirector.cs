@@ -42,6 +42,10 @@ public class TutorialDirector : MonoBehaviour
     private RectTransform captionBox;
     private RectTransform hand;
     private Vector2 handBase;
+    private Sprite arrowSprite;
+    private readonly List<RectTransform> extraArrows = new();
+    private readonly List<Vector2> extraArrowBases = new();
+    private Coroutine extraBob;
     private GameObject endCard;
     private Coroutine pulse;
 
@@ -135,18 +139,24 @@ public class TutorialDirector : MonoBehaviour
                 if (ovenScript != null) ovenScript.OnPointerClick(EventFor(oven));
                 HideHand();
                 Say("Bread is baking");
-
-                // Let the bake run, but never make the player wait more than 3 s for the demo
-                var waited = 0f;
-                while (ovenScript != null && ovenScript.IsBaking && waited < 3f)
-                {
-                    waited += Time.unscaledDeltaTime;
-                    yield return null;
-                }
-                if (ovenScript != null && ovenScript.IsBaking) ovenScript.FinishBakeNow();
-
-                Say("Fresh bread, back to the counter");
                 yield return new WaitForSeconds(1.5f);
+
+                // While it bakes, point at every other kitchen section the player can unlock later
+                Say("More kitchen upgrades available as you progress!");
+                var sections = new List<RectTransform>();
+                foreach (var name in new[] { "apples", "juice", "coffee", "cake", "cutboard", "oven1", "oven3" })
+                {
+                    var go = FindInScene("KitchenScene", name);
+                    if (go != null) sections.Add(go.GetComponent<RectTransform>());
+                }
+                ShowArrowsAt(sections);
+
+                // The real bake, however long this oven takes
+                while (ovenScript != null && ovenScript.IsBaking) yield return null;
+
+                HideExtraArrows();
+                Say("Ding! Fresh bread");
+                yield return new WaitForSeconds(2f);
             }
 
             HideHand();
@@ -304,10 +314,74 @@ public class TutorialDirector : MonoBehaviour
     private IEnumerator PointAtRect(RectTransform target)
     {
         if (target == null) yield break;
+        yield return PointAtScreen(ScreenPointOf(target));
+    }
+
+    private static Vector2 ScreenPointOf(RectTransform target)
+    {
         var targetCanvas = target.GetComponentInParent<Canvas>();
         var cam = targetCanvas != null && targetCanvas.renderMode != RenderMode.ScreenSpaceOverlay ? targetCanvas.worldCamera : null;
-        var screen = RectTransformUtility.WorldToScreenPoint(cam, target.position);
-        yield return PointAtScreen(screen);
+        return RectTransformUtility.WorldToScreenPoint(cam, target.position);
+    }
+
+    /// Finds an active object by name inside one loaded scene (GameObject.Find could pick a same-named object elsewhere).
+    private static GameObject FindInScene(string sceneName, string name)
+    {
+        var scene = SceneManager.GetSceneByName(sceneName);
+        if (!scene.isLoaded) return null;
+        foreach (var root in scene.GetRootGameObjects())
+            foreach (var t in root.GetComponentsInChildren<Transform>(false))
+                if (t.name == name) return t.gameObject;
+        return null;
+    }
+
+    /// One bobbing arrow over each target at once (used for the kitchen sections while the bread bakes).
+    private void ShowArrowsAt(List<RectTransform> targets)
+    {
+        HideExtraArrows();
+        foreach (var target in targets)
+        {
+            if (target == null) continue;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, ScreenPointOf(target), null, out var local);
+            var arrow = NewArrow("SectionArrow", 110f);
+            extraArrows.Add(arrow);
+            extraArrowBases.Add(local + new Vector2(0f, 40f));
+        }
+        if (extraArrows.Count > 0) extraBob = StartCoroutine(BobExtraArrows());
+    }
+
+    private IEnumerator BobExtraArrows()
+    {
+        var t = 0f;
+        while (true)
+        {
+            t += Time.unscaledDeltaTime * 5f;
+            var lift = 12f + 12f * Mathf.Sin(t);
+            for (var i = 0; i < extraArrows.Count; i++)
+                extraArrows[i].anchoredPosition = extraArrowBases[i] + new Vector2(0f, lift);
+            yield return null;
+        }
+    }
+
+    private void HideExtraArrows()
+    {
+        if (extraBob != null) { StopCoroutine(extraBob); extraBob = null; }
+        foreach (var a in extraArrows) if (a != null) Destroy(a.gameObject);
+        extraArrows.Clear();
+        extraArrowBases.Clear();
+    }
+
+    private RectTransform NewArrow(string name, float size)
+    {
+        var img = NewImage(name, canvasRect, Color.white);
+        var rt = img.rectTransform;
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0f);
+        rt.sizeDelta = new Vector2(size, size);
+        img.sprite = arrowSprite;
+        img.preserveAspect = true;
+        img.raycastTarget = false;
+        return rt;
     }
 
     private IEnumerator PointAtScreen(Vector2 screen)
@@ -348,6 +422,7 @@ public class TutorialDirector : MonoBehaviour
     {
         var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF");
         var handSprite = Resources.Load<Sprite>("Tutorial/arrow");
+        arrowSprite = handSprite;
 
         var go = new GameObject("TutorialCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         canvas = go.GetComponent<Canvas>();
