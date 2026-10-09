@@ -28,3 +28,8 @@ No output means it compiles. If the `.dag` folder name differs, pick the newest 
 ## Scene sanity
 
 Always press Play from `MainMenu.unity`; the other scenes rely on managers it creates. The Shop scene is reached only after a level, so `SessionManager.Instance` is non-null there in normal play.
+
+## Unity editor link (MCP for Unity)
+
+Claude Code is registered to the bridge at http://127.0.0.1:8080/mcp (local scope, Desktop/Sept folder). Unity starts the bridge itself on load (Auto-Start is on); if `claude mcp list` shows it unreachable, open Window, MCP for Unity in Unity and click Start Server. Tools: `manage_editor` (play/pause/stop), `read_console` (pass include_stacktrace=false and a filter_text; entries are huge otherwise), `manage_camera` screenshot with include_image=true (Captures/ is gitignored), `execute_code` (runs C# in the editor), `manage_scene`, `manage_gameobject`, `manage_components`, `run_tests`. Always Stop play mode when done. Telemetry is disabled in EditorPrefs.
+

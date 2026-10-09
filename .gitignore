@@ -66,3 +66,7 @@ ignore.conf
 
 # VS Code workspace files (Unity regenerates them per folder name)
 *.code-workspace
+
+# MCP for Unity screenshot output
+Captures/
+Captures.meta
