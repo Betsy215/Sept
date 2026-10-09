@@ -27,6 +27,7 @@ public class CustomerManager : MonoBehaviour
     // Baseline minimum order size from LevelData (applied to OrderSystem by LevelManager before OnLevelLoaded).
     // Customer-specific minimums raise this per customer and it is restored on the next spawn. -1 = not captured yet.
     private int levelMinOrderItems = -1;
+    private float levelOrderDisplayTime = -1f; // LevelData value, before any customer multiplier
 
     // Tracked coroutines so disabling the manager can stop future spawns/orders
     // (disabling a component does NOT stop its running coroutines)
@@ -170,7 +171,8 @@ public class CustomerManager : MonoBehaviour
         if (orderSystem != null)
         {
             levelMinOrderItems = orderSystem.minOrderItems;
-            DebugLog($"Captured level baseline minOrderItems = {levelMinOrderItems}");
+            levelOrderDisplayTime = orderSystem.orderDisplayTime;
+            DebugLog($"Captured level baseline minOrderItems = {levelMinOrderItems}, orderDisplayTime = {levelOrderDisplayTime}");
         }
 
         isProcessingCustomer = false;
@@ -189,8 +191,12 @@ public class CustomerManager : MonoBehaviour
             if (orderSystem != null)
             {
                 var baseline = levelMinOrderItems >= 0 ? levelMinOrderItems : orderSystem.minOrderItems;
-                var clampedMin = ClampMinOrderItems(Mathf.Max(baseline, customer.MinOrderItems));
+                var clampedMin = ClampMinOrderItems(Mathf.Max(baseline + customer.ExtraOrderItems, customer.MinOrderItems));
                 orderSystem.minOrderItems = clampedMin;
+
+                // Patient or hurried customers change how long their order stays open
+                if (levelOrderDisplayTime < 0f) levelOrderDisplayTime = orderSystem.orderDisplayTime;
+                orderSystem.orderDisplayTime = levelOrderDisplayTime * customer.OrderTimeMultiplier;
                 DebugLog($"Set minOrderItems to {clampedMin} for {customer.name} (customer wants {customer.MinOrderItems}, level min {baseline}, level max {orderSystem.maxOrderItems})");
             }
 
@@ -325,6 +331,8 @@ public class CustomerManager : MonoBehaviour
         {
             if (levelMinOrderItems < 0) levelMinOrderItems = orderSystem.minOrderItems; // first spawn without OnLevelLoaded
             orderSystem.minOrderItems = ClampMinOrderItems(levelMinOrderItems);
+            if (levelOrderDisplayTime < 0f) levelOrderDisplayTime = orderSystem.orderDisplayTime;
+            orderSystem.orderDisplayTime = levelOrderDisplayTime;
         }
 
         if (scoreManager != null) scoreManager.SetCurrentTipMultiplier(1.0f);

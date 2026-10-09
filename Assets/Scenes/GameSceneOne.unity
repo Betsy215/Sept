@@ -2353,6 +2353,9 @@ MonoBehaviour:
   - {fileID: 7080979575534249089, guid: 071e0c6af32264758a61a2e46f2e0a47, type: 3}
   - {fileID: 1433252652188703250, guid: fb454bab6cd6a42f68df7fe3aa93d33b, type: 3}
   - {fileID: 5264646542919529082, guid: 480e6c6abf9c641ceb659ed07c359013, type: 3}
+  - {fileID: 6078073404647016362, guid: 008ae7c72eda4894afc9f9a0156f8415, type: 3}
+  - {fileID: 6078073404647016362, guid: b727f7b1dec64fec84ae470851229d0b, type: 3}
+  - {fileID: 6078073404647016362, guid: 6358982b8efe4f45aa6a115536d3382f, type: 3}
   spawnPoint: {fileID: 1787719493}
   orderSystem: {fileID: 1998227852}
   scoreManager: {fileID: 1415756604}

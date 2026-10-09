@@ -33,6 +33,10 @@ public abstract class CustomerController : MonoBehaviour
 
     public virtual float TipMultiplier => 1.0f; // 1.0 = normal tip
     public virtual int MinOrderItems => 1;
+    /// Items added on top of the level's minimum order size (Chef: 1). Clamped to the level maximum.
+    public virtual int ExtraOrderItems => 0;
+    /// Multiplies the level's order time for this customer (Yoga lady 1.5, Businessman 0.75).
+    public virtual float OrderTimeMultiplier => 1f;
 
     protected virtual void Awake()
     {

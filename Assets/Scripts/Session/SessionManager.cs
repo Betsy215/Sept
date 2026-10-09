@@ -58,7 +58,7 @@ public class SessionData
             { "Coffee", 1 },
             { "CoffeeMachine", 1 }
         };
-        purchasedCharacters = new List<string> { "Girl" };
+        purchasedCharacters = new List<string> { "Girl", "Boy", "Kid" };
         savedFoodPositions = new List<FoodItemPosition>();
         SyncUpgradesToLists();
     }
@@ -105,7 +105,7 @@ public class SessionManager : MonoBehaviour
     public int totalFoodItems = 4;
 
     [Tooltip("Total number of characters available in the shop")]
-    public int totalCharacters = 2;
+    public int totalCharacters = 7; // Girl, Boy, Kid (default) + Grandma, Chef, Yoga, Businessman (shop)
 
     // Session data
     private SessionData currentSession;
@@ -456,7 +456,7 @@ public class SessionManager : MonoBehaviour
                 Debug.Log("Session loaded successfully");
 
                 if (currentSession.purchasedCharacters == null)
-                    currentSession.purchasedCharacters = new List<string> { "Girl" };
+                    currentSession.purchasedCharacters = new List<string> { "Girl", "Boy", "Kid" };
 
                 currentSession.SyncUpgradesFromLists();
                 // NEW: Handle legacy sessions without saved positions
