@@ -178,12 +178,16 @@ App Privacy has no API and is set in the browser. Ten data types are declared fr
 - Sprites go in `Assets/Images/Customers` with a chest pivot of (0.5, 0.6).
 - The prompts and the daily queue are in the report, under Customer art.
 
+**In-game caption card** (10 October): the tutorial captions (`TutorialDirector`, CaptionBox) and the arrange hint (GameSceneOne, ArrangementUI/HintCard behind the Text) use `Assets/Resources/Tutorial/card.png`, a 9-sliced gingham recipe card (border 48), brown text 0.36/0.22/0.09, auto-sized 36 to 64. The table's top edge has `TableEdgeShadow` (Assets/Images/tableshadow.png, Table layer order 1) under TableLayer.
+
 **Art kit** (`Desktop/Sept/Store/artkit`, scripts need the scratchpad venv with numpy, scipy, pillow):
 - `painterly.py`: turns flat vector shapes into the game's soft watercolour look (paper grain, pigment pooling at edges, blotches, wobbly edge, top-left light, warm rim) plus a contact shadow. Good for UI pieces and simple props; not for characters or detailed food, which still come from Gemini or ChatGPT with the style prompt.
 - `ui_v5.py`: cookie buttons, arrow and hand sampled from the real square cookie buttons (colour profile edge to centre, pressed-in text in the icon's burnt orange); `ui_style.py` and `ui_v3.py` hold paper panels and notes.
 - `rim6.py`: the current sprite finisher. `defringe` first: it compares each edge pixel with the colour a few pixels inside the figure and removes or recolours the lighter ones, so the white and grey matte left by a cut-out goes while white parts of the design (chef hat, white hair, hoodie) stay. Then the tan 7 px stroke and the all-around shadow (owner's choice, style G), one scale per character for both poses. Writes `Store/characters/outlined` and a lineup sheet. `rim5.py` is the older stroke-only version.
 - `ui_v6.py`: cookie buttons, arrow and hand built from measurements of the real pause cookie (colour gradient top-left cream to bottom-right amber, blotch and grain spread, grain quilted from the real image), frosting letters (`frosting_text`: icon-orange letters with a piped outline, white by default), and `note_card6`, the option B gingham caption card. `checkin2.py` is the daily treats mock on top of it; `tableedge.py` mocks the table's top edge (shadow line and cloth drop) on a screenshot.
 - `cut_sprites.py`, `headswap3.py`: cut-out and the one-body head swap for the two poses of a character.
+- `cookies_gemini_raw.png`, `cookie_wide|arrow|hand(_matched).png`: Gemini's cookie button, arrow and hand drawn from the real square cookies (reference `Store/mockups/cookie-ref.png`), cut out and colour-matched to the pause cookie's mean and spread per channel. `ui_v7_demo.py` stretches the wide one with a 9-slice and adds frosting letters.
+- Gemini's result without a download: its Copy button puts the image on the clipboard; save with `osascript` («class PNGf»).
 - Mock-ups made with these live in `Store/mockups`.
 
 ## 8. Building and releasing (summary)
