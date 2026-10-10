@@ -161,6 +161,8 @@ Apple's rule (guideline 2.3.4): in-app footage only. Captions, overlays and musi
 
 **Store page text for 26.10.09:** the constants `DESCRIPTION`, `KEYWORDS`, `SUBTITLE` and `NOTES` in `Docs/tools/asc_fill.py`. The owner edited the promo text and the What's New in the browser afterwards, so App Store Connect holds the final wording. Run `asc_fill.py status` to read the lengths.
 
+**Age rating:** "Advertising" must be **Yes**, because the game shows Unity Ads. 26.10.09 was rejected on 10 October 2026 under guideline 2.3.6 because it was No. That question is new in Apple's 2025 age rating form. It can be set through the API: PATCH `ageRatingDeclarations/<id>` with `advertising: true`; the id comes from `appInfos/<id>/ageRatingDeclaration`. After a rejection, open the version, click **Update Review**, then **Resubmit to App Review** (only with the owner's yes).
+
 App Privacy has no API and is set in the browser. Ten data types are declared from Unity Ads' privacy survey. Device ID is linked and used for tracking. Product Interaction, Advertising Data, Other Usage Data, Performance Data and Other Data Types are linked but not used for tracking. The other declared types are in App Store Connect.
 
 **Character sprites from ChatGPT** (free plan, about 2 to 3 images a day, each back 24 h after use):
