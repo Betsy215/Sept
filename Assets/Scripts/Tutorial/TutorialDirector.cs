@@ -441,18 +441,27 @@ public class TutorialDirector : MonoBehaviour
         blocker.raycastTarget = true;
         blocker.gameObject.AddComponent<TapCatcher>().OnTap = HandleTap;
 
-        // Caption at the top
-        var box = NewImage("CaptionBox", canvasRect, new Color(0.12f, 0.08f, 0.06f, 0.82f));
+        // Caption at the top: a gingham recipe card (Resources/Tutorial/card, 9-sliced) with brown letters
+        var box = NewImage("CaptionBox", canvasRect, Color.white);
+        var cardSprite = Resources.Load<Sprite>("Tutorial/card");
+        if (cardSprite != null) { box.sprite = cardSprite; box.type = Image.Type.Sliced; }
+        else box.color = new Color(1f, 0.98f, 0.93f, 0.95f);
         captionBox = box.rectTransform;
         captionBox.anchorMin = new Vector2(0.5f, 1f);
         captionBox.anchorMax = new Vector2(0.5f, 1f);
         captionBox.pivot = new Vector2(0.5f, 1f);
-        captionBox.anchoredPosition = new Vector2(0f, -1130f); // over the table, below the order bubble and customer
-        captionBox.sizeDelta = new Vector2(900f, 150f);
-        caption = NewText("Caption", captionBox, font, 52f, Color.white);
+        captionBox.anchoredPosition = new Vector2(0f, -1110f); // over the table, below the order bubble and customer
+        captionBox.sizeDelta = new Vector2(1000f, 200f);
+        caption = NewText("Caption", captionBox, font, 64f, new Color(0.36f, 0.22f, 0.09f));
         Stretch(caption.rectTransform);
+        caption.rectTransform.offsetMin = new Vector2(40f, 36f);
+        caption.rectTransform.offsetMax = new Vector2(-40f, -36f);
         caption.alignment = TextAlignmentOptions.Center;
         caption.enableWordWrapping = true;
+        caption.characterSpacing = 3f;
+        caption.enableAutoSizing = true; // long lines shrink a little instead of spilling off the card
+        caption.fontSizeMax = 64f;
+        caption.fontSizeMin = 40f;
 
         // Pointing arrow
         var handImage = NewImage("Hand", canvasRect, Color.white);
