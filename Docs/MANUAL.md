@@ -163,6 +163,14 @@ Apple's rule (guideline 2.3.4): in-app footage only. Captions, overlays and musi
 
 App Privacy has no API and is set in the browser. Ten data types are declared from Unity Ads' privacy survey. Device ID is linked and used for tracking. Product Interaction, Advertising Data, Other Usage Data, Performance Data and Other Data Types are linked but not used for tracking. The other declared types are in App Store Connect.
 
+**Character sprites from ChatGPT** (free plan, about 2 to 3 images a day, each back 24 h after use):
+- One landscape image per character, with the neutral and happy poses side by side.
+- Attach `Store/characters/cast-sheet.png` for style. Ask for a plain white background, not a transparent one.
+- The owner saves the result as `~/Desktop/ftc_<name>.png`. Raw images go in `Store/characters/raw`.
+- Cut with `Docs/tools/cut_sprites.py` (needs numpy, scipy and pillow; a scratchpad venv is fine): `cut_sprites.py raw.png out.png outhappy.png [match.png matchhappy.png]`. Pass the match files when replacing a sprite, so the canvas size and pivot stay the same. The script removes the white rim between hair strands.
+- Sprites go in `Assets/Images/Customers` with a chest pivot of (0.5, 0.6).
+- The prompts and the daily queue are in the report, under Customer art.
+
 ## 8. Building and releasing (summary)
 
 The full steps, commands and error fixes are in `Docs/ios-testing-and-release.md`, section "Automated chain from Claude Code". In short:
