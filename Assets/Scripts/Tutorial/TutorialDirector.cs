@@ -456,7 +456,7 @@ public class TutorialDirector : MonoBehaviour
         Stretch(caption.rectTransform);
         caption.rectTransform.offsetMin = new Vector2(40f, 36f);
         caption.rectTransform.offsetMax = new Vector2(-40f, -36f);
-        caption.alignment = TextAlignmentOptions.Center;
+        caption.alignment = TextAlignmentOptions.Capline; // centred on the cap height, so the line sits in the middle of the card
         caption.enableWordWrapping = true;
         caption.characterSpacing = 3f;
         caption.enableAutoSizing = true; // long lines shrink a little instead of spilling off the card
