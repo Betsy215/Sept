@@ -132,3 +132,9 @@ The whole TestFlight path runs from the terminal and the Unity editor link; only
 7. **Submission** (owner's explicit go only): create the version in App Store Connect, attach the build, What's New, screenshots, App Privacy check, submit.
 
 Editor notes: Unity Ads shows a placeholder ad in play mode after Next Level (Skip and Close buttons on a DontDestroyOnLoad object called Placeholder); the game continues underneath it. Closing it fires the ad-finished callback, which reloads the Shop.
+
+### Filling the App Store Connect version from Claude Code
+
+`Docs/tools/asc_fill.py` (first used for 26.10.09 on 9 October 2026) fills a version through the App Store Connect API without submitting: `texts` (description, keywords, promotional text, What's New, copyright, manual release, review notes, subtitle), `build` (attaches the newest VALID build of the version), `screenshots` (deletes the old sets, uploads `Store/screenshots/final` as `APP_IPHONE_67`, which accepts 1320 x 2868, and `APP_IPAD_PRO_3GEN_129`, which accepts 2064 x 2752), `preview IPHONE_67` (uploads the 30 s cut) and `status`. Edit the ids at the top for a new version (the version, localization, review detail and app info localization ids come from the API). It needs the JWT helper described above. App Privacy cannot be set through the API; confirm it in the browser. The Submit button stays manual.
+
+`Docs/tools/preview_cut.py` is the preview video compositor (frames from `Assets/Editor/PreviewRecorder.cs`, drags from `Assets/Editor/ArrangeDemo.cs`): caption pills in the game font, push-in zooms, crossfade, dip, iris and slide transitions, music plus the game's own sounds. Keep the App Store cut under 30 s and in-game footage only.
