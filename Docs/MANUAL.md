@@ -178,6 +178,13 @@ App Privacy has no API and is set in the browser. Ten data types are declared fr
 - Sprites go in `Assets/Images/Customers` with a chest pivot of (0.5, 0.6).
 - The prompts and the daily queue are in the report, under Customer art.
 
+**Art kit** (`Desktop/Sept/Store/artkit`, scripts need the scratchpad venv with numpy, scipy, pillow):
+- `painterly.py`: turns flat vector shapes into the game's soft watercolour look (paper grain, pigment pooling at edges, blotches, wobbly edge, top-left light, warm rim) plus a contact shadow. Good for UI pieces and simple props; not for characters or detailed food, which still come from Gemini or ChatGPT with the style prompt.
+- `ui_v5.py`: cookie buttons, arrow and hand sampled from the real square cookie buttons (colour profile edge to centre, pressed-in text in the icon's burnt orange); `ui_style.py` and `ui_v3.py` hold paper panels and notes.
+- `rim5.py`: the tan stroke plus all-around shadow for customer sprites (owner's choice: tan, 7 px, style G).
+- `cut_sprites.py`, `headswap3.py`: cut-out and the one-body head swap for the two poses of a character.
+- Mock-ups made with these live in `Store/mockups`.
+
 ## 8. Building and releasing (summary)
 
 The full steps, commands and error fixes are in `Docs/ios-testing-and-release.md`, section "Automated chain from Claude Code". In short:
