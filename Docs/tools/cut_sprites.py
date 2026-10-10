@@ -74,7 +74,7 @@ def split(im):
     else: first, second = im.crop((0, 0, e0 + 1, H)), im.crop((e1, 0, W, H))
     return first.crop(first.getbbox()), second.crop(second.getbbox())
 
-figs = split(out)
+figs = [out.crop(out.getbbox())] if os.environ.get("SINGLE") else split(out)  # SINGLE=1: one figure per image
 outs = sys.argv[2:4]; matches = sys.argv[4:6]
 for i, fig in enumerate(figs):
     if matches:

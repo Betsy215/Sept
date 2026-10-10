@@ -168,6 +168,11 @@ App Privacy has no API and is set in the browser. Ten data types are declared fr
 - Attach `Store/characters/cast-sheet.png` for style. Ask for a plain white background, not a transparent one.
 - The owner saves the result as `~/Desktop/ftc_<name>.png`. Raw images go in `Store/characters/raw`.
 - Cut with `Docs/tools/cut_sprites.py` (needs numpy, scipy and pillow; a scratchpad venv is fine): `cut_sprites.py raw.png out.png outhappy.png [match.png matchhappy.png]`. Pass the match files when replacing a sprite, so the canvas size and pivot stay the same. The script removes the white rim between hair strands.
+- **Gemini** (gemini.google.com, the owner's account) is better than ChatGPT at editing an existing sprite while keeping it unchanged, for example adding legs to a cut-off character. It is not limited to 2 or 3 images a day the way ChatGPT is.
+  - Pad the sprite on white with empty space where the new part goes, then ask Gemini to draw only there. Paste the original pixels back over the result (`fullbody.py`-style compositing).
+  - To attach a file without the system file picker: in the page, patch `HTMLInputElement.prototype.click` so a file input shows itself with an aria-label instead of opening the picker. Choose "Upload files", then attach with the Chrome file_upload tool on that input.
+  - To get the result without a browser download: click Gemini's Copy button, then save the clipboard to a file with `osascript` («class PNGf»).
+- Cut tool options for hard cases: `RIM=30 WHITE=185 HOLES=1` for dark-haired characters with no white in their design (it clears white trapped deep in hair or enclosed by an arm). Use `RIM=4` for white-haired characters such as Grandma. `SINGLE=1` cuts one figure per image.
 - Sprites go in `Assets/Images/Customers` with a chest pivot of (0.5, 0.6).
 - The prompts and the daily queue are in the report, under Customer art.
 
