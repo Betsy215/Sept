@@ -12,7 +12,9 @@ import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage
 
-RIM = 10   # near-white pockets this close to the background are background
+import os
+RIM = int(os.environ.get("RIM", 10))   # near-white pockets this close to the background are background;
+# raise it (RIM=30) for characters with no white in their design, to clear white trapped between arm and body or deep in hair
 BAND = 3   # edge band that gets un-mixed from white
 src = Image.open(sys.argv[1]).convert("RGB")
 W, H = src.size
@@ -27,8 +29,20 @@ rgb = np.asarray(src).astype(np.float32)
 bg = np.all(np.asarray(flood) == sent, axis=2)
 dist_bg = ndimage.distance_transform_edt(~bg)
 lum_min = rgb.min(axis=2); sat = rgb.max(axis=2) - lum_min
-nearwhite = (lum_min > 222) & (sat < 22)
+WHITE = int(os.environ.get("WHITE", 222))  # how light a pixel must be to count as leftover background
+nearwhite = (lum_min > WHITE) & (sat < 26)
 bg |= nearwhite & (dist_bg <= RIM)
+if os.environ.get("HOLES"):  # HOLES=1: enclosed pure-white pockets (e.g. between arm and body) are background too
+    pure = (lum_min > 240) & (sat < 14) & ~bg
+    lab, n = ndimage.label(pure)
+    sizes = ndimage.sum(pure, lab, range(1, n + 1))
+    bg |= np.isin(lab, [i + 1 for i, s in enumerate(sizes) if s >= int(os.environ.get("HOLE_MIN", 150))])
+# Tiny enclosed specks (texture strokes, not real gaps) go back to the figure
+lab, n = ndimage.label(bg)
+sizes = ndimage.sum(bg, lab, range(1, n + 1))
+border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]])))
+small = [i + 1 for i, s in enumerate(sizes) if s < int(os.environ.get("HOLE_MIN", 150)) and (i + 1) not in border]
+bg &= ~np.isin(lab, small)
 dist_bg = ndimage.distance_transform_edt(~bg)
 solid = (~bg) & (dist_bg > BAND)
 # local solid colour: normalised blur of the solid pixels (smooth, no streaks)
