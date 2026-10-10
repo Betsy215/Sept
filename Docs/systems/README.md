@@ -5,7 +5,7 @@ Deep notes per system, written 7 to 8 October 2026 from the code and scene YAML 
 | File | Read before touching |
 | --- | --- |
 | [01-scene-flow-and-startup.md](01-scene-flow-and-startup.md) | Scene loads, the persistent singletons, startup order, button flows, events, pause and time scale |
-| [02-levels-orders-customers.md](02-levels-orders-customers.md) | LevelManager, the level-complete popup and money count-up, GamePhaseManager, OrderSystem, customers and their animation events, the 14 level assets |
+| [02-levels-orders-customers.md](02-levels-orders-customers.md) | LevelManager, the level-complete popup and money count-up, GamePhaseManager, OrderSystem, customers and their animation events, the level assets (24 since 9 October) |
 | [03-food-items-drag-refill.md](03-food-items-drag-refill.md) | Tap and drag input, ServeableItem, DraggableFood, TableLayer, RefillSystem, coffee machine and beans |
 | [04-kitchen.md](04-kitchen.md) | The additive kitchen scene, food gates, bake and respawn timers, CooldownRegistry |
 | [05-scoring-session-shop.md](05-scoring-session-shop.md) | Points and tips, the save file (SessionData) and its JSON, Play and Continue, the Shop purchase flow, adding a shop item |

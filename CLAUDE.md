@@ -1,8 +1,8 @@
 # FoodTruckCafe (Unity, iOS)
 
-Unity 2022.3.50f1 2D portrait cafe game, shipped on the App Store as 26.03.29. This folder is the only source of truth; the Xcode exports live in `../Builds` and are not committed. The owner's other game (Godot, at Desktop/Godot) is unrelated; never mix the two.
+Unity 2022.3.50f1 2D portrait cafe game, live on the App Store as 26.03.29; 26.10.09 (build 4) submitted for review 9 October 2026. This folder is the only source of truth; the Xcode exports live in `../Builds` and are not committed. The owner's other game (Godot, at Desktop/Godot) is unrelated; never mix the two.
 
-Read `Docs/architecture.md` before touching gameplay code and `Docs/ios-testing-and-release.md` before anything build-related. Known issues and ideas are in `Docs/TODO.md`.
+**Start every session by reading `Docs/MANUAL.md`**: state, the owner's rules, paths, and how each recurring job (play-testing through MCP, store screenshots and video, builds, App Store Connect) is done. Read `Docs/architecture.md` before touching gameplay code and `Docs/ios-testing-and-release.md` before anything build-related. Known issues and ideas are in `Docs/TODO.md`.
 
 ## Working rules
 

@@ -2,7 +2,7 @@
 python3 -I asc_fill.py texts|build|screenshots|preview|status"""
 import sys, json, hashlib, os, urllib.request, urllib.error, time, subprocess
 
-TOKEN = subprocess.run(["python3", "-I", "/tmp/asc_token.py"], capture_output=True, text=True).stdout.strip().splitlines()[-1]
+TOKEN = subprocess.run(["python3", "-I", os.path.join(os.path.dirname(os.path.abspath(__file__)), "asc_token.py")], capture_output=True, text=True).stdout.strip().splitlines()[-1]
 A = "https://api.appstoreconnect.apple.com/v1"
 APP = "6755611355"
 VER = "228b7193-eae5-4e39-a087-c56551df7907"          # 26.10.09

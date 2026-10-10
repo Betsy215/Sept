@@ -1,6 +1,6 @@
 # TODO and suggestions
 
-Status as of 7 October 2026. Done items are kept for a while so the history is visible.
+Status as of 9 October 2026 (the Done list below is from 7 October). Done items are kept for a while so the history is visible.
 
 ## Done on 7 October 2026
 
@@ -37,11 +37,11 @@ Lifetime: 55 downloads since 29 Nov 2025, all from App Store search, 0.9 percent
 ## Next
 
 - [x] Days 15 to 24 added (9 Oct), see Docs/systems/02 for the table
-- [ ] Ship 26.10.09 (fixes + interstitial): TestFlight phone test, App Privacy tracking declaration, then submit on the owner's explicit go
-- [ ] Next build (branch feature/tutorial-level, 9 Oct): interactive Level 0 tutorial with arrow, two more customers per day with star thresholds scaled, evening and night tint (main scene and kitchen window). Editor-tested by Claude and the owner; needs a phone test, then merge and TestFlight on the owner's go
-- [ ] App preview video for the store page: storyboard and shot list (Claude), gameplay capture (owner or editor), edit in iMovie or CapCut; 15 to 30 s portrait, Apple specs per device size
+- [x] 26.10.09 (4) submitted for review on 9 Oct, manual release; the owner presses Release after approval
+- [x] Tutorial, two more customers per day, evening and night tint: merged to main and shipped in 26.10.09
+- [x] App preview video (29.9 s) and an extended 112.8 s cut, made in the editor; see Docs/MANUAL.md section 7
 - [ ] Marketing discovery: plan with cost and effort for keyword work, Apple Search Ads test, short-video clips, cozy-game communities, Apple featuring request
-- [ ] Store page text: title, subtitle, keyword field
+- [x] Store page text: subtitle, keywords, description, screenshots for iPhone, iPad and Duo (9 Oct)
 - [ ] Re-read retention and conversion in November, then decide on content
 
 Backlog from the owner, 9 October (after the goals above):
