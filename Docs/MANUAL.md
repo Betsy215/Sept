@@ -168,7 +168,7 @@ App Privacy has no API and is set in the browser. Ten data types are declared fr
 **Character sprites from ChatGPT** (free plan, about 2 to 3 images a day, each back 24 h after use):
 - One landscape image per character, with the neutral and happy poses side by side.
 - Attach `Store/characters/cast-sheet.png` for style. Ask for a plain white background, not a transparent one.
-- The owner saves the result as `~/Desktop/ftc_<name>.png`. Raw images go in `Store/characters/raw`.
+- Getting the result out of ChatGPT without a browser download: in the page, fetch the generated image's blob URL and write it to the clipboard (`navigator.clipboard.write` with a ClipboardItem; click the page first so it has focus, run it fire-and-forget and poll a window variable, since awaiting it hangs the tool), then save the clipboard with `osascript` («class PNGf»). Raw images go in `Store/characters/raw`. The owner can also save it by hand as `~/Desktop/ftc_<name>.png`.
 - Cut with `Docs/tools/cut_sprites.py` (needs numpy, scipy and pillow; a scratchpad venv is fine): `cut_sprites.py raw.png out.png outhappy.png [match.png matchhappy.png]`. Pass the match files when replacing a sprite, so the canvas size and pivot stay the same. The script removes the white rim between hair strands.
 - **Gemini** (gemini.google.com, the owner's account) is better than ChatGPT at editing an existing sprite while keeping it unchanged, for example adding legs to a cut-off character. It is not limited to 2 or 3 images a day the way ChatGPT is.
   - Pad the sprite on white with empty space where the new part goes, then ask Gemini to draw only there. Paste the original pixels back over the result (`fullbody.py`-style compositing).
@@ -181,7 +181,8 @@ App Privacy has no API and is set in the browser. Ten data types are declared fr
 **Art kit** (`Desktop/Sept/Store/artkit`, scripts need the scratchpad venv with numpy, scipy, pillow):
 - `painterly.py`: turns flat vector shapes into the game's soft watercolour look (paper grain, pigment pooling at edges, blotches, wobbly edge, top-left light, warm rim) plus a contact shadow. Good for UI pieces and simple props; not for characters or detailed food, which still come from Gemini or ChatGPT with the style prompt.
 - `ui_v5.py`: cookie buttons, arrow and hand sampled from the real square cookie buttons (colour profile edge to centre, pressed-in text in the icon's burnt orange); `ui_style.py` and `ui_v3.py` hold paper panels and notes.
-- `rim5.py`: the tan stroke plus all-around shadow for customer sprites (owner's choice: tan, 7 px, style G).
+- `rim6.py`: the current sprite finisher. `defringe` first: it compares each edge pixel with the colour a few pixels inside the figure and removes or recolours the lighter ones, so the white and grey matte left by a cut-out goes while white parts of the design (chef hat, white hair, hoodie) stay. Then the tan 7 px stroke and the all-around shadow (owner's choice, style G), one scale per character for both poses. Writes `Store/characters/outlined` and a lineup sheet. `rim5.py` is the older stroke-only version.
+- `ui_v6.py`: cookie buttons, arrow and hand built from measurements of the real pause cookie (colour gradient top-left cream to bottom-right amber, blotch and grain spread, grain quilted from the real image), frosting letters (`frosting_text`: icon-orange letters with a piped outline, white by default), and `note_card6`, the option B gingham caption card. `checkin2.py` is the daily treats mock on top of it; `tableedge.py` mocks the table's top edge (shadow line and cloth drop) on a screenshot.
 - `cut_sprites.py`, `headswap3.py`: cut-out and the one-body head swap for the two poses of a character.
 - Mock-ups made with these live in `Store/mockups`.
 
