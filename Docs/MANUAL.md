@@ -28,7 +28,7 @@ These override any default habit.
 
 1. **The game is live and works. Change code only for a real, confirmed bug.** No refactors, re-tuning or tidy-ups unless asked. Write ideas into `Docs/TODO.md` instead. The "Leave alone" list in `Docs/TODO.md` holds things the owner chose not to fix.
 2. **No App Store submission or release without an explicit yes in the same conversation.** A TestFlight upload is fine when the owner asks for a build. Creating or submitting a store version, releasing, and changing pricing or availability each need a fresh yes.
-3. **The owner reads the report, not the terminal.** The report is the Claude Doc "FoodTruckCafe Code Review" (https://claude.ai/code/artifact/726347e1-dd8c-42fd-917b-be80474ff9ae). Put substantive answers there and reply in chat with a line and the link. The report holds only open work; remove items once they are done. How-to knowledge belongs in this repo, not in the report.
+3. **The owner reads the report, not the terminal.** The report is the Claude Doc "FoodTruckCafe Code Review" (https://claude.ai/code/artifact/726347e1-dd8c-42fd-917b-be80474ff9ae). Put substantive answers there and reply in chat with a line and the link. The report holds only open work; remove items once they are done. Its layout, set by the owner on 9 October: **Next** is always the first section and shows the step each of us is on right now (update it whenever the task changes); **MVP for the next release** comes right after it; then the later work, backlog and reference sections. How-to knowledge belongs in this repo, not in the report.
 4. **Ask before anything outward-facing:** pushing a release, posting, sending messages, filling forms on Apple's site. Never type passwords; the owner signs in to App Store Connect and Unity themselves.
 5. Commit after each working change with a message that says what was broken or what was added, and push to `origin main`. End commit messages with the Claude co-author line given in the session.
 6. Keep the Godot game at Desktop/Godot separate. Never mix it with this one.
@@ -188,7 +188,7 @@ The owner sometimes asks for help on App Store Connect pages.
 
 ## 10. Open work
 
-The report's Next and Backlog sections are the live list. As of 9 October:
+The report's Next, MVP and Backlog sections are the live list. MVP for the next release (owner's list, 9 October; the owner will explain each): daily check-in rewards; economy balance (coins, stars, shop prices: three stars achievable, an always-3-star player unlocks everything about two-thirds through, an always-2-star player near the end); a level map; more equipment or items for the empty kitchen and counter slots. Other open work as of 9 October:
 - Press Release after approval (the owner).
 - Marketing research and plan.
 - The App Store header and search-results banner.
