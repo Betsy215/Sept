@@ -121,6 +121,17 @@ elif what == "preview":
     sid = res["data"]["id"]; print("preview set", ptype, sid)
     upload_asset("appPreviews", "appPreviewSet", sid, VIDEO)
 
+elif what == "duo":
+    sid = "08a37dc4-edc9-4886-aa8d-aeb6f3026f08"  # APP_IPHONE_DUO set created 9 Oct
+    for f in [f"{SHOTS}/duo-0{i}.png" for i in range(1, 6)]: upload_asset("appScreenshots", "appScreenshotSet", sid, f)
+    try:
+        res = api("POST", "/appPreviewSets", {"data": {"type": "appPreviewSets", "attributes": {"previewType": "IPHONE_DUO"},
+                 "relationships": {"appStoreVersionLocalization": {"data": {"type": "appStoreVersionLocalizations", "id": LOC}}}}})
+        pid = res["data"]["id"]; print("duo preview set", pid)
+        upload_asset("appPreviews", "appPreviewSet", pid, VIDEO)
+    except SystemExit as e:
+        print("duo preview set not accepted:", e)
+
 elif what == "status":
     v = api("GET", f"/appStoreVersions/{VER}?fields%5BappStoreVersions%5D=versionString,copyright,releaseType,appVersionState")
     print("version", v["data"]["attributes"])
