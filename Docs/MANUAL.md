@@ -2,7 +2,7 @@
 
 Read this first at the start of every session on this project. It says what the game is, the owner's rules, where everything lives, and how each recurring job is done. Deeper detail is in the docs it links to; this file is the map.
 
-Last updated 9 October 2026.
+Last updated 11 October 2026.
 
 ## 1. State of the project
 
@@ -16,7 +16,8 @@ Last updated 9 October 2026.
 | Apple team | XY39924J9T |
 | Repo | https://github.com/Betsy215/Sept (**public**: never commit keys, issuer ids or tokens), branch `main` |
 | Live version | 26.03.29 (March 2026) |
-| In review | 26.10.09 build 4, submitted 9 October 2026, release type MANUAL (the owner presses Release after approval) |
+| In review | 26.10.09 build 4, submitted 9 October 2026, release type MANUAL (the owner presses Release after approval); still Waiting for Review on 11 October |
+| On main, not yet built | Chapter map (16 days), Daily Treats, cookie buttons, outlined customers, choux 2 by 2, table edge (10 October). Needs a TestFlight build when the owner asks, and store text that says 16-day chapters, not 24 days |
 
 What 26.10.09 added: 24 days (was 14), two more orders per day, evening and night tint for the last orders of a day, an interactive Level 0 tutorial, four shop regulars with habits (Grandma tips x2, Chef orders an extra item, Yoga lady has 1.5x time, Businessman tips x3 with 0.75x time), interstitial ads between a day and the Shop, and the fixes listed under Done in `Docs/TODO.md`.
 
@@ -192,6 +193,7 @@ App Privacy has no API and is set in the browser. Ten data types are declared fr
 - `painterly.py`: turns flat vector shapes into the game's soft watercolour look (paper grain, pigment pooling at edges, blotches, wobbly edge, top-left light, warm rim) plus a contact shadow. Good for UI pieces and simple props; not for characters or detailed food, which still come from Gemini or ChatGPT with the style prompt.
 - `ui_v5.py`: cookie buttons, arrow and hand sampled from the real square cookie buttons (colour profile edge to centre, pressed-in text in the icon's burnt orange); `ui_style.py` and `ui_v3.py` hold paper panels and notes.
 - `rim6.py`: the current sprite finisher. `defringe` first: it compares each edge pixel with the colour a few pixels inside the figure and removes or recolours the lighter ones, so the white and grey matte left by a cut-out goes while white parts of the design (chef hat, white hair, hoodie) stay. Then the tan 7 px stroke and the all-around shadow (owner's choice, style G), one scale per character for both poses. Writes `Store/characters/outlined` and a lineup sheet. `rim5.py` is the older stroke-only version.
+- **Brush set** (11 October): `Store/artkit/brush/` holds a stamp brush engine like Procreate's (`engine.py`: `Canvas.stroke` with shape + canvas-fixed grain, pressure, spacing, scatter, wet edge, multiply/screen, blur and smudge; `Canvas.wash` for a flat colour fill; `Canvas.form_shade` for light and shade from a shape) and 26 brushes in `brushset.py`: the owner's Procreate "Picnic" set (6 with their own textures, 4 with my copies of Procreate built-ins) plus 16 made from textures cut from the game art (`textures.py`). Sheets: `Store/brushes/full_set.png`; catalog `Store/brushes/README.md`; example painting `props_test.py`. Shapes are white = paint, grains tile.
 - `ui_v6.py`: cookie buttons, arrow and hand built from measurements of the real pause cookie (colour gradient top-left cream to bottom-right amber, blotch and grain spread, grain quilted from the real image), frosting letters (`frosting_text`: icon-orange letters with a piped outline, white by default), and `note_card6`, the option B gingham caption card. `checkin2.py` is the daily treats mock on top of it; `tableedge.py` mocks the table's top edge (shadow line and cloth drop) on a screenshot.
 - `cut_sprites.py`, `headswap3.py`: cut-out and the one-body head swap for the two poses of a character.
 - `cookies_gemini_raw.png`, `cookie_wide|arrow|hand(_matched).png`: Gemini's cookie button, arrow and hand drawn from the real square cookies (reference `Store/mockups/cookie-ref.png`), cut out and colour-matched to the pause cookie's mean and spread per channel. `ui_v7_demo.py` stretches the wide one with a 9-slice and adds frosting letters.
@@ -223,17 +225,11 @@ The owner sometimes asks for help on App Store Connect pages.
 
 ## 10. Open work
 
-The report's Next, MVP and Backlog sections are the live list. MVP for the next release (owner's list, 9 October; the owner will explain each): daily check-in rewards; economy balance (coins, stars, shop prices: three stars achievable, an always-3-star player unlocks everything about two-thirds through, an always-2-star player near the end); a level map; more equipment or items for the empty kitchen and counter slots. Other open work as of 9 October:
-- Press Release after approval (the owner).
-- Marketing research and plan.
-- The App Store header and search-results banner.
-- An in-game rating prompt after Day 3.
-- A one-page marketing site.
-- A TikTok plan (the owner creates the account).
-- New art: Chef, Yoga and Businessman need distinct faces and poses; Girl and Grandma need full-body versions. ChatGPT's image quota resets 10 October, 1:17 PM.
-- Unity Ads payout profile.
-- Merge Unity's SKAdNetwork list into `IOSPostBuild.cs`.
-- Review the analytics in November.
+The report's Next, Current, MVP and Backlog sections are the live list (layout and rules: section 2 and the report itself). As of 11 October:
+- **Current: the drawing tool.** A 26-brush set is built (catalog `Desktop/Sept/Store/brushes/README.md`, engine `Store/artkit/brush`, see section 7). Next the owner wants to discuss how to draw and try drawings together. A Procreate .brushset for the owner can be made using `Store/brushes/from_procreate/Picnic` as the file template.
+- **MVP (next release):** store text for 16-day chapters and the map; economy rebalance (replays pay full coins; three-star bonus $100 once per day; players from the live game can re-earn it on all 16 days); App Store header and search banner; rating prompt after Day 3.
+- Press Release on 26.10.09 after approval (the owner). TestFlight of what's on main only when asked.
+- Backlog: marketing research, TikTok, one-page site, improvement ideas, main scene visual pass, two small fixes, safe-area buttons, Earned label wrap, Unity payout profile, SKAdNetwork list, check the Interstitial_iOS unit, Remove Ads later. Analytics review in November.
 
 Minor known issues are in `Docs/TODO.md`. Don't fix them without the owner's yes.
 
