@@ -274,7 +274,7 @@ public class SessionManager : MonoBehaviour
     public void StartNewSession()
     {
         currentSession = new SessionData();
-        // Daily Treats collected on the menu while no game was running start the new game off
+        // Daily Treats collected on the menu start the new game off
         var pending = DailyTreats.TakePending();
         if (pending > 0) currentSession.totalScore = RoundToCents(currentSession.totalScore + pending);
         SaveSession();
@@ -293,6 +293,10 @@ public class SessionManager : MonoBehaviour
     {
         if (HasActiveSession())
         {
+            // Daily Treats collected on the menu
+            var treats = DailyTreats.TakePending();
+            if (treats > 0) { currentSession.totalScore = RoundToCents(currentSession.totalScore + treats); SaveSession(); }
+
             // Set the level manager to continue from the correct level (only if available)
             if (levelManager != null) levelManager.SetCurrentLevel(currentSession.currentLevel);
 

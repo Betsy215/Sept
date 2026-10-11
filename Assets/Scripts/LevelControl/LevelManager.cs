@@ -339,6 +339,8 @@ public class LevelManager : MonoBehaviour
         if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
         {
             SessionManager.Instance.RestoreScoreToSnapshot();
+            // The three-star bonus is paid once and recorded; Restart must not take it back
+            if (threeStarBonusPaid > 0) SessionManager.Instance.AddScoreImmediately(threeStarBonusPaid);
             SessionManager.Instance.SetCurrentLevel(currentLevelIndex);
             Debug.Log($"RestartLevel: Reset session to level {currentLevelIndex}");
         }
@@ -606,8 +608,8 @@ public class LevelManager : MonoBehaviour
         var todayScore = scoreManager.GetCurrentScore();
         var orderSale = Mathf.Max(0f, todayScore - tips);
         var totalScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : todayScore;
-        var earnedBeforeLevel = Mathf.Max(0f, totalScore - todayScore);
-        var earnedAfterSale = totalScore - tips;
+        var earnedBeforeLevel = Mathf.Max(0f, totalScore - todayScore - threeStarBonusPaid);
+        var earnedAfterSale = totalScore - tips - threeStarBonusPaid;
 
         if (todayTip != null)
             todayTip.text = $"Tips Earned: $ {tips:F2}";
@@ -623,7 +625,8 @@ public class LevelManager : MonoBehaviour
             orderSale, earnedAfterSale));
         yield return new WaitForSeconds(1f);
         yield return StartCoroutine(AnimateFullTransfer(todayTip, totalEarned, "Tips: $ ", "Earned: $ ", tips,
-            totalScore));
+            totalScore - threeStarBonusPaid));
+        if (threeStarBonusPaid > 0 && totalEarned != null) totalEarned.text = $"Earned: $ {totalScore:F2}";
 
         var isLastLevel = currentLevelIndex >= LastDayIndex;
         if (isLastLevel)

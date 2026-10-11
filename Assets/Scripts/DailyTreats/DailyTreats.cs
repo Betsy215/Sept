@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 /// Daily Treats: the first time the game is opened each day, a popup on the main menu gives +50 coins.
 /// Five days in a row also gives a +100 surprise on day 5, then the row starts again. Missing a day
 /// resets the row to day 1. Uses the phone's local date; a clock moved back gives nothing.
-/// The coins go into the running game, or wait (PlayerPrefs) for the next New game.
+/// The coins wait (PlayerPrefs) and are paid when the player taps Continue or starts a New game.
 /// Layout follows the approved mock (Store/artkit/checkin2.py) on a 1080x1920 canvas; the pieces are
 /// drawn by Store/artkit/treats_pieces.py into Resources/DailyTreats.
 /// </summary>
@@ -28,8 +29,11 @@ public class DailyTreats : MonoBehaviour
     private int dayToday;        // 1..5
     private bool collecting;
 
+    private DateTime dueDate;    // the local date the popup opened on
+
     private void Start()
     {
+        dueDate = DateTime.Now.Date;
         if (DueDay(out dayToday)) Show(dayToday);
     }
 
@@ -39,7 +43,7 @@ public class DailyTreats : MonoBehaviour
         day = 1;
         var today = DateTime.Now.Date;
         var last = PlayerPrefs.GetString(LastKey, "");
-        if (DateTime.TryParseExact(last, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var lastDate))
+        if (DateTime.TryParseExact(last, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var lastDate))
         {
             if (lastDate >= today) return false; // already collected today, or the clock was moved back
             var streak = PlayerPrefs.GetInt(StreakKey, 0);
@@ -159,10 +163,11 @@ public class DailyTreats : MonoBehaviour
         var day = dayToday;
         var amount = DailyCoins + (day == 5 ? Day5Bonus : 0);
 
-        var sm = SessionManager.Instance;
-        if (sm != null && sm.HasActiveSession()) sm.AddScoreImmediately(amount);
-        else PlayerPrefs.SetInt(PendingKey, PlayerPrefs.GetInt(PendingKey, 0) + amount);
-        PlayerPrefs.SetString(LastKey, DateTime.Now.Date.ToString("yyyy-MM-dd"));
+        // Always held until the player taps Continue or New, which both pay it (paying into the running game here
+        // lost it when the player then started a new game)
+        PlayerPrefs.SetInt(PendingKey, PlayerPrefs.GetInt(PendingKey, 0) + amount);
+        // The day the popup was opened for, so a tap just after midnight doesn't use up the next day
+        PlayerPrefs.SetString(LastKey, dueDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
         PlayerPrefs.SetInt(StreakKey, day);
         PlayerPrefs.Save();
 

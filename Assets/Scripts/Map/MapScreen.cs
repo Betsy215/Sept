@@ -123,8 +123,9 @@ public class MapScreen : MonoBehaviour
             var truck = NewImage("Truck", canvasRect, truckSprite);
             var h = 120f; var w = h * truckSprite.rect.width / truckSprite.rect.height;
             // beside today's star; above day 16 once the chapter is done (to its right it would cover day 11)
-            var offset = allDone ? new Vector2(0f, 110f) : new Vector2(at.x < 300f ? 44f + w / 2f : -44f - w / 2f, -80f);
-            if (!allDone && at.x >= 300f) offset = new Vector2(44f + w / 2f, -80f);
+            var offset = allDone ? new Vector2(0f, 110f)
+                : at.x < 400f ? new Vector2(44f + w / 2f, -80f)
+                : new Vector2(540f - 10f - w / 2f - at.x, -140f); // day 5 sits near the right edge: tuck the truck below it
             Place(truck.rectTransform, at + offset, new Vector2(w, h));
             truck.raycastTarget = false;
         }
