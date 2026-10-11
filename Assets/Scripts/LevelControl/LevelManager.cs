@@ -64,6 +64,11 @@ public class LevelManager : MonoBehaviour
     // Final day: the high-score result is decided when the level ends, then only displayed later.
     private bool finalRunIsNewRecord = false;
 
+    // Map (10 October): a chapter is 16 days; days past it stay in allLevels for chapter 2.
+    public const int ThreeStarBonus = 100;   // paid once per day, the first time it gets three stars
+    private int threeStarBonusPaid;
+    private int LastDayIndex => Mathf.Min(allLevels.Length, MapScreen.ChapterDays) - 1;
+
     private void Start()
     {
         // IMPORTANT: Ensure AudioManager exists (create if missing)
@@ -88,7 +93,7 @@ public class LevelManager : MonoBehaviour
             // Check if continuing from saved session
             if (SessionManager.Instance.HasActiveSession())
             {
-                var savedLevel = SessionManager.Instance.GetCurrentLevelIndex();
+                var savedLevel = Mathf.Min(SessionManager.Instance.GetCurrentLevelIndex(), LastDayIndex);
                 Debug.Log($"🔄 Continuing from saved session - Level {savedLevel + 1}");
                 LoadLevel(savedLevel);
             }
@@ -228,7 +233,7 @@ public class LevelManager : MonoBehaviour
         if (pauseMainMenuButton != null)
         {
             pauseMainMenuButton.onClick.RemoveAllListeners();
-            pauseMainMenuButton.onClick.AddListener(GoToMainMenu);
+            pauseMainMenuButton.onClick.AddListener(GoToMap); // the pause menu's home opens the map (owner, 10 October)
             Debug.Log("LevelManager: Pause Main Menu button setup complete");
         }
         else
@@ -564,14 +569,14 @@ public class LevelManager : MonoBehaviour
         //    SessionManager.Instance.AddLevelScore(levelScore);
         SessionManager.Instance.OnLevelCompleted(currentLevelIndex);
 
-        // Final day: finish the game in the save right now. Previously this only happened at the end
-        // of the popup animation, so leaving early (Main Menu, app killed) left an active session
-        // pointing past the last level, and Continue then loaded a broken state.
-        if (currentLevelIndex + 1 >= allLevels.Length)
-        {
+        // Stars for the map, and the one-time three-star bonus
+        var stars = scoreManager != null && scoreManager.starProgressBar != null ? scoreManager.starProgressBar.GetEarnedStarsCount() : 0;
+        threeStarBonusPaid = SessionManager.Instance.RecordLevelStars(currentLevelIndex, stars, ThreeStarBonus);
+
+        // Last day of the chapter: record the high score. The session stays active so every day
+        // can still be replayed from the map (it used to end the game here).
+        if (currentLevelIndex >= LastDayIndex)
             finalRunIsNewRecord = SessionManager.Instance.CheckAndSaveHighScore();
-            SessionManager.Instance.CompleteSession();
-        }
 
         isLevelEnding = true;
         var totalAfter = SessionManager.Instance.GetTotalScore();
@@ -620,12 +625,14 @@ public class LevelManager : MonoBehaviour
         yield return StartCoroutine(AnimateFullTransfer(todayTip, totalEarned, "Tips: $ ", "Earned: $ ", tips,
             totalScore));
 
-        var isLastLevel = currentLevelIndex + 1 >= allLevels.Length;
+        var isLastLevel = currentLevelIndex >= LastDayIndex;
         if (isLastLevel)
         {
             yield return new WaitForSeconds(0.5f);
             ShowFinalCompletionMessage();
         }
+        if (threeStarBonusPaid > 0 && unlockedItemsText != null)
+            unlockedItemsText.text = $"Three stars! Bonus $ {threeStarBonusPaid}\n" + unlockedItemsText.text;
     }
 
     private void ShowFinalCompletionMessage()
@@ -634,7 +641,7 @@ public class LevelManager : MonoBehaviour
         var isNewRecord = finalRunIsNewRecord; // decided and saved in OnLevelComplete
 
         if (todaySale != null)
-            todaySale.text = "\nCongrats!\nYou finished all levels!";
+            todaySale.text = "\nCongrats!\nChapter 1 complete!";
         todayTip.text = "";
         UpdateUnlockedItemsDisplay();
 
@@ -667,11 +674,9 @@ public class LevelManager : MonoBehaviour
 
     private void SetupLevelCompleteButtons()
     {
-        var isLastLevel = currentLevelIndex + 1 >= allLevels.Length;
-
-        if (nextLevelButton != null && !isLastLevel) nextLevelButton.gameObject.SetActive(true);
-        if (levelCompleteMainMenuButton != null && isLastLevel) levelCompleteMainMenuButton.gameObject.SetActive(true);
-        if (levelCompleteRestartButton != null && !isLastLevel) levelCompleteRestartButton.gameObject.SetActive(true);
+        // Every day, the last one included, ends with Next (to the map) and Restart
+        if (nextLevelButton != null) nextLevelButton.gameObject.SetActive(true);
+        if (levelCompleteRestartButton != null) levelCompleteRestartButton.gameObject.SetActive(true);
     }
 
     public void LoadNextLevel()
@@ -683,12 +688,20 @@ public class LevelManager : MonoBehaviour
         if (AudioManager.Instance != null)
             AudioManager.Instance.StopMusic();
 
-        // Between-level interstitial. If no ad is loaded the Shop opens immediately.
-        InterstitialAdService.Instance.ShowAfterLevelThen(() =>
-        {
-            if (SceneTransitionManager.Instance != null)
-                SceneTransitionManager.Instance.TransitionToScene("Shop");
-        });
+        // After a day: finish board, then the map; the map's Play shows the ad, then the Shop (owner, 10 October)
+        MapScreen.CameFromDay = true;
+        if (SceneTransitionManager.Instance != null)
+            SceneTransitionManager.Instance.TransitionToScene(MapScreen.SceneName);
+    }
+
+    public void GoToMap()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.StopMusic();
+        Time.timeScale = 1f;
+        isPaused = false;
+        MapScreen.CameFromDay = false;
+        SceneTransitionManager.Instance.TransitionToScene(MapScreen.SceneName);
     }
 
     private void OnAllLevelsComplete()

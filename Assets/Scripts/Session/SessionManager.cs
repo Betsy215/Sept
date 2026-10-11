@@ -44,6 +44,11 @@ public class SessionData
 
     public List<FoodItemPosition> savedFoodPositions;
 
+    // Map (10 October): best stars per day (index = day - 1) and the days whose one-time
+    // three-star bonus has been paid. Missing (null) in sessions saved before the map.
+    public List<int> levelStars;
+    public List<int> starBonusPaidDays;
+
     public SessionData()
     {
         totalScore = 0;
@@ -60,6 +65,8 @@ public class SessionData
         };
         purchasedCharacters = new List<string> { "Girl", "Boy", "Kid" };
         savedFoodPositions = new List<FoodItemPosition>();
+        levelStars = new List<int>();
+        starBonusPaidDays = new List<int>();
         SyncUpgradesToLists();
     }
 
@@ -368,12 +375,43 @@ public class SessionManager : MonoBehaviour
         if (currentSession != null && currentSession.isActive)
         {
             currentSession.currentLevel = levelIndex + 1; // Next level to play
-            currentSession.levelsCompleted = levelIndex + 1; // Levels actually completed
+            // A replay of an earlier day must not move progress back
+            currentSession.levelsCompleted = Mathf.Max(currentSession.levelsCompleted, levelIndex + 1);
             SaveSession();
 
             Debug.Log($"Level {levelIndex + 1} completed. Next level: {currentSession.currentLevel + 1}");
         }
     }
+
+    /// Best stars earned on a day (0 when never played).
+    public int GetLevelStars(int levelIndex)
+    {
+        var list = currentSession?.levelStars;
+        return list != null && levelIndex >= 0 && levelIndex < list.Count ? list[levelIndex] : 0;
+    }
+
+    /// Records the stars of a finished day (keeps the best) and pays the one-time three-star bonus.
+    /// Returns the bonus paid now (0 when not three stars, or already paid for that day).
+    public int RecordLevelStars(int levelIndex, int stars, int threeStarBonus)
+    {
+        if (currentSession == null || !currentSession.isActive || levelIndex < 0) return 0;
+        if (currentSession.levelStars == null) currentSession.levelStars = new List<int>();
+        if (currentSession.starBonusPaidDays == null) currentSession.starBonusPaidDays = new List<int>();
+        while (currentSession.levelStars.Count <= levelIndex) currentSession.levelStars.Add(0);
+        currentSession.levelStars[levelIndex] = Mathf.Max(currentSession.levelStars[levelIndex], stars);
+        var bonus = 0;
+        if (stars >= 3 && !currentSession.starBonusPaidDays.Contains(levelIndex))
+        {
+            currentSession.starBonusPaidDays.Add(levelIndex);
+            bonus = threeStarBonus;
+            currentSession.totalScore = RoundToCents(currentSession.totalScore + bonus);
+            OnTotalScoreChanged?.Invoke(currentSession.totalScore);
+        }
+        SaveSession();
+        return bonus;
+    }
+
+    public int GetLevelsCompleted() => currentSession != null ? currentSession.levelsCompleted : 0;
 
     // Add this to SessionManager.cs
     public void SetCurrentLevel(int levelIndex)
@@ -462,6 +500,8 @@ public class SessionManager : MonoBehaviour
                     currentSession.purchasedCharacters = new List<string> { "Girl", "Boy", "Kid" };
 
                 currentSession.SyncUpgradesFromLists();
+                if (currentSession.levelStars == null) currentSession.levelStars = new List<int>();
+                if (currentSession.starBonusPaidDays == null) currentSession.starBonusPaidDays = new List<int>();
                 // NEW: Handle legacy sessions without saved positions
                 if (currentSession.savedFoodPositions == null)
                 {

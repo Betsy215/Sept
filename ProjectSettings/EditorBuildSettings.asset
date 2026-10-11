@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/KitchenScene.unity
     guid: c521e92b22986469f9516f9b417ec2e3
+  - enabled: 1
+    path: Assets/Scenes/Map.unity
+    guid: 35d491ff2a45c4dda9355f6a29c92d21
   m_configObjects:
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 1ca2e6d2d7cca47aab17a60be97fa91d, type: 2}
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 8c73eb590a9674c8fa4ef0dff344d491, type: 2}
