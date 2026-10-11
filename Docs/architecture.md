@@ -5,14 +5,15 @@ How the game is put together, for someone opening the project after a break.
 ## Scenes and flow
 
 ```
-MainMenu ──Play / Continue──▶ GameSceneOne ──level complete──▶ Shop ──Next level──▶ GameSceneOne
-   ▲                              │  ▲                            │
-   └────────── Main Menu ─────────┘  └── KitchenScene (additive) ─┘  └── Main Menu ──▶ MainMenu
+MainMenu ──Play / Continue──▶ Map ──a day's Play──▶ GameSceneOne ──finish board, Next──▶ Map ──Play──▶ ad ──▶ Shop ──Next──▶ GameSceneOne
+   ▲                           │  ▲                     │  (pause home ──▶ Map)
+   └────────── home ───────────┘  └─────────────────────┘
 ```
 
 - **MainMenu** creates the persistent managers (below), starts menu music, initialises Unity Ads, and offers Play (new game, asks for a second tap if a saved game exists) and Continue (enabled once a level has been completed).
 - **GameSceneOne** is the only gameplay scene. Every level runs here; the level number comes from the saved session. It has two phases: *arrangement* (drag food onto the table, no timer) and *playing* (customers and orders).
 - **KitchenScene** loads additively on top of GameSceneOne when the kitchen button is tapped. It is where baking and brewing refill stock. While it is open, the game scene's colliders are disabled.
+- **Map** (10 October) is the chapter map: chapter 1 is Scorpio, 16 days; see `Map/MapScreen.cs` and the manual.
 - **Shop** runs between levels. Buys foods, characters, and upgrades with coins, and hosts the rewarded ad button.
 
 Scene changes go through `SceneTransitionManager.TransitionToScene`, which fades to black on its own canvas and uses unscaled time so it works while paused.
