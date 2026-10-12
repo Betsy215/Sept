@@ -2,7 +2,7 @@
 
 Read this first at the start of every session on this project. It says what the game is, the owner's rules, where everything lives, and how each recurring job is done. Deeper detail is in the docs it links to; this file is the map.
 
-Last updated 11 October 2026.
+Last updated 12 October 2026.
 
 ## 1. State of the project
 
@@ -177,6 +177,8 @@ App Privacy has no API and is set in the browser. Ten data types are declared fr
   - To get the result without a browser download: click Gemini's Copy button, then save the clipboard to a file with `osascript` («class PNGf»).
 - Cut tool options for hard cases: `RIM=30 WHITE=185 HOLES=1` for dark-haired characters with no white in their design (it clears white trapped deep in hair or enclosed by an arm). Use `RIM=4` for white-haired characters such as Grandma. `SINGLE=1` cuts one figure per image.
 - Sprites go in `Assets/Images/Customers` with a chest pivot of (0.5, 0.6).
+- **Three-way drafts** (12 October, chapter 2): for new art the owner wants three versions to choose from: ChatGPT, Gemini and Claude's own painting (`Store/artkit/brush`). Claude writes the brief: the closest existing game art as the style reference, plus a layout map for scenes. Never give Gemini an image with words on it; it paints the words in. Describe the layout to Gemini in words. Gemini's free images are 572 x 1024. ChatGPT's are 941 x 1672.
+- **Backgrounds on iPhone:** the 1080 x 1920 background fills the screen height, so about 9% is cut off at each side. The tablecloth starts at 50% of the height. `Store/chapter2/beach_bg/mock.py bg.png out.png [night]` shows a background in the game with the cloth, a customer and the truck.
 - The prompts and the daily queue are in the report, under Customer art.
 
 **In-game caption card** (10 October): the tutorial captions (`TutorialDirector`, CaptionBox) and the arrange hint (GameSceneOne, ArrangementUI/HintCard behind the Text) use `Assets/Resources/Tutorial/card.png`, a 9-sliced gingham recipe card (border 48), brown text 0.36/0.22/0.09, auto-sized 36 to 64. The table top edge has only `TableOuterShadow` (Assets/Images/tableedge.png), a child of TableCloth so it follows the cloth when it is stretched at runtime; the soft brown TableEdgeShadow was removed at the owner's request.
