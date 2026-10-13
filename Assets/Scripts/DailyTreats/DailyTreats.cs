@@ -131,9 +131,11 @@ public class DailyTreats : MonoBehaviour
         var star = NewImage("Star", canvasRect, starSprite, Color.white);
         Place(star.rectTransform, 368f, 12f, 96f, 96f);
 
-        // Today's reward: the coin and +50, or the gift box on day 5 (the +150 shows when collected)
+        // Today's reward: the coin and +50, or the gift box on day 5. The coin, the +50 and the sparkles are the
+        // effect after Collect is tapped, so they start hidden (owner, 12 October); the gift box shows at once
         sparkles = NewImage("Sparkles", canvasRect, Load("sparkles"), Color.white);
         Place(sparkles.rectTransform, 0f, -190f, 700f, 240f);
+        sparkles.gameObject.SetActive(false);
         if (day == 5)
         {
             giftImage = NewImage("Gift", canvasRect, Load("gift_big"), Color.white);
@@ -146,6 +148,7 @@ public class DailyTreats : MonoBehaviour
         {
             rewardImage = NewImage("Reward", canvasRect, Load("reward50"), Color.white);
             Place(rewardImage.rectTransform, 0f, -190f, 520f, 180f);
+            rewardImage.gameObject.SetActive(false);
         }
 
         // Collect: the cookie button (collect.png keeps the same canvas as continue.png)
@@ -174,17 +177,14 @@ public class DailyTreats : MonoBehaviour
         StartCoroutine(CloseAfterReveal(day == 5));
     }
 
-    private IEnumerator CloseAfterReveal(bool reveal)
+    private IEnumerator CloseAfterReveal(bool gift)
     {
         collectButton.gameObject.SetActive(false);
-        if (reveal)
-        {
-            // Day 5: the gift opens into the +150
-            giftImage.gameObject.SetActive(false);
-            rewardImage.gameObject.SetActive(true);
-            yield return new WaitForSeconds(2f);
-        }
-        else yield return new WaitForSeconds(0.35f);
+        // The reward appears on the tap: the coin and +50 with sparkles, or on day 5 the gift opening into the +150
+        if (gift) giftImage.gameObject.SetActive(false);
+        sparkles.gameObject.SetActive(true);
+        rewardImage.gameObject.SetActive(true);
+        yield return new WaitForSeconds(gift ? 2f : 1.4f);
         Destroy(root);
         root = null;
     }
