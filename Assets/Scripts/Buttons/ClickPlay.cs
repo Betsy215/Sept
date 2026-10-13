@@ -48,6 +48,8 @@ public class ClickPlay : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
         if (AudioManager.Instance != null) AudioManager.Instance.StopMusic();
 
-        SceneTransitionManager.Instance.TransitionToScene(_sceneName);
+        // A new game opens with the tutorial (day 0) before the map ever shows; the tutorial ends on the map
+        var scene = TutorialDirector.IsDue(SessionManager.Instance) ? TutorialDirector.GameScene : _sceneName;
+        SceneTransitionManager.Instance.TransitionToScene(scene);
     }
 }

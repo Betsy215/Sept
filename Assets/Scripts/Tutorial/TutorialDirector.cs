@@ -22,6 +22,9 @@ public class TutorialDirector : MonoBehaviour
     /// Set by the Replay button before the scene reloads.
     public static bool ReplayRequested;
 
+    public const string GameScene = "GameSceneOne";
+    public const string MapScene = "Map";
+
     public static bool IsDue(SessionManager sm)
     {
         if (ReplayRequested) return true;
@@ -60,6 +63,7 @@ public class TutorialDirector : MonoBehaviour
         orderSystem = os;
         customerManager = cm;
         ReplayRequested = false;
+        if (lm != null && lm.levelInfoText != null) lm.levelInfoText.text = "Day 0";   // the tutorial is day 0, not counted
         BuildUi();
         StartCoroutine(Run());
     }
@@ -275,7 +279,13 @@ public class TutorialDirector : MonoBehaviour
             SessionManager.Instance.MarkTutorialSeen();
         }
 
-        Reload();
+        // Day 0 is over: on to the map, where day 1 is the next star (12 October; it used to reload into day 1)
+        Time.timeScale = 1f;
+        if (AudioManager.Instance != null) AudioManager.Instance.StopMusic();
+        if (SceneTransitionManager.Instance != null)
+            SceneTransitionManager.Instance.TransitionToScene(MapScene);
+        else
+            SceneManager.LoadScene(MapScene);
     }
 
     private void OnReplay()
@@ -303,6 +313,10 @@ public class TutorialDirector : MonoBehaviour
     {
         caption.text = text;
         caption.gameObject.SetActive(true);
+        // The card grows for a second line (owner, 12 October: two lines did not sit well on the one-line card)
+        caption.ForceMeshUpdate();
+        var lines = Mathf.Max(1, caption.textInfo.lineCount);
+        captionBox.sizeDelta = new Vector2(1000f, 200f + (lines - 1) * 72f);
     }
 
     private IEnumerator PointAtWorld(Vector3 world)
