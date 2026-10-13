@@ -9,8 +9,8 @@ using UnityEngine;
 /// Built from runtime sprites, no assets. Shown by OrderSystem.StartOrderForCustomer, hidden by CompleteOrder / ExpireOrder.
 public class PatienceMeter : MonoBehaviour
 {
-    public static readonly Vector3 WorldPosition = new Vector3(-1.11f, 3.45f, 0f);   // in the bubble root's space: centred over the bubble, on its top edge (two slots at 0.65: y 3.8, under the corner buttons; owner 13 October)
-    public const float Scale = 0.8f;       // the whole set, a little smaller (owner, 13 October)
+    public static readonly Vector3 WorldPosition = new Vector3(-1.11f, 3.3f, 0f);    // in the bubble root's space: centred over the bubble, sitting on its top edge (owner 13 October: closer to the bubble)
+    public const float Scale = 0.65f;      // the whole set, smaller (owner, 13 October, fourth pass)
     public const int Flowers = 3;
     const float Spacing = 0.45f;           // between flower centres, world units
     const float PetalRadius = 0.15f;
