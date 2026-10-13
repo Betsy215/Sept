@@ -435,6 +435,9 @@ public class LevelManager : MonoBehaviour
             ApplyServeableItemSettings();
 
         KitchenButtonOverTable.Setup();   // the truck button a third onto the cloth (12 October)
+        // Money and stars live on the table now (13 October): the flip clock next to the truck; the sign at the top goes
+        MoneyFlipClock.Setup(scoreManager);
+        if (levelInfoText != null && levelInfoText.transform.parent != null) levelInfoText.transform.parent.gameObject.SetActive(false);
 
         if (customerManager != null)
         {
@@ -560,14 +563,17 @@ public class LevelManager : MonoBehaviour
     private void BuildDayClockText()
     {
         if (dayClockText != null || levelInfoText == null || dayClockDisabled) return;
-        var go = Instantiate(levelInfoText.gameObject, levelInfoText.transform.parent);
+        // under the canvas root at the top centre, where the sign used to be (the sign itself is hidden)
+        var canvasRoot = levelInfoText.transform.parent != null && levelInfoText.transform.parent.parent != null ? levelInfoText.transform.parent.parent : levelInfoText.transform.parent;
+        var go = Instantiate(levelInfoText.gameObject, canvasRoot);
+        go.SetActive(true);
         go.name = "DayClockText";
         dayClockText = go.GetComponent<TMPro.TextMeshProUGUI>();
         var rt = dayClockText.rectTransform;
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0f);
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
         rt.pivot = new Vector2(0.5f, 1f);
-        rt.anchoredPosition = new Vector2(0f, -4f);
-        rt.sizeDelta = new Vector2(300f, 60f);
+        rt.anchoredPosition = new Vector2(0f, -150f);
+        rt.sizeDelta = new Vector2(300f, 70f);
         dayClockText.alignment = TMPro.TextAlignmentOptions.Center;
         dayClockText.enableAutoSizing = false;
         dayClockText.fontSize = 44f;
