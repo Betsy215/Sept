@@ -2,7 +2,7 @@
 
 Read this first at the start of every session on this project. It says what the game is, the owner's rules, where everything lives, and how each recurring job is done. Deeper detail is in the docs it links to; this file is the map.
 
-Last updated 12 October 2026.
+Last updated 12 October 2026, evening.
 
 ## 1. State of the project
 
@@ -17,7 +17,8 @@ Last updated 12 October 2026.
 | Repo | https://github.com/Betsy215/Sept (**public**: never commit keys, issuer ids or tokens), branch `main` |
 | Live version | 26.03.29 (March 2026) |
 | In review | 26.10.09 build 4, submitted 9 October 2026, release type MANUAL (the owner presses Release after approval); still Waiting for Review on 11 October |
-| On main, not yet built | Chapter map (16 days), Daily Treats, cookie buttons, outlined customers, choux 2 by 2, table edge (10 October). Needs a TestFlight build when the owner asks, and store text that says 16-day chapters, not 24 days |
+| TestFlight | 26.10.11 (1), 11 October: map, Daily Treats, cookie buttons, outlined customers, choux 2 by 2, table edge. 26.10.12 (1), 12 October 19:31: plus the three table fixes (stripe seams, flat choux shadow, blue cloth under the cake) |
+| On main, not yet built (12 October evening) | Economy rebalance (replays pay half, Apple 20, new star thresholds), Cookies food, patience daisy + Decor_Vase / Decor_Bouquet shop upgrades, iOS target 15.0. Release planned 13 October after an editor play test; store text must say 16-day chapters, not 24 days |
 
 What 26.10.09 added: 24 days (was 14), two more orders per day, evening and night tint for the last orders of a day, an interactive Level 0 tutorial, four shop regulars with habits (Grandma tips x2, Chef orders an extra item, Yoga lady has 1.5x time, Businessman tips x3 with 0.75x time), interstitial ads between a day and the Shop, and the fixes listed under Done in `Docs/TODO.md`.
 
@@ -238,3 +239,12 @@ Minor known issues are in `Docs/TODO.md`. Don't fix them without the owner's yes
 ## 11. Keeping this manual current
 
 When a session learns something a future session would need (a new recipe, a path, a decision by the owner, a store rule), add it here or in the linked doc and commit it. Change the "Last updated" date. Remove anything that stops being true.
+
+## 9. 12 October evening: what changed and how it was done
+
+- **Command-line export** (`Assets/Editor/CommandLineBuild.cs`): when the editor is closed, `Unity -batchmode -quit -projectPath . -buildTarget iOS -executeMethod CommandLineBuild.iOS -exportPath ../Builds/iOS-<v>-<b> -logFile ../Builds/archives/export-<v>-<b>.log`, then the archive and upload steps from `Docs/ios-testing-and-release.md`. The export took about 4 minutes; the log says "Exiting batchmode successfully". Apple's ITMS-90068 on 26.10.12 (1) was about the iOS 14 target; it is 15.0 now.
+- **Economy** (`Docs/economy_sim.py` is the model): replays of a finished day pay half the order money (`ScoreManager.payFactor`, set in `LevelManager.LoadLevel` from `levelIndex < GetLevelsCompleted()`), stars still use the full score. Apple is 20 points. Star thresholds in `Level1..16Data.asset` = natural-path income at 60% timer left (3 stars), 75% of that (2), 50% (1).
+- **Cookies** (`Docs/tools/add_cookies.py` did every scene edit by YAML): id `Cookies`, $600, 30 points, table object copied from Choux at (-1.56, -2.32) scale 0.22 with `Cookies.cs` (4 sprites `Images/cookies/k0..k3`, 680 px canvas, shadow baked in), kitchen plate under `cabright` with `CookiesInKitchen.cs` (tap, 8 s respawn, like the apples), bubble icon `Prefabs/Cookies.prefab`, shop card in a new row at (-400, -2680). `totalFoodItems` is 7. Sprites come from ChatGPT's sheet via `Store/decor/table_sprites.py`.
+- **Patience** (`PatienceMeter.cs`, `PatienceDecor.cs`): the daisy is drawn from runtime textures at world (-1, 3.35); petals = `CustomerManager` sets `OrderSystem.patiencePetals = round(level time + PatienceDecor.BonusSeconds())`; `OrderSystem.DisplayOrder` shows it, `CompleteOrder` / `ExpireOrder` hide it. Decorations are Shop upgrades keyed `Decor_Vase` (-1.85, -0.75) and `Decor_Bouquet` (1.8, -0.6), sprites in `Resources/Decor`, placed by `LevelManager.ApplyLevelSettings`. Cards added by `Docs/tools/add_decor_shop.py`; `ShopManager` scroll limit is 3300.
+- **Art**: `Store/brushes/STYLE.md` has the owner's second reference (soft textured gouache, pastel). ChatGPT free tier gives about three images a day; typing into its box right after an upload loses the text, so wait a few seconds first. Gemini keeps a style but not a shape; for a same-shape repaint use ChatGPT with the original as image 1.
+- **Not done**: bread basket restyle (Gemini's two tries changed the shape), the lantern decoration, chapter 2 picks.
