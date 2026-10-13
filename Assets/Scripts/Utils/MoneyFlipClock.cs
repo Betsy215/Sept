@@ -12,7 +12,7 @@ public class MoneyFlipClock : MonoBehaviour
 {
     public static Vector3 Position = new Vector3(-0.12f, 0.12f, 0f);   // just right of the truck button
     public const float Width = 1.15f, Height = 0.5f;                  // world units, the fallback board; the truck button is about 1.0 x 0.6
-    public const float HenScale = 0.2f;                               // the 700 x 560 hen picture at 100 px per unit: 1.4 x 1.12 units
+    public const float HenScale = 0.5f;                               // the owner's 236 x 222 hen (her kitchen layer export, 2x) at 100 px per unit: 1.18 x 1.11 units
 
     static Sprite roundRect, starSprite;
     ScoreManager scoreManager;
@@ -39,7 +39,7 @@ public class MoneyFlipClock : MonoBehaviour
         // Store/artkit/money_hen.py with its contact shadow): the number sits on the white body, the three stars on
         // the red base. If the picture is missing, the old cream board is built instead.
         var hen = Resources.Load<Sprite>("UI/money_hen");
-        var numberPos = new Vector3(-0.06f, 0.04f, 0f); var starsY = -0.26f; var starGap = 0.2f; var starScale = 0.72f;
+        var numberPos = new Vector3(0.01f, 0.03f, 0f); var starsY = -0.25f; var starGap = 0.19f; var starScale = 0.65f;
         if (hen != null)
         {
             var h = new GameObject("Hen");
@@ -59,8 +59,8 @@ public class MoneyFlipClock : MonoBehaviour
         g.transform.localPosition = numberPos;
         money = g.AddComponent<TextMeshPro>();
         if (font != null) money.font = font;
-        money.fontSize = 2.3f;
-        money.characterSpacing = 9f;
+        money.fontSize = 2.0f;
+        money.characterSpacing = 7f;
         money.color = new Color(0.36f, 0.22f, 0.09f);
         money.fontMaterial = new Material(money.fontSharedMaterial);
         money.fontMaterial.SetFloat("_OutlineWidth", 0.22f);
