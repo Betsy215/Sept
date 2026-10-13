@@ -462,12 +462,26 @@ public class OrderSystem : MonoBehaviour
         // Award points for this item (kept on the order for its tip)
         if (scoreManager != null) target.basePoints += scoreManager.AwardItemPointsValue(foodType);
 
+        // Patience: the flower that was draining fills up again (owner, 13 October: the hearts mechanic)
+        RefillPatience(target);
+
         // Play item served sound
         PlayItemServedSound();
 
         if (target.AllServed) CompleteOrder(target);
         Debug.Log($"Served {foodType} to slot {target.slot}. Remaining items: {target.items.Count(i => !i.isServed)}");
         return true;
+    }
+
+    /// Gives the order back the time of the flower that was draining: its timer moves up to the next flower
+    /// boundary (never above the full time), and the meter pops that flower back to full
+    private void RefillPatience(ActiveOrder order)
+    {
+        if (!order.active || order.displayTime <= 0f) return;
+        var per = order.displayTime / PatienceMeter.Flowers;
+        var fullFlowers = Mathf.FloorToInt(order.timer / per + 1e-4f);
+        order.timer = Mathf.Min(order.displayTime, (fullFlowers + 1) * per);
+        PatienceMeter.OnItemServed(order);
     }
 
     private IEnumerator ServeItemWithEffect(OrderItemInstance item, System.Action onFinished = null)
