@@ -4704,7 +4704,7 @@ MonoBehaviour:
   - itemType: Bread
     points: 15
   - itemType: Apple
-    points: 15
+    points: 20
   - itemType: Juice
     points: 20
   - itemType: Melon

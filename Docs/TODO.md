@@ -43,6 +43,7 @@ Lifetime: 55 downloads since 29 Nov 2025, all from App Store search, 0.9 percent
 - [ ] Marketing discovery: plan with cost and effort for keyword work, Apple Search Ads test, short-video clips, cozy-game communities, Apple featuring request
 - [x] Store page text: subtitle, keywords, description, screenshots for iPhone, iPad and Duo (9 Oct)
 - [ ] Re-read retention and conversion in November, then decide on content
+- [ ] **Next MVP (owner, 12 October): visible patience.** Customers show their patience as hearts that run out, so the player can read speed and the expected tip at a glance (the Yoga lady's 1.5x and the Businessman's 0.75x time must show). Shop items (decorations) that raise customers' patience. Needs a design first: heart count and placement, how tip maps to hearts left, which decorations do what and their prices (fits the economy rebalance)
 
 Backlog from the owner, 9 October (after the goals above):
 

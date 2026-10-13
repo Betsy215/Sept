@@ -65,6 +65,7 @@ public class LevelManager : MonoBehaviour
     private bool finalRunIsNewRecord = false;
 
     // Map (10 October): a chapter is 16 days; days past it stay in allLevels for chapter 2.
+    public const float ReplayPayFactor = 0.5f;   // share of order money paid when a finished day is replayed (12 October 2026)
     public const int ThreeStarBonus = 100;   // paid once per day, the first time it gets three stars
     private int threeStarBonusPaid;
     private int LastDayIndex => Mathf.Min(allLevels.Length, MapScreen.ChapterDays) - 1;
@@ -378,6 +379,8 @@ public class LevelManager : MonoBehaviour
         {
             currentLevelIndex = levelIndex;
             currentLevelData = allLevels[levelIndex];
+            // A day already finished pays half its order money on a replay (stars and the three-star bonus are unchanged)
+            scoreManager.payFactor = SessionManager.Instance != null && levelIndex < SessionManager.Instance.GetLevelsCompleted() ? ReplayPayFactor : 1f;
             scoreManager.starProgressBar.Initialize(currentLevelData);
             ApplyLevelSettings();
             StartLevel();

@@ -43,6 +43,10 @@ public class ScoreManager : MonoBehaviour
     private float totalTipsEarned = 0f;
     private float currentTipMultiplier = 1.0f;
 
+    /// Share of each order's money that goes to the wallet: 1 on a first play, ReplayPayFactor on a day already
+    /// finished (economy rebalance, 12 October 2026). The level score, and so the stars, still use the full value.
+    [System.NonSerialized] public float payFactor = 1f;
+
     [Serializable]
     public class ItemPointValues
     {
@@ -159,7 +163,7 @@ public class ScoreManager : MonoBehaviour
         currentScore += tip;
 
         // ADD ALL POINTS TO SESSION NOW
-        var totalPoints = currentOrderItemPoints + tip;
+        var totalPoints = (currentOrderItemPoints + tip) * payFactor;
         if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
             SessionManager.Instance.AddScoreImmediately(totalPoints);
 
@@ -167,7 +171,7 @@ public class ScoreManager : MonoBehaviour
         if (starProgressBar != null)
             starProgressBar.UpdateDisplay(currentScore);
 
-        StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints, tip));
+        StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints * payFactor, tip * payFactor));
         PlayBonusSound();
 
         currentOrderItemPoints = 0;
@@ -195,12 +199,12 @@ public class ScoreManager : MonoBehaviour
         {
             // Add accumulated points to session
             if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
-                SessionManager.Instance.AddScoreImmediately(currentOrderItemPoints);
+                SessionManager.Instance.AddScoreImmediately(currentOrderItemPoints * payFactor);
 
             UpdateScoreUI(); // Update score display
 
             // Show popup with earned points (no bonus)
-            StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints, 0f));
+            StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints * payFactor, 0f));
         }
 
         ShowFeedback("Order Expired!", Color.red);
