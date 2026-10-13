@@ -220,7 +220,7 @@ public static class AutoPlayTest
     {
         var name = type switch
         {
-            "Bread" => "oven2", "Choux" => "oven1", "Cake" => "oven3",
+            "Bread" => "oven2", "Choux" => "oven1", "Cake" => "oven3", "Cookies" => "cookies",
             "Apple" => "apples", "Juice" => "juice", "Coffee" => "coffee", _ => null
         };
         if (name == null) return;

@@ -7,15 +7,15 @@ Edit POINTS, PRICES, DAYS and STARS below to try a rebalance."""
 import sys
 FRAC=float(sys.argv[1]) if len(sys.argv)>1 else 0.4          # share of the timer left when an order is served
 REPLAY_PAY=0.5                                               # not used here: first run only
-POINTS={"Coffee":10,"Bread":15,"Juice":20,"Apple":20,"Cake":35,"Choux":35}
-PRICES={"Juice":150,"Grandma":300,"Chef":300,"CoffeeUp":350,"Choux":750,"Cake":750,"Yoga":500,"MachineUp":600,"Businessman":700,"Apple":350,
+POINTS={"Coffee":10,"Bread":15,"Juice":20,"Apple":20,"Cake":35,"Choux":35,"Cookies":30}
+PRICES={"Juice":150,"Grandma":300,"Chef":300,"CoffeeUp":350,"Choux":750,"Cake":750,"Yoga":500,"MachineUp":600,"Businessman":700,"Apple":350,"Cookies":600,
         "Vase":400,"Lantern":900,"Radio":1500}
-ORDER=["Juice","Grandma","Chef","Vase","Choux","Cake","Yoga","Lantern","Businessman","CoffeeUp","Radio","MachineUp","Apple"]   # buying order
+ORDER=["Juice","Grandma","Chef","Vase","Cookies","Choux","Cake","Yoga","Lantern","Businessman","CoffeeUp","Radio","MachineUp","Apple"]   # buying order
 # day: (orders, timer s, min items, max items)
 DAYS={1:(7,5,1,2),2:(7,5,1,3),3:(8,5,2,3),4:(8,5,2,4),5:(9,5,2,4),6:(10,4,2,4),7:(10,4,2,4),8:(10,4,2,4),9:(11,4,2,4),10:(11,4,2,4),
       11:(11,4,2,4),12:(12,4,2,4),13:(12,4,2,4),14:(13,4,2,4),15:(13,4,2,4),16:(14,4,2,4)}
-STARS_NOW={1:(70,140,210),2:(140,280,420),3:(200,330,470),4:(200,330,470),5:(390,510,640),6:(440,560,690),7:(440,560,690),8:(440,560,690),
-      9:(490,610,730),10:(550,670,790),11:(610,730,860),12:(660,780,900),13:(720,840,960),14:(770,890,1000),15:(820,940,1050),16:(870,990,1110)}
+STARS_NOW={1:(100,140,190),2:(160,240,320),3:(220,330,440),4:(280,420,560),5:(420,640,850),6:(510,760,1020),7:(540,810,1080),8:(540,810,1080),
+      9:(600,890,1190),10:(620,940,1250),11:(620,940,1250),12:(680,1030,1370),13:(680,1030,1370),14:(740,1110,1480),15:(740,1110,1480),16:(800,1190,1590)}   # the game's thresholds since 12 October 2026
 CUST={"Girl":(1,1,0,0),"Boy":(1,1,0,0),"Kid":(1,1,0,99),"Grandma":(2,1,0,0),"Chef":(1,1,1,0),"Yoga":(1,1.5,0,0),"Businessman":(3,0.75,0,0)}  # tip x, time x, extra min, min override
 DECOR={"Vase":1,"Lantern":1,"Radio":1}                        # seconds of patience each adds
 def day_income(d,foods,custs,extra_s):
