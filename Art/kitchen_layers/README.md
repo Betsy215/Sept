@@ -1,0 +1,3 @@
+# Kitchen painting, layer exports
+
+The owner's kitchen painting (`Assets/Images/Kitchen/未命名作品.png`) as its Procreate layers, exported 6 March 2026 at 1080 x 1920 with transparency, saved here 13 October 2026 so they are kept with the project. `IMG_4453.JPG` is the room; `IMG_4455` the two flower pots and the bunny plate; `IMG_4456` the jar, the French press and the hen; `IMG_4457` the hanging bouquet, the oven mitt and the towel; the rest are the ovens, bottles, baskets, cutting board, blender, whisk and cake. `Store/artkit/kitchen_layers.py` cuts the hen, pots and bouquet from them for the game table.

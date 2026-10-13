@@ -39,12 +39,13 @@ public class MoneyFlipClock : MonoBehaviour
         // Store/artkit/money_hen.py with its contact shadow): the number sits on the white body, the three stars on
         // the red base. If the picture is missing, the old cream board is built instead.
         var hen = Resources.Load<Sprite>("UI/money_hen");
-        var numberPos = new Vector3(0.01f, 0.03f, 0f); var starsY = -0.25f; var starGap = 0.19f; var starScale = 0.65f;
+        // the hen is stretched: longer than tall, about the truck's height (owner, 13 October, late)
+        var numberPos = new Vector3(0.01f, 0.02f, 0f); var starsY = -0.16f; var starGap = 0.21f; var starScale = 0.5f;
         if (hen != null)
         {
             var h = new GameObject("Hen");
             h.transform.SetParent(transform, false);
-            h.transform.localScale = Vector3.one * HenScale;
+            h.transform.localScale = new Vector3(HenScale * 1.2f, HenScale * 0.6f, 1f);
             var hsr = h.AddComponent<SpriteRenderer>(); hsr.sprite = hen; hsr.sortingOrder = 1;
         }
         else
@@ -59,7 +60,7 @@ public class MoneyFlipClock : MonoBehaviour
         g.transform.localPosition = numberPos;
         money = g.AddComponent<TextMeshPro>();
         if (font != null) money.font = font;
-        money.fontSize = 2.0f;
+        money.fontSize = 1.7f;
         money.characterSpacing = 7f;
         money.color = new Color(0.36f, 0.22f, 0.09f);
         money.fontMaterial = new Material(money.fontSharedMaterial);

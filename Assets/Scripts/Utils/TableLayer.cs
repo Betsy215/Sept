@@ -11,6 +11,8 @@ public class TableLayer : MonoBehaviour
 
     [Tooltip("Padding between table bounds and tablecloth edges (in world units)")] [Range(0f, 1f)]
     public float tableBoundsPadding = 0.3f;
+    [Tooltip("The band along the back edge of the cloth kept for the truck button, the hen and the pots: food cannot be placed there (owner, 13 October). World units from the cloth's top edge")]
+    public float topReserve = 0.75f;
 
     [Header("Table Coverage Settings")]
     [Tooltip("What percentage of the screen height should the tablecloth cover from bottom")]
@@ -209,7 +211,7 @@ public class TableLayer : MonoBehaviour
         var minX = Mathf.Max(clothMinX, safeMinX) + tableBoundsPadding;
         var maxX = Mathf.Min(clothMaxX, safeMaxX) - tableBoundsPadding;
         var minY = Mathf.Max(clothMinY, safeMinY) + tableBoundsPadding;
-        var maxY = Mathf.Min(clothMaxY, safeMaxY) - tableBoundsPadding;
+        var maxY = Mathf.Min(clothMaxY - topReserve, safeMaxY - tableBoundsPadding);   // the back band is for the fixed items only
 
         // Degenerate (padding larger than the available area): collapse to the centre line
         if (maxX < minX) minX = maxX = (minX + maxX) / 2f;
