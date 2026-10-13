@@ -15,8 +15,8 @@ Last updated 12 October 2026, evening.
 | App Store app id | 6755611355 |
 | Apple team | XY39924J9T |
 | Repo | https://github.com/Betsy215/Sept (**public**: never commit keys, issuer ids or tokens), branch `main` |
-| Live version | 26.03.29 (March 2026) |
-| In review | 26.10.09 build 4, submitted 9 October 2026, release type MANUAL (the owner presses Release after approval); still Waiting for Review on 11 October |
+| Live version | 26.10.09 build 4: approved and released by the owner on 12 October 2026 (before that 26.03.29, March 2026) |
+| Next version | 26.10.13 planned for 13 October: everything on main since 26.10.09 (see the row below and section 9). Create the version in App Store Connect, attach the build, store text for 16-day chapters, submit only on the owner's go |
 | TestFlight | 26.10.11 (1), 11 October: map, Daily Treats, cookie buttons, outlined customers, choux 2 by 2, table edge. 26.10.12 (1), 12 October 19:31: plus the three table fixes (stripe seams, flat choux shadow, blue cloth under the cake) |
 | On main, not yet built (12 October evening) | Economy rebalance (replays pay half, Apple 20, new star thresholds), Cookies food, patience daisy + Decor_Vase / Decor_Bouquet shop upgrades, iOS target 15.0. Release planned 13 October after an editor play test; store text must say 16-day chapters, not 24 days |
 
