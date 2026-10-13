@@ -15,7 +15,7 @@ MonoBehaviour:
   levelNumber: 18
   levelName: Day 18
   ordersPerLevel: 15
-  orderDisplayTime: 4
+  orderDisplayTime: 5
   timeBetweenOrders: 5
   dayDurationSeconds: 75
   minOrderItems: 2

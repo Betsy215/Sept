@@ -15,7 +15,7 @@ MonoBehaviour:
   levelNumber: 9
   levelName: Day 9
   ordersPerLevel: 11
-  orderDisplayTime: 4
+  orderDisplayTime: 6
   timeBetweenOrders: 5
   dayDurationSeconds: 55
   minOrderItems: 2
