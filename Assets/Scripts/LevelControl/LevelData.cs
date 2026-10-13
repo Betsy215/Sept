@@ -8,9 +8,13 @@ public class LevelData : ScriptableObject
     public string levelName = "Level 1";
     
     [Header("Order Settings")]
+    [Tooltip("Kept for the editor auto-play and the no-customer flow; the day now ends on dayDurationSeconds")]
     public int ordersPerLevel = 3;
     public float orderDisplayTime = 5f;
+    [Tooltip("Seconds between one customer setting off and the next (13 October: customers arrive on this fixed beat, two can wait)")]
     public float timeBetweenOrders = 2f;
+    [Tooltip("Length of the day in seconds; customers stop coming when it runs out and the day ends once the last one has left")]
+    public float dayDurationSeconds = 60f;
     public int minOrderItems = 1;
     public int maxOrderItems = 4;
     

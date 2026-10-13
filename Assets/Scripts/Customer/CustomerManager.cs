@@ -18,8 +18,8 @@ public class CustomerManager : MonoBehaviour
 
     [Header("Timing Settings")] [Tooltip("Delay between customer exit and spawning next customer")]
     public float nextCustomerSpawnDelay = 2.0f;
-    [Tooltip("Seconds after a customer reaches the counter before the next one sets off, when a slot is free")]
-    public float secondCustomerDelay = 1.0f;   // the walk-in itself takes 4 s; at 2.5 the two rarely overlapped (review, 12 October)
+    [Tooltip("Not used since 13 October: customers set off on the level's beat (LevelData.timeBetweenOrders) while the day clock runs")]
+    public float secondCustomerDelay = 1.0f;
 
     [Header("Two customers (12 October 2026)")]
     [Tooltip("X offset of each slot's spot when two customers can wait (slot 0 right, slot 1 left); the walk-in ends at x = offset + 1")]
@@ -43,6 +43,7 @@ public class CustomerManager : MonoBehaviour
     // Tracked coroutines so disabling the manager can stop future spawns/orders
     // (disabling a component does NOT stop its running coroutines)
     private Coroutine nextCustomerSpawnCoroutine;
+    private Coroutine spawnLoop;
     private readonly List<Coroutine> orderDelayCoroutines = new List<Coroutine>();
 
     // Events for integration
@@ -99,6 +100,11 @@ public class CustomerManager : MonoBehaviour
             StopCoroutine(nextCustomerSpawnCoroutine);
             nextCustomerSpawnCoroutine = null;
         }
+        if (spawnLoop != null)
+        {
+            StopCoroutine(spawnLoop);
+            spawnLoop = null;
+        }
         foreach (var c in orderDelayCoroutines) if (c != null) StopCoroutine(c);
         orderDelayCoroutines.Clear();
     }
@@ -140,32 +146,43 @@ public class CustomerManager : MonoBehaviour
         return spots[slot];
     }
 
-    /// Starts the next customer if a slot is free, nobody is walking in, and the day still has orders to give.
+    /// Starts the day's arrivals: one customer now, then one every timeBetweenOrders seconds while the day clock
+    /// runs, each waiting for a free slot (two at most) and for the previous one to have reached the counter.
     public void SpawnCustomerForCurrentLevel()
     {
         if (!enabled) return;
-        if (AnyWalkingIn())
-        {
-            DebugLog("A customer is still walking in, skipping spawn request");
-            return;
-        }
-        var slot = FreeSlot();
-        if (slot < 0)
-        {
-            DebugLog("No free slot, skipping spawn request");
-            return;
-        }
-        if (orderSystem != null && spawnedCount >= orderSystem.ordersPerLevel)
-        {
-            DebugLog("Every order of the day has a customer already");
-            return;
-        }
+        if (spawnLoop == null) spawnLoop = StartCoroutine(SpawnLoop());
+    }
 
+    private IEnumerator SpawnLoop()
+    {
+        while (enabled)
+        {
+            yield return new WaitUntil(() => !enabled || (levelManager != null && levelManager.DayOver) || (FreeSlot() >= 0 && !AnyWalkingIn()));
+            if (!enabled || (levelManager != null && levelManager.DayOver)) break;
+            SpawnOne();
+            var interval = orderSystem != null ? Mathf.Max(0.5f, orderSystem.timeBetweenOrders) : 5f;
+            yield return new WaitForSeconds(interval);
+        }
+        spawnLoop = null;
+        DebugLog("No more customers today");
+    }
+
+    private void SpawnOne()
+    {
+        var slot = FreeSlot();
+        if (slot < 0) return;
         var customerPrefab = SelectCustomerForLevel(currentLevelIndex);
         if (customerPrefab != null)
             SpawnCustomer(customerPrefab, slot);
         else
             Debug.LogError($"No customer available for level {currentLevelIndex + 1}");
+    }
+
+    /// Customers on screen (walking in, waiting or walking out); the day ends only when this is 0
+    public int ActiveCustomers
+    {
+        get { var n = 0; foreach (var c in slots) if (c != null) n++; return n; }
     }
 
     public void HandleOrderServed(CustomerController customer, bool perfect)
@@ -241,9 +258,6 @@ public class CustomerManager : MonoBehaviour
         DebugLog($"{customer.name}: min items {minItems}, time {displayTime:F1}s, tip x{customer.TipMultiplier}");
 
         orderDelayCoroutines.Add(StartCoroutine(HandleCustomerOrderDelay(customer, minItems, displayTime, customer.TipMultiplier, petals)));
-
-        // Two slots: the next customer sets off a little later, while this one is being served
-        if (MaxSlots > 1) ScheduleSpawn(secondCustomerDelay);
     }
 
     public void OnCustomerExited(CustomerController customer)
@@ -257,28 +271,7 @@ public class CustomerManager : MonoBehaviour
         DebugLog($"{customer.name} has exited (slot {slot})");
         slots[slot] = null;
         OnCustomerCompleted?.Invoke(customer);
-
-        if (!enabled)
-        {
-            DebugLog("CustomerManager is disabled - not spawning next customer");
-            return;
-        }
-        ScheduleSpawn(nextCustomerSpawnDelay);
-    }
-
-    private void ScheduleSpawn(float delay)
-    {
-        if (!enabled || orderSystem == null) return;
-        if (nextCustomerSpawnCoroutine != null) StopCoroutine(nextCustomerSpawnCoroutine);
-        nextCustomerSpawnCoroutine = StartCoroutine(DelayedNextCustomerSpawn(delay));
-    }
-
-    private IEnumerator DelayedNextCustomerSpawn(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        nextCustomerSpawnCoroutine = null;
-        if (!enabled) { DebugLog("Not spawning next customer - CustomerManager is disabled"); yield break; }
-        SpawnCustomerForCurrentLevel();
+        if (levelManager != null) levelManager.OnCustomerLeft();   // the day may end now
     }
 
     private CustomerController SelectCustomerForLevel(int levelIndex)
@@ -349,7 +342,7 @@ public class CustomerManager : MonoBehaviour
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayCustomerWalkIn();
 
-        DebugLog($"Spawned {customer.name} in slot {slot} ({spawnedCount}/{(orderSystem != null ? orderSystem.ordersPerLevel : 0)})");
+        DebugLog($"Spawned {customer.name} in slot {slot} (number {spawnedCount} today)");
         OnCustomerSpawned?.Invoke(customer);
     }
 

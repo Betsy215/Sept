@@ -518,18 +518,22 @@ public class OrderSystem : MonoBehaviour
 
         SetBubble(slots[order.slot], 0);
         orders.Remove(order);
+        AfterOrderClosed();
+    }
 
-        // Check if level is complete
-        if (ordersCompleted >= ordersPerLevel)
+    /// Customer flow: the day ends on the clock (LevelManager checks). Original flow: by the order count.
+    private void AfterOrderClosed()
+    {
+        if (isUsingCustomerFlow && customerManager != null)
         {
-            DebugLog("All orders completed for this level!");
+            if (levelManager != null) levelManager.OnOrderClosed();
+        }
+        else if (ordersCompleted >= ordersPerLevel)
+        {
+            DebugLog("All orders processed for this level!");
             if (levelManager != null) levelManager.OnLevelComplete();
         }
-        else if (!(isUsingCustomerFlow && customerManager != null))
-        {
-            // ORIGINAL FLOW: Generate next order after delay
-            Invoke("GenerateNewOrder", timeBetweenOrders);
-        }
+        else Invoke("GenerateNewOrder", timeBetweenOrders);
     }
 
     private void ExpireOrder(ActiveOrder order)
@@ -557,18 +561,7 @@ public class OrderSystem : MonoBehaviour
         }
 
         orders.Remove(order);
-
-        // Check if level is complete
-        if (ordersCompleted >= ordersPerLevel)
-        {
-            DebugLog("All orders processed for this level!");
-            if (levelManager != null) levelManager.OnLevelComplete();
-        }
-        else if (!(isUsingCustomerFlow && customerManager != null))
-        {
-            // ORIGINAL FLOW: Generate next order after delay
-            Invoke("GenerateNewOrder", timeBetweenOrders);
-        }
+        AfterOrderClosed();
     }
 
     private void ClearOrderDisplay(ActiveOrder order)
@@ -626,6 +619,9 @@ public class OrderSystem : MonoBehaviour
     {
         return orders.Exists(o => o.active);
     }
+
+    /// Open orders right now (LevelManager ends the day only when this is 0)
+    public int OpenOrders => orders.Count;
 
     /// Whether a slot has an open order (CustomerManager spawns into free slots)
     public bool IsSlotBusy(int slot) => orders.Exists(o => o.active && o.slot == slot);

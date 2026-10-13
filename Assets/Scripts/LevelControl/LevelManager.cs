@@ -65,6 +65,17 @@ public class LevelManager : MonoBehaviour
     private bool finalRunIsNewRecord = false;
 
     // Map (10 October): a chapter is 16 days; days past it stay in allLevels for chapter 2.
+    // The day clock (13 October 2026): a day is dayDurationSeconds long. Customers keep coming on the level's beat
+    // while it runs; when it reaches zero no more come, and the day ends once the last order is closed and the last
+    // customer has left. The tutorial has no clock.
+    private float dayTimeLeft;
+    private bool dayStarted, dayClockDisabled;
+    private TMPro.TextMeshProUGUI dayClockText;
+    public float DayDuration => currentLevelData != null ? currentLevelData.dayDurationSeconds : 0f;
+    public float DayTimeLeft => dayTimeLeft;
+    public bool DayStarted => dayStarted;
+    public bool DayOver => dayStarted && !dayClockDisabled && dayTimeLeft <= 0f;
+
     public const float ReplayPayFactor = 0.5f;   // share of order money paid when a finished day is replayed (12 October 2026)
     public const int ThreeStarBonus = 100;   // paid once per day, the first time it gets three stars
     private int threeStarBonusPaid;
@@ -518,6 +529,52 @@ public class LevelManager : MonoBehaviour
                 backgroundRenderer.sprite = currentLevelData.backgroundSprite;
     }
 
+    private void Update()
+    {
+        if (!dayStarted || dayClockDisabled || isLevelEnding) return;
+        if (dayTimeLeft > 0f)
+        {
+            if (orderSystem == null || !orderSystem.freezeTimer) dayTimeLeft = Mathf.Max(0f, dayTimeLeft - Time.deltaTime);
+            if (dayClockText != null)
+            {
+                var t = Mathf.CeilToInt(dayTimeLeft);
+                dayClockText.text = $"{t / 60}:{t % 60:00}";
+                dayClockText.color = t <= 10 ? new Color(1f, 0.55f, 0.35f) : new Color(1f, 0.98f, 0.92f);
+            }
+            if (dayTimeLeft <= 0f) TryEndDay();
+        }
+    }
+
+    /// Called by OrderSystem when an order closes and by CustomerManager when a customer has left
+    public void OnOrderClosed() => TryEndDay();
+    public void OnCustomerLeft() => TryEndDay();
+
+    private void TryEndDay()
+    {
+        if (!DayOver || isLevelEnding) return;
+        if (orderSystem != null && orderSystem.OpenOrders > 0) return;
+        if (customerManager != null && customerManager.ActiveCustomers > 0) return;
+        OnLevelComplete();
+    }
+
+    /// The countdown under the day sign, a copy of the day label's text style
+    private void BuildDayClockText()
+    {
+        if (dayClockText != null || levelInfoText == null || dayClockDisabled) return;
+        var go = Instantiate(levelInfoText.gameObject, levelInfoText.transform.parent);
+        go.name = "DayClockText";
+        dayClockText = go.GetComponent<TMPro.TextMeshProUGUI>();
+        var rt = dayClockText.rectTransform;
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0f);
+        rt.pivot = new Vector2(0.5f, 1f);
+        rt.anchoredPosition = new Vector2(0f, -4f);
+        rt.sizeDelta = new Vector2(300f, 60f);
+        dayClockText.alignment = TMPro.TextAlignmentOptions.Center;
+        dayClockText.enableAutoSizing = false;
+        dayClockText.fontSize = 44f;
+        dayClockText.text = "";
+    }
+
     private void UpdateLevelInfoDisplay()
     {
         if (levelInfoText != null && currentLevelData != null)
@@ -547,6 +604,10 @@ public class LevelManager : MonoBehaviour
     public void StartGamePlay()
     {
         StartGameplayMusic();
+        dayStarted = true;
+        dayTimeLeft = DayDuration;
+        dayClockDisabled = currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance);   // the demo has no end of day
+        BuildDayClockText();
 
         if (orderSystem != null)
         {

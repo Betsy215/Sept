@@ -158,8 +158,17 @@ public class DayNightTint : MonoBehaviour
         return img;
     }
 
+    private LevelManager levelManager;
+
     private int WantedStage()
     {
+        // Timed days (13 October): dusk at 65% of the day, night at 85%
+        if (levelManager == null) levelManager = FindObjectOfType<LevelManager>();
+        if (levelManager != null && levelManager.DayStarted && levelManager.DayDuration > 0f)
+        {
+            var elapsed = 1f - levelManager.DayTimeLeft / levelManager.DayDuration;
+            return elapsed >= 0.85f ? 2 : elapsed >= 0.65f ? 1 : 0;
+        }
         // Short custom days (under 4 orders) never get night, so the tint cannot start at the first customer.
         if (orderSystem.ordersPerLevel < 4) return 0;
         var remaining = orderSystem.ordersPerLevel - orderSystem.OrdersCompleted;
