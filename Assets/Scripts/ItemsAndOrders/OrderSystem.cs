@@ -35,6 +35,14 @@ public class OrderSystem : MonoBehaviour
     /// Orders finished or expired so far this day (read by DayNightTint).
     public int OrdersCompleted => ordersCompleted;
 
+    /// Patience read by PatienceMeter (12 October 2026): seconds left, the customer's full time, and whether an order is open.
+    public float RemainingTime => orderTimer;
+    public float TotalTime => orderDisplayTime;
+    public bool OrderActive => orderActive;
+    /// Petals on the daisy for the current customer: whole seconds of the level's timer plus the decoration bonus
+    /// (set by CustomerManager before the order; 0 = use the display time).
+    [System.NonSerialized] public int patiencePetals;
+
     [Header("Order Display UI")] public Text orderProgressText; // "Orders: 2/3"
     public Transform orderContainer; // Parent object to hold order items
     public Text orderTitleText; // Text showing "Order:" or similar
@@ -361,6 +369,7 @@ public class OrderSystem : MonoBehaviour
         orderActive = true;
 
         orderTimer = orderDisplayTime;
+        PatienceMeter.Show(this, patiencePetals > 0 ? patiencePetals : Mathf.RoundToInt(orderDisplayTime));
 
         Debug.Log($"Order active: {orderActive} , timer: {orderTimer}");
     }
@@ -450,6 +459,7 @@ public class OrderSystem : MonoBehaviour
     private void CompleteOrder()
     {
         Debug.Log("Order completed!");
+        PatienceMeter.Hide();
 
         // Award completion bonus
         if (scoreManager != null)
@@ -507,6 +517,7 @@ public class OrderSystem : MonoBehaviour
     private void ExpireOrder()
     {
         Debug.Log("Order expired!");
+        PatienceMeter.Hide();
 
         // CRITICAL FIX: Clear all order display objects before marking order as inactive
         ClearOrderDisplay();

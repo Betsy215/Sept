@@ -196,7 +196,11 @@ public class CustomerManager : MonoBehaviour
 
                 // Patient or hurried customers change how long their order stays open
                 if (levelOrderDisplayTime < 0f) levelOrderDisplayTime = orderSystem.orderDisplayTime;
-                orderSystem.orderDisplayTime = levelOrderDisplayTime * customer.OrderTimeMultiplier;
+                // Decorations on the table add a second each (patience system, 12 October 2026); the daisy shows
+                // one petal per whole second, falling at the customer's own pace
+                var patience = levelOrderDisplayTime + PatienceDecor.BonusSeconds();
+                orderSystem.orderDisplayTime = patience * customer.OrderTimeMultiplier;
+                orderSystem.patiencePetals = Mathf.Max(1, Mathf.RoundToInt(patience));
                 DebugLog($"Set minOrderItems to {clampedMin} for {customer.name} (customer wants {customer.MinOrderItems}, level min {baseline}, level max {orderSystem.maxOrderItems})");
             }
 

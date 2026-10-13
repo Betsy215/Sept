@@ -416,6 +416,8 @@ public class LevelManager : MonoBehaviour
         if (serveableItems != null)
             ApplyServeableItemSettings();
 
+        PatienceDecor.Place();   // the owned vase / bouquet on the table's back row
+
         if (customerManager != null)
         {
             customerManager.OnLevelLoaded(currentLevelIndex);

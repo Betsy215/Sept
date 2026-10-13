@@ -363,7 +363,7 @@ public class ShopManager : MonoBehaviour
         var targetPos = startPos + new Vector2(0, amount);
 
         var topBoundary = -38f;
-        var bottomBoundary = 2700f;   // one more row since the Cookies card (12 October 2026)
+        var bottomBoundary = 3300f;   // two more rows since the Cookies card and the decorations (12 October 2026)
 
         targetPos.y = Mathf.Clamp(targetPos.y, topBoundary, bottomBoundary);
 
@@ -394,7 +394,7 @@ public class ShopManager : MonoBehaviour
 
         var currentY = containerRect.anchoredPosition.y;
         var canScrollUp = currentY > -38f;
-        var canScrollDown = currentY < 2700f;
+        var canScrollDown = currentY < 3300f;
 
         if (scrollUpButton != null)
             scrollUpButton.interactable = canScrollUp;
