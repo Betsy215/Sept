@@ -109,7 +109,7 @@ public class SessionManager : MonoBehaviour
     [SerializeField] private LevelManager levelManager;
 
     [Header("Shop Configuration")] [Tooltip("Total number of food items available in the shop")]
-    public int totalFoodItems = 4;
+    public int totalFoodItems = 6;   // Bread, Coffee, Juice, Apple, Choux, Cake (Cookies are held back, 13 October)
 
     [Tooltip("Total number of characters available in the shop")]
     public int totalCharacters = 7; // Girl, Boy, Kid (default) + Grandma, Chef, Yoga, Businessman (shop)
@@ -195,9 +195,15 @@ public class SessionManager : MonoBehaviour
         }
     }
 
+    /// Foods that exist in the project but are held back from this release (owner, 13 October: Cookies wait for the
+    /// next one). They cannot be bought, and a session that already has one does not show it.
+    public static readonly string[] HeldBackFoods = { "Cookies" };
+    public static bool IsHeldBack(string foodType) => System.Array.IndexOf(HeldBackFoods, foodType) >= 0;
+
     public bool IsFoodItemPurchased(string foodType)
     {
         if (string.IsNullOrEmpty(foodType)) return true;
+        if (IsHeldBack(foodType)) return false;
         if (currentSession == null || currentSession.purchasedFoodItems == null) return true;
         return currentSession.purchasedFoodItems.Contains(foodType);
     }

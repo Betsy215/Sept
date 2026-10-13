@@ -474,7 +474,7 @@ public class LevelManager : MonoBehaviour
             if (serveableItems[i] != null)
             {
                 var itemFoodType = serveableItems[i].GetFoodType();
-                var shouldBeActive = purchasedItems.Contains(itemFoodType);
+                var shouldBeActive = purchasedItems.Contains(itemFoodType) && !SessionManager.IsHeldBack(itemFoodType);
                 serveableItems[i].gameObject.SetActive(shouldBeActive);
 
                 if (shouldBeActive) activatedCount++;

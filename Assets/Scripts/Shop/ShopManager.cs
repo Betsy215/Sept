@@ -43,6 +43,10 @@ public class ShopManager : MonoBehaviour
         SetupButtonListeners();
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayShopMusic();
+        // cards of foods held back from this release are not shown (Cookies, 13 October)
+        foreach (var card in GetAllShopItems())
+            if (card != null && card.itemType == ItemType.Food && SessionManager.IsHeldBack(card.itemName?.Trim()))
+                card.gameObject.SetActive(false);
 
         // FIX: Wait for all ShopItemController.Start() methods to complete
         StartCoroutine(DelayedInitializeShop());

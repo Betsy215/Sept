@@ -11,7 +11,8 @@ using UnityEngine;
 public class MoneyFlipClock : MonoBehaviour
 {
     public static Vector3 Position = new Vector3(-0.12f, 0.12f, 0f);   // just right of the truck button
-    public const float Width = 1.4f, Height = 0.62f;                  // world units; the truck button is about 1.2 x 0.7
+    public const float Width = 1.15f, Height = 0.5f;                  // world units, the fallback board; the truck button is about 1.0 x 0.6
+    public const float HenScale = 0.2f;                               // the 700 x 560 hen picture at 100 px per unit: 1.4 x 1.12 units
 
     static Sprite roundRect, starSprite;
     ScoreManager scoreManager;
@@ -34,34 +35,47 @@ public class MoneyFlipClock : MonoBehaviour
     void Build()
     {
         var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF");
-        // contact shadow under the foot (a soft band hugging the base, a little to the right: owner 13 October), box, wooden foot
-        var shadow = new GameObject("Shadow");
-        shadow.transform.SetParent(transform, false);
-        shadow.transform.localPosition = new Vector3(0.03f, -Height / 2f + 0.005f, 0f);
-        var ssr = shadow.AddComponent<SpriteRenderer>();
-        ssr.sprite = ContactShadowSprite(); ssr.drawMode = SpriteDrawMode.Sliced; ssr.size = new Vector2(Width + 0.16f, 0.22f);
-        ssr.color = new Color(0.27f, 0.2f, 0.17f, 0.55f); ssr.sortingOrder = 0;
-        Rect("Box", Vector3.zero, Width, Height, new Color(0.98f, 0.953f, 0.91f), 1);
-        Rect("Line", Vector3.zero, Width - 0.03f, Height - 0.03f, new Color(0.667f, 0.588f, 0.47f), 1, hollow: true);
-        Rect("Foot", new Vector3(0f, -Height / 2f + 0.03f, 0f), Width - 0.12f, 0.07f, new Color(0.69f, 0.52f, 0.36f), 2);
-        // the number, in the game's text style (the font's own material: black face, green glow)
+        // The board is the kitchen's little hen (owner, 13 October evening; Resources/UI/money_hen, drawn by
+        // Store/artkit/money_hen.py with its contact shadow): the number sits on the white body, the three stars on
+        // the red base. If the picture is missing, the old cream board is built instead.
+        var hen = Resources.Load<Sprite>("UI/money_hen");
+        var numberPos = new Vector3(-0.06f, 0.04f, 0f); var starsY = -0.26f; var starGap = 0.2f; var starScale = 0.72f;
+        if (hen != null)
+        {
+            var h = new GameObject("Hen");
+            h.transform.SetParent(transform, false);
+            h.transform.localScale = Vector3.one * HenScale;
+            var hsr = h.AddComponent<SpriteRenderer>(); hsr.sprite = hen; hsr.sortingOrder = 1;
+        }
+        else
+        {
+            Rect("Box", Vector3.zero, Width, Height, new Color(0.98f, 0.953f, 0.91f), 1);
+            Rect("Line", Vector3.zero, Width - 0.03f, Height - 0.03f, new Color(0.667f, 0.588f, 0.47f), 1, hollow: true);
+            numberPos = new Vector3(0f, -0.07f, 0f); starsY = Height / 2f - 0.11f; starGap = 0.26f; starScale = 0.8f;
+        }
+        // the number: warm brown with a cream outline, letters spaced out (owner, 13 October evening)
         var g = new GameObject("Money");
         g.transform.SetParent(transform, false);
-        g.transform.localPosition = new Vector3(0f, -0.09f, 0f);
+        g.transform.localPosition = numberPos;
         money = g.AddComponent<TextMeshPro>();
         if (font != null) money.font = font;
-        money.fontSize = 3.4f;
-        money.color = Color.black;
+        money.fontSize = 2.3f;
+        money.characterSpacing = 9f;
+        money.color = new Color(0.36f, 0.22f, 0.09f);
+        money.fontMaterial = new Material(money.fontSharedMaterial);
+        money.fontMaterial.SetFloat("_OutlineWidth", 0.22f);
+        money.fontMaterial.SetColor("_OutlineColor", new Color(0.99f, 0.96f, 0.9f));
+        money.fontMaterial.DisableKeyword("UNDERLAY_ON");
         money.alignment = TextAlignmentOptions.Center;
-        money.rectTransform.sizeDelta = new Vector2(Width, 0.36f);
+        money.rectTransform.sizeDelta = new Vector2(1.2f, 0.36f);
         money.text = "";
-        // stars on top
+        // stars on the base
         for (var k = 0; k < 3; k++)
         {
             var s = new GameObject("Star" + k);
             s.transform.SetParent(transform, false);
-            s.transform.localPosition = new Vector3((k - 1) * 0.3f, Height / 2f - 0.13f + (k == 1 ? 0.02f : 0f), 0f);
-            s.transform.localScale = Vector3.one * 0.95f;
+            s.transform.localPosition = new Vector3((k - 1) * starGap - 0.06f, starsY, 0f);
+            s.transform.localScale = Vector3.one * starScale;
             var sr = s.AddComponent<SpriteRenderer>();
             sr.sprite = StarSprite(); sr.sortingOrder = 4;
             stars[k] = sr;
@@ -91,7 +105,7 @@ public class MoneyFlipClock : MonoBehaviour
         if (earned != shownStars)
         {
             for (var k = 0; k < 3; k++) stars[k].color = k < earned ? new Color(1f, 0.78f, 0.3f) : new Color(0.78f, 0.74f, 0.68f);
-            if (!instant && earned > shownStars && shownStars >= 0) StartCoroutine(Pop(stars[Mathf.Clamp(earned - 1, 0, 2)].transform, 0.5f, 0.95f));
+            if (!instant && earned > shownStars && shownStars >= 0) { var st = stars[Mathf.Clamp(earned - 1, 0, 2)].transform; StartCoroutine(Pop(st, 0.5f, st.localScale.x)); }
             shownStars = earned;
         }
     }
