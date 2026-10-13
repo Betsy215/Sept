@@ -46,16 +46,18 @@ public class MoneyFlipClock : MonoBehaviour
         for (var i = 0; i < Digits; i++)
         {
             var cx = x0 + i * (cardW + gap);
-            Rect("Slot" + i, new Vector3(cx, y, 0f), cardW + 0.03f, cardH + 0.03f, new Color(0.25f, 0.23f, 0.2f), 3);
+            // a classic flip clock: dark warm cards, cream digits, a thin seam (owner 13 October: the old cream cards with
+            // the green-glow font looked odd)
+            Rect("Slot" + i, new Vector3(cx, y, 0f), cardW + 0.03f, cardH + 0.03f, new Color(0.42f, 0.35f, 0.29f), 3);
             var card = new Card { root = new GameObject("Card" + i).transform };
             card.root.SetParent(transform, false);
             card.root.localPosition = new Vector3(cx, y, 0f);
-            Rect("Top", new Vector3(0f, cardH / 4f + 0.004f, 0f), cardW, cardH / 2f - 0.008f, new Color(0.98f, 0.953f, 0.91f), 4, card.root);
-            Rect("Bottom", new Vector3(0f, -cardH / 4f - 0.004f, 0f), cardW, cardH / 2f - 0.008f, new Color(0.93f, 0.9f, 0.84f), 4, card.root);
+            Rect("Top", new Vector3(0f, cardH / 4f + 0.004f, 0f), cardW, cardH / 2f - 0.008f, new Color(0.3f, 0.26f, 0.23f), 4, card.root);
+            Rect("Bottom", new Vector3(0f, -cardH / 4f - 0.004f, 0f), cardW, cardH / 2f - 0.008f, new Color(0.24f, 0.21f, 0.18f), 4, card.root);
             card.top = Glyph("TopGlyph", card.root, font, new Vector3(0f, 0.002f, 0f), cardH);
             card.bottom = Glyph("BottomGlyph", card.root, font, new Vector3(0f, 0.002f, 0f), cardH);
-            // each glyph is clipped to its half by the slot's dark seam drawn over the middle
-            Rect("Seam", Vector3.zero, cardW + 0.03f, 0.012f, new Color(0.25f, 0.23f, 0.2f), 7, card.root);
+            // each glyph is clipped to its half by the seam drawn over the middle
+            Rect("Seam", Vector3.zero, cardW + 0.03f, 0.01f, new Color(0.42f, 0.35f, 0.29f), 7, card.root);
             cards[i] = card;
         }
         // stars on top
@@ -81,8 +83,13 @@ public class MoneyFlipClock : MonoBehaviour
         g.transform.localPosition = pos;
         var t = g.AddComponent<TextMeshPro>();
         if (font != null) t.font = font;
-        t.fontSize = 2.6f;
-        t.color = new Color(0.24f, 0.18f, 0.14f);
+        t.fontSize = 2.8f;
+        t.color = new Color(0.99f, 0.96f, 0.9f);
+        // the game font's material has a black outline and a green glow; the clock digits are plain
+        t.fontMaterial = new Material(t.fontSharedMaterial);
+        t.fontMaterial.SetFloat("_OutlineWidth", 0f);
+        t.fontMaterial.SetFloat("_FaceDilate", 0.05f);
+        t.fontMaterial.DisableKeyword("UNDERLAY_ON");
         t.alignment = TextAlignmentOptions.Center;
         t.rectTransform.sizeDelta = new Vector2(0.3f, cardH);
         t.text = "";

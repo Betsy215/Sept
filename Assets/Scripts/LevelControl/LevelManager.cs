@@ -67,10 +67,10 @@ public class LevelManager : MonoBehaviour
     // Map (10 October): a chapter is 16 days; days past it stay in allLevels for chapter 2.
     // The day clock (13 October 2026): a day is dayDurationSeconds long. Customers keep coming on the level's beat
     // while it runs; when it reaches zero no more come, and the day ends once the last order is closed and the last
-    // customer has left. The tutorial has no clock.
+    // customer has left. The tutorial has no clock. The clock is not shown: the evening tint (DayNightTint) tells
+    // the player the day is ending (owner, 13 October).
     private float dayTimeLeft;
     private bool dayStarted, dayClockDisabled;
-    private TMPro.TextMeshProUGUI dayClockText;
     public float DayDuration => currentLevelData != null ? currentLevelData.dayDurationSeconds : 0f;
     public float DayTimeLeft => dayTimeLeft;
     public bool DayStarted => dayStarted;
@@ -537,12 +537,6 @@ public class LevelManager : MonoBehaviour
         if (dayTimeLeft > 0f)
         {
             if (orderSystem == null || !orderSystem.freezeTimer) dayTimeLeft = Mathf.Max(0f, dayTimeLeft - Time.deltaTime);
-            if (dayClockText != null)
-            {
-                var t = Mathf.CeilToInt(dayTimeLeft);
-                dayClockText.text = $"{t / 60}:{t % 60:00}";
-                dayClockText.color = t <= 10 ? new Color(1f, 0.55f, 0.35f) : new Color(1f, 0.98f, 0.92f);
-            }
             if (dayTimeLeft <= 0f) TryEndDay();
         }
     }
@@ -557,27 +551,6 @@ public class LevelManager : MonoBehaviour
         if (orderSystem != null && orderSystem.OpenOrders > 0) return;
         if (customerManager != null && customerManager.ActiveCustomers > 0) return;
         OnLevelComplete();
-    }
-
-    /// The countdown under the day sign, a copy of the day label's text style
-    private void BuildDayClockText()
-    {
-        if (dayClockText != null || levelInfoText == null || dayClockDisabled) return;
-        // under the canvas root at the top centre, where the sign used to be (the sign itself is hidden)
-        var canvasRoot = levelInfoText.transform.parent != null && levelInfoText.transform.parent.parent != null ? levelInfoText.transform.parent.parent : levelInfoText.transform.parent;
-        var go = Instantiate(levelInfoText.gameObject, canvasRoot);
-        go.SetActive(true);
-        go.name = "DayClockText";
-        dayClockText = go.GetComponent<TMPro.TextMeshProUGUI>();
-        var rt = dayClockText.rectTransform;
-        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
-        rt.pivot = new Vector2(0.5f, 1f);
-        rt.anchoredPosition = new Vector2(0f, -40f);   // the very top, between the two corner buttons, above the bubbles
-        rt.sizeDelta = new Vector2(300f, 70f);
-        dayClockText.alignment = TMPro.TextAlignmentOptions.Center;
-        dayClockText.enableAutoSizing = false;
-        dayClockText.fontSize = 44f;
-        dayClockText.text = "";
     }
 
     private void UpdateLevelInfoDisplay()
@@ -612,7 +585,6 @@ public class LevelManager : MonoBehaviour
         dayStarted = true;
         dayTimeLeft = DayDuration;
         dayClockDisabled = currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance);   // the demo has no end of day
-        BuildDayClockText();
 
         if (orderSystem != null)
         {

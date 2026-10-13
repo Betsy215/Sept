@@ -44,10 +44,12 @@ public class OrderSystem : MonoBehaviour
     [Tooltip("How many customers can wait with an order at the same time: 2 in play, 1 in the tutorial")]
     public int maxConcurrentOrders = 2;
     [Tooltip("Where slot 0's bubbles and icons move when two customers can wait (the scene places them for one customer at the right)")]
-    public Vector2 slot0BubbleOffset = new Vector2(1.5f, 1.8f);
-    public Vector2 slot1BubbleOffset = new Vector2(-0.4f, 1.8f);   // left bubble fully on an iPhone screen, flowers clear of the settings button
+    // The bubble's centre sits at root + scale * (-1.11, 2.14): these roots put the bubbles over the customers
+    // (x 1.2 and -0.5, CustomerManager.twoSlotCustomerX + 1) with their centres at y 2.95, under the corner buttons (owner 13 October, layout D)
+    public Vector2 slot0BubbleOffset = new Vector2(1.92f, 1.56f);
+    public Vector2 slot1BubbleOffset = new Vector2(0.22f, 1.56f);
     [Tooltip("Scale of each bubble set when two customers can wait")]
-    public float twoSlotBubbleScale = 0.7f;   // at 0.85 the bubbles reached the top buttons (real capture, 13 October)
+    public float twoSlotBubbleScale = 0.65f;   // 0.7 bubbles 1.7 apart would touch; at 0.85 they reached the top buttons
 
     [Header("Order Display UI")] public Text orderProgressText; // "Orders: 2/3"
     public Transform orderContainer; // Parent object to hold order items

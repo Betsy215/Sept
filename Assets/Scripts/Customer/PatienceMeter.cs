@@ -9,7 +9,8 @@ using UnityEngine;
 /// Built from runtime sprites, no assets. Shown by OrderSystem.StartOrderForCustomer, hidden by CompleteOrder / ExpireOrder.
 public class PatienceMeter : MonoBehaviour
 {
-    public static readonly Vector3 WorldPosition = new Vector3(-0.75f, 3.43f, 0f);   // above the bubble, a little right of its centre so the left set clears the settings button; with two slots at 0.7 that is y 4.2
+    public static readonly Vector3 WorldPosition = new Vector3(-1.11f, 3.45f, 0f);   // in the bubble root's space: centred over the bubble, on its top edge (two slots at 0.65: y 3.8, under the corner buttons; owner 13 October)
+    public const float Scale = 0.8f;       // the whole set, a little smaller (owner, 13 October)
     public const int Flowers = 3;
     const float Spacing = 0.45f;           // between flower centres, world units
     const float PetalRadius = 0.15f;
@@ -17,6 +18,7 @@ public class PatienceMeter : MonoBehaviour
 
     static readonly Dictionary<OrderSystem.ActiveOrder, PatienceMeter> meters = new Dictionary<OrderSystem.ActiveOrder, PatienceMeter>();
     static Sprite petalSprite, centreSprite, sparkSprite;
+    static bool painted, triedPainted;     // the hand-painted petal and centre in Resources/Patience (Store/artkit/daisy_sprites.py); procedural fallback
 
     OrderSystem.ActiveOrder order;
     readonly Flower[] flowers = new Flower[Flowers];
@@ -26,6 +28,7 @@ public class PatienceMeter : MonoBehaviour
     {
         public Transform root, head;
         public SpriteRenderer[] petals;
+        public float[] petalSize;          // each petal's own size, so no two flowers are drawn alike
         public SpriteRenderer centre;
         public float shown = 1f;           // the fill the picture shows (eases toward the real fill)
         public float bounce;               // seconds left of the refill bounce
@@ -39,6 +42,7 @@ public class PatienceMeter : MonoBehaviour
         Hide(order);
         var go = new GameObject("PatienceMeter" + order.slot);
         go.transform.position = position;
+        go.transform.localScale = Vector3.one * Scale;
         var m = go.AddComponent<PatienceMeter>();
         m.order = order;
         m.Build();
@@ -86,6 +90,8 @@ public class PatienceMeter : MonoBehaviour
             f.head.SetParent(f.root, false);
             f.head.localPosition = new Vector3(0f, 0.04f, 0f);
             f.petals = new SpriteRenderer[8];
+            f.petalSize = new float[8];
+            var rng = new System.Random(order != null ? order.slot * 31 + i * 7 : i);   // a hand-drawn daisy: every petal turned and sized a little differently
             for (var k = 0; k < 8; k++)
             {
                 var angle = 90f - 45f * k;
@@ -93,7 +99,9 @@ public class PatienceMeter : MonoBehaviour
                 p.transform.SetParent(f.head, false);
                 var rad = angle * Mathf.Deg2Rad;
                 p.transform.localPosition = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f) * PetalRadius;
-                p.transform.localRotation = Quaternion.Euler(0f, 0f, angle - 90f);
+                var turn = painted ? (float)(rng.NextDouble() * 14.0 - 7.0) : 0f;
+                f.petalSize[k] = painted ? 0.92f + (float)rng.NextDouble() * 0.16f : 1f;
+                p.transform.localRotation = Quaternion.Euler(0f, 0f, angle - 90f + turn);
                 var sr = p.AddComponent<SpriteRenderer>();
                 sr.sprite = PetalSprite(); sr.sortingOrder = 5;
                 f.petals[k] = sr;
@@ -102,7 +110,7 @@ public class PatienceMeter : MonoBehaviour
             c.transform.SetParent(f.head, false);
             f.centre = c.AddComponent<SpriteRenderer>();
             f.centre.sprite = CentreSprite(); f.centre.sortingOrder = 6;
-            f.centre.color = new Color(1f, 0.82f, 0.25f);
+            f.centre.color = painted ? Color.white : new Color(1f, 0.82f, 0.25f);
             flowers[i] = f;
         }
     }
@@ -126,9 +134,9 @@ public class PatienceMeter : MonoBehaviour
                 var pf = Mathf.Clamp01((s - k / 8f) * 8f);          // this petal's own fill
                 var tint = Mathf.Lerp(0.72f, 1f, s);                   // dull as it wilts
                 f.petals[k].color = new Color(tint, tint, tint * 0.98f, 0.25f + 0.75f * pf);
-                f.petals[k].transform.localScale = Vector3.one * (0.75f + 0.25f * pf);
+                f.petals[k].transform.localScale = Vector3.one * (0.75f + 0.25f * pf) * f.petalSize[k];
             }
-            f.centre.color = Color.Lerp(new Color(0.75f, 0.6f, 0.35f), new Color(1f, 0.82f, 0.25f), s);
+            f.centre.color = painted ? Color.Lerp(new Color(0.78f, 0.68f, 0.52f), Color.white, s) : Color.Lerp(new Color(0.75f, 0.6f, 0.35f), new Color(1f, 0.82f, 0.25f), s);
             var droop = Mathf.Lerp(-42f, 0f, Mathf.SmoothStep(0f, 1f, s));             // head leans over as it wilts
             var alive = Mathf.Sin(sway * 2.2f + i * 1.3f) * 3f * s;                      // a gentle sway while fresh
             f.head.localRotation = Quaternion.Euler(0f, 0f, droop + alive);
@@ -201,8 +209,20 @@ public class PatienceMeter : MonoBehaviour
         foreach (var s in sparks) if (s != null) Destroy(s.gameObject);
     }
 
+    /// The painted petal and centre from Resources/Patience when they are there (then `painted` is true)
+    static void LoadPainted()
+    {
+        if (triedPainted) return;
+        triedPainted = true;
+        var p = Resources.Load<Sprite>("Patience/petal");
+        var c = Resources.Load<Sprite>("Patience/centre");
+        painted = p != null && c != null;
+        if (painted) { petalSprite = p; centreSprite = c; }
+    }
+
     static Sprite PetalSprite()
     {
+        LoadPainted();
         if (petalSprite != null) return petalSprite;
         const int w = 20, h = 34;
         var tex = new Texture2D(w, h, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear };
@@ -224,6 +244,7 @@ public class PatienceMeter : MonoBehaviour
 
     static Sprite CentreSprite()
     {
+        LoadPainted();
         if (centreSprite != null) return centreSprite;
         const int n = 18;
         var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear };

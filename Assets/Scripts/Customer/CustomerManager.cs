@@ -23,7 +23,9 @@ public class CustomerManager : MonoBehaviour
 
     [Header("Two customers (12 October 2026)")]
     [Tooltip("X offset of each slot's spot when two customers can wait (slot 0 right, slot 1 left); the walk-in ends at x = offset + 1")]
-    public float[] twoSlotCustomerX = { 0.6f, -1.9f };
+    public float[] twoSlotCustomerX = { 0.2f, -1.5f };   // customers at x 1.2 and -0.5, 1.7 apart (owner 13 October: closer together)
+    [Tooltip("The spots sit this much lower when two can wait: the customers stand behind the table, knees hidden by the cloth, so the bubbles fit under the corner buttons")]
+    public float twoSlotCustomerY = -0.3f;
     [Tooltip("Customers are drawn this much smaller when two can wait")]
     public float twoSlotCustomerScale = 0.9f;
 
@@ -142,7 +144,7 @@ public class CustomerManager : MonoBehaviour
         }
         var two = MaxSlots > 1;
         var x = two && slot < twoSlotCustomerX.Length ? twoSlotCustomerX[slot] : 0f;
-        spots[slot].position = new Vector3(x, 0f, 0f);
+        spots[slot].position = new Vector3(x, two ? twoSlotCustomerY : 0f, 0f);
         return spots[slot];
     }
 
