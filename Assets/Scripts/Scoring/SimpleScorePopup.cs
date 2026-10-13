@@ -18,7 +18,7 @@ public class SimpleScorePopup : MonoBehaviour
     public Color bonusPointsColor = Color.yellow;
     public Color combinedColor = Color.yellow; // Color when showing both base + bonus
 
-    [Header("Popup Positioning")] public Vector2 defaultSpawnPosition = new(-100, 350); // Default spawn position
+    [Header("Popup Positioning")] public Vector2 defaultSpawnPosition = new(0, 520); // centre, between the two order bubbles (two customers, 13 October); was (-100, 350), on the left customer
     public float randomRange = 150f; // Random horizontal spread
 
     [Header("Font Settings")] public TMP_FontAsset popupFont; // Custom font (leave null for default)
