@@ -572,7 +572,7 @@ public class LevelManager : MonoBehaviour
         var rt = dayClockText.rectTransform;
         rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
         rt.pivot = new Vector2(0.5f, 1f);
-        rt.anchoredPosition = new Vector2(0f, -150f);
+        rt.anchoredPosition = new Vector2(0f, -40f);   // the very top, between the two corner buttons, above the bubbles
         rt.sizeDelta = new Vector2(300f, 70f);
         dayClockText.alignment = TMPro.TextAlignmentOptions.Center;
         dayClockText.enableAutoSizing = false;

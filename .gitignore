@@ -70,3 +70,5 @@ ignore.conf
 # MCP for Unity screenshot output
 Captures/
 Captures.meta
+Assets/Screenshots/
+Assets/Screenshots.meta
