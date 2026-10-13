@@ -118,6 +118,7 @@ public class OrderSystem : MonoBehaviour
         public float timer, displayTime, tipMultiplier = 1f, basePoints, startedAt;
         public int petals;
         public bool active;
+        public bool hadCustomer;                 // opened for a customer (false on the original no-customer flow)
         public bool AllServed => items.TrueForAll(i => i.isServed);
         public bool Needs(string food) => items.Exists(i => !i.isServed && i.foodType == food);
     }
@@ -165,6 +166,11 @@ public class OrderSystem : MonoBehaviour
     {
         // Allow a fresh initialization when re-enabled (level settings may have changed)
         hasInitializedSinceEnable = false;
+    }
+
+    private void OnDestroy()
+    {
+        PatienceMeter.HideAll();   // no meter entry survives the scene
     }
 
     private void InitializeOrderSystem()
@@ -331,15 +337,17 @@ public class OrderSystem : MonoBehaviour
     {
         if (slots == null) BuildSlots();
         slot = Mathf.Clamp(slot, 0, slots.Length - 1);
-        if (orders.Exists(o => o.slot == slot && o.active))
+        var stale = orders.Find(o => o.slot == slot && o.active);
+        if (stale != null)
         {
-            DebugLog($"Slot {slot} already has an open order - ignoring", true);
-            return;
+            // should not happen; if it ever does, the old order is closed so the new customer is never left waiting
+            DebugLog($"Slot {slot} already had an open order - expiring it first", true);
+            ExpireOrder(stale);
         }
         var order = new ActiveOrder
         {
             slot = slot, customer = customer, displayTime = Mathf.Max(0.1f, displayTime), timer = Mathf.Max(0.1f, displayTime),
-            tipMultiplier = tipMultiplier, petals = petals, startedAt = Time.time, active = true
+            tipMultiplier = tipMultiplier, petals = petals, startedAt = Time.time, active = true, hadCustomer = !ReferenceEquals(customer, null)
         };
         var s = slots[slot];
 
@@ -501,7 +509,8 @@ public class OrderSystem : MonoBehaviour
         UpdateOrderProgress();
 
         // CUSTOMER INTEGRATION: Notify customer manager (once, null-guarded)
-        if (isUsingCustomerFlow && customerManager != null)
+        // (a customer that was opened for but is gone is not swapped for the other slot's customer)
+        if (isUsingCustomerFlow && customerManager != null && (order.customer != null || !order.hadCustomer))
         {
             customerManager.HandleOrderServed(order.customer, isPerfect);
             DebugLog($"Notified CustomerManager - Order completed (perfect: {isPerfect}, time left: {order.timer:F2}s)");
@@ -541,7 +550,7 @@ public class OrderSystem : MonoBehaviour
         UpdateOrderProgress();
 
         // CUSTOMER INTEGRATION: Notify customer manager
-        if (isUsingCustomerFlow && customerManager != null)
+        if (isUsingCustomerFlow && customerManager != null && (order.customer != null || !order.hadCustomer))
         {
             customerManager.HandleOrderExpired(order.customer);
             DebugLog("Notified CustomerManager of expired order");

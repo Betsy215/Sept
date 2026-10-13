@@ -19,7 +19,7 @@ public class CustomerManager : MonoBehaviour
     [Header("Timing Settings")] [Tooltip("Delay between customer exit and spawning next customer")]
     public float nextCustomerSpawnDelay = 2.0f;
     [Tooltip("Seconds after a customer reaches the counter before the next one sets off, when a slot is free")]
-    public float secondCustomerDelay = 2.5f;
+    public float secondCustomerDelay = 1.0f;   // the walk-in itself takes 4 s; at 2.5 the two rarely overlapped (review, 12 October)
 
     [Header("Two customers (12 October 2026)")]
     [Tooltip("X offset of each slot's spot when two customers can wait (slot 0 right, slot 1 left); the walk-in ends at x = offset + 1")]
@@ -332,7 +332,17 @@ public class CustomerManager : MonoBehaviour
         var spot = Spot(slot);
         var customer = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation, spot);
         customer.Slot = slot;
-        if (MaxSlots > 1) customer.transform.localScale *= twoSlotCustomerScale;
+        if (MaxSlots > 1)
+        {
+            customer.transform.localScale *= twoSlotCustomerScale;
+            // The walk-in clip starts at local x -3; with the right slot's offset that is on screen. The spot starts
+            // further left and slides to its place during the walk, so every customer enters from off screen
+            var home = spot.position;
+            spot.position = home + Vector3.left * 2.5f;
+            StartCoroutine(SlideSpot(spot, home, 3f));
+            // Draw order between the two: the right slot in front of the left, so an overlap never flickers
+            foreach (var sr in customer.GetComponentsInChildren<SpriteRenderer>(true)) sr.sortingOrder += slot == 0 ? 2 : 0;
+        }
         slots[slot] = customer;
         spawnedCount++;
 
@@ -341,6 +351,18 @@ public class CustomerManager : MonoBehaviour
 
         DebugLog($"Spawned {customer.name} in slot {slot} ({spawnedCount}/{(orderSystem != null ? orderSystem.ordersPerLevel : 0)})");
         OnCustomerSpawned?.Invoke(customer);
+    }
+
+    private IEnumerator SlideSpot(Transform spot, Vector3 home, float seconds)
+    {
+        var from = spot.position; var t = 0f;
+        while (t < seconds && spot != null)
+        {
+            t += Time.deltaTime;
+            spot.position = Vector3.Lerp(from, home, Mathf.SmoothStep(0f, 1f, t / seconds));
+            yield return null;
+        }
+        if (spot != null) spot.position = home;
     }
 
     private IEnumerator HandleCustomerOrderDelay(CustomerController customer, int minItems, float displayTime, float tipMultiplier, int petals)

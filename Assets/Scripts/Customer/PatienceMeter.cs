@@ -34,6 +34,12 @@ public class PatienceMeter : MonoBehaviour
         meters[order] = m;
     }
 
+    public static void HideAll()
+    {
+        foreach (var m in meters.Values) if (m != null) Destroy(m.gameObject);
+        meters.Clear();
+    }
+
     public static void Hide(OrderSystem.ActiveOrder order)
     {
         if (order != null && meters.TryGetValue(order, out var m))

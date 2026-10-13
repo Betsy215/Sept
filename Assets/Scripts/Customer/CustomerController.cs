@@ -173,11 +173,28 @@ public abstract class CustomerController : MonoBehaviour
             animator.SetBool("IsHappy", true);
         }
 
-        // Wait for animation to complete
-        yield return new WaitForSeconds(2.0f); // Fallback duration
+        // Walk until off the right edge of the screen (a left-slot customer needs longer than the old fixed 2 s)
+        yield return WalkOffScreen(2.0f, 6.0f);
 
         // Customer exits
         OnReachedExit();
+    }
+
+    /// Waits at least minSeconds, then until the sprite has left the screen to the right, at most maxSeconds
+    protected IEnumerator WalkOffScreen(float minSeconds, float maxSeconds)
+    {
+        var t = 0f;
+        var cam = Camera.main;
+        while (t < maxSeconds)
+        {
+            t += Time.deltaTime;
+            if (t >= minSeconds)
+            {
+                var right = cam != null ? cam.transform.position.x + cam.orthographicSize * cam.aspect : 3f;
+                if (transform.position.x > right + 1.2f) yield break;
+            }
+            yield return null;
+        }
     }
 
     // CLEANED: Sad walk out - single path, no conflicts
