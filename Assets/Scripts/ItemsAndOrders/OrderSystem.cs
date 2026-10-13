@@ -45,7 +45,7 @@ public class OrderSystem : MonoBehaviour
     public int maxConcurrentOrders = 2;
     [Tooltip("Where slot 0's bubbles and icons move when two customers can wait (the scene places them for one customer at the right)")]
     public Vector2 slot0BubbleOffset = new Vector2(1.5f, 1.7f);
-    public Vector2 slot1BubbleOffset = new Vector2(-0.7f, 1.7f);
+    public Vector2 slot1BubbleOffset = new Vector2(-0.5f, 1.7f);   // -0.7 put the left bubble 0.24 units off an iPhone screen
     [Tooltip("Scale of each bubble set when two customers can wait")]
     public float twoSlotBubbleScale = 0.85f;
 
