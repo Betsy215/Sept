@@ -250,9 +250,8 @@ public class CustomerManager : MonoBehaviour
 
         // This customer's order: never below the level's own minimum, clamped to the level's maximum
         var minItems = ClampMinOrderItems(Mathf.Max(levelMinOrderItems + customer.ExtraOrderItems, customer.MinOrderItems));
-        // Decorations on the table add a second each (patience system); the daisy shows one petal per whole
-        // second, falling at the customer's own pace (patient or hurried customers)
-        var patience = levelOrderDisplayTime + PatienceDecor.BonusSeconds();
+        // Patience: the level's time; the meter shows it falling at the customer's own pace (patient or hurried)
+        var patience = levelOrderDisplayTime;
         var displayTime = patience * customer.OrderTimeMultiplier;
         var petals = Mathf.Max(1, Mathf.RoundToInt(patience));
         DebugLog($"{customer.name}: min items {minItems}, time {displayTime:F1}s, tip x{customer.TipMultiplier}");
