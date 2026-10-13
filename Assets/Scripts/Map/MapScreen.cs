@@ -43,7 +43,15 @@ public class MapScreen : MonoBehaviour
     }
 
     private static Sprite Load(string n) => Resources.Load<Sprite>("Map/" + n);
-    private static Vector2 P(Vector2 design) => new Vector2(design.x - 540f, 960f - design.y);
+    // The constellation is drawn 15% larger and sparser around its centre (owner, 12 October); the design
+    // points above are the original 10 October layout
+    private const float MapScale = 1.15f;
+    private static readonly Vector2 MapCentre = new Vector2(565f, 982f);
+    private static Vector2 P(Vector2 design)
+    {
+        var d = MapCentre + (design - MapCentre) * MapScale;
+        return new Vector2(d.x - 540f, 960f - d.y);
+    }
 
     private void Build()
     {
@@ -89,7 +97,18 @@ public class MapScreen : MonoBehaviour
             var isToday = !allDone && i == today;
             var pos = P(Stars[i]);
             var size = isToday ? 104f : 84f;
+            var dayStars = played && sm != null ? sm.GetLevelStars(i) : 0;
+            if (played && dayStars >= 3)
+            {
+                // Three stars: the day lights up like a star, a warm glow pulsing behind the circle (no yellow circle)
+                var glow = NewImage("Glow", canvasRect, GlowSprite());
+                Place(glow.rectTransform, pos, new Vector2(size * 2.6f, size * 2.6f));
+                glow.color = new Color(1f, 0.9f, 0.55f, 0.9f);
+                glow.raycastTarget = false;
+                glow.gameObject.AddComponent<MapGlowPulse>();
+            }
             var dot = NewImage("Day" + (i + 1), canvasRect, Load(isToday ? "day_today" : played ? "day_done" : "day_locked"));
+            if (played && dayStars >= 3) dot.color = new Color(1f, 0.98f, 0.9f);
             Place(dot.rectTransform, pos, new Vector2(size, size));
             var label = NewText("Number", dot.rectTransform, (i + 1).ToString(), isToday ? 38f : 30f,
                 isToday ? new Color(1f, 0.98f, 0.92f) : played ? new Color(0.43f, 0.24f, 0.08f) : new Color(0.47f, 0.43f, 0.39f));
@@ -98,11 +117,12 @@ public class MapScreen : MonoBehaviour
 
             if (played)
             {
-                var stars = sm != null ? sm.GetLevelStars(i) : 0;
+                var stars = dayStars;
                 for (var k = 0; k < 3; k++)
                 {
                     var st = NewImage("Star", canvasRect, k < stars ? starSprite : darkStarSprite);
-                    Place(st.rectTransform, pos + new Vector2(-32f + k * 32f, -40f + (k == 1 ? 6f : 0f)), new Vector2(30f, 30f));
+                    // under the circle, clear of its edge (circle radius 42, star 30)
+                    Place(st.rectTransform, pos + new Vector2(-32f + k * 32f, -68f + (k == 1 ? 6f : 0f)), new Vector2(30f, 30f));
                     st.raycastTarget = false;
                 }
             }
@@ -203,6 +223,26 @@ public class MapScreen : MonoBehaviour
         MakeButton(board.rectTransform, Load("btn_cancel"), new Vector2(140f, -640f), CloseDay);
     }
 
+    private static Sprite glowSprite;
+    /// A soft round glow, made once at runtime (like DayNightTint's stars)
+    private static Sprite GlowSprite()
+    {
+        if (glowSprite != null) return glowSprite;
+        const int n = 64;
+        var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear };
+        var px = new Color[n * n];
+        for (var y = 0; y < n; y++)
+        for (var x = 0; x < n; x++)
+        {
+            var dx = (x + 0.5f - n / 2f) / (n / 2f); var dy = (y + 0.5f - n / 2f) / (n / 2f);
+            var a = Mathf.Clamp01(1f - Mathf.Sqrt(dx * dx + dy * dy));
+            px[y * n + x] = new Color(1f, 1f, 1f, a * a * a);
+        }
+        tex.SetPixels(px); tex.Apply();
+        glowSprite = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f));
+        return glowSprite;
+    }
+
     private void MakeButton(RectTransform parent, Sprite sprite, Vector2 pos, UnityEngine.Events.UnityAction onClick)
     {
         var img = NewImage(sprite != null ? sprite.name : "Button", parent, sprite);
@@ -282,5 +322,19 @@ public class MapScreen : MonoBehaviour
     {
         rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
         rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
+    }
+}
+
+/// Slow pulse of a three-star day's glow on the map (alpha 0.55 to 0.95, about once a second)
+public class MapGlowPulse : MonoBehaviour
+{
+    private Image img; private float t;
+    private void Awake() { img = GetComponent<Image>(); t = Random.value * 6f; }
+    private void Update()
+    {
+        if (img == null) return;
+        t += Time.unscaledDeltaTime;
+        var c = img.color; c.a = 0.75f + 0.2f * Mathf.Sin(t * 5f); img.color = c;
+        transform.localScale = Vector3.one * (1f + 0.04f * Mathf.Sin(t * 5f));
     }
 }
