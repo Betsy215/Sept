@@ -417,6 +417,7 @@ public class LevelManager : MonoBehaviour
             ApplyServeableItemSettings();
 
         PatienceDecor.Place();   // the owned vase / bouquet on the table's back row
+        KitchenButtonOverTable.Setup();   // the truck button a third onto the cloth (12 October)
 
         if (customerManager != null)
         {
