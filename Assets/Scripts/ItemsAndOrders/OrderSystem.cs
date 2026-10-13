@@ -12,6 +12,11 @@ public class OrderItem
     public GameObject displayPrefab; // Prefab to show in the order display
 }
 
+/// Orders of the customers at the counter. Since 12 October 2026 up to two customers can wait at once, each with
+/// an order of their own (slot 0 and slot 1), so a second customer may arrive while the first is being served.
+/// A tap on a food serves the oldest open order that still needs that food. Every order keeps its own timer,
+/// tip multiplier and points. Slot 0 uses the scene's bubble objects and OrderContainer; slot 1 uses clones of them.
+/// With maxConcurrentOrders = 1 (the tutorial) everything behaves and looks as before.
 public class OrderSystem : MonoBehaviour
 {
     [Header("Level Settings - Updated by LevelManager")]
@@ -35,13 +40,14 @@ public class OrderSystem : MonoBehaviour
     /// Orders finished or expired so far this day (read by DayNightTint).
     public int OrdersCompleted => ordersCompleted;
 
-    /// Patience read by PatienceMeter (12 October 2026): seconds left, the customer's full time, and whether an order is open.
-    public float RemainingTime => orderTimer;
-    public float TotalTime => orderDisplayTime;
-    public bool OrderActive => orderActive;
-    /// Petals on the daisy for the current customer: whole seconds of the level's timer plus the decoration bonus
-    /// (set by CustomerManager before the order; 0 = use the display time).
-    [System.NonSerialized] public int patiencePetals;
+    [Header("Two customers (12 October 2026)")]
+    [Tooltip("How many customers can wait with an order at the same time: 2 in play, 1 in the tutorial")]
+    public int maxConcurrentOrders = 2;
+    [Tooltip("Where slot 0's bubbles and icons move when two customers can wait (the scene places them for one customer at the right)")]
+    public Vector2 slot0BubbleOffset = new Vector2(1.5f, 1.7f);
+    public Vector2 slot1BubbleOffset = new Vector2(-0.7f, 1.7f);
+    [Tooltip("Scale of each bubble set when two customers can wait")]
+    public float twoSlotBubbleScale = 0.85f;
 
     [Header("Order Display UI")] public Text orderProgressText; // "Orders: 2/3"
     public Transform orderContainer; // Parent object to hold order items
@@ -65,17 +71,6 @@ public class OrderSystem : MonoBehaviour
 
     [Header("Debug Settings")] public bool enableDebugLogs = true;
 
-    // Private variables - NEW SYSTEM: Individual item tracking
-    private List<OrderItemInstance> currentOrderItems = new();
-    private List<GameObject> orderDisplayObjects = new();
-    private bool orderActive = false;
-    private float orderTimer = 0f;
-    private Coroutine orderCycleCoroutine;
-    private Coroutine orderTimerCoroutine;
-
-    // Running serve-item effect coroutines, so ClearOrderDisplay can stop them before destroying their targets
-    private readonly List<Coroutine> activeServeEffects = new();
-
     // ADD THESE LINES:
     [Header("Speech Bubbles - Different Sizes")] [Tooltip("Speech bubble for 1 item orders")]
     public GameObject speechBubble1;
@@ -89,17 +84,12 @@ public class OrderSystem : MonoBehaviour
     [Tooltip("Speech bubble for 4 item orders")]
     public GameObject speechBubble4;
 
-    // Cache for active food types
-    private List<string> activeFoodTypes = new();
-
-    // Flow control variables
-    private bool isUsingCustomerFlow = false;
-    private bool isInitialized = false;
-    private bool isProcessingCustomerOrder = false;
-
-    // Guard so Start/OnEnable/InitializeForCustomerFlow only run initialization once per enable cycle
-    private bool hasInitializedSinceEnable = false;
-
+    /// Patience read by PatienceMeter: an order's seconds left and full time (per order since 12 October).
+    public float RemainingTime => orders.Count > 0 ? orders[0].timer : 0f;
+    public float TotalTime => orders.Count > 0 ? orders[0].displayTime : orderDisplayTime;
+    public bool OrderActive => orders.Count > 0;
+    /// Petals on the daisy for the next customer's order (set by CustomerManager; kept for the single-customer path).
+    [System.NonSerialized] public int patiencePetals;
 
     // NEW: Class to track individual order items (for multiple quantities)
     [System.Serializable]
@@ -117,6 +107,45 @@ public class OrderSystem : MonoBehaviour
         }
     }
 
+    /// One customer's open order
+    public class ActiveOrder
+    {
+        public int slot;
+        public CustomerController customer;
+        public readonly List<OrderItemInstance> items = new List<OrderItemInstance>();
+        public readonly List<GameObject> displayObjects = new List<GameObject>();
+        public readonly List<Coroutine> serveEffects = new List<Coroutine>();
+        public float timer, displayTime, tipMultiplier = 1f, basePoints, startedAt;
+        public int petals;
+        public bool active;
+        public bool AllServed => items.TrueForAll(i => i.isServed);
+        public bool Needs(string food) => items.Exists(i => !i.isServed && i.foodType == food);
+    }
+
+    /// The bubble objects and icon container of one slot
+    private class SlotVisuals
+    {
+        public Transform root;
+        public GameObject bubble1, bubble2, bubble4;
+        public Transform container;
+    }
+
+    private readonly List<ActiveOrder> orders = new List<ActiveOrder>();   // open orders, oldest first
+    private SlotVisuals[] slots;
+    private bool layoutForTwo;
+
+    private Coroutine orderCycleCoroutine;
+
+    // Cache for active food types
+    private List<string> activeFoodTypes = new();
+
+    // Flow control variables
+    private bool isUsingCustomerFlow = false;
+    private bool isInitialized = false;
+
+    // Guard so Start/OnEnable/InitializeForCustomerFlow only run initialization once per enable cycle
+    private bool hasInitializedSinceEnable = false;
+
     private void Start()
     {
         InitializeOrderSystem();
@@ -124,9 +153,10 @@ public class OrderSystem : MonoBehaviour
 
     private void OnEnable()
     {
-        // Reset when re-enabled by LevelManager
+        // Reset when re-enabled by LevelManager: no order survives a level change
         ordersCompleted = 0;
-        isProcessingCustomerOrder = false;
+        foreach (var o in orders.ToArray()) { PatienceMeter.Hide(o); ClearOrderDisplay(o); if (slots != null) SetBubble(slots[o.slot], 0); }
+        orders.Clear();
         hasInitializedSinceEnable = false;
         InitializeOrderSystem();
     }
@@ -154,6 +184,8 @@ public class OrderSystem : MonoBehaviour
         // Update active food types based on current level
         UpdateActiveFoodTypes();
 
+        BuildSlots();
+        ApplyLayout();
 
         // Update order progress display
         UpdateOrderProgress();
@@ -161,7 +193,7 @@ public class OrderSystem : MonoBehaviour
         isInitialized = true;
 
         DebugLog(
-            $"OrderSystem initialized. Flow: {(isUsingCustomerFlow ? "Customer-Integrated" : "Original")}, Orders per level: {ordersPerLevel}");
+            $"OrderSystem initialized. Flow: {(isUsingCustomerFlow ? "Customer-Integrated" : "Original")}, Orders per level: {ordersPerLevel}, slots: {maxConcurrentOrders}");
     }
 
     // NEW: Initialize for customer flow without starting cycle
@@ -169,37 +201,71 @@ public class OrderSystem : MonoBehaviour
     {
         DebugLog("Initializing OrderSystem for customer flow");
         InitializeOrderSystem();
+        ApplyLayout();   // the tutorial may have set maxConcurrentOrders after the first initialization
     }
 
-    // ADD THIS NEW METHOD:
-    private void ActivateSpeechBubbleForOrderSize(int itemCount)
+    /// Slot 0 = the scene's bubbles and container, gathered under one root; slot 1 = clones of them under a second root.
+    private void BuildSlots()
     {
-        // Deactivate all bubbles first
-        if (speechBubble1 != null) speechBubble1.SetActive(false);
-        if (speechBubble2 != null) speechBubble2.SetActive(false);
-        // speechBubble3 removed - don't reference it
-        if (speechBubble4 != null) speechBubble4.SetActive(false);
+        if (slots != null) return;
+        var s0 = new SlotVisuals { root = new GameObject("OrderSlot0").transform };
+        s0.root.SetParent(transform.parent, false);
+        s0.root.position = Vector3.zero;
+        if (speechBubble1 != null) speechBubble1.transform.SetParent(s0.root, true);
+        if (speechBubble2 != null) speechBubble2.transform.SetParent(s0.root, true);
+        if (speechBubble4 != null) speechBubble4.transform.SetParent(s0.root, true);
+        if (orderContainer != null) orderContainer.SetParent(s0.root, true);
+        s0.bubble1 = speechBubble1; s0.bubble2 = speechBubble2; s0.bubble4 = speechBubble4; s0.container = orderContainer;
 
-        // Activate the appropriate bubble based on item count
-        switch (itemCount)
+        var s1 = new SlotVisuals { root = new GameObject("OrderSlot1").transform };
+        s1.root.SetParent(transform.parent, false);
+        s1.root.position = Vector3.zero;
+        s1.bubble1 = CloneUnder(speechBubble1, s1.root);
+        s1.bubble2 = CloneUnder(speechBubble2, s1.root);
+        s1.bubble4 = CloneUnder(speechBubble4, s1.root);
+        if (orderContainer != null)
         {
-            case 1:
-                if (speechBubble1 != null) speechBubble1.SetActive(true);
-                break;
-            case 2:
-                if (speechBubble2 != null) speechBubble2.SetActive(true);
-                break;
-            case 3:
-            case 4:
-                // Both 3 and 4 item orders use speechBubble4
-                if (speechBubble4 != null) speechBubble4.SetActive(true);
-                break;
-            default:
-                // Fallback: use speechBubble4
-                if (speechBubble4 != null) speechBubble4.SetActive(true);
-                Debug.LogWarning($"Order size {itemCount} exceeds available bubbles, using speechBubble4");
-                break;
+            var c = new GameObject("OrderContainer1").transform;
+            c.SetParent(s1.root, false);
+            c.position = orderContainer.position;
+            c.localScale = orderContainer.lossyScale;
+            s1.container = c;
         }
+        slots = new[] { s0, s1 };
+    }
+
+    private static GameObject CloneUnder(GameObject original, Transform root)
+    {
+        if (original == null) return null;
+        var clone = Instantiate(original, root);          // same local position under a root at the origin = same place
+        clone.name = original.name + "_1";
+        clone.SetActive(false);
+        return clone;
+    }
+
+    /// One customer: the bubbles stay where the scene puts them. Two: each slot's set moves up beside its customer.
+    private void ApplyLayout()
+    {
+        if (slots == null) return;
+        var two = maxConcurrentOrders > 1;
+        if (two == layoutForTwo && slots[0].root.position == (two ? (Vector3)slot0BubbleOffset : Vector3.zero)) return;
+        layoutForTwo = two;
+        slots[0].root.position = two ? (Vector3)slot0BubbleOffset : Vector3.zero;
+        slots[1].root.position = two ? (Vector3)slot1BubbleOffset : Vector3.zero;
+        var k = two ? twoSlotBubbleScale : 1f;
+        slots[0].root.localScale = Vector3.one * k;
+        slots[1].root.localScale = Vector3.one * k;
+    }
+
+    private void SetBubble(SlotVisuals s, int itemCount)
+    {
+        if (s.bubble1 != null) s.bubble1.SetActive(false);
+        if (s.bubble2 != null) s.bubble2.SetActive(false);
+        if (s.bubble4 != null) s.bubble4.SetActive(false);
+        if (itemCount <= 0) return;
+        var b = itemCount == 1 ? s.bubble1 : itemCount == 2 ? s.bubble2 : s.bubble4;
+        if (b == null) b = s.bubble4;
+        if (b != null) b.SetActive(true);
     }
 
     private void UpdateActiveFoodTypes()
@@ -230,7 +296,6 @@ public class OrderSystem : MonoBehaviour
         DebugLog($"Active food types for orders: {string.Join(", ", activeFoodTypes)}");
     }
 
-    // Helper method to check if we have an OrderItem for a given food type
     private bool HasOrderItemForFoodType(string foodType)
     {
         return System.Array.Exists(availableFoods, item =>
@@ -239,17 +304,17 @@ public class OrderSystem : MonoBehaviour
 
     private void Update()
     {
-        if (orderActive) UpdateOrderTimer();
-    }
-
-    private void UpdateOrderTimer()
-    {
-        if (!freezeTimer) orderTimer -= Time.deltaTime;
-
-        if (orderTimer <= 0)
+        if (orders.Count == 0 || freezeTimer) return;
+        // oldest first; expiring one may remove it from the list, so walk a copy
+        foreach (var o in orders.ToArray())
         {
-            Debug.Log("Order timer is over, expired");
-            ExpireOrder();
+            if (!o.active) continue;
+            o.timer -= Time.deltaTime;
+            if (o.timer <= 0f)
+            {
+                Debug.Log($"Order timer is over, expired (slot {o.slot})");
+                ExpireOrder(o);
+            }
         }
     }
 
@@ -261,62 +326,68 @@ public class OrderSystem : MonoBehaviour
     /// explains). The tip is still computed from the remaining time, so it stays realistic.
     [System.NonSerialized] public bool freezeTimer;
 
-    public void GenerateNewOrder()
+    /// Opens an order for a customer in its slot. Called by CustomerManager after the customer's order delay.
+    public void StartOrderForCustomer(CustomerController customer, int slot, int minItems, float displayTime, float tipMultiplier, int petals)
     {
-        if (orderActive) return;
-
-        // Clear previous order
-        ClearOrderDisplay();
-
-        currentOrderItems.Clear();
+        if (slots == null) BuildSlots();
+        slot = Mathf.Clamp(slot, 0, slots.Length - 1);
+        if (orders.Exists(o => o.slot == slot && o.active))
+        {
+            DebugLog($"Slot {slot} already has an open order - ignoring", true);
+            return;
+        }
+        var order = new ActiveOrder
+        {
+            slot = slot, customer = customer, displayTime = Mathf.Max(0.1f, displayTime), timer = Mathf.Max(0.1f, displayTime),
+            tipMultiplier = tipMultiplier, petals = petals, startedAt = Time.time, active = true
+        };
+        var s = slots[slot];
 
         if (forcedNextOrder != null && forcedNextOrder.Count > 0)
         {
             var forced = forcedNextOrder;
             forcedNextOrder = null;
-            for (var i = 0; i < forced.Count; i++)
-                CreateOrderItemInstance(forced[i], i, forced.Count);
-            DisplayOrder();
-            Debug.Log($"New forced order generated with {currentOrderItems.Count} items");
-            return;
+            for (var i = 0; i < forced.Count; i++) CreateOrderItemInstance(order, s, forced[i], i, forced.Count);
         }
-
-        // Generate random order items (clamp so min can never exceed max, e.g. a customer-specific minimum on a small level)
-        var safeMax = Mathf.Max(1, maxOrderItems);
-        var safeMin = Mathf.Clamp(minOrderItems, 1, safeMax);
-        var orderSize = Random.Range(safeMin, safeMax + 1);
-
-        // REMOVED: Allow duplicate food items in orders
-        // orderSize = Mathf.Min(orderSize, activeFoodTypes.Count);
-
-        for (var i = 0; i < orderSize; i++)
+        else
         {
-            // Select random food type (can be duplicate)
-            var randomFood = activeFoodTypes[Random.Range(0, activeFoodTypes.Count)];
-
-            // FIXED: Pass the total orderSize to prevent incremental count bug
-            CreateOrderItemInstance(randomFood, i, orderSize);
+            // Random order items (clamp so min can never exceed max, e.g. a customer-specific minimum on a small level)
+            var safeMax = Mathf.Max(1, maxOrderItems);
+            var safeMin = Mathf.Clamp(minItems, 1, safeMax);
+            var orderSize = Random.Range(safeMin, safeMax + 1);
+            for (var i = 0; i < orderSize; i++)
+            {
+                var randomFood = activeFoodTypes[Random.Range(0, activeFoodTypes.Count)];   // duplicates allowed
+                CreateOrderItemInstance(order, s, randomFood, i, orderSize);
+            }
         }
 
-        DisplayOrder();
-
-        Debug.Log($"New order generated with {currentOrderItems.Count} items");
+        orders.Add(order);
+        SetBubble(s, order.items.Count);
+        if (orderTitleText != null) orderTitleText.text = "Order:";
+        PatienceMeter.Show(order, s.root.TransformPoint(PatienceMeter.WorldPosition));
+        Debug.Log($"New order in slot {slot} with {order.items.Count} items, timer {order.timer:F1}s, tip x{tipMultiplier}");
     }
 
+    /// Single-customer path kept for the original flow and old callers: slot 0 with the current level values.
+    public void GenerateNewOrder()
+    {
+        StartOrderForCustomer(null, 0, minOrderItems, orderDisplayTime, 1f, patiencePetals);
+    }
 
-    private void CreateOrderItemInstance(string foodType, int index, int totalOrderSize)
+    private void CreateOrderItemInstance(ActiveOrder order, SlotVisuals s, string foodType, int index, int totalOrderSize)
     {
         // Find the matching food item
         var orderItem = System.Array.Find(availableFoods, item =>
             item != null && item.foodType == foodType);
 
-        if (orderItem != null && orderItem.displayPrefab != null)
+        if (orderItem != null && orderItem.displayPrefab != null && s.container != null)
         {
             // FIXED: Pass the intended total order size instead of using incremental count
             var itemPosition = CalculateOrderItemPosition(index, totalOrderSize);
 
             // Create the display item
-            var displayItem = Instantiate(orderItem.displayPrefab, orderContainer);
+            var displayItem = Instantiate(orderItem.displayPrefab, s.container);
             displayItem.transform.localPosition = itemPosition;
 
             // Add served item visual component for pop effect
@@ -324,10 +395,8 @@ public class OrderSystem : MonoBehaviour
             if (servedVisual == null)
                 servedVisual = displayItem.AddComponent<ServedItemVisual>();
 
-            // Create order item instance
-            var orderInstance = new OrderItemInstance(foodType, displayItem);
-            currentOrderItems.Add(orderInstance);
-            orderDisplayObjects.Add(displayItem);
+            order.items.Add(new OrderItemInstance(foodType, displayItem));
+            order.displayObjects.Add(displayItem);
         }
     }
 
@@ -359,57 +428,38 @@ public class OrderSystem : MonoBehaviour
         }
     }
 
-    private void DisplayOrder()
-    {
-        // Select and activate the appropriate speech bubble based on order size
-        ActivateSpeechBubbleForOrderSize(currentOrderItems.Count);
-        if (orderTitleText != null)
-            orderTitleText.text = "Order:";
-
-        orderActive = true;
-
-        orderTimer = orderDisplayTime;
-        PatienceMeter.Show(this, patiencePetals > 0 ? patiencePetals : Mathf.RoundToInt(orderDisplayTime));
-
-        Debug.Log($"Order active: {orderActive} , timer: {orderTimer}");
-    }
-
+    /// A tap on a food: serves the oldest open order that still needs it (the customer who came first).
     public bool TryServeItem(string foodType)
     {
-        // Method stays exactly the same - no changes needed!
-        // ServeableItem calls this method and it works perfectly
+        if (orders.Count == 0) return false;
 
-        if (!orderActive) return false;
+        ActiveOrder target = null;
+        foreach (var o in orders)
+            if (o.active && o.Needs(foodType) && (target == null || o.startedAt < target.startedAt)) target = o;
 
-        // Find the first unserved item of this type
-        var itemToServe = currentOrderItems.Find(item =>
-            item.foodType == foodType && !item.isServed);
-
-        if (itemToServe != null)
+        if (target == null)
         {
-            // Mark as served
-            itemToServe.isServed = true;
-
-            // Play served item visual effect and remove (tracked so ClearOrderDisplay can stop it)
-            Coroutine effectHandle = null;
-            effectHandle = StartCoroutine(ServeItemWithEffect(itemToServe, () => activeServeEffects.Remove(effectHandle)));
-            if (effectHandle != null) activeServeEffects.Add(effectHandle);
-
-            // Award points for this item
-            if (scoreManager != null) scoreManager.AwardItemPoints(foodType);
-
-            // Play item served sound
-            PlayItemServedSound();
-
-            // Check if order is complete
-            CheckOrderCompletion();
-
-            Debug.Log($"Served {foodType}. Remaining items: {GetRemainingItemsCount()}");
-            return true;
+            Debug.Log($"No {foodType} needed in the open orders");
+            return false;
         }
 
-        Debug.Log($"No {foodType} needed in current order");
-        return false;
+        var itemToServe = target.items.Find(item => item.foodType == foodType && !item.isServed);
+        itemToServe.isServed = true;
+
+        // Play served item visual effect and remove (tracked so the order's clean-up can stop it)
+        Coroutine effectHandle = null;
+        effectHandle = StartCoroutine(ServeItemWithEffect(itemToServe, () => target.serveEffects.Remove(effectHandle)));
+        if (effectHandle != null) target.serveEffects.Add(effectHandle);
+
+        // Award points for this item (kept on the order for its tip)
+        if (scoreManager != null) target.basePoints += scoreManager.AwardItemPointsValue(foodType);
+
+        // Play item served sound
+        PlayItemServedSound();
+
+        if (target.AllServed) CompleteOrder(target);
+        Debug.Log($"Served {foodType} to slot {target.slot}. Remaining items: {target.items.Count(i => !i.isServed)}");
+        return true;
     }
 
     private IEnumerator ServeItemWithEffect(OrderItemInstance item, System.Action onFinished = null)
@@ -433,45 +483,18 @@ public class OrderSystem : MonoBehaviour
         }
     }
 
-    private void CheckOrderCompletion()
+    private void CompleteOrder(ActiveOrder order)
     {
-        // Check if all items are served
-        var allServed = true;
-        foreach (var item in currentOrderItems)
-            if (!item.isServed)
-            {
-                allServed = false;
-                break;
-            }
+        Debug.Log($"Order completed! (slot {order.slot})");
+        PatienceMeter.Hide(order);
+        order.active = false;
 
-        if (allServed) CompleteOrder();
-    }
-
-    private int GetRemainingItemsCount()
-    {
-        var count = 0;
-        foreach (var item in currentOrderItems)
-            if (!item.isServed)
-                count++;
-        return count;
-    }
-
-    private void CompleteOrder()
-    {
-        Debug.Log("Order completed!");
-        PatienceMeter.Hide();
-
-        // Award completion bonus
+        // Award completion bonus: the tip from this order's time left, points and customer
         if (scoreManager != null)
-        {
-            var remainingTime = orderTimer;
-            var orderBasePoints = scoreManager.currentOrderItemPoints;
-            scoreManager.AwardOrderCompletionBonus(remainingTime, orderBasePoints);
-        }
+            scoreManager.AwardOrderCompletionBonus(order.timer, order.basePoints, order.tipMultiplier);
 
         // Perfect = finished with at least perfectTimeFraction of the display time still remaining
-        // (expiry fires at <= 0, so "orderTimer > 0" would always be true here)
-        var isPerfect = orderTimer >= orderDisplayTime * perfectTimeFraction;
+        var isPerfect = order.timer >= order.displayTime * perfectTimeFraction;
 
         // Count as completed
         ordersCompleted++;
@@ -480,56 +503,38 @@ public class OrderSystem : MonoBehaviour
         // CUSTOMER INTEGRATION: Notify customer manager (once, null-guarded)
         if (isUsingCustomerFlow && customerManager != null)
         {
-            customerManager.HandleOrderServed(isPerfect);
-            DebugLog($"Notified CustomerManager - Order completed (perfect: {isPerfect}, time left: {orderTimer:F2}s)");
-
-            // Reset the processing flag to allow next customer orders
-            isProcessingCustomerOrder = false;
-            DebugLog("Reset isProcessingCustomerOrder flag for next customer");
+            customerManager.HandleOrderServed(order.customer, isPerfect);
+            DebugLog($"Notified CustomerManager - Order completed (perfect: {isPerfect}, time left: {order.timer:F2}s)");
         }
 
-        // Hide order and prepare for next one
-        orderActive = false;
-        if (speechBubble1 != null) speechBubble1.SetActive(false);
-        if (speechBubble2 != null) speechBubble2.SetActive(false);
-        if (speechBubble3 != null) speechBubble3.SetActive(false);
-        if (speechBubble4 != null) speechBubble4.SetActive(false);
+        SetBubble(slots[order.slot], 0);
+        orders.Remove(order);
 
         // Check if level is complete
         if (ordersCompleted >= ordersPerLevel)
         {
             DebugLog("All orders completed for this level!");
-
             if (levelManager != null) levelManager.OnLevelComplete();
         }
-        else
+        else if (!(isUsingCustomerFlow && customerManager != null))
         {
-            // CUSTOMER FLOW: Wait for customer to leave, then spawn next customer
-            if (isUsingCustomerFlow && customerManager != null)
-                DebugLog("Waiting for customer to leave before spawning next customer");
-            // Customer will leave automatically, and CustomerManager will handle next spawn
-            else
-                // ORIGINAL FLOW: Generate next order after delay
-                Invoke("GenerateNewOrder", timeBetweenOrders);
+            // ORIGINAL FLOW: Generate next order after delay
+            Invoke("GenerateNewOrder", timeBetweenOrders);
         }
     }
 
-    private void ExpireOrder()
+    private void ExpireOrder(ActiveOrder order)
     {
-        Debug.Log("Order expired!");
-        PatienceMeter.Hide();
+        Debug.Log($"Order expired! (slot {order.slot})");
+        PatienceMeter.Hide(order);
+        order.active = false;
 
-        // CRITICAL FIX: Clear all order display objects before marking order as inactive
-        ClearOrderDisplay();
+        // Clear this order's display objects before telling anyone
+        ClearOrderDisplay(order);
+        SetBubble(slots[order.slot], 0);
 
-        orderActive = false;
-        if (speechBubble1 != null) speechBubble1.SetActive(false);
-        if (speechBubble2 != null) speechBubble2.SetActive(false);
-        if (speechBubble3 != null) speechBubble3.SetActive(false);
-        if (speechBubble4 != null) speechBubble4.SetActive(false);
-
-        // Penalize for expired order
-        if (scoreManager != null) scoreManager.ApplyOrderExpiredPenalty();
+        // Penalize for expired order: the points of what was served are still paid, no tip
+        if (scoreManager != null) scoreManager.ApplyOrderExpiredPenalty(order.basePoints);
 
         // Count as completed (even if expired)
         ordersCompleted++;
@@ -538,50 +543,42 @@ public class OrderSystem : MonoBehaviour
         // CUSTOMER INTEGRATION: Notify customer manager
         if (isUsingCustomerFlow && customerManager != null)
         {
-            customerManager.HandleOrderExpired();
+            customerManager.HandleOrderExpired(order.customer);
             DebugLog("Notified CustomerManager of expired order");
-
-            // CRITICAL FIX: Reset the processing flag to allow next customer orders  
-            isProcessingCustomerOrder = false;
-            DebugLog("Reset isProcessingCustomerOrder flag after expiry");
         }
+
+        orders.Remove(order);
 
         // Check if level is complete
         if (ordersCompleted >= ordersPerLevel)
         {
             DebugLog("All orders processed for this level!");
-
             if (levelManager != null) levelManager.OnLevelComplete();
         }
-        else
+        else if (!(isUsingCustomerFlow && customerManager != null))
         {
-            // CUSTOMER FLOW: Wait for customer to leave, then spawn next customer
-            if (isUsingCustomerFlow && customerManager != null)
-                DebugLog("Waiting for customer to leave before spawning next customer");
-            // Customer will leave automatically after expiring
-            else
-                // ORIGINAL FLOW: Generate next order after delay
-                Invoke("GenerateNewOrder", timeBetweenOrders);
+            // ORIGINAL FLOW: Generate next order after delay
+            Invoke("GenerateNewOrder", timeBetweenOrders);
         }
     }
 
-    private void ClearOrderDisplay()
+    private void ClearOrderDisplay(ActiveOrder order)
     {
         // Stop any in-flight serve effects first so they never touch a destroyed display object.
         // Snapshot + clear before stopping: stopping disposes the coroutine, whose finally block removes itself from the list.
-        var effectsToStop = activeServeEffects.ToArray();
-        activeServeEffects.Clear();
+        var effectsToStop = order.serveEffects.ToArray();
+        order.serveEffects.Clear();
         foreach (var effect in effectsToStop)
             if (effect != null)
                 StopCoroutine(effect);
 
         // Destroy all display objects
-        foreach (var displayObj in orderDisplayObjects)
+        foreach (var displayObj in order.displayObjects)
             if (displayObj != null)
                 Destroy(displayObj);
 
-        orderDisplayObjects.Clear();
-        currentOrderItems.Clear();
+        order.displayObjects.Clear();
+        order.items.Clear();
     }
 
     private void UpdateOrderProgress()
@@ -614,35 +611,25 @@ public class OrderSystem : MonoBehaviour
         }
     }
 
-
     // For compatibility with existing code
+    /// True while any customer has an open order
     public bool IsOrderActive()
     {
-        return orderActive;
+        return orders.Exists(o => o.active);
     }
 
+    /// Whether a slot has an open order (CustomerManager spawns into free slots)
+    public bool IsSlotBusy(int slot) => orders.Exists(o => o.active && o.slot == slot);
 
+    /// Unserved food types across the open orders, oldest order first (used by the editor auto-play)
     public List<string> GetCurrentOrderTypes()
     {
         var types = new List<string>();
-        foreach (var item in currentOrderItems)
-            if (!item.isServed)
-                types.Add(item.foodType);
+        foreach (var o in orders.OrderBy(o => o.startedAt))
+            foreach (var item in o.items)
+                if (!item.isServed)
+                    types.Add(item.foodType);
         return types;
-    }
-
-
-    public void GenerateCustomerOrder()
-    {
-        if (isProcessingCustomerOrder)
-        {
-            DebugLog("Already processing customer order, ignoring new request");
-            return;
-        }
-
-        isProcessingCustomerOrder = true;
-        DebugLog("Generating order for customer");
-        GenerateNewOrder();
     }
 
     public void StartOrderCycle()
@@ -685,7 +672,7 @@ public class OrderSystem : MonoBehaviour
             GenerateNewOrder();
 
             // Wait until order is completed or expired
-            yield return new WaitUntil(() => !orderActive);
+            yield return new WaitUntil(() => !IsOrderActive());
 
             // Wait between orders (except for the last one)
             if (i < ordersPerLevel - 1)
@@ -700,7 +687,7 @@ public class OrderSystem : MonoBehaviour
         if (levelManager != null) levelManager.OnLevelComplete();
     }
 
-    // Called by CustomerManager after customer delay to start the order
+    /// Old entry point (one customer, slot 0, the level's values). CustomerManager now calls StartOrderForCustomer.
     public void StartOrderCycleForCustomer()
     {
         if (!isUsingCustomerFlow)
@@ -708,15 +695,7 @@ public class OrderSystem : MonoBehaviour
             DebugLog("StartOrderCycleForCustomer called but not using customer flow!", true);
             return;
         }
-
-        if (isProcessingCustomerOrder)
-        {
-            DebugLog("Already processing customer order - ignoring StartOrderCycleForCustomer");
-            return;
-        }
-
-        DebugLog("Starting order cycle for customer");
-        GenerateCustomerOrder();
+        GenerateNewOrder();
     }
 }
 

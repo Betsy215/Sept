@@ -2,6 +2,11 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+/// Brings customers to the counter. Since 12 October 2026 two can wait at once (slots 0 and 1): they still arrive
+/// one by one, but the next one sets off a little after the previous reached the counter, so the second arrives
+/// while the first is being served. Each customer stands under a spot parent; the walk-in clip animates the
+/// customer's local position from (-3,1) to (1,1), so the spot's x offset decides where each slot stands.
+/// With OrderSystem.maxConcurrentOrders = 1 (the tutorial) there is one slot at the scene's place, as before.
 public class CustomerManager : MonoBehaviour
 {
     [Header("Customer Management")] public CustomerController[] customerPrefabs;
@@ -13,30 +18,38 @@ public class CustomerManager : MonoBehaviour
 
     [Header("Timing Settings")] [Tooltip("Delay between customer exit and spawning next customer")]
     public float nextCustomerSpawnDelay = 2.0f;
+    [Tooltip("Seconds after a customer reaches the counter before the next one sets off, when a slot is free")]
+    public float secondCustomerDelay = 2.5f;
+
+    [Header("Two customers (12 October 2026)")]
+    [Tooltip("X offset of each slot's spot when two customers can wait (slot 0 right, slot 1 left); the walk-in ends at x = offset + 1")]
+    public float[] twoSlotCustomerX = { 0.6f, -1.9f };
+    [Tooltip("Customers are drawn this much smaller when two can wait")]
+    public float twoSlotCustomerScale = 0.9f;
 
     [Header("Debug")] public bool enableDebugLogs = true;
 
     // Current state
-    private CustomerController currentCustomer;
-    private bool isProcessingCustomer = false;
+    private readonly CustomerController[] slots = new CustomerController[2];
+    private Transform[] spots;
+    private int spawnedCount;                 // customers started this day (never more than ordersPerLevel)
     private int currentLevelIndex = 0;
 
-    // CRITICAL: Prevent duplicate order generation
-    private bool hasOrderBeenGenerated = false;
-
     // Baseline minimum order size from LevelData (applied to OrderSystem by LevelManager before OnLevelLoaded).
-    // Customer-specific minimums raise this per customer and it is restored on the next spawn. -1 = not captured yet.
+    // Customer-specific minimums raise this per customer. -1 = not captured yet.
     private int levelMinOrderItems = -1;
     private float levelOrderDisplayTime = -1f; // LevelData value, before any customer multiplier
 
     // Tracked coroutines so disabling the manager can stop future spawns/orders
     // (disabling a component does NOT stop its running coroutines)
     private Coroutine nextCustomerSpawnCoroutine;
-    private Coroutine customerOrderDelayCoroutine;
+    private readonly List<Coroutine> orderDelayCoroutines = new List<Coroutine>();
 
     // Events for integration
     public System.Action<CustomerController> OnCustomerSpawned;
     public System.Action<CustomerController> OnCustomerCompleted;
+
+    private int MaxSlots => orderSystem != null ? Mathf.Clamp(orderSystem.maxConcurrentOrders, 1, slots.Length) : 1;
 
     private void Start()
     {
@@ -62,32 +75,20 @@ public class CustomerManager : MonoBehaviour
 
     private void OnDisable()
     {
-        // Stop future spawns / pending order generation. The current customer is intentionally NOT destroyed here:
+        // Stop future spawns / pending order generation. Customers in flight are intentionally NOT destroyed here:
         // LevelManager disables this component synchronously inside the final CompleteOrder, and the customer must
         // still finish its reaction and walk-out (it destroys itself via OnReachedExit -> OnCustomerExited).
         StopSpawnCoroutines();
-
-        if (currentCustomer == null)
-        {
-            // No customer in flight - safe to reset state now. Otherwise OnCustomerExited resets it when the customer leaves.
-            isProcessingCustomer = false;
-            hasOrderBeenGenerated = false;
-        }
-        else
-        {
-            DebugLog($"CustomerManager disabled - letting {currentCustomer.name} finish its walk-out");
-        }
     }
 
     private void OnDestroy()
     {
         // Scene reload / teardown: make sure nothing is left behind
         StopSpawnCoroutines();
-
-        if (currentCustomer != null)
+        for (var i = 0; i < slots.Length; i++)
         {
-            Destroy(currentCustomer.gameObject);
-            currentCustomer = null;
+            if (slots[i] != null) Destroy(slots[i].gameObject);
+            slots[i] = null;
         }
     }
 
@@ -98,12 +99,8 @@ public class CustomerManager : MonoBehaviour
             StopCoroutine(nextCustomerSpawnCoroutine);
             nextCustomerSpawnCoroutine = null;
         }
-
-        if (customerOrderDelayCoroutine != null)
-        {
-            StopCoroutine(customerOrderDelayCoroutine);
-            customerOrderDelayCoroutine = null;
-        }
+        foreach (var c in orderDelayCoroutines) if (c != null) StopCoroutine(c);
+        orderDelayCoroutines.Clear();
     }
 
     // Clamp a requested minimum order size so Random.Range in OrderSystem never gets min > max
@@ -113,46 +110,94 @@ public class CustomerManager : MonoBehaviour
         return Mathf.Clamp(requestedMin, 1, max);
     }
 
+    private int FreeSlot()
+    {
+        for (var i = 0; i < MaxSlots; i++) if (slots[i] == null) return i;
+        return -1;
+    }
+
+    private bool AnyWalkingIn()
+    {
+        foreach (var c in slots) if (c != null && !c.HasReachedServicePoint()) return true;
+        return false;
+    }
+
+    private Transform Spot(int slot)
+    {
+        if (spots == null)
+        {
+            var root = new GameObject("CustomerSpots").transform;
+            spots = new Transform[slots.Length];
+            for (var i = 0; i < spots.Length; i++)
+            {
+                spots[i] = new GameObject("Spot" + i).transform;
+                spots[i].SetParent(root, false);
+            }
+        }
+        var two = MaxSlots > 1;
+        var x = two && slot < twoSlotCustomerX.Length ? twoSlotCustomerX[slot] : 0f;
+        spots[slot].position = new Vector3(x, 0f, 0f);
+        return spots[slot];
+    }
+
+    /// Starts the next customer if a slot is free, nobody is walking in, and the day still has orders to give.
     public void SpawnCustomerForCurrentLevel()
     {
-        if (isProcessingCustomer)
+        if (!enabled) return;
+        if (AnyWalkingIn())
         {
-            DebugLog("Already processing a customer, skipping spawn request");
+            DebugLog("A customer is still walking in, skipping spawn request");
+            return;
+        }
+        var slot = FreeSlot();
+        if (slot < 0)
+        {
+            DebugLog("No free slot, skipping spawn request");
+            return;
+        }
+        if (orderSystem != null && spawnedCount >= orderSystem.ordersPerLevel)
+        {
+            DebugLog("Every order of the day has a customer already");
             return;
         }
 
         var customerPrefab = SelectCustomerForLevel(currentLevelIndex);
         if (customerPrefab != null)
-            SpawnCustomer(customerPrefab);
+            SpawnCustomer(customerPrefab, slot);
         else
             Debug.LogError($"No customer available for level {currentLevelIndex + 1}");
     }
 
-    public void HandleOrderServed(bool perfect)
+    public void HandleOrderServed(CustomerController customer, bool perfect)
     {
-        if (currentCustomer != null)
+        if (customer == null) customer = FirstCustomer();
+        if (customer != null)
         {
-            // CLEANED: In your system, this should always be true (orders always completed correctly)
-            DebugLog($"Order served perfectly - notifying customer");
-            currentCustomer.OnOrderServed(perfect); // Always true in your system
+            DebugLog($"Order served - notifying {customer.name}");
+            customer.OnOrderServed(perfect);
         }
-        else
-        {
-            Debug.LogWarning("HandleOrderServed called but no current customer!");
-        }
+        else Debug.LogWarning("HandleOrderServed called but no customer!");
     }
 
-    public void HandleOrderExpired()
+    public void HandleOrderExpired(CustomerController customer)
     {
-        if (currentCustomer != null)
+        if (customer == null) customer = FirstCustomer();
+        if (customer != null)
         {
-            DebugLog("Order expired - customer leaving disappointed");
-            currentCustomer.OnOrderExpired();
+            DebugLog($"Order expired - {customer.name} leaving disappointed");
+            customer.OnOrderExpired();
         }
-        else
-        {
-            Debug.LogWarning("HandleOrderExpired called but no current customer!");
-        }
+        else Debug.LogWarning("HandleOrderExpired called but no customer!");
+    }
+
+    // Old single-customer entry points
+    public void HandleOrderServed(bool perfect) => HandleOrderServed(null, perfect);
+    public void HandleOrderExpired() => HandleOrderExpired(null);
+
+    private CustomerController FirstCustomer()
+    {
+        foreach (var c in slots) if (c != null) return c;
+        return null;
     }
 
     public void OnLevelLoaded(int levelIndex)
@@ -160,12 +205,12 @@ public class CustomerManager : MonoBehaviour
         currentLevelIndex = levelIndex;
 
         StopSpawnCoroutines();
-
-        if (currentCustomer != null)
+        for (var i = 0; i < slots.Length; i++)
         {
-            Destroy(currentCustomer.gameObject);
-            currentCustomer = null;
+            if (slots[i] != null) Destroy(slots[i].gameObject);
+            slots[i] = null;
         }
+        spawnedCount = 0;
 
         // LevelManager applies LevelData.minOrderItems to OrderSystem before calling this - capture it as the baseline
         if (orderSystem != null)
@@ -175,111 +220,65 @@ public class CustomerManager : MonoBehaviour
             DebugLog($"Captured level baseline minOrderItems = {levelMinOrderItems}, orderDisplayTime = {levelOrderDisplayTime}");
         }
 
-        isProcessingCustomer = false;
-        hasOrderBeenGenerated = false;
         DebugLog($"CustomerManager ready for level {levelIndex + 1}");
     }
 
     public void OnCustomerReachedService(CustomerController customer)
     {
-        if (customer == currentCustomer)
-        {
-            DebugLog($"{customer.name} reached service point, starting order delay");
+        if (customer == null || System.Array.IndexOf(slots, customer) < 0) return;
+        DebugLog($"{customer.name} reached service point (slot {customer.Slot}), starting order delay");
 
-            // Apply this customer's min order size to OrderSystem: never below the level's own minimum,
-            // and clamped to the level's maxOrderItems (e.g. KidCustomer wants 4 on a level with max 2)
-            if (orderSystem != null)
-            {
-                var baseline = levelMinOrderItems >= 0 ? levelMinOrderItems : orderSystem.minOrderItems;
-                var clampedMin = ClampMinOrderItems(Mathf.Max(baseline + customer.ExtraOrderItems, customer.MinOrderItems));
-                orderSystem.minOrderItems = clampedMin;
+        if (levelMinOrderItems < 0 && orderSystem != null) levelMinOrderItems = orderSystem.minOrderItems;
+        if (levelOrderDisplayTime < 0f && orderSystem != null) levelOrderDisplayTime = orderSystem.orderDisplayTime;
 
-                // Patient or hurried customers change how long their order stays open
-                if (levelOrderDisplayTime < 0f) levelOrderDisplayTime = orderSystem.orderDisplayTime;
-                // Decorations on the table add a second each (patience system, 12 October 2026); the daisy shows
-                // one petal per whole second, falling at the customer's own pace
-                var patience = levelOrderDisplayTime + PatienceDecor.BonusSeconds();
-                orderSystem.orderDisplayTime = patience * customer.OrderTimeMultiplier;
-                orderSystem.patiencePetals = Mathf.Max(1, Mathf.RoundToInt(patience));
-                DebugLog($"Set minOrderItems to {clampedMin} for {customer.name} (customer wants {customer.MinOrderItems}, level min {baseline}, level max {orderSystem.maxOrderItems})");
-            }
+        // This customer's order: never below the level's own minimum, clamped to the level's maximum
+        var minItems = ClampMinOrderItems(Mathf.Max(levelMinOrderItems + customer.ExtraOrderItems, customer.MinOrderItems));
+        // Decorations on the table add a second each (patience system); the daisy shows one petal per whole
+        // second, falling at the customer's own pace (patient or hurried customers)
+        var patience = levelOrderDisplayTime + PatienceDecor.BonusSeconds();
+        var displayTime = patience * customer.OrderTimeMultiplier;
+        var petals = Mathf.Max(1, Mathf.RoundToInt(patience));
+        DebugLog($"{customer.name}: min items {minItems}, time {displayTime:F1}s, tip x{customer.TipMultiplier}");
 
-            // Apply this customer's tip multiplier to ScoreManager
-            if (scoreManager != null)
-            {
-                scoreManager.SetCurrentTipMultiplier(customer.TipMultiplier);
-                DebugLog($"Set tip multiplier to {customer.TipMultiplier}x for {customer.name}");
-            }
+        orderDelayCoroutines.Add(StartCoroutine(HandleCustomerOrderDelay(customer, minItems, displayTime, customer.TipMultiplier, petals)));
 
-            customerOrderDelayCoroutine = StartCoroutine(HandleCustomerOrderDelay(customer));
-        }
+        // Two slots: the next customer sets off a little later, while this one is being served
+        if (MaxSlots > 1) ScheduleSpawn(secondCustomerDelay);
     }
 
     public void OnCustomerExited(CustomerController customer)
     {
-        if (customer == currentCustomer)
+        var slot = System.Array.IndexOf(slots, customer);
+        if (slot < 0)
         {
-            DebugLog($"{customer.name} has exited");
-            currentCustomer = null;
-            isProcessingCustomer = false;
-            hasOrderBeenGenerated = false; // Reset for next customer
-
-            OnCustomerCompleted?.Invoke(customer);
-            DebugLog("Customer exited - checking if we should spawn next customer");
-
-            // FIXED: Check if we need to spawn the next customer
-            CheckForNextCustomer();
-        }
-        else
-        {
-            DebugLog($"Customer {customer.name} exited but was not current customer");
-        }
-    }
-
-    // NEW: Check if we should spawn the next customer
-    private void CheckForNextCustomer()
-    {
-        if (orderSystem == null)
-        {
-            Debug.LogError("OrderSystem reference missing!");
+            DebugLog($"Customer {customer.name} exited but was not in a slot");
             return;
         }
+        DebugLog($"{customer.name} has exited (slot {slot})");
+        slots[slot] = null;
+        OnCustomerCompleted?.Invoke(customer);
 
-        // Disabled (e.g. level complete) - the last customer just left, do not spawn another
         if (!enabled)
         {
             DebugLog("CustomerManager is disabled - not spawning next customer");
             return;
         }
-
-        // Wait a bit, then spawn next customer
-        DebugLog("Waiting before spawning next customer");
-        if (nextCustomerSpawnCoroutine != null) StopCoroutine(nextCustomerSpawnCoroutine);
-        nextCustomerSpawnCoroutine = StartCoroutine(DelayedNextCustomerSpawn());
+        ScheduleSpawn(nextCustomerSpawnDelay);
     }
 
-    // NEW: Delayed spawning of next customer
-    private IEnumerator DelayedNextCustomerSpawn()
+    private void ScheduleSpawn(float delay)
     {
-        // Wait 2 seconds before spawning next customer
-        yield return new WaitForSeconds(nextCustomerSpawnDelay);
+        if (!enabled || orderSystem == null) return;
+        if (nextCustomerSpawnCoroutine != null) StopCoroutine(nextCustomerSpawnCoroutine);
+        nextCustomerSpawnCoroutine = StartCoroutine(DelayedNextCustomerSpawn(delay));
+    }
 
+    private IEnumerator DelayedNextCustomerSpawn(float delay)
+    {
+        yield return new WaitForSeconds(delay);
         nextCustomerSpawnCoroutine = null;
-
-        // Check if we should still spawn (enabled, and no current customer)
-        if (!enabled)
-        {
-            DebugLog("Not spawning next customer - CustomerManager is disabled");
-        }
-        else if (currentCustomer == null)
-        {
-            DebugLog("Spawning next customer after delay");
-            SpawnCustomerForCurrentLevel();
-        }
-        else
-        {
-            DebugLog("Not spawning next customer - customer already exists");
-        }
+        if (!enabled) { DebugLog("Not spawning next customer - CustomerManager is disabled"); yield break; }
+        SpawnCustomerForCurrentLevel();
     }
 
     private CustomerController SelectCustomerForLevel(int levelIndex)
@@ -321,7 +320,7 @@ public class CustomerManager : MonoBehaviour
         return selected;
     }
 
-    private void SpawnCustomer(CustomerController customerPrefab)
+    private void SpawnCustomer(CustomerController customerPrefab, int slot)
     {
         if (spawnPoint == null)
         {
@@ -329,71 +328,41 @@ public class CustomerManager : MonoBehaviour
             return;
         }
 
-        // Restore the level's own minimum (NOT a hard-coded 1, which silently overrode LevelData.minOrderItems).
-        // A customer-specific minimum is applied later in OnCustomerReachedService.
-        if (orderSystem != null)
-        {
-            if (levelMinOrderItems < 0) levelMinOrderItems = orderSystem.minOrderItems; // first spawn without OnLevelLoaded
-            orderSystem.minOrderItems = ClampMinOrderItems(levelMinOrderItems);
-            if (levelOrderDisplayTime < 0f) levelOrderDisplayTime = orderSystem.orderDisplayTime;
-            orderSystem.orderDisplayTime = levelOrderDisplayTime;
-        }
-
         if (scoreManager != null) scoreManager.SetCurrentTipMultiplier(1.0f);
-        currentCustomer = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation);
-        isProcessingCustomer = true;
-        hasOrderBeenGenerated = false; // Reset for new customer
+        var spot = Spot(slot);
+        var customer = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation, spot);
+        customer.Slot = slot;
+        if (MaxSlots > 1) customer.transform.localScale *= twoSlotCustomerScale;
+        slots[slot] = customer;
+        spawnedCount++;
 
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayCustomerWalkIn();
 
-        DebugLog($"Spawned {currentCustomer.name} at {spawnPoint.position}");
-        OnCustomerSpawned?.Invoke(currentCustomer);
+        DebugLog($"Spawned {customer.name} in slot {slot} ({spawnedCount}/{(orderSystem != null ? orderSystem.ordersPerLevel : 0)})");
+        OnCustomerSpawned?.Invoke(customer);
     }
 
-    private IEnumerator HandleCustomerOrderDelay(CustomerController customer)
+    private IEnumerator HandleCustomerOrderDelay(CustomerController customer, int minItems, float displayTime, float tipMultiplier, int petals)
     {
-        // CRITICAL FIX: Check if order already generated to prevent duplicates
-        if (hasOrderBeenGenerated)
-        {
-            DebugLog($"Order already generated for {customer.name} - skipping duplicate generation", true);
-            yield break;
-        }
-
         var delay = customer.OrderDelay;
         DebugLog($"Waiting {delay}s before generating order for {customer.name}");
-
         yield return new WaitForSeconds(delay);
 
-        // CRITICAL FIX: Double-check before generating order
-        if (hasOrderBeenGenerated)
+        // Still here (not destroyed by a level change) and still in its slot
+        if (customer == null || System.Array.IndexOf(slots, customer) < 0)
         {
-            DebugLog($"Order was generated while waiting for {customer.name} - aborting", true);
+            DebugLog("Customer gone before its order - aborting order generation");
             yield break;
         }
-
-        // Check if customer is still current and valid
-        if (customer != currentCustomer || currentCustomer == null)
-        {
-            DebugLog($"Customer {customer.name} is no longer current customer - aborting order generation");
-            yield break;
-        }
-
-        // Set flag to prevent duplicate generation
-        hasOrderBeenGenerated = true;
-        customerOrderDelayCoroutine = null;
 
         if (orderSystem != null)
         {
-            DebugLog("Customer delay complete - requesting order generation");
-            orderSystem.StartOrderCycleForCustomer();
+            DebugLog("Customer delay complete - opening the order");
+            orderSystem.StartOrderForCustomer(customer, customer.Slot, minItems, displayTime, tipMultiplier, petals);
             customer.OnOrderGenerated();
         }
-        else
-        {
-            Debug.LogError("OrderSystem reference missing!");
-            hasOrderBeenGenerated = false; // Reset flag on error
-        }
+        else Debug.LogError("OrderSystem reference missing!");
     }
 
     private void ValidateSetup()
@@ -436,41 +405,27 @@ public class CustomerManager : MonoBehaviour
         }
     }
 
-    // Public getters for debugging
-    public CustomerController GetCurrentCustomer()
-    {
-        return currentCustomer;
-    }
+    // Public getters for debugging and the tutorial
+    public CustomerController GetCurrentCustomer() => FirstCustomer();
 
-    public bool IsProcessingCustomer()
-    {
-        return isProcessingCustomer && currentCustomer != null;
-    }
+    public bool IsProcessingCustomer() => FirstCustomer() != null;
 
+    /// True when any customer stands at the counter
     public bool HasCustomerAtService()
     {
-        return currentCustomer != null && currentCustomer.HasReachedServicePoint();
+        foreach (var c in slots) if (c != null && c.HasReachedServicePoint()) return true;
+        return false;
     }
 
-    public bool HasOrderBeenGenerated()
-    {
-        return hasOrderBeenGenerated;
-    }
+    public bool HasOrderBeenGenerated() => orderSystem != null && orderSystem.IsOrderActive();
 
     [ContextMenu("Debug Customer Manager State")]
     public void DebugCustomerManagerState()
     {
         Debug.Log($"=== CUSTOMER MANAGER STATE ===");
-        Debug.Log($"Current Customer: {(currentCustomer != null ? currentCustomer.name : "None")}");
-        Debug.Log($"Is Processing: {isProcessingCustomer}");
-        Debug.Log($"Order Generated: {hasOrderBeenGenerated}");
-        Debug.Log($"Current Level: {currentLevelIndex + 1}");
-        if (currentCustomer != null)
-        {
-            Debug.Log($"Customer at Service: {currentCustomer.HasReachedServicePoint()}");
-            Debug.Log($"Customer Waiting: {currentCustomer.IsWaitingForOrder()}");
-        }
-
+        for (var i = 0; i < slots.Length; i++)
+            Debug.Log($"Slot {i}: {(slots[i] != null ? slots[i].name : "None")}{(slots[i] != null && slots[i].HasReachedServicePoint() ? " at service" : "")}");
+        Debug.Log($"Spawned: {spawnedCount}, Current Level: {currentLevelIndex + 1}");
         Debug.Log($"=============================");
     }
 }

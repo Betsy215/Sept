@@ -23,6 +23,9 @@ public abstract class CustomerController : MonoBehaviour
     // CRITICAL: Prevent multiple walk-out attempts
     protected bool hasProcessedOrder = false;
 
+    /// Which counter slot this customer stands in (0 right, 1 left), set by CustomerManager (12 October 2026)
+    [System.NonSerialized] public int Slot;
+
     [Header("Order Sounds")] public AudioClip perfectOrderSound; // plays when order completed with time bonus
     public AudioClip orderDoneSound;
 

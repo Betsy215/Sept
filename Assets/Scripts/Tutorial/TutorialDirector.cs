@@ -62,6 +62,7 @@ public class TutorialDirector : MonoBehaviour
         phaseManager = gpm;
         orderSystem = os;
         customerManager = cm;
+        if (os != null) os.maxConcurrentOrders = 1;   // the demo is one customer at the scene's place
         ReplayRequested = false;
         if (lm != null && lm.levelInfoText != null) lm.levelInfoText.text = "Day 0";   // the tutorial is day 0, not counted
         BuildUi();

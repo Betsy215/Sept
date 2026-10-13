@@ -12,30 +12,35 @@ public class PatienceMeter : MonoBehaviour
     const float PetalRadius = 0.30f;      // centre of each petal from the daisy centre, world units
     const float FallSeconds = 0.7f;
 
-    static PatienceMeter current;
+    static readonly Dictionary<OrderSystem.ActiveOrder, PatienceMeter> meters = new Dictionary<OrderSystem.ActiveOrder, PatienceMeter>();
     static Sprite petalSprite, centreSprite;
 
-    OrderSystem orderSystem;
+    OrderSystem.ActiveOrder order;
     int petals;
     readonly List<SpriteRenderer> petalRenderers = new List<SpriteRenderer>();
     readonly List<float> fallStart = new List<float>();     // Time.time a petal started falling, or -1
     SpriteRenderer centre;
 
-    public static void Show(OrderSystem system, int petalCount)
+    /// One daisy per open order, at the given world position (each slot's bubble root decides where)
+    public static void Show(OrderSystem.ActiveOrder order, Vector3 position)
     {
-        Hide();
-        if (petalCount < 1) petalCount = 1;
-        var go = new GameObject("PatienceMeter");
-        go.transform.position = WorldPosition;
-        current = go.AddComponent<PatienceMeter>();
-        current.orderSystem = system;
-        current.Build(Mathf.Min(petalCount, 12));
+        Hide(order);
+        var petalCount = Mathf.Clamp(order.petals > 0 ? order.petals : Mathf.RoundToInt(order.displayTime), 1, 12);
+        var go = new GameObject("PatienceMeter" + order.slot);
+        go.transform.position = position;
+        var m = go.AddComponent<PatienceMeter>();
+        m.order = order;
+        m.Build(petalCount);
+        meters[order] = m;
     }
 
-    public static void Hide()
+    public static void Hide(OrderSystem.ActiveOrder order)
     {
-        if (current != null) Destroy(current.gameObject);
-        current = null;
+        if (order != null && meters.TryGetValue(order, out var m))
+        {
+            if (m != null) Destroy(m.gameObject);
+            meters.Remove(order);
+        }
     }
 
     void Build(int count)
@@ -62,9 +67,9 @@ public class PatienceMeter : MonoBehaviour
 
     void Update()
     {
-        if (orderSystem == null || !orderSystem.OrderActive) return;
-        var total = Mathf.Max(orderSystem.TotalTime, 0.01f);
-        var f = Mathf.Clamp01(orderSystem.RemainingTime / total);      // share of patience left
+        if (order == null || !order.active) return;
+        var total = Mathf.Max(order.displayTime, 0.01f);
+        var f = Mathf.Clamp01(order.timer / total);                     // share of patience left
         var alive = f * petals;                                         // petals still on, fractional
         for (var i = 0; i < petals; i++)
         {

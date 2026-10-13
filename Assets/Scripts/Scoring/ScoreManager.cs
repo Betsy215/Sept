@@ -153,6 +153,29 @@ public class ScoreManager : MonoBehaviour
         PlayPointsSound();
     }
 
+    /// Points of one served item, also added to the level score (two customers: each order keeps its own total)
+    public float AwardItemPointsValue(string itemType)
+    {
+        var points = GetPointsForItem(itemType);
+        AwardItemPoints(itemType);
+        return points;
+    }
+
+    /// Completion bonus for one order: its own points, time left and customer tip multiplier (12 October 2026)
+    public void AwardOrderCompletionBonus(float remainingTime, float basepoints, float tipMultiplier)
+    {
+        currentTipMultiplier = tipMultiplier;
+        currentOrderItemPoints = basepoints;
+        AwardOrderCompletionBonus(remainingTime, basepoints);
+    }
+
+    /// Expiry of one order: the points of what it got are still paid, no tip
+    public void ApplyOrderExpiredPenalty(float pointsServed)
+    {
+        currentOrderItemPoints = pointsServed;
+        ApplyOrderExpiredPenalty();
+    }
+
     public void AwardOrderCompletionBonus(float remainingTime, float basepoints)
     {
         var timeBonusPoints = remainingTime * timeBonusMultiplier;
