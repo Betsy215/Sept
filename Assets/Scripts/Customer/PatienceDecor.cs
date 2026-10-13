@@ -11,8 +11,8 @@ public static class PatienceDecor
     // key, sprite, world position, scale (sprites are 680 px at 100 px per unit)
     static readonly (string key, string sprite, Vector3 pos, float scale)[] Items =
     {
-        ("Decor_Vase", "Decor/vase", new Vector3(-1.85f, -0.75f, 0f), 0.184f),
-        ("Decor_Bouquet", "Decor/bouquet", new Vector3(1.8f, -0.6f, 0f), 0.213f),
+        ("Decor_Vase", "Decor/vase", new Vector3(-2.05f, -0.45f, 0f), 0.16f),
+        ("Decor_Bouquet", "Decor/bouquet", new Vector3(1.95f, -0.45f, 0f), 0.18f),   // inside a 19.5:9 screen, clear of the Apple and Choux slots
     };
 
     public static bool Owned(string key)

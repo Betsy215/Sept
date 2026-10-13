@@ -61,7 +61,7 @@ public class MapScreen : MonoBehaviour
         var scaler = go.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1080, 1920);
-        scaler.matchWidthOrHeight = 0f; // keep the width; taller phones get more background top and bottom
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand; // never smaller than 1080 x 1920 in either axis: on an iPad the title and the coins pill stayed clear of the days (review, 12 October)
         canvasRect = go.GetComponent<RectTransform>();
 
         // Background: the night shop, covering the screen
@@ -144,7 +144,7 @@ public class MapScreen : MonoBehaviour
             var h = 120f; var w = h * truckSprite.rect.width / truckSprite.rect.height;
             // beside today's star; above day 16 once the chapter is done (to its right it would cover day 11)
             var offset = allDone ? new Vector2(0f, 110f)
-                : at.x < 400f ? new Vector2(44f + w / 2f, -80f)
+                : at.x < 370f ? new Vector2(44f + w / 2f, -80f)   // 370: with the 1.15 map, day 4 at x 387 clipped the truck on the right
                 : new Vector2(540f - 10f - w / 2f - at.x, -140f); // day 5 sits near the right edge: tuck the truck below it
             Place(truck.rectTransform, at + offset, new Vector2(w, h));
             truck.raycastTarget = false;

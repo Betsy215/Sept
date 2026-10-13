@@ -40,5 +40,7 @@ public static class KitchenButtonOverTable
         rt.anchorMin = anchorMin; rt.anchorMax = anchorMax; rt.sizeDelta = size; rt.pivot = pivot;
         // anchored to the left middle: y 0 is the cloth's top edge; bottom third of the button below it
         rt.anchoredPosition = new Vector2(anchored.x, size.y * (0.5f - OverlapShare));
+        var wobble = button.GetComponent<BalatroWobble>();   // it writes its rest position every frame
+        if (wobble != null) wobble.Rebase();
     }
 }

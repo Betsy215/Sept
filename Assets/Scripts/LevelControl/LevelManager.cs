@@ -318,9 +318,14 @@ public class LevelManager : MonoBehaviour
         return false;
     }
 
+    // A Restart keeps the pay rate of the run it restarts: a first play restarted from the finish board is still a
+    // first play (levelsCompleted was already bumped by then). Set by RestartLevel, used once by LoadLevel.
+    private static float restartPayFactor = -1f;
+
     public void RestartLevel()
     {
         Debug.Log("RestartLevel called");
+        if (scoreManager != null) restartPayFactor = scoreManager.payFactor;
 
         // Universal restart method - handles both pause and level complete cases
         Time.timeScale = 1f;
@@ -380,7 +385,9 @@ public class LevelManager : MonoBehaviour
             currentLevelIndex = levelIndex;
             currentLevelData = allLevels[levelIndex];
             // A day already finished pays half its order money on a replay (stars and the three-star bonus are unchanged)
-            scoreManager.payFactor = SessionManager.Instance != null && levelIndex < SessionManager.Instance.GetLevelsCompleted() ? ReplayPayFactor : 1f;
+            scoreManager.payFactor = restartPayFactor > 0f ? restartPayFactor
+                : SessionManager.Instance != null && levelIndex < SessionManager.Instance.GetLevelsCompleted() ? ReplayPayFactor : 1f;
+            restartPayFactor = -1f;
             scoreManager.starProgressBar.Initialize(currentLevelData);
             ApplyLevelSettings();
             StartLevel();

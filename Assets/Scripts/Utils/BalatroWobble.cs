@@ -37,6 +37,13 @@ public class BalatroWobble : MonoBehaviour
     // Wrap threshold — keeps _timeCounter small to avoid float precision loss
     private const float TIME_WRAP = 1000f;
 
+    /// Takes the current anchored position as the new rest position (KitchenButtonOverTable moves the button after Awake)
+    public void Rebase()
+    {
+        if (_rectTransform == null) _rectTransform = GetComponent<RectTransform>();
+        _initialAnchoredPosition = _rectTransform.anchoredPosition;
+    }
+
     private void Awake()
     {
         _rectTransform = GetComponent<RectTransform>();

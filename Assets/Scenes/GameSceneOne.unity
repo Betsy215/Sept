@@ -1956,7 +1956,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: a101439079ba4050a3d831b09a031f1e, type: 3}
   - {fileID: 21300000, guid: bd5918b883494ecfac5f3afe4568f454, type: 3}
   - {fileID: 21300000, guid: bae750bfa85b4dcd8ea4964c7efa7fcb, type: 3}
-  - {fileID: 21300000, guid: bb670d1bb92294ed7bf3f721bdf9d4e7, type: 3}
 --- !u!1 &592377076
 GameObject:
   m_ObjectHideFlags: 0
@@ -6777,6 +6776,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 199596646}
+  - {fileID: 1900000103}
   - {fileID: 1907019808}
   - {fileID: 1669864949}
   - {fileID: 1073917564}
