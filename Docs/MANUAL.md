@@ -25,7 +25,9 @@ day ends), patience as three daisies per order (each serve brings one back), the
 three-star bonus, replays at half pay), Daily Treats, the hen money board and flower pots on a picnic cloth, the
 owner's kitchen art on the table, Cookies held back for a later release.
 
-Business (9 October): 55 lifetime downloads, all from App Store search, ads earn cents. Stay free; work on the
+Business (9 October): 55 lifetime downloads, all from App Store search, ads earn cents. Unity Ads (checked 14 October,
+dashboard project 568be95c, game id 6074412): `Interstitial_iOS` and `Rewarded_iOS` are active and serving; no payout
+profile yet. Stay free; work on the
 store page and marketing before more content. Re-read the numbers in November.
 
 ## 2. The owner's rules

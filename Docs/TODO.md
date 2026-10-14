@@ -57,8 +57,6 @@ Full chapter played by `Docs/tools/autoplay/driver.py` at 1.5x, one action a sec
 - [ ] Unity Ads payout profile; merge Unity's SKAdNetwork id list into `IOSPostBuild.cs`.
 - [ ] Paid Apps Agreement, bank and tax (only before a purchase); Remove Ads (later); interstitial frequency once
   retention data exists.
-- [ ] Confirm the `Interstitial_iOS` ad unit on the Unity Ads dashboard (14 October: cloud.unity.com rendered blank from the automated browser, a script error after the cookie banner; retry or the owner looks) and test the ad on a device (offline the
-  Shop must open with no delay).
 
 ## Leave alone (owner's decision, 7 October 2026)
 
