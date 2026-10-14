@@ -265,6 +265,22 @@ public class OrderSystem : MonoBehaviour
         slots[1].root.localScale = Vector3.one * k;
     }
 
+    /// The bubble sits over its customer: centred on the customer, its bottom just above the head, whatever the
+    /// customer's height or the bubble's size (owner, 13 October). With two slots the whole set (bubble, icons) moves.
+    [Tooltip("Gap between the customer's head and the bubble's bottom edge, world units")]
+    public float bubbleGapAboveHead = 0.05f;
+    private void PlaceBubbleOverCustomer(SlotVisuals s, CustomerController customer)
+    {
+        if (customer == null || maxConcurrentOrders <= 1) return;
+        var b = s.bubble1 != null && s.bubble1.activeSelf ? s.bubble1 : s.bubble2 != null && s.bubble2.activeSelf ? s.bubble2 : s.bubble4;
+        var br = b != null ? b.GetComponentInChildren<Renderer>() : null;
+        var cr = customer.GetComponentInChildren<SpriteRenderer>();
+        if (br == null || cr == null) return;
+        var cb = cr.bounds; var bb = br.bounds;
+        var delta = new Vector3(cb.center.x - bb.center.x, cb.max.y + bubbleGapAboveHead - bb.min.y, 0f);
+        s.root.position += delta;
+    }
+
     /// The patience flowers sit centred over whichever bubble is showing, on its top edge, whatever its size
     /// (owner, 13 October). Falls back to the fixed offset when the bubble has no renderer.
     private Vector3 MeterPosition(SlotVisuals s)
@@ -385,6 +401,7 @@ public class OrderSystem : MonoBehaviour
 
         orders.Add(order);
         SetBubble(s, order.items.Count);
+        PlaceBubbleOverCustomer(s, customer);
         if (orderTitleText != null) orderTitleText.text = "Order:";
         PatienceMeter.Show(order, MeterPosition(s));
         Debug.Log($"New order in slot {slot} with {order.items.Count} items, timer {order.timer:F1}s, tip x{tipMultiplier}");

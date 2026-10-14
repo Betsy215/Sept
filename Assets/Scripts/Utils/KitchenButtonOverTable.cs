@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// and scaler, and is lowered so its bottom third overlaps the cloth's top edge (canvas y 0 = screen middle = cloth top).
 public static class KitchenButtonOverTable
 {
-    const float OverlapShare = 1f / 3f;
+    const float OverlapShare = 0.45f;   // was a third; a little lower (owner, 13 October)
 
     public static void Setup()
     {

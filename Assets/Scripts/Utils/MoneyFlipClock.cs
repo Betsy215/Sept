@@ -10,7 +10,7 @@ using UnityEngine;
 /// on 13 October: the flipping looked odd.)
 public class MoneyFlipClock : MonoBehaviour
 {
-    public static Vector3 Position = new Vector3(-0.12f, 0.09f, 0f);   // just right of the truck button, its bottom on the truck's line (owner, 13 October)
+    public static Vector3 Position = new Vector3(-0.12f, -0.02f, 0f);  // just right of the truck button, its bottom on the truck's line, a little lower (owner, 13 October)
     public const float Width = 1.15f, Height = 0.5f;                  // world units, the fallback board; the truck button is about 1.0 x 0.6
     public const float HenScale = 0.5f;                               // the owner's 236 x 222 hen (her kitchen layer export, 2x) at 100 px per unit: 1.18 x 1.11 units
 
@@ -45,7 +45,7 @@ public class MoneyFlipClock : MonoBehaviour
         {
             var h = new GameObject("Hen");
             h.transform.SetParent(transform, false);
-            h.transform.localScale = new Vector3(HenScale * 1.0f, HenScale * 0.6f, 1f);   // 1.18 x 0.67 units: the truck's height, a little longer (owner, 13 October)
+            h.transform.localScale = new Vector3(HenScale * 0.75f, HenScale * 0.6f, 1f);   // 0.89 x 0.67 units: the truck's height, a quarter shorter again (owner, 13 October)
             var hsr = h.AddComponent<SpriteRenderer>(); hsr.sprite = hen; hsr.sortingOrder = 1;
         }
         else
@@ -60,12 +60,13 @@ public class MoneyFlipClock : MonoBehaviour
         g.transform.localPosition = numberPos;
         money = g.AddComponent<TextMeshPro>();
         if (font != null) money.font = font;
-        money.fontSize = 1.9f;
-        money.characterSpacing = 6f;
-        money.color = new Color(0.27f, 0.15f, 0.05f);
+        // the number in the filled star's yellow with a dark brown outline (owner, 13 October)
+        money.fontSize = 1.7f;
+        money.characterSpacing = 5f;
+        money.color = new Color(1f, 0.78f, 0.3f);
         money.fontMaterial = new Material(money.fontSharedMaterial);
-        money.fontMaterial.SetFloat("_OutlineWidth", 0.22f);
-        money.fontMaterial.SetColor("_OutlineColor", new Color(0.99f, 0.96f, 0.9f));
+        money.fontMaterial.SetFloat("_OutlineWidth", 0.25f);
+        money.fontMaterial.SetColor("_OutlineColor", new Color(0.27f, 0.15f, 0.05f));
         money.fontMaterial.DisableKeyword("UNDERLAY_ON");
         money.alignment = TextAlignmentOptions.Center;
         money.rectTransform.sizeDelta = new Vector2(1.2f, 0.36f);
