@@ -20,9 +20,9 @@ MonoBehaviour:
   dayDurationSeconds: 50
   minOrderItems: 2
   maxOrderItems: 4
-  starThreshold1: 510
-  starThreshold2: 760
-  starThreshold3: 1020
+  starThreshold1: 230
+  starThreshold2: 430
+  starThreshold3: 620
   maxPossibleScore: 50
   backgroundSprite: {fileID: 0}
   useSpecificFoodTypes: 0

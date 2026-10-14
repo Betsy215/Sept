@@ -1,6 +1,6 @@
 // buy the first affordable item in the natural order through the real shop popup
 var shop = UnityEngine.Object.FindObjectOfType<ShopManager>(); if (shop == null) return "B|noshop";
-var order = new[]{"Juice","Grandma","Chef","Choux","Cake","Yoga","Businessman","CoffeeMachine","Coffee","Apple"};
+var order = new[]{"Juice","Grandma","Chef","Choux","Cake","Yoga","Businessman","CoffeeMachine","Coffee","Apple","Cookies"};
 var cards = UnityEngine.Object.FindObjectsOfType<ShopItemController>();
 var sm = SessionManager.Instance;
 foreach (var name in order) foreach (var c in cards) {

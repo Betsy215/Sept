@@ -27,24 +27,17 @@ Current open work, as of 13 October 2026 (night). Done items are removed; the da
   redo (flat napkin, no pink cut face). About three pictures a day on the free plan.
 - [ ] **Choux board stretch** to the 40-degree look (`Store/artkit/choux_board5.py`, K = 1.52, parked).
 - [ ] **Cookies** back in (MANUAL section 6, "Held back").
-- [ ] **Economy tune** (owner's call, see below).
 - [ ] Fold the 13 October night fixes (commit 4cad84d) into the next build.
 
-## Economy findings (13 October play test, not acted on)
+## Economy (tuned 14 October 2026)
 
-Full chapter played by `Docs/tools/autoplay/driver.py` at 1.5x, one action a second, never letting an order expire
-(a fast, perfect player). Per-day numbers: `Docs/tools/autoplay/run_2026-10-13_days.tsv`.
-
-- Daily earnings 163, 231, 328, 388, 474, 1013, 848, 832, 665, 866, 1029, 885, 1110, 1127, 1072, 935; about $11,960
-  in all. Stars 1 to 2 every day; **three stars on no day**. Earnings were 56 to 99 % of the three-star line, median
-  about 75 %.
-- Why: days are timed and a customer sets off every 5 s, so income is capped by arrivals, not by skill. The
-  thresholds came from the older order-count model at 60 % patience left.
-- **The whole shop was bought by day 9.** Days 10 to 16 have nothing to buy; the wallet ended at $7,214.
-- Suggestion: three stars at about 0.8x today's line, two at 0.6x, one at 0.4x; add a late money sink (decorations,
-  Cookies, chapter 2 unlock price). Then re-run the driver to check that a good player gets three stars on most days.
-- `Docs/economy_sim.py` is out of date (still has Cookies in the shop, Vase/Lantern/Radio and no day clock). Update
-  it before tuning, or tune from the driver.
+The 13 October play test (a fast, perfect player through `Docs/tools/autoplay/driver.py`) reached three stars on no
+day and bought out the shop by day 9 (numbers in `Docs/tools/autoplay/run_2026-10-13_days.tsv`). On 14 October the
+star lines of all 16 days were reset from that run's earnings, smoothed over three days and never falling: 1 star at
+30 %, 2 at 55 %, 3 at 80 % of a perfect player's day (`Docs/tools/recipes/economy_tune.cs`; days 1 and 5 eased by
+hand). Check run (14 October): three stars on 14 of 16 days, two on days 1 and 5 before the easing. Cookies (600,
+fourth shop row, back since 14 October) are the late money sink for now; `Docs/economy_sim.py` is still the old
+model (Vase/Lantern/Radio, no day clock) and only worth updating if the tune needs more work.
 
 ## Later
 
