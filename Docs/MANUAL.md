@@ -4,7 +4,7 @@ Read this first in every session on this project. It is the current state: what 
 where things live, how the game works now, and how each recurring job is done. Dated change notes are in
 `Docs/history/` (the 12 to 13 October log and the pre-rewrite manual and TODO are there).
 
-Last updated 13 October 2026, night (rewritten after the 26.10.13 submission and a full-chapter play test).
+Last updated 14 October 2026, evening (menu book, economy tune, tutorial additions, test ads on TestFlight; chapter 2 parked).
 
 ## 1. State of the project
 
@@ -18,7 +18,7 @@ Last updated 13 October 2026, night (rewritten after the 26.10.13 submission and
 | Live | 26.10.09 build 4 (released by the owner 12 October 2026) |
 | In review | **26.10.13 build 4**, submitted 13 October 21:41 (review submission c3872ee1-f57e-4cf7-9346-1a2b55c831d0), release type Manual: after approval the owner presses Release. Version id 0abde827-2bd8-47e1-959e-c9f7d63d06a4 |
 | TestFlight | 26.10.13 builds 1 to 4 (4 = the submitted one). `ProjectSettings` is at 26.10.13 build 4 |
-| On main after build 4 | Fixes from the 13 October night review (finish board on replays, money rounding, hen next to the truck on iPad, tutorial arrow, held-back foods without a session). Not in any build yet; they go into the next version |
+| On main after build 4 | 13 October night fixes, and 14 October: the menu book (grid, oven notes, station caps), Cookies back as a buy, the economy tune, Day 0 coffee bags and fruit tree, the gingham order receipt and finish panel, real star shapes, test ads on TestFlight builds, chapter 2 groundwork. Not in any build yet |
 
 What 26.10.13 brings over 26.10.09: two customers at the counter at once, days on a clock (dusk and night as the
 day ends), patience as three daisies per order (each serve brings one back), the chapter map (16 days, stars,
