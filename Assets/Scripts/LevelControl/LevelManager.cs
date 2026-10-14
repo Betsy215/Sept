@@ -128,6 +128,10 @@ public class LevelManager : MonoBehaviour
         if (currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance))
             gameObject.AddComponent<TutorialDirector>().Begin(this, gamePhaseManager, orderSystem, customerManager);
 
+        // The menu book during the arrangement phase, on every normal day (owner, 14 October)
+        if (!(currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance)) && gamePhaseManager != null)
+            gameObject.AddComponent<MenuBook>().Begin(this, gamePhaseManager);
+
         // Evening and night over the last two customers; draws only on the background image
         if (orderSystem != null) gameObject.AddComponent<DayNightTint>().Begin(orderSystem);
 
