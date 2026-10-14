@@ -205,8 +205,11 @@ plain `python3` has no numpy. Make a new venv if the scratchpad is gone.
 ## 10. Open work
 
 See the report's Next and MVP and `Docs/TODO.md`. In short: watch the 26.10.13 review and answer anything Apple
-raises; after release, the next version: the table redesign at 40 degrees, the choux board stretch, Cookies, the
-economy tune (TODO has the play-test numbers: no player reaches 3 stars now), store text. Chapter 2 is parked.
+raises; after release, the next version. **Its goal (owner, 14 October): chapter 2, the beach** (days 17 to 32,
+ice cream; plan table in the report's Chapter 2 section and in TODO). Also: the table redesign at 40 degrees, the
+choux board stretch, Cookies, the economy tune (TODO has the play-test numbers: no player reaches 3 stars now),
+store text. New art follows the kitchen style: `Store/brushes/STYLE.md` rules 1 to 22 (third study 14 October),
+painter `Store/artkit/brush/ks2.py`; ice cream brief in `Store/chapter2/icecream`.
 
 ## 11. Keeping this manual current
 

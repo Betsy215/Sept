@@ -13,6 +13,13 @@ Current open work, as of 13 October 2026 (night). Done items are removed; the da
 
 ## Next version (MVP list in the report)
 
+- [ ] **Chapter 2, the beach (the goal of the next version, owner 14 October).** Art three ways (ChatGPT, Gemini, my
+  kitchen-style painting), the owner picks. Parts: beach background day/night (picked); table and Shop background
+  (owner's pick, sheets in `Store/chapter2/table`, `shop_bg`); ice cream cones/cups and a freezer well, coconut drink
+  (brief `Store/chapter2/icecream`; Gemini draft in, ChatGPT pending); Cookies; hibiscus patience flowers; a beach
+  map page (`MapScreen`, the locked arrow after day 16); days 17 to 32 (`Level17..24Data` exist, 8 more to make);
+  chapter number in the save; "Chapter 1 complete!" (`LevelManager` line ~698) leads on to chapter 2.
+
 - [ ] **Table redesign at the 40-degree camera** (approved 13 October): each item keeps its art and is repainted at
   the angle by ChatGPT. Briefs ready in `Store/redesign/ai/<item>/`: juice, choux, cookies, coffee cups, machine, cake
   redo (flat napkin, no pink cut face). About three pictures a day on the free plan.
@@ -44,7 +51,6 @@ Full chapter played by `Docs/tools/autoplay/driver.py` at 1.5x, one action a sec
 - [ ] Marketing: keyword work, an Apple Search Ads test, short-video clips, cozy-game communities, a featuring
   request. The TikTok account is the owner's to create.
 - [ ] Re-read downloads, retention and conversion in November, then decide on content.
-- [ ] Chapter 2 (beach): parked. Background picks in `Store/chapter2`; hibiscus patience flowers.
 - [ ] Country breakdown of downloads and ads into the report.
 - [ ] Unity Ads payout profile; merge Unity's SKAdNetwork id list into `IOSPostBuild.cs`.
 - [ ] Paid Apps Agreement, bank and tax (only before a purchase); Remove Ads (later); interstitial frequency once
