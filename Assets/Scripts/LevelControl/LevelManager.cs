@@ -79,7 +79,7 @@ public class LevelManager : MonoBehaviour
     public const float ReplayPayFactor = 0.5f;   // share of order money paid when a finished day is replayed (12 October 2026)
     public const int ThreeStarBonus = 100;   // paid once per day, the first time it gets three stars
     private int threeStarBonusPaid;
-    private int LastDayIndex => Mathf.Min(allLevels.Length, MapScreen.ChapterDays) - 1;
+    private int LastDayIndex => Mathf.Min(allLevels.Length, Chapter.TotalDays) - 1;
 
     private void Start()
     {
@@ -628,7 +628,7 @@ public class LevelManager : MonoBehaviour
 
         // Last day of the chapter: record the high score. The session stays active so every day
         // can still be replayed from the map (it used to end the game here).
-        if (currentLevelIndex >= LastDayIndex)
+        if (currentLevelIndex >= LastDayIndex || Chapter.IsLastDay(currentLevelIndex))
             finalRunIsNewRecord = SessionManager.Instance.CheckAndSaveHighScore();
 
         isLevelEnding = true;
@@ -681,7 +681,7 @@ public class LevelManager : MonoBehaviour
             totalScore - threeStarBonusPaid));
         if (threeStarBonusPaid > 0 && totalEarned != null) totalEarned.text = $"Earned: $ {totalScore:F2}";
 
-        var isLastLevel = currentLevelIndex >= LastDayIndex;
+        var isLastLevel = currentLevelIndex >= LastDayIndex || Chapter.IsLastDay(currentLevelIndex);
         if (isLastLevel)
         {
             yield return new WaitForSeconds(0.5f);
@@ -695,7 +695,7 @@ public class LevelManager : MonoBehaviour
         var isNewRecord = finalRunIsNewRecord; // decided and saved in OnLevelComplete
 
         if (todaySale != null)
-            todaySale.text = "\nCongrats!\nChapter 1 complete!";
+            todaySale.text = $"\nCongrats!\nChapter {Chapter.Of(currentLevelIndex)} complete!";
         todayTip.text = "";
         UpdateUnlockedItemsDisplay();
 
