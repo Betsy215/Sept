@@ -46,6 +46,8 @@ public class SessionData
     }
 
     public List<FoodItemPosition> savedFoodPositions;
+    // Where the player dragged each sticker on the menu paper (owner, 14 October 2026); null in older saves
+    public List<FoodItemPosition> menuStickerPositions;
 
     // Map (10 October): best stars per day (index = day - 1) and the days whose one-time
     // three-star bonus has been paid. Missing (null) in sessions saved before the map.
@@ -283,6 +285,27 @@ public class SessionManager : MonoBehaviour
         else { if (!CanDisableFood(foodType, out why)) { Debug.Log($"Menu book: cannot switch off {foodType}: {why}"); return false; } list.Remove(foodType); }
         SaveSession();
         return true;
+    }
+
+    /// A sticker's spot on the menu paper, if the player has moved it.
+    public bool TryGetMenuStickerSpot(string foodType, out Vector2 spot)
+    {
+        spot = Vector2.zero;
+        var list = currentSession != null ? currentSession.menuStickerPositions : null;
+        if (list == null) return false;
+        foreach (var p in list) if (p.foodType == foodType) { spot = new Vector2(p.x, p.y); return true; }
+        return false;
+    }
+
+    public void SetMenuStickerSpot(string foodType, Vector2 spot)
+    {
+        if (currentSession == null) return;
+        if (currentSession.menuStickerPositions == null) currentSession.menuStickerPositions = new List<SessionData.FoodItemPosition>();
+        var list = currentSession.menuStickerPositions;
+        var p = list.Find(e => e.foodType == foodType);
+        if (p == null) { p = new SessionData.FoodItemPosition(foodType, Vector3.zero); list.Add(p); }
+        p.x = spot.x; p.y = spot.y;
+        SaveSession();
     }
 
     #endregion

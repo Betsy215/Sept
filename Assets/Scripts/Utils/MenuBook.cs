@@ -296,7 +296,10 @@ public class MenuBook : MonoBehaviour
                 var y = 285f - row * 285f + (float)(rng.NextDouble() * 40 - 20);
                 var rot = (float)(rng.NextDouble() * 18 - 9);
                 var st = MakeSticker(food, board, StickerSize);
+                if (sm.TryGetMenuStickerSpot(food, out var spot)) { x = spot.x; y = spot.y; }   // where the player left it
                 st.anchoredPosition = new Vector2(x, y); st.localRotation = Quaternion.Euler(0, 0, rot);
+                st.gameObject.AddComponent<StickerDrag>().Init(this, food, board);
+                AddCross(st, food);
                 placed[food] = st;
                 if (food == hidden) st.GetComponent<Image>().color = new Color(1, 1, 1, 0);
             }
@@ -327,9 +330,24 @@ public class MenuBook : MonoBehaviour
         {
             var t = NewText("Name", rt, font, 36f, Brown); t.text = food; t.alignment = TextAlignmentOptions.Center; Stretch(t.rectTransform);
         }
-        img.gameObject.AddComponent<Button>().onClick.AddListener(() => OnStickerTapped(food, rt));
+        if (parent != board) img.gameObject.AddComponent<Button>().onClick.AddListener(() => OnStickerTapped(food, rt));
         img.gameObject.AddComponent<Wiggle>().phase = StableHash(food) % 628 / 100f;
         return rt;
+    }
+
+    /// A red cross on the sticker's corner (owner, 14 October: a quick way to take items off when the table is too
+    /// full). Tapping it peels the sticker off into the carousel.
+    private void AddCross(RectTransform sticker, string food)
+    {
+        var cross = NewImage("Remove", sticker, new Color(0.86f, 0.24f, 0.2f));
+        var spr = Resources.Load<Sprite>("UI/cross"); if (spr != null) { cross.sprite = spr; cross.color = Color.white; }
+        var crt = cross.rectTransform; crt.anchorMin = crt.anchorMax = new Vector2(1f, 1f); crt.pivot = new Vector2(0.5f, 0.5f);
+        crt.anchoredPosition = new Vector2(-34f, -34f); crt.sizeDelta = new Vector2(60f, 60f);
+        if (spr == null)
+        {
+            var t = NewText("X", crt, font, 46f, Color.white); t.text = "x"; t.alignment = TextAlignmentOptions.Center; Stretch(t.rectTransform);
+        }
+        cross.gameObject.AddComponent<Button>().onClick.AddListener(() => OnStickerTapped(food, sticker));
     }
 
     private RectTransform FindHome(string food, bool onPaper)
@@ -362,6 +380,36 @@ public class MenuBook : MonoBehaviour
     }
 
     #endregion
+
+    /// Drags a sticker around the paper (owner, 14 October: anywhere, overlapping is fine). It comes to the front, lifts
+    /// a little while held, and its spot is saved. A drag never counts as a tap, so it does not peel the sticker off.
+    public class StickerDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    {
+        private MenuBook book; private string food; private RectTransform rt, area;
+        public void Init(MenuBook b, string f, RectTransform board) { book = b; food = f; area = board; rt = (RectTransform)transform; }
+        public void OnBeginDrag(PointerEventData e) { if (book.busy) return; rt.SetAsLastSibling(); rt.localScale = Vector3.one * 1.08f; }
+        public void OnDrag(PointerEventData e)
+        {
+            if (book.busy) return;
+            rt.position += (Vector3)e.delta;
+            var half = area.rect.size / 2f;
+            var p = rt.anchoredPosition; rt.anchoredPosition = new Vector2(Mathf.Clamp(p.x, -half.x, half.x), Mathf.Clamp(p.y, -half.y, half.y));
+        }
+        public void OnEndDrag(PointerEventData e)
+        {
+            rt.localScale = Vector3.one;
+            if (SessionManager.Instance != null) SessionManager.Instance.SetMenuStickerSpot(food, rt.anchoredPosition);
+        }
+
+        /// Tests and recordings: a smooth drag by delta (paper units) over some frames.
+        public IEnumerator DragBy(Vector2 delta, int frames)
+        {
+            var e = new PointerEventData(EventSystem.current);
+            OnBeginDrag(e);
+            for (var i = 0; i < frames; i++) { e.delta = delta * (area.lossyScale.x / frames); OnDrag(e); yield return null; }
+            OnEndDrag(e);
+        }
+    }
 
     /// A sticker's gentle idle wiggle (owner, 14 October): a small rock round its own tilt, each on its own beat.
     public class Wiggle : MonoBehaviour
