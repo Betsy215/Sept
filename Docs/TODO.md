@@ -1,169 +1,117 @@
-# TODO and suggestions
+# TODO
 
-Status as of 9 October 2026 (the Done list below is from 7 October). Done items are kept for a while so the history is visible.
+Current open work, as of 13 October 2026 (night). Done items are removed; the dated record is in `Docs/history/`
+(the 9 to 13 October TODO is `history/TODO_2026-10-13_before_rewrite.md`).
 
-## Done on 7 October 2026
+## Waiting
 
-- [x] Committed the kitchen scene, levels 5 to 14, three prefabs, audio and art that had never reached GitHub
-- [x] Upgrade levels survive app restarts (were silently dropped from the save file)
-- [x] Play asks for a second tap before erasing a saved game
-- [x] Food cannot be served while paused or behind a popup; a hold-to-refill no longer also serves
-- [x] Music: menu music restarts on return, mute/unmute resumes the right track, shop music stops when leaving to the menu
-- [x] Rewarded ad button retries failed loads and only claims a reward when coins were added; coins kept at whole cents
-- [x] Orders: perfect-order sound reachable, last customer finishes its walk-out, Kid orders clamped to the level maximum, LevelData minimum no longer overridden
-- [x] Shop: pay before record with refund on failure, visible failure and success messages, upgrades capped at level 3
-- [x] Level-complete money count-up no longer double-counts tips
-- [x] Kitchen timers cannot double-fire when the kitchen is reopened mid-bake; pop effects play before items hide
-- [x] iOS post-build writes the tracking usage description and the export-compliance key
-- [x] Debug logs filtered out of release builds
-- [x] Deleted 83 unreferenced images, audio clips, prefabs and template leftovers (10.9 MB)
-- [x] Five 2048 px Choux sprites capped at 1024 px (about 7 MB off the app); music clips set to streaming at 70 percent quality (about 10 MB off the app, about 80 MB less RAM)
-- [x] Stale SampleScene and Menu entries removed from Build Settings; level names no longer have a double space
-- [x] Oven centre taps did nothing: each oven's bread-note sticker caught the tap and the oven rejected it (live since March). Fixed in code
-- [x] Finishing Day 14 and leaving the popup early left a broken save (Continue then looped Day 1 with purchases failing). The session now completes when the last order ends; old broken saves are treated as finished
-- [x] Pause blocked during the 3 s between the last order and the level-complete popup
-- [x] GamePhaseManager food list no longer depends on Start order (a wrong order would have made every tap fail for a day)
-- [x] Tracking (ATT) prompt now waits for the app to be active; it never showed in the March build and would have shown late with the new plist key
-- [x] Cake and Choux awarded 0 points when served (missing from the ScoreManager points table, fallback 0). Now 35 each
-- [x] Refill catalogue completed for every food item; recommendation recorded in Docs/maintenance.md (do not widen hold-to-refill)
-- [x] Days 10 to 14 re-tuned: orders 9, 9, 10, 10, 11 with star thresholds rising 50 per day from 450/550/650 to 650/750/850
-- [x] iOS build number set to 1 in Player Settings (bundle ID was already set)
-- [x] Second pass (7 October, evening): refill holds cannot serve or be hijacked by a second finger; coffee upgrades apply regardless of start order; the coffee machine uses EventSystem clicks and respects pause; kitchen open/close guarded against double taps; new game clears kitchen timers; drags owned by one finger and ended on phase switch; table bounds use the real safe-area rect; scene transitions always reset; shop buttons no longer fire twice; purchase popup blocks the buttons beneath it; camera far clip moved off the UI plane
+- [ ] **26.10.13 build 4 in App Store review** (submitted 13 October 21:41, manual release). Answer anything Apple
+  raises; the owner presses Release.
+- [ ] **Owner to decide:** the description and promo text still say "serve two customers at a time" / "keep two
+  customers happy at once". The owner said not to say that in a caption. Rewording the description means pulling the
+  submission back and resubmitting (MANUAL section 9), or it waits for the next version.
 
-## Direction (decided 9 October 2026)
+## Next version (MVP list in the report)
 
-Lifetime: 55 downloads since 29 Nov 2025, all from App Store search, 0.9 percent page conversion, ad revenue in cents. The game is undiscovered, not under-monetised. Stay free, ship the interstitial, no paid version or Remove Ads purchase until downloads reach a few hundred a month. Next work is the store page and marketing, not more levels.
+- [ ] **Table redesign at the 40-degree camera** (approved 13 October): each item keeps its art and is repainted at
+  the angle by ChatGPT. Briefs ready in `Store/redesign/ai/<item>/`: juice, choux, cookies, coffee cups, machine, cake
+  redo (flat napkin, no pink cut face). About three pictures a day on the free plan.
+- [ ] **Choux board stretch** to the 40-degree look (`Store/artkit/choux_board5.py`, K = 1.52, parked).
+- [ ] **Cookies** back in (MANUAL section 6, "Held back").
+- [ ] **Economy tune** (owner's call, see below).
+- [ ] **Rating prompt** (`SKStoreReviewController` after a three-star day or day 5): not built.
+- [ ] **Store header / banner art** for the product page.
+- [ ] Fold the 13 October night fixes (commit 4cad84d) into the next build.
 
-## Next
+## Economy findings (13 October play test, not acted on)
 
-- [x] Days 15 to 24 added (9 Oct), see Docs/systems/02 for the table
-- [x] 26.10.09 (4) submitted for review on 9 Oct, manual release; the owner presses Release after approval
-- [x] Tutorial, two more customers per day, evening and night tint: merged to main and shipped in 26.10.09
-- [x] App preview video (29.9 s) and an extended 112.8 s cut, made in the editor; see Docs/MANUAL.md section 7
-- [ ] Marketing discovery: plan with cost and effort for keyword work, Apple Search Ads test, short-video clips, cozy-game communities, Apple featuring request
-- [x] Store page text: subtitle, keywords, description, screenshots for iPhone, iPad and Duo (9 Oct)
-- [ ] Re-read retention and conversion in November, then decide on content
-- [ ] **Two customers at once + timed days (owner, 12/13 October):** built, see MANUAL section 9; play test, then tune the slot offsets, customer scale, the 5 s beat and the day lengths (LevelData); re-run `Docs/economy_sim.py` after
-- [ ] **Table redesign (owner, 13 October):** cloth done (picnic gingham, 40-degree camera). Items keep their art and change camera via ChatGPT (original + gouache angle guide): cake, bread and apples done (13 October; the cake's full state shows a pink cut face on the front slice, ask ChatGPT for a full cake with no cut faces in the next batch); juice, choux, cookies (green rim and dots, three different cookies), coffee cups and the coffee machine to go, briefs written, ChatGPT's quota resets 14 October afternoon. Briefs and reference pairs in `Store/redesign/ai/<item>/`, cutter `Store/redesign/ai/cut_states.py`. ChatGPT free plan gives about three pictures a day.
-- [ ] **Money flip clock (owner, 12 October late):** replace the top "Day X $" sign with a small flip-clock box on the table (a little longer than the truck button, a little shorter): split-flap digit cards that flip when the money changes, the $ on the box, the three stars at the right turning gold at each threshold; no Day X. Sketch and placements in the report; open: placement (back-right or next to the truck) and whether to show all three amounts or only the next one. Frees the top of the screen for two order bubbles (two customers at once, also mocked in the report, not planned yet). Painter: `Store/artkit/brush/money_clock.py`
-- [ ] **Patience as three flowers (owner, 12 October late):** three flowers by the bubble instead of one daisy; each wilts in turn; tip = flowers still fresh; chapter 1 daisy, chapter 2 hibiscus; decorations add a flower. Rebuild PatienceMeter this way before the 26.10.13 build
-- [x] **Next MVP (owner, 12 October): visible patience.** Built 12 October evening as the daisy (PatienceMeter) with Decor_Vase and Decor_Bouquet; lantern art pending. Customers show their patience as hearts that run out, so the player can read speed and the expected tip at a glance (the Yoga lady's 1.5x and the Businessman's 0.75x time must show). Shop items (decorations) that raise customers' patience. Needs a design first: heart count and placement, how tip maps to hearts left, which decorations do what and their prices (fits the economy rebalance)
+Full chapter played by `Docs/tools/autoplay/driver.py` at 1.5x, one action a second, never letting an order expire
+(a fast, perfect player). Per-day numbers: `Docs/tools/autoplay/run_2026-10-13_days.tsv`.
 
-Backlog from the owner, 9 October (after the goals above):
+- Daily earnings 163, 231, 328, 388, 474, 1013, 848, 832, 665, 866, 1029, 885, 1110, 1127, 1072, 935; about $11,960
+  in all. Stars 1 to 2 every day; **three stars on no day**. Earnings were 56 to 99 % of the three-star line, median
+  about 75 %.
+- Why: days are timed and a customer sets off every 5 s, so income is capped by arrivals, not by skill. The
+  thresholds came from the older order-count model at 60 % patience left.
+- **The whole shop was bought by day 9.** Days 10 to 16 have nothing to buy; the wallet ended at $7,214.
+- Suggestion: three stars at about 0.8x today's line, two at 0.6x, one at 0.4x; add a late money sink (decorations,
+  Cookies, chapter 2 unlock price). Then re-run the driver to check that a good player gets three stars on most days.
+- `Docs/economy_sim.py` is out of date (still has Cookies in the shop, Vase/Lantern/Radio and no day clock). Update
+  it before tuning, or tune from the driver.
 
-- [x] More default customers and bonus customers: done 9 Oct (Girl/Boy/Kid default; Grandma, Chef, Yoga, Businessman in the shop with bonus lines). Open: regenerate Chef/Yoga/Businessman with distinct faces and poses, and full-body Girl/Grandma keeping their poses (ChatGPT quota resets 10 Oct 1:17 PM); add the Businessman card art review
-- [ ] Main scene visual pass: more detail, more harmonious palette (kitchen stays as is). Ideas with mock-ups
-- [ ] Marketing plan and app page improvements; TikTok account is the owner's to create, Claude writes the plan and captions
-- [ ] Country breakdown of downloads and play (App Store Connect Territory filter, Unity Ads country view) into the report
+## Later
 
-## Backlog (needed, no rush)
-
-- [ ] Unity Ads payout profile
-- [ ] Merge Unity's SKAdNetwork ID list into IOSPostBuild.cs (dashboard reports missing IDs)
-- [ ] Paid Apps Agreement, bank and tax forms (only before adding a purchase; approval takes days)
-- [ ] Remove Ads purchase (later)
-- [ ] Interstitial frequency review once retention data exists
-- [x] Automated release chain written into Docs/ios-testing-and-release.md (9 Oct)
-
-## In progress
-
-- [ ] **Interstitial ads between level and Shop.** Code is in (`InterstitialAdService`, called from `LevelManager.LoadNextLevel`), shows after every level by default. Needs the `Interstitial_iOS` ad unit created on the Unity Ads dashboard, then a device test: finish Day 1, tap Next Level, the ad plays, the Shop opens after it or after skip. Also confirm the Shop opens with no delay when offline.
+- [ ] Marketing: keyword work, an Apple Search Ads test, short-video clips, cozy-game communities, a featuring
+  request. The TikTok account is the owner's to create.
+- [ ] Re-read downloads, retention and conversion in November, then decide on content.
+- [ ] Chapter 2 (beach): parked. Background picks in `Store/chapter2`; hibiscus patience flowers.
+- [ ] Country breakdown of downloads and ads into the report.
+- [ ] Unity Ads payout profile; merge Unity's SKAdNetwork id list into `IOSPostBuild.cs`.
+- [ ] Paid Apps Agreement, bank and tax (only before a purchase); Remove Ads (later); interstitial frequency once
+  retention data exists.
+- [ ] Confirm the `Interstitial_iOS` ad unit on the Unity Ads dashboard and test the ad on a device (offline the
+  Shop must open with no delay).
 
 ## Leave alone (owner's decision, 7 October 2026)
 
 The game is live and working. These were reviewed and the owner chose not to change them. Do not "fix" them.
 
 - Main menu music set to None in the MainMenu scene (silent menu is accepted).
-- Unused packages (Visual Scripting, XR Management, Mobile feature set, 2D feature set extras, Timeline): keep, they may be needed for the Xcode export.
-- `Assets/Plugins/iOS/NSUserTrackingUsageDescription.plist`: leave. (It never reaches the Xcode export at all; harmless.)
-- Choux sprite cropping: cannot be tested on device yet; stays below under Someday.
+- Unused packages (Visual Scripting, XR Management, Mobile feature set, 2D feature set extras, Timeline): keep.
+- `Assets/Plugins/iOS/NSUserTrackingUsageDescription.plist`: leave (never reaches the export; harmless).
+- Choux sprite cropping: needs a device test; stays under Someday.
 - MP3 sound effects re-encoded to Vorbis: fine as is.
 - Debug flag defaults: leave.
 - Buttons under the notch and home indicator: leave for now. `SafeAreaFitter` exists if this changes.
 - AudioManager prefab vs scene overrides: fine, not every clip is meant to be wired.
-- Hold-to-refill enabled only on Melon, and Melon is an inactive object no player can reach: reviewed 7 October, recommendation is to leave it (redundant with the kitchen, and it would need refill-bar art and tutorial text). Details in Docs/maintenance.md.
-- Orphan entries Pie, Mont Blanc and Log Cake in the ScoreManager points table: harmless, no item uses those names.
-- Kitchen bakes continuing through pause and into the Shop: logs an error when a bake lands in the Shop, but no player impact because levels start full.
-- Small scene leftovers (missing script on MainMenu Canvas, dead Inspector call on kitchen back button, silent pause button, four unreferenced scripts): leave unless they break something.
-- Upgrade shop items are one-shot by design (verified: see maintenance notes).
+- Hold-to-refill only on Melon (an inactive object): leave. Details in `Docs/maintenance.md`.
+- Orphan entries Pie, Mont Blanc and Log Cake in the ScoreManager points table: harmless.
+- Kitchen bakes continuing through pause and into the Shop: logs an error, no player impact.
+- Small scene leftovers (missing script on the MainMenu Canvas, dead Inspector call on the kitchen back button,
+  silent pause button, four unreferenced scripts): leave unless they break something.
+- Upgrade shop items are one-shot by design.
 
-## Unused packages (reference only: the owner chose to keep them, see Leave alone)
+## Known issues (minor, not fixed)
 
-Removing editor-only packages changes nothing in the app; the first three do shrink the iOS build.
+From the 7 to 8 October review (details in `Docs/systems`) and the 13 October play test.
 
-| Package | Why | Build effect |
-| --- | --- | --- |
-| Visual Scripting | Never used; the one `using` line is gone | Removes several MB of runtime assemblies |
-| Mobile feature set (com.unity.feature.mobile) | Pulls Mobile Notifications, which asked for notification permission on first launch, plus Adaptive Performance which is inert. The launch prompt is now off, but the plugin still ships. After removing, delete `Assets/Editor/com.unity.mobile.notifications` and `Assets/Adaptive Performance` | Under 2 MB and one less permission prompt |
-| XR Management | No XR anywhere; it was set to initialise on start (now off). After removing, delete `Assets/XR` | About 1 MB and a faster start |
-| 2D feature set, replace with 2D Sprite + 2D Pixel Perfect | Only Pixel Perfect is used; the feature set drags in Burst, Collections, Sprite Shape and Tilemap | A few MB |
-| Timeline | No timelines in the project | Small |
-| Muse Chat, Muse Sprite, Collaborate, Device Simulator devices, VS Code IDE 1.2.5 | Editor-only tools not in use (keep mcp-unity if you use it with Claude) | None, faster editor import |
+- Double-tapping Next Level while an interstitial is pending can run the Shop transition twice.
+- Leaving a day through Pause, Home keeps the coins earned so far and the day replays; Restart rolls them back.
+- Players from 26.03.29 lost bought coffee upgrades in that build (it never saved them); nothing to recover.
+- The item-served sound plays twice per correct serve.
+- Bread and Cake reject a wrong tap silently; other foods buzz.
+- The coffee machine's table position is not saved; food is not overlap-checked against the machine.
+- Shop Next Level briefly plays gameplay music before arrangement music.
+- Play and Continue clicks ignore Sound Off.
+- Kitchen bake timers carry over through Restart and Home; the oven ding can play in the Shop.
+- Rewarded ad status labels are unassigned in the Shop scene, so they never show.
+- `drag.anim` has an animation event with an empty function name (logs while the old hand animation plays).
+- Several clips are unassigned (button click, item pickup, wrong item, level win).
+- Settings panel animator runs on scaled time, so it freezes while paused.
+- The ringer switch mutes the game (Ambient audio session). Standard for casual games.
+- Editor only: "AudioManager: Cannot play music. Clip: False" once at menu start; Unity Ads shows a Placeholder ad.
 
-Keep: Unity Ads, Unity Ads iOS Support, TextMeshPro, uGUI, 2D Pixel Perfect, and `Assets/MobileDependencyResolver` (it generates the Podfile that pulls the Unity Ads framework into Xcode).
+## Clean-up ideas (not to do without the owner)
 
-## Scene edits found by the audit (reference: most are on the Leave alone list)
+- `StartArrangementPhase` runs twice per level load (harmless, idempotent).
+- Money state lives in both `ScoreManager` and `SessionManager`; new money features go through SessionManager.
+- String identifiers for foods, characters and upgrades; a shared constants class would make renames safe.
+- Git history is large (Library was committed early on); only worth rewriting on a fresh clone.
+- Unused packages: see `history/TODO_2026-10-13_before_rewrite.md` for the table of what each would save.
 
-Found by the scene wiring audit. Each is a few clicks in the Inspector.
+## Someday (needs device testing)
 
-- [ ] **Buttons under the notch and home indicator.** On iPhones with a Dynamic Island, the pause button (60 to 180 px from the top in the 1080 x 1920 design), the settings button, the Shop's Next Level and Get 5 Coins buttons (bottom 400 px), and the kitchen back button all sit in the inset zones. Fix: add an empty full-stretch panel under each Canvas, put the new `SafeAreaFitter` component on it, and re-parent those buttons under the panel. No other change needed.
-- [ ] **Apply the AudioManager overrides to the prefab.** The prefab asset has only seven clips; shop music, arrangement music, the gameplay playlist, walk-in, wrong-item, money sounds and volume 0.4 exist only as overrides on the MainMenu scene instance. Select that instance, Overrides, Apply All. Until then, GameSceneOne launched directly in the editor plays no music.
-- [ ] **Main menu music and level-complete music are set to None** on the MainMenu scene instance (see Needs a decision).
-- [ ] **Missing script on MainMenu's Canvas.** A disabled component with an unknown script GUID sits on Main Camera/Canvas. Remove it (Inspector shows "Missing (Mono Script)").
-- [ ] **Kitchen back button has a dead Inspector call** (target None). Harmless; the code wires it. Remove the entry for tidiness.
-- [ ] **PauseButton has no AudioSource or clips**, so it is silent. Add a source and the compress/uncompress clips if you want the click sound.
-- [ ] **Tablecloth sits flush to the screen bottom**, under the home indicator. The drag bounds now respect the safe area, but the cloth art does not move. Lift it if you want a visible margin.
-- [ ] **Four scripts are not used by any scene**: KitchenButtonGlowController, CloseKitchenButtonGlowController, ButtonGlowEffect, StartButtonScript. Wire them up or delete them.
-- [ ] **Player Settings**: Scripting Backend and Architecture are not pinned (defaults resolve to IL2CPP and ARM64, which is fine); Metal API Validation is on, which only affects development builds. Android and Standalone bundle IDs still carry the template value; harmless for iOS.
+- [ ] Crop the Choux source art (`Untitled_Artwork 5` to `9`) so it can sit at 512 px.
 
-## Code and project clean-up
+## Test checklist for the next build
 
-- [ ] `Assets/Plugins/iOS/NSUserTrackingUsageDescription.plist` is never merged into Info.plist (Unity copies loose plists as resources). Its SKAdNetwork list is redundant with what the Unity Ads iOS Support package adds (77 IDs were present in the March export). Delete it to avoid confusion.
-- [ ] `StartArrangementPhase` runs twice per level load (LevelManager and GamePhaseManager). Harmless now that it is idempotent, but one call should go.
-- [ ] `ScoreManager` and `SessionManager` both hold money-related state. Level score and stars live in ScoreManager; coins live in SessionManager. Fine for now, but any new money feature should go through SessionManager only.
-- [ ] Food, character and upgrade names are string-matched across scripts, scene data and shop items. A rename in one place breaks purchases silently. A shared `FoodType` constants class would make this safer.
-- [ ] Git history is 722 MB because the Library folder was committed early on. Only worth rewriting if you clone the repo again.
-
-## Known issues
-
-- On tall phones (iPhone 6.9 inch, 1320 x 2868) the Shop's "EARNED: $ 1320.00" label wraps onto two lines once earnings reach four digits (seen in the editor at that size on 9 Oct). Cosmetic; fix is a smaller font or auto-size on that text., documented and not fixed
-
-Found in the deep review of 7 to 8 October. Each is functional but minor, or a judgement call. Details and file:line references are in Docs/systems.
-
-- Double-tapping Next Level while an interstitial is pending can run the Shop transition twice (the Shop slide-in replays). Fix: disable the button on the first tap. (01, 06, 07)
-- "Unlocked Food" on the level-complete popup counts against `totalFoodItems: 8` on the MainMenu SessionManager; only 6 foods exist, so it never reaches 0. Fix: set it to 6. (01, 05, 07)
-- Leaving a level through Pause, Main Menu (or killing the app) keeps the coins earned so far and the day replays, so coins can be farmed; Restart rolls them back. Design choice. (02, 05)
-- Returning players from 26.03.29 lost bought coffee upgrades on every app restart in that build (it never saved them). The new build saves them, but those players see the upgrades for sale again. No fix possible; nothing was saved. (05)
-- The level-complete count-up shows whole dollars while the rest of the game shows cents, and the labels change wording mid-animation. Cosmetic. (02)
-- The item-served sound plays twice per correct serve; on perfect orders two identical clips stack. (02)
-- Bread and Cake reject a wrong tap silently (Use Audio Manager is off on both); other foods buzz. (03)
-- The coffee machine's table position is not saved; food is not overlap-checked against the machine, only the machine turns red. (03)
-- Shop Next Level briefly plays gameplay music before arrangement music. (01, 06)
-- Play and Continue button clicks ignore Sound Off. (06)
-- Kitchen bake timers carry over through Restart and Main Menu; the oven ding can play in the Shop. Harmless. (04)
-- Rewarded ad status labels ("Loading ad...", "+$5 coins added!") are unassigned in the Shop scene, so they never show. (05)
-- `drag.anim` has an animation event with an empty function name; the editor logs an error every 4 s while the old scene TutorialPanel hand animation plays. (02, 07)
-- Several clips were deleted before March and are unassigned (button click, item pickup, wrong item, level win). Leave-alone list covers AudioManager clips. (06, 07)
-- Settings panel animator runs on scaled time, so it freezes while paused. (06)
-- The iPhone ringer switch mutes the game (Ambient audio session). Standard for casual games. (06)
-
-## Someday (only with device testing available)
-
-- [ ] Crop the Choux source art (`Untitled_Artwork 5` to `9`, 2048 x 2048 with the drawing in a 1259 x 1018 area) so it can sit at 512 px. Changes on-screen placement, so it needs a device check.
-
-## Testing checklist for the next build
-
-- [ ] Fresh install (delete the app first): the tracking prompt appears over the menu within a second or two of launch
-- [ ] Kitchen: tap the middle of each oven window (the bread note); it starts baking
-- [ ] Finish Day 14 and tap Main Menu while the money is still counting: Continue is greyed out, Play starts fresh
-- [ ] Day 2 onwards: table positions load and every food can be served
-
-- [ ] Fresh install: tracking prompt appears once; no notification prompt
-- [ ] Buy an upgrade, kill the app, reopen: upgrade still owned
-- [ ] Tap Play with a saved game: warning appears, second tap starts over
-- [ ] Pause mid-level and tap food beside the pause panel: nothing is served
-- [ ] Hold a food item to refill: it refills and does not shake or serve on release
-- [ ] Finish a level: last customer walks out, Today Sale counts each amount once
-- [ ] Shop: try to buy with too few coins, message is visible; buy an item, coins drop once
-- [ ] Watch a rewarded ad: coins added and shown; airplane mode: button shows Loading then retries
-- [ ] Open and close the kitchen mid-bake: the bake completes once
+- [ ] Fresh install: tracking prompt once, no notification prompt; tutorial plays; Let's go opens the map.
+- [ ] Two customers: bubbles over their heads, margins even, never the same person twice at once.
+- [ ] Daisies wilt in turn and come back on each serve; an expired order leaves without paying.
+- [ ] The day ends after the clock and the last customer; dusk and night tint on the way.
+- [ ] Finish card: sale, tips and stars right; a replay pays half and shows the half; three-star bonus once.
+- [ ] Shop: the lock arrow at the bottom; prices; buy with too little money shows the message.
+- [ ] Kitchen: tap each oven; bake completes once after closing mid-bake.
+- [ ] iPad: hen board beside the truck, pots on the cloth, nothing off screen.
+- [ ] Daily Treats: pays on the next Continue; day 5 bonus.
+- [ ] Kill the app mid-chapter, reopen, Continue: the map shows the right day and stars.
