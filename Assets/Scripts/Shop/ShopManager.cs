@@ -44,9 +44,9 @@ public class ShopManager : MonoBehaviour
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayShopMusic();
         // cards of foods held back from this release are not shown (Cookies, 13 October)
-        foreach (var card in GetAllShopItems())
-            if (card != null && card.itemType == ItemType.Food && SessionManager.IsHeldBack(card.itemName?.Trim()))
-                card.gameObject.SetActive(false);
+        foreach (var card in FindObjectsOfType<ShopItemController>(true))
+            if (IsHeldBackCard(card)) card.gameObject.SetActive(false);
+        EvenOutCharacterIcons();
 
         // FIX: Wait for all ShopItemController.Start() methods to complete
         StartCoroutine(DelayedInitializeShop());
@@ -104,6 +104,7 @@ public class ShopManager : MonoBehaviour
         foreach (var shopItem in allShopItems)
             if (shopItem != null)
             {
+                if (IsHeldBackCard(shopItem)) { shopItem.gameObject.SetActive(false); continue; }   // Cookies wait for the next release
                 shopItem.gameObject.SetActive(true);
                 var canAfford = session != null && session.CanAfford(shopItem.price);
                 shopItem.UpdateAffordability(canAfford);
@@ -293,7 +294,7 @@ public class ShopManager : MonoBehaviour
         if (playerScoreText != null)
         {
             var currentScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : 0;
-            playerScoreText.text = $"EARNED: $ {currentScore:F2}";
+            playerScoreText.text = $"EARNED: ${currentScore:F0}";   // one line, whole dollars (owner, 13 October: it wrapped)
             playerScoreText.color = playerScoreOriginalColor;
             scoreMessageSerial++; // any pending feedback restore is now stale
         }
@@ -367,7 +368,7 @@ public class ShopManager : MonoBehaviour
         var targetPos = startPos + new Vector2(0, amount);
 
         var topBoundary = -38f;
-        var bottomBoundary = 2700f;   // one more row since the Cookies card (12 October 2026)
+        var bottomBoundary = BottomBoundary;
 
         targetPos.y = Mathf.Clamp(targetPos.y, topBoundary, bottomBoundary);
 
@@ -389,6 +390,60 @@ public class ShopManager : MonoBehaviour
         UpdateScrollButtons();
     }
 
+    /// The people cards show their figures at one height (owner, 13 October: some were out of proportion). The
+    /// smallest figure sets the height; the others shrink to it, width by their picture's aspect, centred where they were.
+    private void EvenOutCharacterIcons()
+    {
+        var icons = new List<RectTransform>();
+        foreach (var card in FindObjectsOfType<ShopItemController>(true))
+        {
+            if (card == null || card.itemType != ItemType.Character) continue;
+            var icon = card.transform.Find("ItemIcon") as RectTransform;
+            if (icon != null && icon.GetComponent<Image>() != null && icon.GetComponent<Image>().sprite != null) icons.Add(icon);
+        }
+        if (icons.Count < 2) return;
+        var h = float.MaxValue;
+        foreach (var icon in icons) h = Mathf.Min(h, icon.rect.height);
+        foreach (var icon in icons)
+        {
+            var sp = icon.GetComponent<Image>().sprite;
+            var aspect = sp.rect.width / sp.rect.height;
+            var centre = icon.anchoredPosition + new Vector2((0.5f - icon.pivot.x) * icon.rect.width, (0.5f - icon.pivot.y) * icon.rect.height);
+            icon.sizeDelta = new Vector2(h * aspect, h);
+            icon.anchoredPosition = centre - new Vector2((0.5f - icon.pivot.x) * icon.rect.width, (0.5f - icon.pivot.y) * icon.rect.height);
+        }
+    }
+
+    private static bool IsHeldBackCard(ShopItemController card) =>
+        card != null && (SessionManager.IsHeldBack(card.itemName?.Trim()) || SessionManager.IsHeldBack(card.upgradeFoodType?.Trim()) || SessionManager.IsHeldBack(card.gameObject.name));
+
+    // The last row with the Cookies card held back (13 October 2026): three rows of cards, 900 apart
+    private const float BottomBoundary = 1800f;
+
+    /// At the bottom of the shop the down arrow keeps showing, with a small lock on it: more comes in the next
+    /// chapter (owner, 13 October). The lock is the map's lock_small, laid over the button.
+    private void ShowDownLock(bool show)
+    {
+        if (scrollDownButton == null) return;
+        var t = scrollDownButton.transform.Find("Lock");
+        if (t == null)
+        {
+            var sprite = Resources.Load<Sprite>("Map/lock_small");
+            if (sprite == null) return;
+            var go = new GameObject("Lock", typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(scrollDownButton.transform, false);
+            var rt = (RectTransform)go.transform;
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0.5f);
+            var br = scrollDownButton.GetComponent<RectTransform>().rect;
+            rt.anchoredPosition = new Vector2(br.width * 0.26f, -br.height * 0.24f);   // lower right corner, the arrow stays visible
+            var size = br.height * 0.5f;
+            rt.sizeDelta = new Vector2(size * sprite.rect.width / sprite.rect.height, size);
+            var img = go.GetComponent<Image>(); img.sprite = sprite; img.raycastTarget = false; img.preserveAspect = true;
+            t = go.transform;
+        }
+        t.gameObject.SetActive(show);
+    }
+
     private void UpdateScrollButtons()
     {
         if (itemContainer == null) return;
@@ -398,13 +453,14 @@ public class ShopManager : MonoBehaviour
 
         var currentY = containerRect.anchoredPosition.y;
         var canScrollUp = currentY > -38f;
-        var canScrollDown = currentY < 2700f;
+        var canScrollDown = currentY < BottomBoundary;
+        ShowDownLock(!canScrollDown);
 
         if (scrollUpButton != null)
             scrollUpButton.interactable = canScrollUp;
 
         if (scrollDownButton != null)
-            scrollDownButton.interactable = canScrollDown;
+            scrollDownButton.interactable = true;   // at the bottom the arrow stays bright with its lock (a tap scrolls nowhere)
     }
 
     private void StartShopAnimation()

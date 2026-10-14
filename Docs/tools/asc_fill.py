@@ -1,14 +1,14 @@
-"""Fill App Store Connect version 26.10.09 for Food Truck Cafe. Never submits.
+"""Fill App Store Connect version 26.10.13 (first used for 26.10.09) for Food Truck Cafe. Never submits.
 python3 -I asc_fill.py texts|build|screenshots|preview|status"""
 import sys, json, hashlib, os, urllib.request, urllib.error, time, subprocess
 
 TOKEN = subprocess.run(["python3", "-I", os.path.join(os.path.dirname(os.path.abspath(__file__)), "asc_token.py")], capture_output=True, text=True).stdout.strip().splitlines()[-1]
 A = "https://api.appstoreconnect.apple.com/v1"
 APP = "6755611355"
-VER = "228b7193-eae5-4e39-a087-c56551df7907"          # 26.10.09
-LOC = "83ae5f36-9276-4ac2-9149-2c6581751e10"          # en-US version localization
-REVIEW = "3267302a-374d-43ce-b435-348d0721f31d"       # appStoreReviewDetail of 26.10.09
-APPINFO_LOC = "fc9d90dc-7da8-45e3-beef-0ffa9dc7844c"  # en-US app info localization (new app info)
+VER = "0abde827-2bd8-47e1-959e-c9f7d63d06a4"          # 26.10.13 (26.10.09 was 228b7193-eae5-4e39-a087-c56551df7907)
+LOC = "cc1c01ba-14ea-49fb-abaf-452a63d61e8d"          # en-US version localization of 26.10.13
+REVIEW = "916f201b-d912-4db0-92e5-7c8f067e9121"       # appStoreReviewDetail of 26.10.13
+APPINFO_LOC = "ab0bcded-75b8-49f3-9b47-cd0c86e79291"  # en-US app info localization of the 26.10.13 app info
 SHOTS = "/Users/betzthebest/Desktop/Sept/Store/screenshots/final"
 VIDEO = "/Users/betzthebest/Desktop/Sept/Store/video/FoodTruckCafe_appstore_v2.mp4"
 
@@ -47,10 +47,10 @@ def upload_asset(kind, set_type, set_id, path):
 
 DESCRIPTION = """A cute, cheerful bakery on wheels!
 
-Enjoy a fun mix of baking and time management. Run your very own food truck, serve customers from morning to night, and grow your bakery over 24 days.
+Enjoy a fun mix of baking and time management. Run your very own food truck, serve two customers at a time from morning to night, and grow your bakery over a 16-day chapter.
 
 How to Play:
-Bake delicious treats in your mobile kitchen and serve them to your customers before the timer runs out. Arrange your table your way before each day. Earn coins to upgrade your equipment, unlock new recipes, and meet new customers!
+Bake delicious treats in your mobile kitchen and serve them before your customers' patience daisies wilt. Two customers wait at once, and every serve brings a daisy back. Arrange your table your way before each day. Earn coins to upgrade your equipment, unlock new recipes, and meet new customers!
 
 Gather Fresh Ingredients:
 Pick fresh apples right from the trees, squeeze juice, use coffee beans, and prepare a variety of ingredients to keep your kitchen stocked and ready to go.
@@ -62,13 +62,22 @@ Serve the Customers:
 Meet a variety of customers, each with their own personality. Grandma tips double, the Chef orders big, the Yoga lady never hurries, and the Businessman tips triple but will not wait. Serve their orders quickly to keep them happy and earn tips.
 
 From Morning to Night:
-Each day brings more customers, and the evening slowly turns to night. Finish the day, count your tips, and come back tomorrow.
+Each day is a little longer with more customers, and the evening slowly turns to night: when the sky darkens the day is almost done. Finish the day, count your tips and stars, and come back tomorrow.
 
 Shop & Upgrade:
 Use the money you earn after completing levels to buy new recipes, upgrade your kitchenware, and invite new regulars to your truck."""
 KEYWORDS = "bakery,restaurant,time management,coffee shop,cake,pastry,kitchen,tycoon,diner,chef,dessert,cooking"
-PROMO = "Run a tiny bakery truck: brew coffee, bake bread and cake, keep the regulars happy from morning to night. 24 days, new customers, new kitchen upgrades."
-WHATS_NEW = "10 more days (24 in all), each with more customers. Evenings now turn to night. A quick tutorial for new cooks. Four regulars with their own habits: Grandma, Chef, Yoga lady and Businessman. Fixes for the oven, serving on Day 2 and the last day."
+PROMO = "Run a tiny bakery truck: brew coffee, bake bread and cake, keep two customers happy at once from morning to night. A 16-day chapter, stars for every day, new regulars."
+WHATS_NEW = """Fresh out of the oven: a busier little bakery!
+
+Two customers at the counter: serve them side by side and keep both smiling.
+Patience daisies: three little flowers show how long each customer will wait, and every treat you serve brings one back.
+Days on a clock: the sky warms to dusk and night as the day winds down. No timer, just the sunset.
+A chapter map: 16 days with stars for each one, a three-star bonus, and replays whenever you like.
+A new counter: a little hen keeps your money and the day's stars, with flower pots by the truck.
+Picnic cloth and a tidier table.
+
+Small crumbs swept up: the Girl's happy face, customers who walked out twice, and the tutorial card."""
 NOTES = "No sign-in. The tutorial runs on first launch; tap Play to start a day. Ads are Unity Ads, shown after a day ends."
 SUBTITLE = "Bake, serve & grow your cafe"
 
