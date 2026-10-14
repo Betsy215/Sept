@@ -13,7 +13,9 @@ Current open work, as of 13 October 2026 (night). Done items are removed; the da
 
 ## Next version (MVP list in the report)
 
-- [ ] **Chapter 2, the beach (the goal of the next version, owner 14 October).** Art three ways (ChatGPT, Gemini, my
+- [ ] **Menu book (owner, 14 October afternoon: the next version's main feature; plan in `Docs/menu-book-plan.md`).**
+  Switch owned foods on and off with station caps, chosen in the arrangement phase; placeholder UI.
+- [ ] **Chapter 2, the beach (parked again 14 October, after the menu book).** Art three ways (ChatGPT, Gemini, my
   kitchen-style painting), the owner picks. Parts: beach background day/night (picked); table and Shop background
   (owner's pick, sheets in `Store/chapter2/table`, `shop_bg`); ice cream cones/cups and a freezer well, coconut drink
   (brief `Store/chapter2/icecream`; Gemini draft in, ChatGPT pending); Cookies; hibiscus patience flowers; a beach
