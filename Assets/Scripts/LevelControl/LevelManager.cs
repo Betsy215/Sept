@@ -127,9 +127,6 @@ public class LevelManager : MonoBehaviour
         // Level 0: a self-playing tutorial before the first real day (or a requested replay)
         if (currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance))
             gameObject.AddComponent<TutorialDirector>().Begin(this, gamePhaseManager, orderSystem, customerManager);
-        // First day with apples on the table: a one-time hint over the arrangement phase (14 October)
-        else if (TutorialDirector.AppleHintDue(SessionManager.Instance))
-            gameObject.AddComponent<TutorialDirector>().BeginAppleHint(gamePhaseManager);
 
         // Evening and night over the last two customers; draws only on the background image
         if (orderSystem != null) gameObject.AddComponent<DayNightTint>().Begin(orderSystem);
