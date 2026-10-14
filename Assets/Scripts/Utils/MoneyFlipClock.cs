@@ -30,6 +30,29 @@ public class MoneyFlipClock : MonoBehaviour
         var c = go.AddComponent<MoneyFlipClock>();
         c.scoreManager = sm;
         c.Build();
+        c.FollowTruck();
+    }
+
+    /// The truck button is anchored to the screen's left edge, so on a wider screen (iPad) it sits further left than on
+    /// a phone. Keep the hen the same distance to the right of it everywhere (13 October review; the phone layout had a
+    /// gap of about 0.5 units).
+    const float GapAfterTruck = 0.5f;
+    void FollowTruck()
+    {
+        var truck = GameObject.Find("KitchenButton");
+        var rt = truck != null ? truck.GetComponent<RectTransform>() : null;
+        if (rt == null) return;
+        var corners = new Vector3[4]; rt.GetWorldCorners(corners);
+        var truckRight = corners[2].x;
+        var rs = GetComponentsInChildren<SpriteRenderer>();
+        if (rs.Length == 0) return;
+        var left = float.MaxValue;
+        foreach (var r in rs) if (r.name == "Hen") left = r.bounds.min.x;
+        if (left == float.MaxValue) foreach (var r in rs) left = Mathf.Min(left, r.bounds.min.x);
+        var p = transform.position; p.x += truckRight + GapAfterTruck - left;
+        // never past the screen middle (a very narrow truck rect would push it right)
+        p.x = Mathf.Min(p.x, 0.6f);
+        transform.position = p;
     }
 
     void Build()

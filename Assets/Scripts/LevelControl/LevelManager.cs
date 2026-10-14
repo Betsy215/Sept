@@ -457,7 +457,7 @@ public class LevelManager : MonoBehaviour
             // Fallback: activate all items and set default upgrade levels
             for (var i = 0; i < serveableItems.Length; i++)
                 if (serveableItems[i] != null)
-                    serveableItems[i].gameObject.SetActive(true);
+                    serveableItems[i].gameObject.SetActive(!SessionManager.IsHeldBack(serveableItems[i].GetFoodType()));
 
             // Set default upgrade levels for ALL IUpgradeable objects
             SetDefaultUpgradeLevels();
@@ -655,8 +655,10 @@ public class LevelManager : MonoBehaviour
 
         // GetCurrentScore() already includes tips, so split it: order sale + tips = level score.
         // Each amount is transferred into "Earned" exactly once.
-        var tips = scoreManager.GetTotalTipsEarned();
-        var todayScore = scoreManager.GetCurrentScore();
+        // on a replay the wallet got only payFactor of today's money (ScoreManager), so the board shows that share
+        var pay = scoreManager.payFactor;
+        var tips = scoreManager.GetTotalTipsEarned() * pay;
+        var todayScore = scoreManager.GetCurrentScore() * pay;
         var orderSale = Mathf.Max(0f, todayScore - tips);
         var totalScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : todayScore;
         var earnedBeforeLevel = Mathf.Max(0f, totalScore - todayScore - threeStarBonusPaid);

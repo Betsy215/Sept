@@ -294,7 +294,7 @@ public class ShopManager : MonoBehaviour
         if (playerScoreText != null)
         {
             var currentScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : 0;
-            playerScoreText.text = $"EARNED: ${currentScore:F0}";   // one line, whole dollars (owner, 13 October: it wrapped)
+            playerScoreText.text = $"EARNED: ${Mathf.FloorToInt(currentScore)}";   // one line, whole dollars (owner, 13 October: it wrapped)
             playerScoreText.color = playerScoreOriginalColor;
             scoreMessageSerial++; // any pending feedback restore is now stale
         }

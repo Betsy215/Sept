@@ -152,6 +152,7 @@ public class TutorialDirector : MonoBehaviour
                 // Slots rather than the items: unpurchased items are inactive, their slots are always there
                 foreach (var name in new[] { "windowleft", "cableft", "cabright", "coffee", "tableleft", "tableright", "spot2", "spot3" })
                 {
+                    if (name == "cabright" && SessionManager.IsHeldBack("Cookies")) continue;   // the Cookies plate's slot, not in this release
                     var go = FindInScene("KitchenScene", name);
                     if (go != null) sections.Add(go.GetComponent<RectTransform>());
                 }

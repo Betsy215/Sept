@@ -1,0 +1,2 @@
+var os = UnityEngine.Object.FindObjectOfType<OrderSystem>(); var cm = UnityEngine.Object.FindObjectOfType<CustomerManager>(); var lm = UnityEngine.Object.FindObjectOfType<LevelManager>();
+return "scene " + UnityEngine.SceneManagement.SceneManager.GetActiveScene().name + " orders " + (os != null ? os.OpenOrders : -1) + " customers " + (cm != null ? cm.ActiveCustomers : -1) + " dayLeft " + (lm != null ? lm.DayTimeLeft.ToString("F1") : "-") + " money " + (SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore().ToString("F0") : "-");

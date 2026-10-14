@@ -174,7 +174,7 @@ public class MapScreen : MonoBehaviour
         pill.rectTransform.anchoredPosition = new Vector2(36f, 130f);    // above the home indicator (owner, 13 October: too close to the bottom edge)
         pill.rectTransform.sizeDelta = new Vector2(300f, 100f);
         pill.raycastTarget = false;
-        var coins = NewText("Amount", pill.rectTransform, "$ " + (sm != null ? sm.GetTotalScore() : 0f).ToString("N0"), 52f, new Color(0.43f, 0.24f, 0.08f));
+        var coins = NewText("Amount", pill.rectTransform, "$ " + Mathf.FloorToInt(sm != null ? sm.GetTotalScore() : 0f).ToString("N0"), 52f, new Color(0.43f, 0.24f, 0.08f));
         Stretch(coins.rectTransform);
 
         var home = NewImage("Home", canvasRect, homeSprite);
