@@ -321,6 +321,10 @@ public class CustomerManager : MonoBehaviour
             return null;
         }
 
+        // never the same person as the one already at the counter (two Chefs side by side, 13 October)
+        if (availableCustomers.Count > 1)
+            foreach (var c in slots)
+                if (c != null) availableCustomers.RemoveAll(p => p.name == c.name.Replace("(Clone)", "").Trim());
         var randomIndex = Random.Range(0, availableCustomers.Count);
         var selected = availableCustomers[randomIndex];
 
