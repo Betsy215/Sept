@@ -685,8 +685,6 @@ public class LevelManager : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
             ShowFinalCompletionMessage();
         }
-        if (threeStarBonusPaid > 0 && unlockedItemsText != null)
-            unlockedItemsText.text = $"Three stars! Bonus $ {threeStarBonusPaid}\n" + unlockedItemsText.text;
     }
 
     private void ShowFinalCompletionMessage()
@@ -708,22 +706,40 @@ public class LevelManager : MonoBehaviour
         // The session was already completed in OnLevelComplete.
     }
 
+    /// The bottom of the level-complete card shows the day's stars (owner, 13 October: no unlock counts, no bonus text).
+    /// Three star images under the money lines, earned ones in the star yellow, the rest grey.
     private void UpdateUnlockedItemsDisplay()
     {
         if (unlockedItemsText == null) return;
-
-        if (SessionManager.Instance == null || !SessionManager.Instance.HasActiveSession())
+        unlockedItemsText.text = "";
+        var stars = scoreManager != null && scoreManager.starProgressBar != null ? scoreManager.starProgressBar.GetEarnedStarsCount() : 0;
+        var host = unlockedItemsText.rectTransform;
+        var row = host.Find("StarsRow");
+        if (row == null)
         {
-            unlockedItemsText.text = "";
-            return;
+            row = new GameObject("StarsRow", typeof(RectTransform)).transform;
+            row.SetParent(host, false);
+            var rrt = (RectTransform)row;
+            rrt.anchorMin = rrt.anchorMax = new Vector2(0.5f, 0.5f); rrt.pivot = new Vector2(0.5f, 0.5f);
+            rrt.anchoredPosition = Vector2.zero; rrt.sizeDelta = new Vector2(500f, 130f);
+            for (var k = 0; k < 3; k++)
+            {
+                var s = new GameObject("Star" + k, typeof(RectTransform), typeof(UnityEngine.UI.Image));
+                s.transform.SetParent(row, false);
+                var srt = (RectTransform)s.transform;
+                srt.anchorMin = srt.anchorMax = new Vector2(0.5f, 0.5f);
+                srt.anchoredPosition = new Vector2((k - 1) * 150f, k == 1 ? 10f : 0f);
+                srt.sizeDelta = new Vector2(k == 1 ? 130f : 110f, k == 1 ? 130f : 110f);
+                var img = s.GetComponent<UnityEngine.UI.Image>();
+                img.sprite = MoneyFlipClock.SharedStarSprite(); img.raycastTarget = false; img.preserveAspect = true;
+            }
         }
-
-        // Get REMAINING items to unlock (total - purchased)
-        var (remainingFood, remainingCharacters) = SessionManager.Instance.GetUnpurchasedItemsCount();
-
-        unlockedItemsText.text = $"Unlocked Food: {remainingFood}\nUnlocked Customers: {remainingCharacters}";
-
-        Debug.Log($"Level Complete: Remaining to unlock - Food: {remainingFood}, Customers: {remainingCharacters}");
+        for (var k = 0; k < 3; k++)
+        {
+            var img = row.GetChild(k).GetComponent<UnityEngine.UI.Image>();
+            if (img != null) img.color = k < stars ? new Color(1f, 0.78f, 0.3f) : new Color(0.8f, 0.76f, 0.7f);
+        }
+        Debug.Log($"Level Complete: {stars} stars shown on the card");
     }
 
     private void SetupLevelCompleteButtons()

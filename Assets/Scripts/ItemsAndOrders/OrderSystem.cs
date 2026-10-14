@@ -267,17 +267,24 @@ public class OrderSystem : MonoBehaviour
 
     /// The bubble sits over its customer: centred on the customer, its bottom just above the head, whatever the
     /// customer's height or the bubble's size (owner, 13 October). With two slots the whole set (bubble, icons) moves.
-    [Tooltip("Gap between the customer's head and the bubble's bottom edge, world units")]
-    public float bubbleGapAboveHead = 0.05f;
+    [Tooltip("Gap between the customer's head and the bubble's lowest point (its tail), world units; negative overlaps")]
+    public float bubbleGapAboveHead = 0f;
+    [Tooltip("Transparent rows above the head in every customer picture (Store/artkit/rim0.py pads 40 px), so the bubble can sit on the real head")]
+    public float customerCanvasPadPx = 40f;
     private void PlaceBubbleOverCustomer(SlotVisuals s, CustomerController customer)
     {
         if (customer == null || maxConcurrentOrders <= 1) return;
         var b = s.bubble1 != null && s.bubble1.activeSelf ? s.bubble1 : s.bubble2 != null && s.bubble2.activeSelf ? s.bubble2 : s.bubble4;
-        var br = b != null ? b.GetComponentInChildren<Renderer>() : null;
         var cr = customer.GetComponentInChildren<SpriteRenderer>();
-        if (br == null || cr == null) return;
-        var cb = cr.bounds; var bb = br.bounds;
-        var delta = new Vector3(cb.center.x - bb.center.x, cb.max.y + bubbleGapAboveHead - bb.min.y, 0f);
+        if (b == null || cr == null) return;
+        // the whole bubble: body, tail dots and icons together
+        var rs = b.GetComponentsInChildren<Renderer>();
+        if (rs.Length == 0) return;
+        var bb = rs[0].bounds;
+        foreach (var r in rs) bb.Encapsulate(r.bounds);
+        var cb = cr.bounds;
+        var headTop = cb.max.y - (cr.sprite != null ? customerCanvasPadPx * cb.size.y / cr.sprite.rect.height : 0f);
+        var delta = new Vector3(cb.center.x - bb.center.x, headTop + bubbleGapAboveHead - bb.min.y, 0f);
         s.root.position += delta;
     }
 

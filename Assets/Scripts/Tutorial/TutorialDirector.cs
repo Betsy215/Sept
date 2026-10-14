@@ -318,6 +318,8 @@ public class TutorialDirector : MonoBehaviour
         caption.ForceMeshUpdate();
         var lines = Mathf.Max(1, caption.textInfo.lineCount);
         captionBox.sizeDelta = new Vector2(1000f, 200f + (lines - 1) * 72f);
+        // one line sits on its cap height (centred on the card); two lines are centred as a block (owner, 13 October)
+        caption.alignment = lines > 1 ? TextAlignmentOptions.Center : TextAlignmentOptions.Capline;
     }
 
     private IEnumerator PointAtWorld(Vector3 world)

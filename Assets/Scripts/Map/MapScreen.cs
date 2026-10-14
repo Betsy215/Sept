@@ -110,6 +110,7 @@ public class MapScreen : MonoBehaviour
             var dot = NewImage("Day" + (i + 1), canvasRect, Load(isToday ? "day_today" : played ? "day_done" : "day_locked"));
             if (played && dayStars >= 3) dot.color = new Color(1f, 0.98f, 0.9f);
             Place(dot.rectTransform, pos, new Vector2(size, size));
+            if (isToday) dot.gameObject.AddComponent<MapTodayBounce>();   // today's circle bounces (owner, 13 October)
             var label = NewText("Number", dot.rectTransform, (i + 1).ToString(), isToday ? 38f : 30f,
                 isToday ? new Color(1f, 0.98f, 0.92f) : played ? new Color(0.43f, 0.24f, 0.08f) : new Color(0.47f, 0.43f, 0.39f));
             Stretch(label.rectTransform);
@@ -154,7 +155,7 @@ public class MapScreen : MonoBehaviour
         var title = NewImage("Title", canvasRect, Load("title_ch1"));
         title.rectTransform.anchorMin = title.rectTransform.anchorMax = new Vector2(0.5f, 1f);
         title.rectTransform.pivot = new Vector2(0.5f, 1f);
-        title.rectTransform.anchoredPosition = new Vector2(0f, -60f);
+        title.rectTransform.anchoredPosition = new Vector2(0f, -170f);   // under the Dynamic Island (owner, 13 October: the banner was covered)
         title.rectTransform.sizeDelta = new Vector2(980f, 140f);
         title.raycastTarget = false;
 
@@ -170,7 +171,7 @@ public class MapScreen : MonoBehaviour
         var pill = NewImage("Coins", canvasRect, Load("pill"));
         pill.rectTransform.anchorMin = pill.rectTransform.anchorMax = new Vector2(0f, 0f);
         pill.rectTransform.pivot = new Vector2(0f, 0f);
-        pill.rectTransform.anchoredPosition = new Vector2(36f, 40f);
+        pill.rectTransform.anchoredPosition = new Vector2(36f, 130f);    // above the home indicator (owner, 13 October: too close to the bottom edge)
         pill.rectTransform.sizeDelta = new Vector2(300f, 100f);
         pill.raycastTarget = false;
         var coins = NewText("Amount", pill.rectTransform, "$ " + (sm != null ? sm.GetTotalScore() : 0f).ToString("N0"), 52f, new Color(0.43f, 0.24f, 0.08f));
@@ -179,7 +180,7 @@ public class MapScreen : MonoBehaviour
         var home = NewImage("Home", canvasRect, homeSprite);
         home.rectTransform.anchorMin = home.rectTransform.anchorMax = new Vector2(1f, 0f);
         home.rectTransform.pivot = new Vector2(1f, 0f);
-        home.rectTransform.anchoredPosition = new Vector2(-36f, 30f);
+        home.rectTransform.anchoredPosition = new Vector2(-36f, 120f);
         home.rectTransform.sizeDelta = new Vector2(130f, 130f);
         var hb = home.gameObject.AddComponent<Button>();
         hb.onClick.AddListener(GoHome);
@@ -322,6 +323,24 @@ public class MapScreen : MonoBehaviour
     {
         rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
         rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
+    }
+}
+
+/// Today's circle on the map bounces: a little hop every 1.4 s with a squash on landing (owner, 13 October).
+/// The number inside is a child, so it bounces along.
+public class MapTodayBounce : MonoBehaviour
+{
+    private RectTransform rt; private Vector2 rest; private float t;
+    private void Awake() { rt = GetComponent<RectTransform>(); rest = rt.anchoredPosition; }
+    private void Update()
+    {
+        if (rt == null) return;
+        t += Time.unscaledDeltaTime;
+        var phase = Mathf.Repeat(t, 1.4f);
+        var hop = phase < 0.5f ? Mathf.Sin(phase / 0.5f * Mathf.PI) : 0f;         // up and down in half a second, then rest
+        rt.anchoredPosition = rest + new Vector2(0f, 26f * hop);
+        var squash = phase >= 0.5f && phase < 0.62f ? 1f - 0.12f * Mathf.Sin((phase - 0.5f) / 0.12f * Mathf.PI) : 1f;
+        rt.localScale = new Vector3(2f - squash, squash, 1f);                      // wider as it lands, back to round
     }
 }
 

@@ -40,7 +40,7 @@ public class MoneyFlipClock : MonoBehaviour
         // the red base. If the picture is missing, the old cream board is built instead.
         var hen = Resources.Load<Sprite>("UI/money_hen");
         // the hen is stretched: longer than tall, about the truck's height (owner, 13 October, late)
-        var numberPos = new Vector3(0f, 0.03f, 0f); var starsY = -0.16f; var starGap = 0.2f; var starScale = 0.5f;
+        var numberPos = new Vector3(0f, -0.02f, 0f); var starsY = -0.16f; var starGap = 0.2f; var starScale = 0.5f;   // the number just above the base's line (owner, 13 October)
         if (hen != null)
         {
             var h = new GameObject("Hen");
@@ -177,6 +177,9 @@ public class MoneyFlipClock : MonoBehaviour
         contactShadow = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, new Vector4(r + 1, r + 1, r + 1, r + 1));
         return contactShadow;
     }
+
+    /// The same five-point star for the level-complete panel (LevelManager)
+    public static Sprite SharedStarSprite() => StarSprite();
 
     static Sprite StarSprite()
     {

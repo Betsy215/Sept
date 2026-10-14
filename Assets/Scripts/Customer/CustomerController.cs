@@ -185,14 +185,33 @@ public abstract class CustomerController : MonoBehaviour
     {
         var t = 0f;
         var cam = Camera.main;
+        var handedOver = false;
+        var walkSpeed = 2.5f;                     // world units per second once the clip has played through
+        var prevX = transform.position.x;
         while (t < maxSeconds)
         {
             t += Time.deltaTime;
-            if (t >= minSeconds)
+            var right = cam != null ? cam.transform.position.x + cam.orthographicSize * cam.aspect : 3f;
+            if (t >= minSeconds && transform.position.x > right + 1.2f) yield break;
+            if (!handedOver && animator != null && animator.enabled)
             {
-                var right = cam != null ? cam.transform.position.x + cam.orthographicSize * cam.aspect : 3f;
-                if (transform.position.x > right + 1.2f) yield break;
+                // The walk clip loops and moves the sprite by a fixed distance, so a customer who is not yet off screen
+                // when it ends would snap back and walk again (owner, 13 October: "the happy walk out repeats"). After one
+                // play-through the code walks the customer the rest of the way, at the clip's own pace.
+                var speedNow = (transform.position.x - prevX) / Mathf.Max(Time.deltaTime, 1e-4f);
+                if (speedNow > 0.3f) walkSpeed = Mathf.Lerp(walkSpeed, speedNow, 0.2f);
+                var st = animator.GetCurrentAnimatorStateInfo(0);
+                if (t > 0.2f && st.normalizedTime >= 0.97f)
+                {
+                    animator.enabled = false;     // keeps the last pose and position
+                    handedOver = true;
+                }
             }
+            else if (handedOver)
+            {
+                transform.position += Vector3.right * walkSpeed * Time.deltaTime;
+            }
+            prevX = transform.position.x;
             yield return null;
         }
     }
