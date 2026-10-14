@@ -5,12 +5,13 @@ import sys, json, hashlib, os, urllib.request, urllib.error, time, subprocess
 TOKEN = subprocess.run(["python3", "-I", os.path.join(os.path.dirname(os.path.abspath(__file__)), "asc_token.py")], capture_output=True, text=True).stdout.strip().splitlines()[-1]
 A = "https://api.appstoreconnect.apple.com/v1"
 APP = "6755611355"
+BUILD = "4"                                           # the 26.10.13 build to attach
 VER = "0abde827-2bd8-47e1-959e-c9f7d63d06a4"          # 26.10.13 (26.10.09 was 228b7193-eae5-4e39-a087-c56551df7907)
 LOC = "cc1c01ba-14ea-49fb-abaf-452a63d61e8d"          # en-US version localization of 26.10.13
 REVIEW = "916f201b-d912-4db0-92e5-7c8f067e9121"       # appStoreReviewDetail of 26.10.13
 APPINFO_LOC = "ab0bcded-75b8-49f3-9b47-cd0c86e79291"  # en-US app info localization of the 26.10.13 app info
-SHOTS = "/Users/betzthebest/Desktop/Sept/Store/screenshots/final"
-VIDEO = "/Users/betzthebest/Desktop/Sept/Store/video/FoodTruckCafe_appstore_v2.mp4"
+SHOTS = "/Users/betzthebest/Desktop/Sept/Store/screenshots/final2"   # 26.10.13 set; the 26.10.09 set is in final/
+VIDEO = "/Users/betzthebest/Desktop/Sept/Store/video/FoodTruckCafe_appstore_v3.mp4"
 
 def api(method, path, body=None, raw=False):
     req = urllib.request.Request(A + path if path.startswith("/") else path, method=method)
@@ -97,8 +98,8 @@ elif what == "build":
     for x in b["data"]:
         pv = pre.get(x["relationships"]["preReleaseVersion"]["data"]["id"])
         print(" build", x["id"], x["attributes"], pv)
-        if pv == "26.10.09" and x["attributes"]["version"] == "4" and x["attributes"]["processingState"] == "VALID": chosen = x["id"]
-    if not chosen: raise SystemExit("build 26.10.09 (4) not found or not VALID")
+        if pv == "26.10.13" and x["attributes"]["version"] == BUILD and x["attributes"]["processingState"] == "VALID": chosen = x["id"]
+    if not chosen: raise SystemExit(f"build 26.10.13 ({BUILD}) not found or not VALID")
     api("PATCH", f"/appStoreVersions/{VER}/relationships/build", {"data": {"type": "builds", "id": chosen}})
     print("build attached:", chosen)
 
