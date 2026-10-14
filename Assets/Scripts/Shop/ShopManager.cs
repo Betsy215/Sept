@@ -418,7 +418,7 @@ public class ShopManager : MonoBehaviour
         card != null && (SessionManager.IsHeldBack(card.itemName?.Trim()) || SessionManager.IsHeldBack(card.upgradeFoodType?.Trim()) || SessionManager.IsHeldBack(card.gameObject.name));
 
     // The last row with the Cookies card held back (13 October 2026): three rows of cards, 900 apart
-    private const float BottomBoundary = 1800f;
+    private const float BottomBoundary = 2700f;   // four rows again with the Cookies card back (14 October); 1800 while it was held back
 
     /// At the bottom of the shop the down arrow keeps showing, with a small lock on it: more comes in the next
     /// chapter (owner, 13 October). The lock is the map's lock_small, laid over the button.

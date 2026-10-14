@@ -113,7 +113,7 @@ public class SessionManager : MonoBehaviour
     [SerializeField] private LevelManager levelManager;
 
     [Header("Shop Configuration")] [Tooltip("Total number of food items available in the shop")]
-    public int totalFoodItems = 6;   // Bread, Coffee, Juice, Apple, Choux, Cake (Cookies are held back, 13 October)
+    public int totalFoodItems = 7;   // Bread, Coffee, Juice, Apple, Choux, Cake, Cookies (back on 14 October)
 
     [Tooltip("Total number of characters available in the shop")]
     public int totalCharacters = 7; // Girl, Boy, Kid (default) + Grandma, Chef, Yoga, Businessman (shop)
@@ -199,10 +199,11 @@ public class SessionManager : MonoBehaviour
         }
     }
 
-    /// Foods that belong to a later chapter (owner, 13 October: Cookies wait for chapter 2). Until the player is in
-    /// that chapter they cannot be bought, and a session that already has one does not show it.
-    public static readonly Dictionary<string, int> FoodChapter = new Dictionary<string, int> { { "Cookies", 2 } };
-    public static readonly string[] HeldBackFoods = { "Cookies" };   // kept for older callers; FoodChapter decides
+    /// Foods that belong to a later chapter. Until the player is in that chapter they cannot be bought, and a session
+    /// that already has one does not show it. Cookies were held back on 13 October; since 14 October they are a
+    /// chapter 1 shop buy and the first use of the menu book (bought while the oven is full = off until switched on).
+    public static readonly Dictionary<string, int> FoodChapter = new Dictionary<string, int>();
+    public static readonly string[] HeldBackFoods = { };   // kept for older callers; FoodChapter decides
     public static bool IsHeldBack(string foodType) =>
         foodType != null && FoodChapter.TryGetValue(foodType, out var chapter) && chapter > CurrentChapter;
 
