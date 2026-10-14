@@ -37,11 +37,13 @@ store page and marketing before more content. Re-read the numbers in November.
    conversation.** A TestFlight upload is fine when the owner asks for a build.
 3. **The owner reads the report, not the terminal.** Report: Claude Doc "FoodTruckCafe Code Review",
    https://claude.ai/code/artifact/726347e1-dd8c-42fd-917b-be80474ff9ae, two tabs:
-   - **Report** (body node `9a385004-98ab`): fixed sections with short headings only, never a new section per task:
-     **Next** (Who / Now / Waiting-on table, always first), **Q&A** (answers to the owner's questions; remove each
-     once read and acted on), **Latest** (the newest pass only: one real capture plus short bullets, replaced each
-     time), **MVP** (the next release), **Backlog**, **Chapter 2**, **Analysis** (store and ads numbers).
-   - **Visuals** (body node `fa3ac61b-f7d8`): real game captures only, never mock-ups ("everything needs to be from
+   - **Report** (body node `9a385004-98ab`): fixed sections with short headings only. **Never add, rename or
+     remove a section without the owner asking** (owner, 14 October: "stop changing the report structures"). Order:
+     **Next** (Who / Now / Waiting-on table, always first), **Q&A** (only answers to questions the owner asked;
+     cleared once they have read them), **Current** (the task in hand: its drawings, captures and short bullets;
+     the newest pass replaces the old one), **MVP** (the next release), **Backlog**, **Chapter 2**, **Analysis**
+     (store and ads numbers). Questions to the owner go in Next's "You" row, not in Q&A.
+   - **Visuals** (body node `fa3ac61b-f7d8`, owner 14 October: keep as it is, they like it): real game captures only, never mock-ups ("everything needs to be from
      real game play, not by guess"). Holds the store-page assets of the current version, plus a temporary
      "Test before release" section when asked (remove it after the submission).
    - Images: upload with the Artifact tool (`asset: true`), then Docs `create` a blob from the asset id, then
