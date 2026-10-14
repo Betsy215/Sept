@@ -37,9 +37,9 @@ the station's count ("Oven 3/3"), greyed rows when the cap is reached. A switch 
 
 ## Steps
 
-1. Save list, `IsFoodItemActive`, migration, purchase switches on. Compile, old-save fixture.
-2. Gates: table, kitchen, orders, tutorial.
-3. Stations and caps.
-4. The book panel (placeholder art).
-5. Cookies: owned by everyone, off by default (the first use of the book).
-6. Driver run, fixtures (fresh, mid-chapter, day 16 done), iPhone and iPad captures.
+1. Save list, `IsFoodItemActive`, migration, purchase switches on. **Done 14 October.**
+2. Gates: table, kitchen, orders (follow the table). **Done 14 October.**
+3. Stations and caps. **Done 14 October.**
+4. The book panel (placeholder art, `Assets/Scripts/Utils/MenuBook.cs`, button `Resources/UI/menu_book.png`). **Done 14 October.**
+5. Cookies: a chapter 1 shop buy again (600); off when bought while the oven is full. **Done 14 October.** (Owner's first idea was "owned by everyone"; kept as a buy so the shop still has something to sell.)
+6. Driver run (14 October, running), old-save fixture, iPad captures, and the Day 0 tutorial still skips the book. Open: should the coffee machine leave the table when Coffee is off (today it stays, it is an upgrade)?

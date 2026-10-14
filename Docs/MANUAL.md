@@ -131,9 +131,11 @@ plain `python3` has no numpy. Make a new venv if the scratchpad is gone.
   (`TableLayer.topReserve`): it holds the truck button (`KitchenButtonOverTable`, `OverlapShare` 0.56), the hen
   money board (`MoneyFlipClock`, sprite `Resources/UI/money_hen.png`, follows the truck's right edge so iPad keeps
   the same gap) and the pots (`TableDecor/KitchenPots` in GameSceneOne).
-- **Held back:** Cookies (`SessionManager.HeldBackFoods`): no shop card, no table item, no kitchen plate, no
-  tutorial arrow. To ship them: empty `HeldBackFoods`, set the kitchen `cookies` object active, restore the shop's
-  `BottomBoundary` (2700) and the tutorial arrow.
+- **Menu book (14 October):** `SessionData.enabledFoodItems` beside `purchasedFoodItems`; a food is in play when
+  bought AND on (`SessionManager.IsFoodItemActive`, read by the table, `KitchenFoodGate`, and so the orders).
+  Stations and caps in `SessionManager.FoodStation` / `StationCap` (oven 3, machine 1, counter 2), at least two on.
+  `MenuBook.cs` draws the placeholder panel in code (button left of Ready during the arrangement; never on Day 0).
+  Cookies are a shop buy again (600, fourth row, `BottomBoundary` 2700); `FoodChapter` is empty until chapter 2.
 - **Shop:** three rows (`BottomBoundary` 1800); at the bottom the down arrow shows a lock (more next chapter);
   people icons share one height (`EvenOutCharacterIcons`). Prices: Juice 150, Grandma 300, Chef 300, Coffee up 350,
   Apple 350, Yoga 500, Machine up 600, Businessman 700, Choux 750, Cake 750.
