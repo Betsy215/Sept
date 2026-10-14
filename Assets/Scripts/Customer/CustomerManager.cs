@@ -144,6 +144,21 @@ public class CustomerManager : MonoBehaviour
         }
         var two = MaxSlots > 1;
         var x = two && slot < twoSlotCustomerX.Length ? twoSlotCustomerX[slot] : 0f;
+        if (two)
+        {
+            // Two customers stand where two big bubbles leave equal margins: screen edge to bubble, bubble to bubble,
+            // bubble to screen edge (owner, 13 October). The bubble is centred on its customer, and the walk-in ends
+            // at spot x + 1, so the spot is the bubble's centre minus 1.
+            var cam = Camera.main;
+            if (cam != null && orderSystem != null)
+            {
+                var half = cam.orthographicSize * cam.aspect;
+                var b = orderSystem.TwoSlotBigBubbleWidth();
+                var m = Mathf.Max(0f, (2f * half - 2f * b) / 3f);
+                var centre = slot == 0 ? half - m - b / 2f : -half + m + b / 2f;
+                x = cam.transform.position.x + centre - 1f;
+            }
+        }
         spots[slot].position = new Vector3(x, two ? twoSlotCustomerY : 0f, 0f);
         return spots[slot];
     }

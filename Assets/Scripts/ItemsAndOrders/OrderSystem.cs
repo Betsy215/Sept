@@ -288,6 +288,18 @@ public class OrderSystem : MonoBehaviour
         s.root.position += delta;
     }
 
+    /// Width of the biggest bubble (four items) at the two-slot scale, world units. CustomerManager spaces the two
+    /// customers from it so the margins left, between and right of two big bubbles are equal (owner, 13 October).
+    public float TwoSlotBigBubbleWidth()
+    {
+        var b = speechBubble4 != null ? speechBubble4 : speechBubble2 != null ? speechBubble2 : speechBubble1;
+        var sr = b != null ? b.GetComponentInChildren<SpriteRenderer>(true) : null;
+        if (sr == null || sr.sprite == null) return 2f;
+        var w = sr.sprite.bounds.size.x * sr.transform.lossyScale.x;
+        if (slots != null && slots[0].root != null) w /= Mathf.Max(0.01f, slots[0].root.localScale.x);   // without the root's current scale
+        return w * twoSlotBubbleScale;
+    }
+
     /// The patience flowers sit centred over whichever bubble is showing, on its top edge, whatever its size
     /// (owner, 13 October). Falls back to the fixed offset when the bubble has no renderer.
     private Vector3 MeterPosition(SlotVisuals s)
