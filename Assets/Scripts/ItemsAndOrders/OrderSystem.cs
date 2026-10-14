@@ -265,6 +265,17 @@ public class OrderSystem : MonoBehaviour
         slots[1].root.localScale = Vector3.one * k;
     }
 
+    /// The patience flowers sit centred over whichever bubble is showing, on its top edge, whatever its size
+    /// (owner, 13 October). Falls back to the fixed offset when the bubble has no renderer.
+    private Vector3 MeterPosition(SlotVisuals s)
+    {
+        var b = s.bubble1 != null && s.bubble1.activeSelf ? s.bubble1 : s.bubble2 != null && s.bubble2.activeSelf ? s.bubble2 : s.bubble4;
+        var r = b != null ? b.GetComponentInChildren<Renderer>() : null;
+        if (r == null) return s.root.TransformPoint(PatienceMeter.WorldPosition);
+        var bounds = r.bounds;
+        return new Vector3(bounds.center.x, bounds.max.y - 0.04f, 0f);
+    }
+
     private void SetBubble(SlotVisuals s, int itemCount)
     {
         if (s.bubble1 != null) s.bubble1.SetActive(false);
@@ -375,7 +386,7 @@ public class OrderSystem : MonoBehaviour
         orders.Add(order);
         SetBubble(s, order.items.Count);
         if (orderTitleText != null) orderTitleText.text = "Order:";
-        PatienceMeter.Show(order, s.root.TransformPoint(PatienceMeter.WorldPosition));
+        PatienceMeter.Show(order, MeterPosition(s));
         Debug.Log($"New order in slot {slot} with {order.items.Count} items, timer {order.timer:F1}s, tip x{tipMultiplier}");
     }
 

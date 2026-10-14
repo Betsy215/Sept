@@ -10,7 +10,7 @@ using UnityEngine;
 /// on 13 October: the flipping looked odd.)
 public class MoneyFlipClock : MonoBehaviour
 {
-    public static Vector3 Position = new Vector3(-0.12f, 0.12f, 0f);   // just right of the truck button
+    public static Vector3 Position = new Vector3(-0.12f, 0.09f, 0f);   // just right of the truck button, its bottom on the truck's line (owner, 13 October)
     public const float Width = 1.15f, Height = 0.5f;                  // world units, the fallback board; the truck button is about 1.0 x 0.6
     public const float HenScale = 0.5f;                               // the owner's 236 x 222 hen (her kitchen layer export, 2x) at 100 px per unit: 1.18 x 1.11 units
 
@@ -40,12 +40,12 @@ public class MoneyFlipClock : MonoBehaviour
         // the red base. If the picture is missing, the old cream board is built instead.
         var hen = Resources.Load<Sprite>("UI/money_hen");
         // the hen is stretched: longer than tall, about the truck's height (owner, 13 October, late)
-        var numberPos = new Vector3(0.01f, 0.02f, 0f); var starsY = -0.16f; var starGap = 0.21f; var starScale = 0.5f;
+        var numberPos = new Vector3(0f, 0.03f, 0f); var starsY = -0.16f; var starGap = 0.2f; var starScale = 0.5f;
         if (hen != null)
         {
             var h = new GameObject("Hen");
             h.transform.SetParent(transform, false);
-            h.transform.localScale = new Vector3(HenScale * 1.2f, HenScale * 0.6f, 1f);
+            h.transform.localScale = new Vector3(HenScale * 1.0f, HenScale * 0.6f, 1f);   // 1.18 x 0.67 units: the truck's height, a little longer (owner, 13 October)
             var hsr = h.AddComponent<SpriteRenderer>(); hsr.sprite = hen; hsr.sortingOrder = 1;
         }
         else
@@ -60,9 +60,9 @@ public class MoneyFlipClock : MonoBehaviour
         g.transform.localPosition = numberPos;
         money = g.AddComponent<TextMeshPro>();
         if (font != null) money.font = font;
-        money.fontSize = 1.7f;
-        money.characterSpacing = 7f;
-        money.color = new Color(0.36f, 0.22f, 0.09f);
+        money.fontSize = 1.9f;
+        money.characterSpacing = 6f;
+        money.color = new Color(0.27f, 0.15f, 0.05f);
         money.fontMaterial = new Material(money.fontSharedMaterial);
         money.fontMaterial.SetFloat("_OutlineWidth", 0.22f);
         money.fontMaterial.SetColor("_OutlineColor", new Color(0.99f, 0.96f, 0.9f));
@@ -75,7 +75,7 @@ public class MoneyFlipClock : MonoBehaviour
         {
             var s = new GameObject("Star" + k);
             s.transform.SetParent(transform, false);
-            s.transform.localPosition = new Vector3((k - 1) * starGap - 0.06f, starsY, 0f);
+            s.transform.localPosition = new Vector3((k - 1) * starGap + numberPos.x, starsY, 0f);   // centred under the number
             s.transform.localScale = Vector3.one * starScale;
             var sr = s.AddComponent<SpriteRenderer>();
             sr.sprite = StarSprite(); sr.sortingOrder = 4;
