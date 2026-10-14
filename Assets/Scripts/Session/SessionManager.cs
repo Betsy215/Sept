@@ -221,6 +221,7 @@ public class SessionManager : MonoBehaviour
     };
     public static readonly Dictionary<string, int> StationCap = new Dictionary<string, int> { { "Oven", 3 }, { "Machine", 1 }, { "Counter", 2 } };
     public const int MinEnabledFoods = 2;
+    public const int MaxEnabledFoods = 9;   // the menu paper holds nine stickers (owner, 14 October)
     public static string StationOf(string foodType) => foodType != null && FoodStation.TryGetValue(foodType, out var st) ? st : "Other";
     public static int CapOf(string station) => StationCap.TryGetValue(station, out var cap) ? cap : 99;
 
@@ -258,6 +259,8 @@ public class SessionManager : MonoBehaviour
         if (IsFoodItemEnabled(foodType)) return true;
         var st = StationOf(foodType);
         if (EnabledCountAtStation(st) >= CapOf(st)) { reason = $"{st} full"; return false; }
+        var on = 0; foreach (var f in EnabledList() ?? new List<string>()) if (IsFoodItemPurchased(f)) on++;
+        if (on >= MaxEnabledFoods) { reason = "menu full"; return false; }
         return true;
     }
 

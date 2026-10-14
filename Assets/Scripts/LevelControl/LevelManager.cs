@@ -774,7 +774,11 @@ public class LevelManager : MonoBehaviour
         isPaused = false;
 
         if (AudioManager.Instance != null)
+        {
             AudioManager.Instance.StopMusic();
+            // The finish paper turns over (owner, 14 October); AudioManager lives across scenes, so the sound plays out
+            AudioManager.Instance.PlaySFX(Resources.Load<AudioClip>("Audio/paper_flip"));
+        }
 
         // After a day: finish board, then the map; the map's Play shows the ad, then the Shop (owner, 10 October)
         MapScreen.CameFromDay = true;

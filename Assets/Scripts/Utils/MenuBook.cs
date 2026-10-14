@@ -11,7 +11,7 @@ using UnityEngine.UI;
 /// a little off its spot, like a real sticker), a food that is off waits in a carousel at the top of the screen.
 /// Tap a sticker on the paper to peel it off, tap one in the carousel to stick it on. The paper opens by itself two
 /// seconds into the arrangement and can be dragged anywhere. Rules (station caps, at least two on) live in
-/// SessionManager; a refused sticker shakes. Never on the Day 0 tutorial. Sticker art: Resources/UI/stickers/food.
+/// SessionManager; a refused sticker shakes. No words on the paper but MENU and DONE (owner, 14 October). Never on the Day 0 tutorial. Sticker art: Resources/UI/stickers/food.
 /// </summary>
 public class MenuBook : MonoBehaviour
 {
@@ -33,7 +33,6 @@ public class MenuBook : MonoBehaviour
     private RectTransform board;                        // where the stickers sit on the paper
     private GameObject carousel;
     private RectTransform carouselContent;
-    private TextMeshProUGUI counters, note;
     private readonly Dictionary<string, RectTransform> placed = new Dictionary<string, RectTransform>();
     private bool busy;                                  // a sticker is flying
     private bool autoOpened;
@@ -138,7 +137,6 @@ public class MenuBook : MonoBehaviour
         string why;
         if (!(on ? sm.CanDisableFood(food, out why) : sm.CanEnableFood(food, out why)))
         {
-            ShowNote(on ? "Keep at least " + SessionManager.MinEnabledFoods + " on the menu" : SessionManager.StationOf(food) + " is full: take one off first");
             StartCoroutine(Shake(from));
             return;
         }
@@ -148,6 +146,7 @@ public class MenuBook : MonoBehaviour
     private IEnumerator Move(string food, RectTransform from, bool wasOn)
     {
         busy = true;
+        var wig = from.GetComponent<Wiggle>(); if (wig != null) wig.enabled = false;
         var sprite = from.GetComponent<Image>().sprite;
         var startRot = from.eulerAngles.z;
         var startSize = from.rect.size * (from.lossyScale.x / canvasRect.lossyScale.x);
@@ -232,29 +231,23 @@ public class MenuBook : MonoBehaviour
         if (cardSprite != null) { card.sprite = cardSprite; card.type = Image.Type.Sliced; } else card.color = Cream;
         panel = card.gameObject;
         var crt = card.rectTransform;
-        Place(crt, 0f, -190f, 940f, 1320f);
+        Place(crt, 0f, -170f, 900f, 1130f);   // hugs the 3 x 3 board of nine stickers
         panel.AddComponent<DragMove>().Init(crt, canvasRect);
 
         var title = NewText("Title", crt, font, 72f, Brown); title.text = "MENU"; title.alignment = TextAlignmentOptions.Center;
-        Place(title.rectTransform, 0f, 570f, 800f, 90f);
-        var hint = NewText("Hint", crt, font, 34f, new Color(0.5f, 0.38f, 0.26f)); hint.text = "Tap a sticker to take it off";
-        hint.alignment = TextAlignmentOptions.Center; Place(hint.rectTransform, 0f, 505f, 800f, 50f);
+        Place(title.rectTransform, 0f, 482f, 800f, 90f);
 
         var b = new GameObject("Board", typeof(RectTransform)); b.transform.SetParent(crt, false);
-        board = (RectTransform)b.transform; Place(board, 0f, 30f, 860f, 880f);
+        board = (RectTransform)b.transform; Place(board, 0f, 10f, 860f, 860f);
 
-        note = NewText("Note", crt, font, 34f, new Color(0.75f, 0.25f, 0.2f)); note.alignment = TextAlignmentOptions.Center;
-        Place(note.rectTransform, 0f, -455f, 860f, 50f);
-        counters = NewText("Counters", crt, font, 38f, Brown); counters.alignment = TextAlignmentOptions.Center;
-        Place(counters.rectTransform, 0f, -505f, 860f, 50f);
 
         var done = NewImage("DoneButton", crt, new Color(0.98f, 0.78f, 0.36f));
-        Place(done.rectTransform, 0f, -585f, 280f, 100f);
+        Place(done.rectTransform, 0f, -490f, 280f, 100f);
         var dt = NewText("Label", done.rectTransform, font, 50f, Brown); dt.text = "DONE"; dt.alignment = TextAlignmentOptions.Center; Stretch(dt.rectTransform);
         done.gameObject.AddComponent<Button>().onClick.AddListener(Close);
 
         // The carousel: under the settings and pause buttons, the stickers that are off, scrolled sideways
-        var strip = NewImage("StickerCarousel", canvasRect, new Color(1f, 0.97f, 0.9f, 0.85f));
+        var strip = NewImage("StickerCarousel", canvasRect, new Color(1f, 1f, 1f, 0f));   // no background (owner)
         carousel = strip.gameObject;
         var srt = strip.rectTransform; srt.anchorMin = new Vector2(0f, 1f); srt.anchorMax = new Vector2(1f, 1f); srt.pivot = new Vector2(0.5f, 1f);
         srt.anchoredPosition = new Vector2(0f, -215f); srt.sizeDelta = new Vector2(-40f, 230f);
@@ -265,11 +258,10 @@ public class MenuBook : MonoBehaviour
         carouselContent = (RectTransform)content.transform;
         carouselContent.anchorMin = new Vector2(0f, 0f); carouselContent.anchorMax = new Vector2(0f, 1f); carouselContent.pivot = new Vector2(0f, 0.5f);
         carouselContent.offsetMin = Vector2.zero; carouselContent.offsetMax = Vector2.zero;
-        var hl = content.GetComponent<HorizontalLayoutGroup>(); hl.spacing = 24f; hl.padding = new RectOffset(24, 24, 20, 20); hl.childAlignment = TextAnchor.MiddleLeft;
+        var hl = content.GetComponent<HorizontalLayoutGroup>(); hl.spacing = -45f;   // a little overlap, like a pile of stickers hl.padding = new RectOffset(24, 24, 20, 20); hl.childAlignment = TextAnchor.MiddleLeft;
         hl.childControlWidth = false; hl.childControlHeight = false; hl.childForceExpandWidth = false; hl.childForceExpandHeight = false;
         content.GetComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         scroll.content = carouselContent; scroll.viewport = srt;
-        var empty = NewText("Empty", srt, font, 34f, new Color(0.5f, 0.38f, 0.26f)); empty.text = "Every sticker is on the menu"; empty.alignment = TextAlignmentOptions.Center; Stretch(empty.rectTransform);
 
         panel.SetActive(false);
         carousel.SetActive(false);
@@ -301,7 +293,7 @@ public class MenuBook : MonoBehaviour
                 var rng = new System.Random(StableHash(food));
                 var col = i % 3; var row = i / 3;
                 var x = (col - 1) * 285f + (float)(rng.NextDouble() * 50 - 25);
-                var y = 300f - row * 290f + (float)(rng.NextDouble() * 40 - 20);
+                var y = 285f - row * 285f + (float)(rng.NextDouble() * 40 - 20);
                 var rot = (float)(rng.NextDouble() * 18 - 9);
                 var st = MakeSticker(food, board, StickerSize);
                 st.anchoredPosition = new Vector2(x, y); st.localRotation = Quaternion.Euler(0, 0, rot);
@@ -316,12 +308,7 @@ public class MenuBook : MonoBehaviour
                 if (food == hidden) st.GetComponent<Image>().color = new Color(1, 1, 1, 0);
             }
         }
-        var empty = carousel.transform.Find("Empty"); if (empty != null) empty.gameObject.SetActive(offCount == 0);
         LayoutRebuilder.ForceRebuildLayoutImmediate(carouselContent);
-
-        counters.text = $"Oven {sm.EnabledCountAtStation("Oven")}/{SessionManager.CapOf("Oven")}    " +
-                        $"Machine {sm.EnabledCountAtStation("Machine")}/{SessionManager.CapOf("Machine")}    " +
-                        $"Counter {sm.EnabledCountAtStation("Counter")}/{SessionManager.CapOf("Counter")}";
     }
 
     private static int StableHash(string s)
@@ -341,6 +328,7 @@ public class MenuBook : MonoBehaviour
             var t = NewText("Name", rt, font, 36f, Brown); t.text = food; t.alignment = TextAlignmentOptions.Center; Stretch(t.rectTransform);
         }
         img.gameObject.AddComponent<Button>().onClick.AddListener(() => OnStickerTapped(food, rt));
+        img.gameObject.AddComponent<Wiggle>().phase = StableHash(food) % 628 / 100f;
         return rt;
     }
 
@@ -373,18 +361,21 @@ public class MenuBook : MonoBehaviour
         if (t != null) t.anchoredPosition = start;
     }
 
-    private Coroutine noteClear;
-
-    private void ShowNote(string text)
-    {
-        if (note == null) return;
-        if (noteClear != null) StopCoroutine(noteClear);
-        note.text = text; noteClear = StartCoroutine(ClearNote());
-    }
-
-    private IEnumerator ClearNote() { yield return new WaitForSecondsRealtime(2.5f); if (note != null) note.text = ""; }
-
     #endregion
+
+    /// A sticker's gentle idle wiggle (owner, 14 October): a small rock round its own tilt, each on its own beat.
+    public class Wiggle : MonoBehaviour
+    {
+        public float phase;
+        private float baseRot; private bool started;
+        private void OnEnable() { started = false; }
+        private void LateUpdate()
+        {
+            if (!started) { baseRot = transform.localEulerAngles.z; if (baseRot > 180f) baseRot -= 360f; started = true; }
+            var t = Time.unscaledTime * 2.2f + phase;
+            transform.localRotation = Quaternion.Euler(0, 0, baseRot + Mathf.Sin(t) * 2.2f + Mathf.Sin(t * 2.7f) * 0.6f);
+        }
+    }
 
     /// Drags the paper with a finger anywhere on it (taps on stickers still go to the stickers).
     public class DragMove : MonoBehaviour, IBeginDragHandler, IDragHandler
