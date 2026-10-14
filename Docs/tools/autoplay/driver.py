@@ -54,6 +54,12 @@ for day in range(0, 16):
     log(f"===== DAY index {day}")
     log(exf("/tmp/ap/goday.cs", DAY=day)); time.sleep(7)
     log(ex(open("/tmp/ap/state.cs").read()))
+    # a one-time hint (the apple tree, 14 October) runs over the arrangement: tap through it like a player
+    for _ in range(30):
+        r = ex(open("/tmp/ap/tutstep.cs").read())
+        if r == "T|none": break
+        if r.startswith("T|tapped"): log("  hint:", r)
+        time.sleep(1.0)
     log(ex(open("/tmp/startday.cs").read())); time.sleep(1)
     ex(f"UnityEngine.Time.timeScale = {SPEED}f; return \"speed\";")
     counts = {}; t0 = time.time(); last_state = 0

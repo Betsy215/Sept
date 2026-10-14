@@ -32,6 +32,18 @@ public class TutorialDirector : MonoBehaviour
         return s != null && s.isActive && !s.tutorialSeen && s.levelsCompleted == 0;
     }
 
+    /// PlayerPrefs flag: 1 once the apple hint has played on this device (owner, 14 October).
+    public const string AppleHintKey = "ftc.hint.apple";
+
+    /// The first normal day the apples are on the table, a short hint during the arrangement phase shows how to
+    /// serve them and where to pick more. Apples are a shop buy, so the Day 0 tutorial never has them.
+    public static bool AppleHintDue(SessionManager sm)
+    {
+        if (IsDue(sm)) return false;
+        if (sm == null || !sm.HasActiveSession() || !sm.IsFoodItemPurchased("Apple")) return false;
+        return PlayerPrefs.GetInt(AppleHintKey, 0) == 0;
+    }
+
 
     private LevelManager levelManager;
     private GamePhaseManager phaseManager;
@@ -146,6 +158,22 @@ public class TutorialDirector : MonoBehaviour
                 Say("Bread is baking");
                 yield return new WaitForSeconds(1.5f);
 
+                // While it bakes: the coffee bags refill the machine's beans (owner, 14 October)
+                var beans = FindInScene("KitchenScene", "coffee");
+                var beansScript = beans != null ? beans.GetComponent<CoffeeInKitchen>() : null;
+                var beansShown = false;
+                if (beansScript != null && beans.activeInHierarchy)
+                {
+                    Say("Machine out of beans? Tap the coffee bags");
+                    yield return PointAtRect(beans.GetComponent<RectTransform>());
+                    yield return WaitForTapOnRect(beans.GetComponent<RectTransform>());
+                    beansScript.OnPointerClick(EventFor(beans));
+                    HideHand();
+                    Say("Beans are full again");
+                    yield return new WaitForSeconds(1.5f);
+                    beansShown = true;
+                }
+
                 // While it bakes, point at every other kitchen section the player can unlock later
                 Say("More kitchen upgrades available as you progress!");
                 var sections = new List<RectTransform>();
@@ -153,6 +181,7 @@ public class TutorialDirector : MonoBehaviour
                 foreach (var name in new[] { "windowleft", "cableft", "cabright", "coffee", "tableleft", "tableright", "spot2", "spot3" })
                 {
                     if (name == "cabright" && SessionManager.IsHeldBack("Cookies")) continue;   // the Cookies plate's slot, not in this release
+                    if (name == "coffee" && beansShown) continue;   // just taught; the bags are not an upgrade
                     var go = FindInScene("KitchenScene", name);
                     if (go != null) sections.Add(go.GetComponent<RectTransform>());
                 }
@@ -173,6 +202,100 @@ public class TutorialDirector : MonoBehaviour
 
         HideHand();
         ShowEndCard();
+    }
+
+    /// Entry for the one-time apple hint (see <see cref="AppleHintDue"/>). Runs over the arrangement phase,
+    /// when no customers come, with the same card and arrow as Day 0; then removes itself.
+    public void BeginAppleHint(GamePhaseManager gpm)
+    {
+        phaseManager = gpm;
+        BuildUi();
+        StartCoroutine(RunAppleHint());
+    }
+
+    private IEnumerator RunAppleHint()
+    {
+        yield return null; // let every Start() finish
+
+        // The arrangement's own "Drag to arrange" card and drag hand would sit on top of this card: hide them
+        // while the hint runs (the arrangement starts twice on load, so once more a moment later)
+        ShowArrangeHints(false);
+
+        // Once only, even if the player leaves halfway
+        PlayerPrefs.SetInt(AppleHintKey, 1);
+        PlayerPrefs.Save();
+
+        var apple = FindItem("Apple");
+        if (apple == null || phaseManager == null || phaseManager.GetCurrentPhase() != GamePhase.ARRANGEMENT)
+        {
+            EndHint();
+            yield break;
+        }
+
+        yield return new WaitForSeconds(0.3f);
+        ShowArrangeHints(false);
+        Say("New: apples! Tap them to serve");
+        yield return PointAtWorld(apple.transform.position);
+        yield return new WaitForSeconds(2.5f);
+        HideHand();
+
+        var kitchenButton = GameObject.Find("KitchenButton");
+        if (kitchenButton != null && KitchenSceneManager.Instance != null)
+        {
+            Say("Out of apples? Tap Kitchen");
+            yield return PointAtRect(kitchenButton.GetComponent<RectTransform>());
+            yield return WaitForTapOnRect(kitchenButton.GetComponent<RectTransform>());
+            HideHand();
+            KitchenSceneManager.Instance.OpenKitchen();
+            yield return new WaitUntil(() => SceneManager.GetSceneByName("KitchenScene").isLoaded);
+            yield return new WaitForSeconds(0.8f);
+
+            var tree = FindInScene("KitchenScene", "apples");
+            var picker = tree != null ? tree.GetComponent<AppleInKitchen>() : null;
+            if (picker != null)
+            {
+                // Picked on an earlier day? It is hidden while it grows back (8 s)
+                var waited = 0f;
+                while (tree != null && !tree.activeInHierarchy && waited < 10f)
+                {
+                    waited += Time.unscaledDeltaTime;
+                    yield return null;
+                }
+
+                if (tree != null && tree.activeInHierarchy)
+                {
+                    Say("Tap the apples to pick more");
+                    yield return PointAtRect(tree.GetComponent<RectTransform>());
+                    yield return WaitForTapOnRect(tree.GetComponent<RectTransform>());
+                    picker.OnPointerClick(EventFor(tree));
+                    HideHand();
+                    Say("The tree grows more in a few seconds");
+                    yield return new WaitForSeconds(2.5f);
+                }
+            }
+
+            KitchenSceneManager.Instance.CloseKitchen();
+            yield return new WaitForSeconds(0.6f);
+        }
+
+        EndHint();
+    }
+
+    private void ShowArrangeHints(bool show)
+    {
+        if (phaseManager == null) return;
+        if (phaseManager.tutorialPanel != null) phaseManager.tutorialPanel.SetActive(show);
+        var card = phaseManager.arrangmentUI != null ? phaseManager.arrangmentUI.transform.Find("HintCard") : null;
+        if (card != null) card.gameObject.SetActive(show);
+        if (phaseManager.tutorialText != null) phaseManager.tutorialText.gameObject.SetActive(show);
+    }
+
+    private void EndHint()
+    {
+        if (phaseManager != null && phaseManager.GetCurrentPhase() == GamePhase.ARRANGEMENT) ShowArrangeHints(true);
+        HideHand();
+        if (canvas != null) Destroy(canvas.gameObject);
+        Destroy(this);
     }
 
     #endregion

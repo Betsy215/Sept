@@ -207,22 +207,38 @@ public class MoneyFlipClock : MonoBehaviour
     static Sprite StarSprite()
     {
         if (starSprite != null) return starSprite;
-        const int n = 40;
+        // A real five-point star with straight sides and softly rounded tips (owner, 14 October: the old one, whose
+        // radius was blended by angle, bowed its sides into petals and read as a flower). Ten corners, outer 0.84 and
+        // inner 0.46 of the half-width, grown by 0.13 so the tips round off and reach the same 0.97 edge as before.
+        const int n = 128;
+        const float outer = 0.84f, inner = 0.46f, round = 0.13f;
+        var corners = new Vector2[10];
+        for (var i = 0; i < 10; i++)
+        {
+            var ang = Mathf.PI / 2f + i * Mathf.PI / 5f;   // first tip straight up
+            corners[i] = new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)) * (i % 2 == 0 ? outer : inner);
+        }
+        var aa = 1.5f / (n / 2f);   // a pixel and a half of soft edge
         var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear };
         var px = new Color[n * n];
         for (var y = 0; y < n; y++)
         for (var x = 0; x < n; x++)
         {
-            var dx = (x + 0.5f - n / 2f) / (n / 2f); var dy = (y + 0.5f - n / 2f) / (n / 2f);
-            var ang = Mathf.Atan2(dy, dx); var rad = Mathf.Sqrt(dx * dx + dy * dy);
-            // five-point star: radius alternates between 1 and 0.45 with the angle
-            var k = Mathf.Abs(Mathf.Repeat(ang + Mathf.PI / 2f, 2f * Mathf.PI / 5f) / (2f * Mathf.PI / 5f) - 0.5f) * 2f;   // 0 at a tip, 1 at a valley
-            var edge = Mathf.Lerp(1f, 0.45f, k);
-            var a = Mathf.Clamp01((edge - rad) * 10f);
-            px[y * n + x] = new Color(1f, 1f, 1f, a);
+            var p = new Vector2((x + 0.5f - n / 2f) / (n / 2f), (y + 0.5f - n / 2f) / (n / 2f));
+            var dist = 9f; var inside = false;
+            for (var i = 0; i < 10; i++)
+            {
+                var a0 = corners[i]; var b0 = corners[(i + 1) % 10];
+                var e = b0 - a0;
+                var t = Mathf.Clamp01(Vector2.Dot(p - a0, e) / e.sqrMagnitude);
+                dist = Mathf.Min(dist, (p - a0 - e * t).magnitude);
+                if ((a0.y > p.y) != (b0.y > p.y) && p.x < e.x * (p.y - a0.y) / e.y + a0.x) inside = !inside;
+            }
+            var signedDist = inside ? -dist : dist;
+            px[y * n + x] = new Color(1f, 1f, 1f, Mathf.Clamp01((round - signedDist) / aa + 0.5f));
         }
         tex.SetPixels(px); tex.Apply();
-        starSprite = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f * 40f / 22f);   // about 0.22 units wide
+        starSprite = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f * n / 22f);   // about 0.22 units wide, as before
         return starSprite;
     }
 }
