@@ -28,6 +28,7 @@ only if chapter 2 ever gets an unlock price (new field, never a rename; take the
 | Shop background | `ShopManager.Start` ~38 | swap the `bg` Image |
 | Patience flowers | `PatienceMeter` ~21, 92-134 | cache per chapter; petal count from `petals.Length` (hibiscus 5, daisy 8) |
 | Map | `MapScreen` | pages, see below |
+| Kitchen tree | `KitchenScene` `bg/tree` (14 October: the apple tree is its own Image, `Kitchen/tree_apple.png`; the background `kitchen_bg_notree.png` has the window refilled) | swap the sprite for the coconut palm (owner: "instead of apple tree, use coconut tree in kitchen"); the apples object stays for Apple, a Coconut food would need its own pick object |
 | Finish text, day range, chapter end | `LevelManager` 82, 631, 684, 698 | done (step 2) |
 
 ## A new food (copy Cookies)
