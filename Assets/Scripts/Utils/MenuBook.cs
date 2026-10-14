@@ -126,32 +126,32 @@ public class MenuBook : MonoBehaviour
         else card.color = Cream;
         var crt = card.rectTransform;
         crt.anchorMin = crt.anchorMax = new Vector2(0.5f, 0.5f);
-        crt.sizeDelta = new Vector2(940f, 1240f);
+        crt.sizeDelta = new Vector2(940f, 1320f);
         crt.anchoredPosition = new Vector2(0f, 60f);
         card.gameObject.AddComponent<Button>();                       // swallows taps so they do not reach Dim
 
         var title = NewText("Title", crt, font, 72f, Brown);
         title.text = "MENU";
         title.alignment = TextAlignmentOptions.Center;
-        Place(title.rectTransform, 0f, 520f, 800f, 90f);
+        Place(title.rectTransform, 0f, 570f, 800f, 90f);
 
         var hint = NewText("Hint", crt, font, 36f, new Color(0.5f, 0.38f, 0.26f));
         hint.text = "Tap a food to switch it on or off";
         hint.alignment = TextAlignmentOptions.Center;
-        Place(hint.rectTransform, 0f, 450f, 800f, 50f);
+        Place(hint.rectTransform, 0f, 500f, 800f, 50f);
 
         var rowsGo = new GameObject("Rows", typeof(RectTransform));
         rowsGo.transform.SetParent(crt, false);
         rows = (RectTransform)rowsGo.transform;
-        Place(rows, 0f, 60f, 820f, 720f);
+        Place(rows, 0f, 70f, 820f, 780f);
 
         counters = NewText("Counters", crt, font, 40f, Brown);
         counters.alignment = TextAlignmentOptions.Center;
-        Place(counters.rectTransform, 0f, -400f, 860f, 60f);
+        Place(counters.rectTransform, 0f, -460f, 860f, 60f);
 
         var done = NewImage("DoneButton", crt, new Color(0.98f, 0.78f, 0.36f));
         var drt = done.rectTransform;
-        Place(drt, 0f, -520f, 300f, 110f);
+        Place(drt, 0f, -570f, 300f, 110f);
         var dt = NewText("Label", drt, font, 52f, Brown);
         dt.text = "DONE";
         dt.alignment = TextAlignmentOptions.Center;
@@ -159,7 +159,8 @@ public class MenuBook : MonoBehaviour
         done.gameObject.AddComponent<Button>().onClick.AddListener(Close);
     }
 
-    /// Rebuilds the rows from the save: one per bought food, in the table's order.
+    /// Rebuilds the grid from the save: one tile per bought food, three across, in the table's order
+    /// (owner, 14 October: a grid, with the oven stickers as the icons of the baked foods).
     private void Refresh()
     {
         if (rows == null) return;
@@ -172,43 +173,40 @@ public class MenuBook : MonoBehaviour
                 if (item != null && sm.IsFoodItemPurchased(item.GetFoodType()) && !foods.Contains(item.GetFoodType()))
                     foods.Add(item.GetFoodType());
 
-        const float rowH = 110f;
-        var y = rows.sizeDelta.y / 2f - rowH / 2f;
-        foreach (var food in foods)
+        const int cols = 3; const float tileW = 260f, tileH = 245f, gap = 15f;
+        var x0 = -(cols - 1) * (tileW + gap) / 2f;
+        var y0 = rows.sizeDelta.y / 2f - tileH / 2f;
+        for (var i = 0; i < foods.Count; i++)
         {
+            var food = foods[i];
             var on = sm.IsFoodItemEnabled(food);
             string why;
             var allowed = on ? sm.CanDisableFood(food, out why) : sm.CanEnableFood(food, out why);
 
-            var row = NewImage("Row_" + food, rows, on ? new Color(1f, 1f, 1f, 0.55f) : new Color(1f, 1f, 1f, 0.25f));
-            Place(row.rectTransform, 0f, y, rows.sizeDelta.x, rowH - 10f);
+            var tile = NewImage("Tile_" + food, rows, on ? new Color(1f, 1f, 1f, 0.6f) : new Color(1f, 1f, 1f, 0.25f));
+            Place(tile.rectTransform, x0 + (i % cols) * (tileW + gap), y0 - (i / cols) * (tileH + gap), tileW, tileH);
 
-            var icon = NewImage("Icon", row.rectTransform, Color.white);
+            var icon = NewImage("Icon", tile.rectTransform, Color.white);
             var s = IconFor(food);
             if (s != null) icon.sprite = s; else icon.color = new Color(0, 0, 0, 0);
             icon.preserveAspect = true;
-            Place(icon.rectTransform, -330f, 0f, 90f, 90f);
+            Place(icon.rectTransform, 0f, 40f, 140f, 140f);
+            if (!on) icon.color = new Color(1f, 1f, 1f, 0.5f);
 
-            var name = NewText("Name", row.rectTransform, font, 46f, allowed || on ? Brown : OffGrey);
-            name.text = food;
-            name.alignment = TextAlignmentOptions.Left;
-            Place(name.rectTransform, -60f, 14f, 420f, 50f);
+            var name = NewText("Name", tile.rectTransform, font, 36f, allowed || on ? Brown : OffGrey);
+            name.text = food + (allowed || on ? "" : "\n<size=22>" + why + "</size>");
+            name.alignment = TextAlignmentOptions.Center;
+            Place(name.rectTransform, 0f, -58f, tileW - 20f, 60f);
 
-            var station = NewText("Station", row.rectTransform, font, 28f, new Color(0.5f, 0.38f, 0.26f));
-            station.text = SessionManager.StationOf(food) + (allowed || on ? "" : "  (" + why + ")");
-            station.alignment = TextAlignmentOptions.Left;
-            Place(station.rectTransform, -60f, -28f, 420f, 40f);
-
-            var pill = NewImage("Pill", row.rectTransform, on ? OnGreen : OffGrey);
-            Place(pill.rectTransform, 300f, 0f, 150f, 64f);
-            var pt = NewText("Label", pill.rectTransform, font, 36f, Color.white);
+            var pill = NewImage("Pill", tile.rectTransform, on ? OnGreen : OffGrey);
+            Place(pill.rectTransform, 0f, -100f, 120f, 40f);
+            var pt = NewText("Label", pill.rectTransform, font, 30f, Color.white);
             pt.text = on ? "ON" : "OFF";
             pt.alignment = TextAlignmentOptions.Center;
             Stretch(pt.rectTransform);
 
             var captured = food;
-            row.gameObject.AddComponent<Button>().onClick.AddListener(() => Toggle(captured));
-            y -= rowH;
+            tile.gameObject.AddComponent<Button>().onClick.AddListener(() => Toggle(captured));
         }
 
         counters.text = $"Oven {sm.EnabledCountAtStation("Oven")}/{SessionManager.CapOf("Oven")}    " +
@@ -216,9 +214,11 @@ public class MenuBook : MonoBehaviour
                         $"Counter {sm.EnabledCountAtStation("Counter")}/{SessionManager.CapOf("Counter")}";
     }
 
-    /// The food's own table picture (works for items that are switched off too).
+    /// The oven sticker of a baked food (Resources/UI/stickers/<food>), else the food's own table picture.
     private Sprite IconFor(string food)
     {
+        var sticker = Resources.Load<Sprite>("UI/stickers/" + food);
+        if (sticker != null) return sticker;
         if (levelManager == null || levelManager.serveableItems == null) return null;
         foreach (var item in levelManager.serveableItems)
         {

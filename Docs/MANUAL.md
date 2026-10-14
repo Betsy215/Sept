@@ -127,7 +127,9 @@ plain `python3` has no numpy. Make a new venv if the scratchpad is gone.
 - **Patience:** three daisies per order (`PatienceMeter`, sprites in `Resources/Patience`), centred on the bubble's
   top (`OrderSystem.MeterPosition`); each wilts in turn; each served item refills the draining one
   (`OrderSystem.RefillPatience`). Tip = item points x seconds left x 0.1 x the customer's tip multiplier.
-- **Money and stars:** `ScoreManager` (level score, tips, `payFactor` 0.5 on replays of a finished day);
+- **Money and stars:** `ScoreManager` (level score, tips, `payFactor` 0.5 on replays of a finished day). Star lines
+  (`Level1..16Data.starThreshold1..3`) were reset on 14 October from a perfect fast player's earnings: 30 / 55 / 80 %
+  (`Docs/tools/recipes/economy_tune.cs`; check run: three stars on 14 of 16 days);
   `SessionManager` holds the wallet, `levelStars`, `starBonusPaidDays` (three-star bonus $100 once per day).
   The finish card shows today's sale and tips (the replay share), counts into Earned, and shows the day's stars.
 - **Table:** cloth `Assets/Images/knockout 1.PNG` (from `Store/redesign/cloth_picnic.py`), edge shadow
@@ -139,7 +141,10 @@ plain `python3` has no numpy. Make a new venv if the scratchpad is gone.
   bought AND on (`SessionManager.IsFoodItemActive`, read by the table, `KitchenFoodGate`, and so the orders).
   Stations and caps in `SessionManager.FoodStation` / `StationCap` (oven 3, machine 1, counter 2), at least two on.
   `MenuBook.cs` draws the placeholder panel in code (button left of Ready during the arrangement; never on Day 0).
-  Cookies are a shop buy again (600, fourth row, `BottomBoundary` 2700); `FoodChapter` is empty until chapter 2.
+  Cookies are a shop buy again (600, fourth row, `BottomBoundary` 2700); `FoodChapter` is empty until chapter 2. The book
+  is a grid; the baked foods' icons are their oven notes (`Resources/UI/stickers`). Ovens keep their place when a
+  food is off (`KitchenFoodGate.keepVisible`): only the note hides and the baking sleeps; the Cookies note
+  (`sticker4`, `ovens/sticker_cookies.png`) sits on oven3 beside the cake note. The coffee machine follows Coffee.
 - **Shop:** three rows (`BottomBoundary` 1800); at the bottom the down arrow shows a lock (more next chapter);
   people icons share one height (`EvenOutCharacterIcons`). Prices: Juice 150, Grandma 300, Chef 300, Coffee up 350,
   Apple 350, Yoga 500, Machine up 600, Businessman 700, Choux 750, Cake 750.

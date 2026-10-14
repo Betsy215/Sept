@@ -42,4 +42,14 @@ the station's count ("Oven 3/3"), greyed rows when the cap is reached. A switch 
 3. Stations and caps. **Done 14 October.**
 4. The book panel (placeholder art, `Assets/Scripts/Utils/MenuBook.cs`, button `Resources/UI/menu_book.png`). **Done 14 October.**
 5. Cookies: a chapter 1 shop buy again (600); off when bought while the oven is full. **Done 14 October.** (Owner's first idea was "owned by everyone"; kept as a buy so the shop still has something to sell.)
-6. Driver run (14 October, running), old-save fixture, iPad captures, and the Day 0 tutorial still skips the book. Open: should the coffee machine leave the table when Coffee is off (today it stays, it is an upgrade)?
+6. Driver run (14 October, running), old-save fixture, iPad captures, and the Day 0 tutorial still skips the book. The coffee machine goes with Coffee (owner, 14 October): off in the book, off the table.
+
+## Owner, 14 October afternoon
+
+- Oven stickers: each baked food's sticky note on its oven shows when the food is on and hides when it is off
+  (`KitchenFoodGate` on sticker1/2/3; Cookies get a fourth note, three designs in `Store/ui/stickers`, A installed as
+  `Resources/UI/stickers/Cookies.png` until the owner picks).
+- The book is a grid (three tiles across), the baked foods' icons are their stickers (`Resources/UI/stickers/<food>`,
+  copies of the owner's notes), the others keep their table picture.
+- Level complete panel: design A (the order pad with the gingham band, `Store/ui/day_receipt/idea_A.png`) replaces
+  `Assets/Images/paper.png` (original kept as `paper_original.png`), to match the order receipt.

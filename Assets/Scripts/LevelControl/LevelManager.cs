@@ -482,6 +482,11 @@ public class LevelManager : MonoBehaviour
                 if (shouldBeActive) activatedCount++;
             }
 
+        // The coffee machine goes with Coffee: off in the menu book, off the table (owner, 14 October)
+        var coffeeOn = SessionManager.Instance.IsFoodItemActive("Coffee");
+        foreach (var machine in FindObjectsOfType<CoffeeMachine>(true))
+            if (machine.gameObject.activeSelf != coffeeOn) machine.gameObject.SetActive(coffeeOn);
+
         // Apply upgrade levels to ALL IUpgradeable objects (unified approach)
         ApplyUpgradeLevels();
 
