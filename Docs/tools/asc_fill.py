@@ -68,16 +68,11 @@ Shop & Upgrade:
 Use the money you earn after completing levels to buy new recipes, upgrade your kitchenware, and invite new regulars to your truck."""
 KEYWORDS = "bakery,restaurant,time management,coffee shop,cake,pastry,kitchen,tycoon,diner,chef,dessert,cooking"
 PROMO = "Run a tiny bakery truck: brew coffee, bake bread and cake, keep two customers happy at once from morning to night. A 16-day chapter, stars for every day, new regulars."
-WHATS_NEW = """Fresh out of the oven: a busier little bakery!
-
-Two customers at the counter: serve them side by side and keep both smiling.
-Patience daisies: three little flowers show how long each customer will wait, and every treat you serve brings one back.
-Days on a clock: the sky warms to dusk and night as the day winds down. No timer, just the sunset.
-A chapter map: 16 days with stars for each one, a three-star bonus, and replays whenever you like.
-A new counter: a little hen keeps your money and the day's stars, with flower pots by the truck.
-Picnic cloth and a tidier table.
-
-Small crumbs swept up: the Girl's happy face, customers who walked out twice, and the tutorial card."""
+WHATS_NEW = """New patience system
+New order mechanism
+Visual updates
+A new map
+Daily rewards"""
 NOTES = "No sign-in. The tutorial runs on first launch; tap Play to start a day. Ads are Unity Ads, shown after a day ends."
 SUBTITLE = "Bake, serve & grow your cafe"
 
