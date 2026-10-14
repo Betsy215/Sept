@@ -465,8 +465,6 @@ public class LevelManager : MonoBehaviour
         }
 
         // Get purchase status AND apply upgrade levels
-        var sessionData = SessionManager.Instance.GetCurrentSession();
-        var purchasedItems = sessionData.purchasedFoodItems;
         var activatedCount = 0;
 
         // Activate only purchased ServeableItems
@@ -474,7 +472,7 @@ public class LevelManager : MonoBehaviour
             if (serveableItems[i] != null)
             {
                 var itemFoodType = serveableItems[i].GetFoodType();
-                var shouldBeActive = purchasedItems.Contains(itemFoodType) && !SessionManager.IsHeldBack(itemFoodType);
+                var shouldBeActive = SessionManager.Instance.IsFoodItemActive(itemFoodType);   // bought and switched on in the menu book
                 serveableItems[i].gameObject.SetActive(shouldBeActive);
 
                 if (shouldBeActive) activatedCount++;
@@ -485,6 +483,15 @@ public class LevelManager : MonoBehaviour
 
         Debug.Log(
             $"Level {currentLevelIndex + 1}: Activated {activatedCount} serveable items with upgrade levels applied");
+    }
+
+    /// The menu book switched a food on or off during the arrangement: show or hide it on the table and tell the
+    /// order system and the drag cache. Saved positions stay.
+    public void ReapplyServeableItems()
+    {
+        ApplyServeableItemSettings();
+        if (gamePhaseManager != null) gamePhaseManager.SendMessage("RefreshDraggableCache", SendMessageOptions.DontRequireReceiver);
+        if (orderSystem != null) orderSystem.SendMessage("UpdateActiveFoodTypes", SendMessageOptions.DontRequireReceiver);
     }
 
     private void ApplyUpgradeLevels()

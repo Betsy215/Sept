@@ -14,6 +14,9 @@ public class SessionData
 
     public List<string> purchasedFoodItems;
     public List<string> purchasedCharacters;
+    // Menu book (owner, 14 October 2026): bought foods the player has switched on. A food is in play only when it is
+    // bought AND on. Null in saves from before the book: LoadSession fills it with every bought food.
+    public List<string> enabledFoodItems;
 
     // True once the player has watched (or skipped past) the Level 0 tutorial for this game
     public bool tutorialSeen;
@@ -58,6 +61,7 @@ public class SessionData
         isActive = true;
 
         purchasedFoodItems = new List<string> { "Bread", "Coffee" };
+        enabledFoodItems = new List<string> { "Bread", "Coffee" };
         foodUpgradeLevels = new Dictionary<string, int>()
         {
             { "Coffee", 1 },
@@ -205,6 +209,79 @@ public class SessionManager : MonoBehaviour
     /// Chapter of the day being played (always 1 while Chapter.Count is 1).
     public static int CurrentChapter =>
         Mathf.Clamp(Chapter.Of(Instance != null ? Instance.GetCurrentLevelIndex() : 0), 1, Chapter.Count);
+
+    #region MENU BOOK (owner, 14 October 2026)
+
+    /// Each food's station in the kitchen, and how many foods a station can have switched on at once.
+    public static readonly Dictionary<string, string> FoodStation = new Dictionary<string, string>
+    {
+        { "Bread", "Oven" }, { "Cake", "Oven" }, { "Choux", "Oven" }, { "Cookies", "Oven" },
+        { "Coffee", "Machine" }, { "Juice", "Counter" }, { "Apple", "Counter" }
+    };
+    public static readonly Dictionary<string, int> StationCap = new Dictionary<string, int> { { "Oven", 3 }, { "Machine", 1 }, { "Counter", 2 } };
+    public const int MinEnabledFoods = 2;
+    public static string StationOf(string foodType) => foodType != null && FoodStation.TryGetValue(foodType, out var st) ? st : "Other";
+    public static int CapOf(string station) => StationCap.TryGetValue(station, out var cap) ? cap : 99;
+
+    private List<string> EnabledList()
+    {
+        if (currentSession == null) return null;
+        if (currentSession.enabledFoodItems == null)
+            currentSession.enabledFoodItems = new List<string>(currentSession.purchasedFoodItems ?? new List<string>());
+        return currentSession.enabledFoodItems;
+    }
+
+    /// Switched on in the menu book (bought or not). No session: everything is on.
+    public bool IsFoodItemEnabled(string foodType)
+    {
+        if (string.IsNullOrEmpty(foodType)) return true;
+        var list = EnabledList(); return list == null || list.Contains(foodType);
+    }
+
+    /// The one rule: a food is in play (table, kitchen, orders) when it is bought and switched on.
+    public bool IsFoodItemActive(string foodType) => IsFoodItemPurchased(foodType) && IsFoodItemEnabled(foodType);
+
+    /// Foods switched on at this station now (bought ones only).
+    public int EnabledCountAtStation(string station)
+    {
+        var list = EnabledList(); if (list == null) return 0;
+        var n = 0; foreach (var f in list) if (StationOf(f) == station && IsFoodItemPurchased(f)) n++;
+        return n;
+    }
+
+    /// Can this food be switched on now? reason = "" when yes, else why not (the station is full).
+    public bool CanEnableFood(string foodType, out string reason)
+    {
+        reason = "";
+        if (!IsFoodItemPurchased(foodType)) { reason = "not bought"; return false; }
+        if (IsFoodItemEnabled(foodType)) return true;
+        var st = StationOf(foodType);
+        if (EnabledCountAtStation(st) >= CapOf(st)) { reason = $"{st} full"; return false; }
+        return true;
+    }
+
+    /// Can this food be switched off now? At least MinEnabledFoods bought foods must stay on.
+    public bool CanDisableFood(string foodType, out string reason)
+    {
+        reason = "";
+        if (!IsFoodItemEnabled(foodType)) return true;
+        var on = 0; foreach (var f in EnabledList() ?? new List<string>()) if (IsFoodItemPurchased(f)) on++;
+        if (on <= MinEnabledFoods) { reason = $"keep at least {MinEnabledFoods} on"; return false; }
+        return true;
+    }
+
+    /// Switch a bought food on or off. Returns false (and changes nothing) when the rules say no.
+    public bool SetFoodEnabled(string foodType, bool on)
+    {
+        var list = EnabledList(); if (list == null || string.IsNullOrEmpty(foodType)) return false;
+        string why;
+        if (on) { if (!CanEnableFood(foodType, out why)) { Debug.Log($"Menu book: cannot switch on {foodType}: {why}"); return false; } if (!list.Contains(foodType)) list.Add(foodType); }
+        else { if (!CanDisableFood(foodType, out why)) { Debug.Log($"Menu book: cannot switch off {foodType}: {why}"); return false; } list.Remove(foodType); }
+        SaveSession();
+        return true;
+    }
+
+    #endregion
 
     public bool IsFoodItemPurchased(string foodType)
     {
@@ -518,6 +595,8 @@ public class SessionManager : MonoBehaviour
                 currentSession.SyncUpgradesFromLists();
                 if (currentSession.levelStars == null) currentSession.levelStars = new List<int>();
                 if (currentSession.starBonusPaidDays == null) currentSession.starBonusPaidDays = new List<int>();
+                if (currentSession.enabledFoodItems == null)   // a save from before the menu book: everything bought is on
+                    currentSession.enabledFoodItems = new List<string>(currentSession.purchasedFoodItems ?? new List<string>());
                 // NEW: Handle legacy sessions without saved positions
                 if (currentSession.savedFoodPositions == null)
                 {
@@ -548,6 +627,8 @@ public class SessionManager : MonoBehaviour
         if (!currentSession.purchasedFoodItems.Contains(foodType))
         {
             currentSession.purchasedFoodItems.Add(foodType);
+            var list = EnabledList(); string why;
+            if (list != null && !list.Contains(foodType) && CanEnableFood(foodType, out why)) list.Add(foodType);   // on by default
             SaveSession();
             OnFoodItemPurchased?.Invoke(foodType);
             Debug.Log($"Purchased food item: {foodType}");

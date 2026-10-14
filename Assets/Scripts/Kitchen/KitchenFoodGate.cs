@@ -31,7 +31,7 @@ public class KitchenFoodGate : MonoBehaviour
 
         // Inspector strings pick up stray whitespace easily; purchases are matched by exact string.
         var foodType = associatedFoodType?.Trim() ?? "";
-        var purchased = SessionManager.Instance.IsFoodItemPurchased(foodType);
+        var purchased = SessionManager.Instance.IsFoodItemActive(foodType);   // bought and switched on in the menu book
         gameObject.SetActive(purchased);
         DebugLog($"'{associatedFoodType}' purchased={purchased} → {(purchased ? "shown" : "hidden")}");
     }
