@@ -435,8 +435,8 @@ public class ShopManager : MonoBehaviour
             var rt = (RectTransform)go.transform;
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0.5f);
             var br = scrollDownButton.GetComponent<RectTransform>().rect;
-            rt.anchoredPosition = new Vector2(br.width * 0.26f, -br.height * 0.24f);   // lower right corner, the arrow stays visible
-            var size = br.height * 0.5f;
+            rt.anchoredPosition = new Vector2(0f, 2f);                                   // in the middle of the arrow (owner, 13 October)
+            var size = br.height * 0.78f;
             rt.sizeDelta = new Vector2(size * sprite.rect.width / sprite.rect.height, size);
             var img = go.GetComponent<Image>(); img.sprite = sprite; img.raycastTarget = false; img.preserveAspect = true;
             t = go.transform;
@@ -454,7 +454,7 @@ public class ShopManager : MonoBehaviour
         var currentY = containerRect.anchoredPosition.y;
         var canScrollUp = currentY > -38f;
         var canScrollDown = currentY < BottomBoundary;
-        ShowDownLock(!canScrollDown);
+        ShowDownLock(currentY >= BottomBoundary - 1f);   // only when scrolled all the way down
 
         if (scrollUpButton != null)
             scrollUpButton.interactable = canScrollUp;
