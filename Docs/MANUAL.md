@@ -27,7 +27,9 @@ owner's kitchen art on the table, Cookies held back for a later release.
 
 Business (9 October): 55 lifetime downloads, all from App Store search, ads earn cents. Unity Ads (checked 14 October,
 dashboard project 568be95c, game id 6074412): `Interstitial_iOS` and `Rewarded_iOS` are active and serving; no payout
-profile yet. Stay free; work on the
+profile yet. Unity counts TestFlight devices (test mode is off, `AdsInitializer._testMode`); the 7 to 13 October
+impressions (6) fall on the owner's TestFlight days (9, 12, 13 October), so they are not player data. To separate
+them: the dashboard's Testing page takes test devices by advertising id. Stay free; work on the
 store page and marketing before more content. Re-read the numbers in November.
 
 ## 2. The owner's rules
