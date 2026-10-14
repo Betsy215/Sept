@@ -25,11 +25,31 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
 
     private static bool sequenceRunning;
 
+#if UNITY_IOS && !UNITY_EDITOR
+    [System.Runtime.InteropServices.DllImport("__Internal")] private static extern bool FTC_IsTestFlight();
+#endif
+
+    /// TestFlight and Xcode builds carry a sandbox receipt (Plugins/iOS/TestFlightCheck.mm). Store builds do not.
+    private static bool IsTestFlightBuild()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+        try { return FTC_IsTestFlight(); } catch (System.Exception) { return false; }
+#else
+        return false;
+#endif
+    }
+
+    /// Test mode: the Inspector flag, or any TestFlight build (owner, 14 October 2026: our own testing must not
+    /// count as real impressions on the Unity dashboard). Test ads show instead of real ones; nothing is counted.
+    private bool TestMode => _testMode || IsTestFlightBuild();
+
     private void Awake()
     {
         if (Advertisement.isInitialized || sequenceRunning) return;
         sequenceRunning = true;
-        InterstitialAdService.Instance.StartCoroutine(RequestTrackingThenInitialize(_iOSGameId, _testMode, this));
+        var testMode = TestMode;
+        Debug.Log($"Unity Ads test mode: {testMode}");
+        InterstitialAdService.Instance.StartCoroutine(RequestTrackingThenInitialize(_iOSGameId, testMode, this));
     }
 
     private static IEnumerator RequestTrackingThenInitialize(string gameId, bool testMode,
@@ -71,7 +91,7 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
     public void InitializeAds()
     {
         if (!Advertisement.isInitialized && Advertisement.isSupported)
-            Advertisement.Initialize(_iOSGameId, _testMode, this);
+            Advertisement.Initialize(_iOSGameId, TestMode, this);
     }
 
     public void OnInitializationComplete()

@@ -63,6 +63,11 @@ To test on your own phone without TestFlight: plug it in, pick it in the device 
 3. Add yourself under Internal Testing. Install the TestFlight app on the phone and accept the invite. New builds auto-install from then on.
 4. Test on the real device: pause and resume, phone call interruption, kill the app mid-level and reopen (progress should survive), the rewarded ad in the shop, and the tracking prompt on a fresh install.
 
+**Test ads on TestFlight (14 October 2026):** a TestFlight (or Xcode) build turns Unity Ads test mode on by itself
+(`Assets/Plugins/iOS/TestFlightCheck.mm` reads the sandbox receipt; `AdsInitializer.TestMode`). Testers see test ads
+and nothing is counted on the Unity dashboard; the store build shows real ads. First device check: the ad after a day
+should say it is a test ad. If the plugin failed to link the game falls back to real ads without crashing.
+
 ## 5. Submit to the App Store
 
 1. App Store Connect, **Distribution** tab (sometimes labelled App Store).
