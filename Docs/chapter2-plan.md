@@ -72,7 +72,7 @@ iPhone and iPad captures.
 1. `Chapter.cs` with `Count = 1`. **Done 14 October.**
 2. LevelManager day range, chapter end, finish text. **Done 14 October.**
 3. Level25..32Data and `allLevels` to 32, plus the length check (tuning numbers, no art).
-4. Food gating by chapter and the shop boundary.
+4. Food gating by chapter (`SessionManager.FoodChapter`, done 14 October, full-chapter driver run clean); the shop boundary still to do.
 5. Map pages (waits for `bg_ch2`, `title_ch2`, arrows).
 6. Beach background day and night (art ready: `Store/chapter2/beach_bg/final_day.png`, `final_night.png`).
 7. Cloth swap (owner's table pick).

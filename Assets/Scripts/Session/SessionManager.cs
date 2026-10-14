@@ -195,10 +195,16 @@ public class SessionManager : MonoBehaviour
         }
     }
 
-    /// Foods that exist in the project but are held back from this release (owner, 13 October: Cookies wait for the
-    /// next one). They cannot be bought, and a session that already has one does not show it.
-    public static readonly string[] HeldBackFoods = { "Cookies" };
-    public static bool IsHeldBack(string foodType) => System.Array.IndexOf(HeldBackFoods, foodType) >= 0;
+    /// Foods that belong to a later chapter (owner, 13 October: Cookies wait for chapter 2). Until the player is in
+    /// that chapter they cannot be bought, and a session that already has one does not show it.
+    public static readonly Dictionary<string, int> FoodChapter = new Dictionary<string, int> { { "Cookies", 2 } };
+    public static readonly string[] HeldBackFoods = { "Cookies" };   // kept for older callers; FoodChapter decides
+    public static bool IsHeldBack(string foodType) =>
+        foodType != null && FoodChapter.TryGetValue(foodType, out var chapter) && chapter > CurrentChapter;
+
+    /// Chapter of the day being played (always 1 while Chapter.Count is 1).
+    public static int CurrentChapter =>
+        Mathf.Clamp(Chapter.Of(Instance != null ? Instance.GetCurrentLevelIndex() : 0), 1, Chapter.Count);
 
     public bool IsFoodItemPurchased(string foodType)
     {
