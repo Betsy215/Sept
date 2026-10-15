@@ -29,6 +29,9 @@ public class MenuBook : MonoBehaviour
     private Canvas canvas;
     private RectTransform canvasRect;
     private GameObject button;
+    private Button buttonComp;
+    private Transform hen, pots;
+    private Vector2? cardSpot;
     private GameObject panel;                           // the paper (draggable)
     private RectTransform board;                        // where the stickers sit on the paper
     private GameObject carousel;
@@ -66,8 +69,41 @@ public class MenuBook : MonoBehaviour
     private void Update()
     {
         var arranging = Arranging;
-        if (button != null && button.activeSelf != arranging) button.SetActive(arranging);
+        if (button != null)
+        {
+            var dayOn = phaseManager != null && (arranging || phaseManager.GetCurrentPhase() == GamePhase.PLAYING);
+            var show = dayOn && !IsOpen;
+            if (button.activeSelf != show) { button.SetActive(show); if (show) StartCoroutine(Pop(button.transform, 0.6f)); }
+            buttonComp.interactable = arranging;
+            button.GetComponent<Image>().color = arranging ? Color.white : new Color(0.82f, 0.82f, 0.82f, 0.9f);
+        }
         if (!arranging && IsOpen) Close();
+    }
+
+    /// Keep the card on the table's back band, in the gap between the hen board and the pots (follows them on iPad).
+    private void LateUpdate()
+    {
+        if (button == null || !button.activeSelf) return;
+        var cam = Camera.main; if (cam == null) return;
+        if (hen == null) { var h = GameObject.Find("MoneyFlipClock"); if (h != null) hen = h.transform; }
+        if (pots == null) { var p = GameObject.Find("KitchenPots"); if (p != null) pots = p.transform; }
+        float left = 0.5f, right = 0.7f, bottom = 0.46f;
+        if (hen != null) { var r = hen.GetComponentInChildren<Renderer>(); if (r != null) { left = cam.WorldToViewportPoint(r.bounds.max).x; bottom = cam.WorldToViewportPoint(r.bounds.min).y; } }
+        if (pots != null) { var r = pots.GetComponentInChildren<Renderer>(); if (r != null) right = cam.WorldToViewportPoint(r.bounds.min).x; }
+        // During the arrangement the Ready button covers the hen: stand to the right of Ready instead
+        var ready = phaseManager != null && phaseManager.doneButton != null ? phaseManager.doneButton.transform as RectTransform : null;
+        if (ready != null && ready.gameObject.activeInHierarchy)
+        {
+            var corners = new Vector3[4]; ready.GetWorldCorners(corners);
+            var c = ready.GetComponentInParent<Canvas>(); var ucam = c != null && c.renderMode != RenderMode.ScreenSpaceOverlay ? c.worldCamera : null;
+            var sp = RectTransformUtility.WorldToScreenPoint(ucam, corners[2]);
+            left = Mathf.Max(left, sp.x / Screen.width);
+        }
+        var vp = new Vector2((left + right) / 2f, bottom);
+        if (ready != null && ready.gameObject.activeInHierarchy) cardSpot = vp;   // the spot it took during arrangement
+        else if (cardSpot.HasValue) vp = cardSpot.Value;                            // it stays put all day
+        var size = canvasRect.rect.size;
+        ((RectTransform)button.transform).anchoredPosition = new Vector2((vp.x - 0.5f) * size.x, (vp.y - 0.5f) * size.y);
     }
 
     #region Open, close, switch
@@ -213,12 +249,16 @@ public class MenuBook : MonoBehaviour
 
     private void BuildButton()
     {
+        // The menu card standing on the table (owner, 14 October): there all day, between the hen board and the
+        // pots; tappable only during the arrangement, dimmed and still at other times
         var img = NewImage("MenuBookButton", canvasRect, Color.white);
         var sprite = Resources.Load<Sprite>("UI/menu_book");
         if (sprite != null) img.sprite = sprite; else img.color = Cream;
         img.preserveAspect = true;
-        Place(img.rectTransform, -250f, 0f, 150f, 150f);
-        img.gameObject.AddComponent<Button>().onClick.AddListener(() => { if (IsOpen) Close(); else Open(); });
+        var rt = img.rectTransform; rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0f);
+        rt.sizeDelta = new Vector2(132f, 143f);
+        buttonComp = img.gameObject.AddComponent<Button>();
+        buttonComp.onClick.AddListener(() => { if (IsOpen) Close(); else Open(); });
         button = img.gameObject;
         button.SetActive(false);
     }
