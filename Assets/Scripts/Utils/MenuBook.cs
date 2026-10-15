@@ -17,7 +17,7 @@ public class MenuBook : MonoBehaviour
 {
     private const int SortOrder = 40;                  // under the tutorial canvas (50), over the arrangement UI (0)
     private const float AutoOpenDelay = 2f;            // seconds after the arrangement starts (owner)
-    private const float StickerSize = 240f;            // on the paper
+    private const float StickerSize = 225f;            // on the paper
     private const float CarouselSize = 190f;
     private const float FlySeconds = 0.38f;
     private static readonly Color Brown = new Color(0.36f, 0.22f, 0.09f);
@@ -227,22 +227,23 @@ public class MenuBook : MonoBehaviour
     {
         // The paper: the gingham recipe card at the size the owner liked, below the carousel
         var card = NewImage("MenuPaper", canvasRect, Color.white);
-        var cardSprite = Resources.Load<Sprite>("Tutorial/card");
-        if (cardSprite != null) { card.sprite = cardSprite; card.type = Image.Type.Sliced; } else card.color = Cream;
+        // Cream paper with a hand-drawn blue band on all four edges, a line then a dotted line (owner, 14 October)
+        var cardSprite = Resources.Load<Sprite>("UI/menu_paper");
+        if (cardSprite != null) card.sprite = cardSprite; else card.color = Cream;
         panel = card.gameObject;
         var crt = card.rectTransform;
         Place(crt, 0f, -170f, 900f, 1130f);   // hugs the 3 x 3 board of nine stickers
         panel.AddComponent<DragMove>().Init(crt, canvasRect);
 
         var title = NewText("Title", crt, font, 72f, Brown); title.text = "MENU"; title.alignment = TextAlignmentOptions.Center;
-        Place(title.rectTransform, 0f, 482f, 800f, 90f);
+        Place(title.rectTransform, 0f, 425f, 800f, 90f);
 
         var b = new GameObject("Board", typeof(RectTransform)); b.transform.SetParent(crt, false);
-        board = (RectTransform)b.transform; Place(board, 0f, 10f, 860f, 860f);
+        board = (RectTransform)b.transform; Place(board, 0f, 5f, 760f, 720f);
 
 
         var done = NewImage("DoneButton", crt, new Color(0.98f, 0.78f, 0.36f));
-        Place(done.rectTransform, 0f, -490f, 280f, 100f);
+        Place(done.rectTransform, 0f, -415f, 280f, 100f);
         var dt = NewText("Label", done.rectTransform, font, 50f, Brown); dt.text = "DONE"; dt.alignment = TextAlignmentOptions.Center; Stretch(dt.rectTransform);
         done.gameObject.AddComponent<Button>().onClick.AddListener(Close);
 
@@ -292,8 +293,8 @@ public class MenuBook : MonoBehaviour
                 // Its own spot on the paper (three across), nudged and tilted the same way every time
                 var rng = new System.Random(StableHash(food));
                 var col = i % 3; var row = i / 3;
-                var x = (col - 1) * 285f + (float)(rng.NextDouble() * 50 - 25);
-                var y = 285f - row * 285f + (float)(rng.NextDouble() * 40 - 20);
+                var x = (col - 1) * 255f + (float)(rng.NextDouble() * 40 - 20);
+                var y = 245f - row * 250f + (float)(rng.NextDouble() * 30 - 15);
                 var rot = (float)(rng.NextDouble() * 18 - 9);
                 var st = MakeSticker(food, board, StickerSize);
                 if (sm.TryGetMenuStickerSpot(food, out var spot)) { x = spot.x; y = spot.y; }   // where the player left it
