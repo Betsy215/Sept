@@ -5,6 +5,7 @@ Current open work, as of 13 October 2026 (night). Done items are removed; the da
 
 ## Waiting
 
+- [ ] **Star lines after the price change:** the 16 October check run gave 3 stars on 8 days, 2 on 7, 1 on 1 (owner's call to re-tune with `economy_tune.cs`).
 - [ ] **Privacy label:** with the next submission add "Usage Data / Product Interaction, not linked to you" for Unity Analytics (owner approves).
 
 - [x] **26.10.13 build 4 released** (by 16 October).

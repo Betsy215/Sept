@@ -14,6 +14,7 @@ public class SessionData
 
     public List<string> purchasedFoodItems;
     public List<string> purchasedCharacters;
+    public List<string> purchasedDecor;        // table decorations (new field, 16 October; old saves get an empty list)
     // Menu book (owner, 14 October 2026): bought foods the player has switched on. A food is in play only when it is
     // bought AND on. Null in saves from before the book: LoadSession fills it with every bought food.
     public List<string> enabledFoodItems;
@@ -70,6 +71,7 @@ public class SessionData
             { "CoffeeMachine", 1 }
         };
         purchasedCharacters = new List<string> { "Girl", "Boy", "Kid" };
+        purchasedDecor = new List<string>();
         savedFoodPositions = new List<FoodItemPosition>();
         levelStars = new List<int>();
         starBonusPaidDays = new List<int>();
@@ -618,6 +620,7 @@ public class SessionManager : MonoBehaviour
 
                 if (currentSession.purchasedCharacters == null)
                     currentSession.purchasedCharacters = new List<string> { "Girl", "Boy", "Kid" };
+                if (currentSession.purchasedDecor == null) currentSession.purchasedDecor = new List<string>();
 
                 currentSession.SyncUpgradesFromLists();
                 if (currentSession.levelStars == null) currentSession.levelStars = new List<int>();
@@ -667,6 +670,31 @@ public class SessionManager : MonoBehaviour
     }
 
     // Purchase a character
+    /// Decor bought in the shop (the flower pots). Each pot bought raises every customer's patience by 15 percent.
+    public const float PatiencePerDecor = 0.15f;
+
+    public bool IsDecorPurchased(string decorName)
+    {
+        var s = GetCurrentSession(); return s != null && s.purchasedDecor != null && s.purchasedDecor.Contains(decorName);
+    }
+
+    public bool PurchaseDecor(string decorName)
+    {
+        if (currentSession == null) return false;
+        if (currentSession.purchasedDecor == null) currentSession.purchasedDecor = new List<string>();
+        if (currentSession.purchasedDecor.Contains(decorName)) return false;
+        currentSession.purchasedDecor.Add(decorName);
+        SaveSession();
+        Debug.Log($"Purchased decor: {decorName}");
+        return true;
+    }
+
+    /// 1.0 with no decor, 1.15 with one pot, 1.30 with two: multiplies the order time of every customer
+    public float PatienceMultiplier
+    {
+        get { var s = GetCurrentSession(); var n = s != null && s.purchasedDecor != null ? s.purchasedDecor.Count : 0; return 1f + PatiencePerDecor * n; }
+    }
+
     public bool PurchaseCharacter(string characterName)
     {
         if (currentSession == null) return false;

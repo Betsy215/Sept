@@ -172,6 +172,8 @@ public class ShopManager : MonoBehaviour
             purchaseSuccess = session.PurchaseCharacter(item.itemName);
         else if (item.itemType == ItemType.Upgrade)
             purchaseSuccess = session.UpgradeFood(item.upgradeFoodType);
+        else if (item.itemType == ItemType.Decor)
+            purchaseSuccess = session.PurchaseDecor(item.itemName);
 
         if (!purchaseSuccess)
         {
@@ -270,6 +272,10 @@ public class ShopManager : MonoBehaviour
                 shopItem.MarkAsPurchased();
             }
             else if (shopItem.itemType == ItemType.Character && purchasedCharacters.Contains(shopItem.itemName))
+            {
+                shopItem.MarkAsPurchased();
+            }
+            else if (shopItem.itemType == ItemType.Decor && SessionManager.Instance.IsDecorPurchased(shopItem.itemName))
             {
                 shopItem.MarkAsPurchased();
             }
@@ -418,7 +424,7 @@ public class ShopManager : MonoBehaviour
         card != null && (SessionManager.IsHeldBack(card.itemName?.Trim()) || SessionManager.IsHeldBack(card.upgradeFoodType?.Trim()) || SessionManager.IsHeldBack(card.gameObject.name));
 
     // The last row with the Cookies card held back (13 October 2026): three rows of cards, 900 apart
-    private const float BottomBoundary = 2700f;   // four rows again with the Cookies card back (14 October); 1800 while it was held back
+    private const float BottomBoundary = 3290f;   // five rows with the two flower pots (16 October); 2700 with four
 
     /// At the bottom of the shop the down arrow keeps showing, with a small lock on it: more comes in the next
     /// chapter (owner, 13 October). The lock is the map's lock_small, laid over the button.

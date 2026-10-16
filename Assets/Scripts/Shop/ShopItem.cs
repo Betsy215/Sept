@@ -33,5 +33,6 @@ public enum ItemType
 {
     Food,
     Character,
-    Upgrade
+    Upgrade,
+    Decor       // table decorations (the flower pots, owner 16 October): bought once, shown at a fixed spot
 }

@@ -185,7 +185,21 @@ public class DailyTreats : MonoBehaviour
         sparkles.gameObject.SetActive(true);
         rewardImage.gameObject.SetActive(true);
         yield return new WaitForSeconds(gift ? 2f : 1.4f);
-        Destroy(root);
+        // One more treat (owner, 16 October): the board stays and the button comes back as a repeatable ad button
+        var ad = root.AddComponent<DailyTreatsAd>();
+        ad.Begin(root.GetComponent<RectTransform>(), rewardImage, sparkles, collectSprite, PayExtra, CloseBoard);
+    }
+
+    /// Coins from a watched ad: held like the daily coins, paid on Continue or New
+    private void PayExtra(int coins)
+    {
+        PlayerPrefs.SetInt(PendingKey, PlayerPrefs.GetInt(PendingKey, 0) + coins);
+        PlayerPrefs.Save();
+    }
+
+    private void CloseBoard()
+    {
+        if (root != null) Destroy(root);
         root = null;
     }
 
