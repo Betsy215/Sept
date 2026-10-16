@@ -10,7 +10,8 @@ using UnityEngine.UI;
 /// play. The menu is a paper with stickers on it; a food that is on is a sticker stuck on the paper (a little tilted,
 /// a little off its spot, like a real sticker), a food that is off waits in a carousel at the top of the screen.
 /// Tap a sticker on the paper to peel it off, tap one in the carousel to stick it on. The paper opens by itself two
-/// seconds into the arrangement and can be dragged anywhere. Rules (station caps, at least two on) live in
+/// seconds into the arrangement and can be dragged anywhere. When closed it stays on screen as a small version of
+/// itself, centred under the top buttons; a tap grows it back (owner, 16 October). Rules (station caps, at least two on) live in
 /// SessionManager; a refused sticker shakes. No words on the paper but MENU and DONE (owner, 14 October). Never on the Day 0 tutorial. Sticker art: Resources/UI/stickers/food.
 /// </summary>
 public class MenuBook : MonoBehaviour
@@ -21,10 +22,9 @@ public class MenuBook : MonoBehaviour
     private const float CarouselSize = 140f;
     private const float FlySeconds = 0.38f;
     private const float CarouselTop = 170f;            // under the settings and pause buttons
-    private static readonly Vector2 BookSpot = new Vector2(80f, -385f);   // the small book, under the sticker line
-    private static readonly Vector2 BookSize = new Vector2(116f, 146f);   // the cover's shape (900 x 1130), small
-    private const float ZoomSeconds = 0.32f;
-    private const float FlipSeconds = 0.3f;
+    private static readonly Vector2 MiniSpot = new Vector2(0f, -328f);   // the small menu's centre: centred, under the top buttons
+    private const float MiniScale = 0.18f;             // the small menu is the paper itself, scaled (162 x 203)
+    private const float ZoomSeconds = 0.34f;
     private static readonly Color Brown = new Color(0.36f, 0.22f, 0.09f);
     private static readonly Color Cream = new Color(1f, 0.98f, 0.93f);
 
@@ -33,10 +33,12 @@ public class MenuBook : MonoBehaviour
     private TMP_FontAsset font;
     private Canvas canvas;
     private RectTransform canvasRect;
-    private GameObject button;                          // the small closed book, there during the arrangement
-    private RectTransform hinge;                        // the cover that zooms in and swings open (spine on the left)
-    private Image coverImage;
-    private Coroutine bookMotion;
+    private GameObject button;                          // a clear tap catcher over the small menu
+    private CanvasGroup group;                          // the paper's taps and drags, off while it is small
+    private GameObject doneButton;                      // hidden while the paper is small
+    private Vector2 openPos = new Vector2(0f, -170f);   // where the paper sits when open (the player may drag it)
+    private bool open;
+    private Coroutine motion;
     private GameObject panel;                           // the paper (draggable)
     private RectTransform board;                        // where the stickers sit on the paper
     private GameObject carousel;
@@ -45,7 +47,7 @@ public class MenuBook : MonoBehaviour
     private bool busy;                                  // a sticker is flying
     private bool autoOpened;
 
-    public bool IsOpen => panel != null && panel.activeSelf;
+    public bool IsOpen => open;
 
     /// Real seconds per frame, or the recorder's fixed step while a clip is being captured (Time.captureFramerate).
     private static float Dt => Time.captureDeltaTime > 0f ? Time.captureDeltaTime : Time.unscaledDeltaTime;
@@ -77,29 +79,37 @@ public class MenuBook : MonoBehaviour
 
     private void Update()
     {
-        var arranging = Arranging;
-        // The small book is only there during the arrangement, never during the day (owner, 16 October)
-        if (button != null)
+        if (!Arranging)
         {
-            var show = arranging && !IsOpen && !animating;
-            if (button.activeSelf != show) { button.SetActive(show); if (show && !justClosed) StartCoroutine(Pop(button.transform, 0.6f)); }
-            justClosed = false;
+            if (open || animating || (panel != null && panel.activeSelf)) Close();
+            return;
         }
-        if (!arranging && (IsOpen || animating)) Close();
+        // During the arrangement the menu is always on screen: full size, or small under the top buttons when
+        // closed (owner, 16 October: the small menu is just a small version of the menu)
+        if (open || animating) return;
+        if (panel == null) { BuildPanel(); Refresh(null); }
+        if (!panel.activeSelf)
+        {
+            Refresh(null);
+            panel.SetActive(true);
+            ShowMini(true);
+            PlaceMini();
+        }
+        PlaceMini();                                                         // follows the screen size (iPad)
+        if (!button.activeSelf) button.SetActive(true);
     }
-    private bool justClosed;
 
     #region Open, close, switch
 
     public void Open()
     {
         if (SessionManager.Instance == null || !SessionManager.Instance.HasActiveSession()) return;
-        if (IsOpen || animating) return;
+        if (open || animating) return;
         if (panel == null) BuildPanel();
         autoOpened = true;
         Refresh(null);
         ShowArrangeHint(false);
-        bookMotion = StartCoroutine(OpenBook());
+        motion = StartCoroutine(Grow());
     }
 
     public void Close()
@@ -107,114 +117,106 @@ public class MenuBook : MonoBehaviour
         if (!Arranging)
         {
             // The day started (or the scene is leaving): no motion, just put everything away
-            if (bookMotion != null) StopCoroutine(bookMotion);
-            bookMotion = null; animating = false;
-            if (hinge != null) hinge.gameObject.SetActive(false);
-            if (panel != null) panel.SetActive(false);
+            if (motion != null) StopCoroutine(motion);
+            motion = null; animating = false; open = false;
+            if (panel != null) { panel.SetActive(false); var crt = (RectTransform)panel.transform; crt.localScale = Vector3.one; crt.localRotation = Quaternion.identity; }
             if (carousel != null) carousel.SetActive(false);
+            if (button != null) button.SetActive(false);
             busy = false;
             return;
         }
-        if (!IsOpen || animating) return;
+        if (!open || animating) return;
         busy = false;
-        bookMotion = StartCoroutine(CloseBook());
+        motion = StartCoroutine(Shrink());
     }
 
-    /// The small book zooms up to the paper's place, then its cover swings open on the spine (owner, 16 October).
-    private IEnumerator OpenBook()
+    /// The small menu grows up to its place and comes alive.
+    private IEnumerator Grow()
     {
         animating = true; busy = true;
         button.SetActive(false);
-        var paper = (RectTransform)panel.transform;
-        SetCover(SmallBookCenter(), BookSize, 0f);
-        var target = paper.anchoredPosition;
-        var size = paper.rect.size;
+        var crt = (RectTransform)panel.transform;
+        panel.SetActive(true);
+        ShowMini(true);
+        var from = MiniCenter(); var to = openPos;
         for (var t = 0f; t < ZoomSeconds; t += Dt)
         {
             var k = t / ZoomSeconds; var e = 1f - (1f - k) * (1f - k) * (1f - k);
-            SetCover(Vector2.LerpUnclamped(SmallBookCenter(), target, e), Vector2.LerpUnclamped(BookSize, size, e), 0f);
-            hinge.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(k * Mathf.PI) * 4f);
+            crt.anchoredPosition = Vector2.LerpUnclamped(from, to, e);
+            crt.localScale = Vector3.one * Mathf.LerpUnclamped(MiniScale, 1f, e);
+            crt.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(k * Mathf.PI) * 3f);
             yield return null;
         }
-        SetCover(target, size, 0f);
-        panel.SetActive(true);
+        crt.anchoredPosition = to; crt.localScale = Vector3.one; crt.localRotation = Quaternion.identity;
+        open = true;
+        ShowMini(false);
         carousel.SetActive(true);
-        hinge.SetAsLastSibling();
-        for (var t = 0f; t < FlipSeconds; t += Dt)
-        {
-            var k = t / FlipSeconds;
-            SetCover(target, size, 90f * k * k);                             // swings faster as it falls open
-            yield return null;
-        }
-        hinge.gameObject.SetActive(false);
         StartCoroutine(Pop(carousel.transform, 0.85f));
-        animating = false; busy = false; bookMotion = null;
+        animating = false; busy = false; motion = null;
     }
 
-    /// Done: the cover swings shut over the paper, then the book shrinks back to its spot under the sticker line.
-    private IEnumerator CloseBook()
+    /// Done: the paper shrinks back to its spot under the top buttons and stays there, small, until tapped.
+    private IEnumerator Shrink()
     {
         animating = true; busy = true;
-        var paper = (RectTransform)panel.transform;
-        var from = paper.anchoredPosition;
-        var size = paper.rect.size;
+        var crt = (RectTransform)panel.transform;
         carousel.SetActive(false);
-        SetCover(from, size, 90f);
-        hinge.SetAsLastSibling();
-        for (var t = 0f; t < FlipSeconds; t += Dt)
-        {
-            var k = 1f - t / FlipSeconds;
-            SetCover(from, size, 90f * (1f - (1f - k) * (1f - k)));
-            yield return null;
-        }
-        SetCover(from, size, 0f);
-        panel.SetActive(false);
+        openPos = crt.anchoredPosition;                                       // where the player left it
+        open = false;
+        ShowMini(true);
+        var from = openPos; var to = MiniCenter();
         for (var t = 0f; t < ZoomSeconds; t += Dt)
         {
             var k = t / ZoomSeconds; var e = k * k * (3f - 2f * k);
-            SetCover(Vector2.LerpUnclamped(from, SmallBookCenter(), e), Vector2.LerpUnclamped(size, BookSize, e), 0f);
-            hinge.localRotation = Quaternion.Euler(0f, 0f, -Mathf.Sin(k * Mathf.PI) * 4f);
+            crt.anchoredPosition = Vector2.LerpUnclamped(from, to, e);
+            crt.localScale = Vector3.one * Mathf.LerpUnclamped(1f, MiniScale, e);
+            crt.localRotation = Quaternion.Euler(0f, 0f, -Mathf.Sin(k * Mathf.PI) * 3f);
             yield return null;
         }
-        hinge.gameObject.SetActive(false);
-        justClosed = true;
-        animating = false; busy = false; bookMotion = null;
+        PlaceMini();
+        animating = false; busy = false; motion = null;
         ShowArrangeHint(true);
         button.SetActive(true);
-        StartCoroutine(Pop(button.transform, 1.15f));                       // lands with a little bounce
     }
 
-    /// The small book's centre in the canvas's centre-anchored units.
-    private Vector2 SmallBookCenter()
+    /// The small menu's centre in the canvas's centre-anchored units: under the top buttons, and just above the
+    /// "Drag to arrange" card wherever that sits (it is higher on an iPad).
+    private Vector2 MiniCenter()
     {
         var size = canvasRect.rect.size;
-        return new Vector2(-size.x / 2f + BookSpot.x, size.y / 2f + BookSpot.y);
+        var y = size.y / 2f + MiniSpot.y;
+        var half = 1130f * MiniScale / 2f;
+        var cardTop = float.NegativeInfinity;
+        if (phaseManager != null)
+        {
+            var cards = new[] { phaseManager.tutorialPanel != null ? phaseManager.tutorialPanel.transform as RectTransform : null,
+                                phaseManager.arrangmentUI != null ? phaseManager.arrangmentUI.transform.Find("HintCard") as RectTransform : null };
+            foreach (var card in cards)
+            {
+                if (card == null) continue;
+                var corners = new Vector3[4]; card.GetWorldCorners(corners);
+                var c = card.GetComponentInParent<Canvas>(); var ucam = c != null && c.renderMode != RenderMode.ScreenSpaceOverlay ? c.worldCamera : null;
+                var sp = RectTransformUtility.WorldToScreenPoint(ucam, corners[1]);
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, sp, null, out var local)) cardTop = Mathf.Max(cardTop, local.y);
+            }
+        }
+        if (!float.IsInfinity(cardTop)) y = Mathf.Max(y, cardTop + half + 14f);   // the card is higher on an iPad
+        y = Mathf.Min(y, size.y / 2f - half - 20f);                                   // never off the top
+        return new Vector2(MiniSpot.x, y);
     }
 
-    /// Places the cover by its centre and size, opened by angle degrees round the spine (0 = shut, 90 = edge on).
-    private void SetCover(Vector2 center, Vector2 size, float angle)
+    private void PlaceMini()
     {
-        if (hinge == null) BuildCover();
-        hinge.gameObject.SetActive(true);
-        hinge.anchoredPosition = center - new Vector2(size.x / 2f, 0f);
-        coverImage.rectTransform.sizeDelta = size;
-        coverImage.rectTransform.anchoredPosition = new Vector2(size.x / 2f, 0f);
-        hinge.localRotation = Quaternion.identity;
-        hinge.localScale = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), 1f, 1f);
-        var shade = Mathf.Lerp(1f, 0.72f, angle / 90f);                  // the cover darkens as it turns away
-        coverImage.color = new Color(shade, shade, shade, 1f);
+        var crt = (RectTransform)panel.transform;
+        crt.anchoredPosition = MiniCenter(); crt.localScale = Vector3.one * MiniScale; crt.localRotation = Quaternion.identity;
     }
 
-    private void BuildCover()
+    /// Small: nothing on the paper answers taps or drags, Done is hidden, and the clear tap catcher sits on top.
+    private void ShowMini(bool mini)
     {
-        var h = new GameObject("BookCover", typeof(RectTransform)); h.transform.SetParent(canvasRect, false);
-        hinge = (RectTransform)h.transform; hinge.anchorMin = hinge.anchorMax = new Vector2(0.5f, 0.5f); hinge.pivot = new Vector2(0f, 0.5f);
-        hinge.sizeDelta = Vector2.zero;
-        coverImage = NewImage("Cover", hinge, Color.white);
-        var s = Resources.Load<Sprite>("UI/menu_cover"); if (s != null) coverImage.sprite = s; else coverImage.color = new Color(0.36f, 0.57f, 0.83f);
-        coverImage.raycastTarget = true;                                      // swallows taps while it moves
-        var crt = coverImage.rectTransform; crt.anchorMin = crt.anchorMax = new Vector2(0f, 0.5f); crt.pivot = new Vector2(0.5f, 0.5f);
-        h.SetActive(false);
+        if (group != null) { group.interactable = !mini; group.blocksRaycasts = !mini; }
+        if (doneButton != null) doneButton.SetActive(!mini);
+        if (mini && button != null) button.transform.SetAsLastSibling();
     }
 
     /// The arrangement's "Drag to arrange" card would sit over the paper's top: hidden while the menu is open.
@@ -338,14 +340,10 @@ public class MenuBook : MonoBehaviour
 
     private void BuildButton()
     {
-        // The small closed menu book (owner, 16 October): under the sticker line at the top left, only during the
-        // arrangement; a tap zooms it in and opens it
-        var img = NewImage("MenuBookButton", canvasRect, Color.white);
-        var sprite = Resources.Load<Sprite>("UI/menu_cover");
-        if (sprite != null) img.sprite = sprite; else img.color = new Color(0.36f, 0.57f, 0.83f);
-        img.preserveAspect = true;
-        var rt = img.rectTransform; rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f); rt.pivot = new Vector2(0.5f, 0.5f);
-        rt.anchoredPosition = BookSpot; rt.sizeDelta = BookSize;
+        // A clear tap catcher the size of the small menu (owner, 16 October): a tap on the small menu opens it
+        var img = NewImage("MenuTapCatcher", canvasRect, new Color(0f, 0f, 0f, 0f));
+        var rt = img.rectTransform; rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f); rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = MiniSpot; rt.sizeDelta = new Vector2(900f * MiniScale, 1130f * MiniScale);
         img.gameObject.AddComponent<Button>().onClick.AddListener(Open);
         button = img.gameObject;
         button.SetActive(false);
@@ -360,8 +358,9 @@ public class MenuBook : MonoBehaviour
         if (cardSprite != null) card.sprite = cardSprite; else card.color = Cream;
         panel = card.gameObject;
         var crt = card.rectTransform;
-        Place(crt, 0f, -170f, 900f, 1130f);   // hugs the 3 x 3 board of nine stickers
+        Place(crt, openPos.x, openPos.y, 900f, 1130f);   // hugs the 3 x 3 board of nine stickers
         panel.AddComponent<DragMove>().Init(crt, canvasRect);
+        group = panel.AddComponent<CanvasGroup>();
 
         var title = NewText("Title", crt, font, 72f, Brown); title.text = "MENU"; title.alignment = TextAlignmentOptions.Center;
         Place(title.rectTransform, 0f, 425f, 800f, 90f);
@@ -374,6 +373,7 @@ public class MenuBook : MonoBehaviour
         Place(done.rectTransform, 0f, -415f, 280f, 100f);
         var dt = NewText("Label", done.rectTransform, font, 50f, Brown); dt.text = "DONE"; dt.alignment = TextAlignmentOptions.Center; Stretch(dt.rectTransform);
         done.gameObject.AddComponent<Button>().onClick.AddListener(Close);
+        doneButton = done.gameObject;
 
         // The carousel: under the settings and pause buttons, the stickers that are off, scrolled sideways
         var strip = NewImage("StickerCarousel", canvasRect, new Color(1f, 1f, 1f, 0f));   // no background (owner)
