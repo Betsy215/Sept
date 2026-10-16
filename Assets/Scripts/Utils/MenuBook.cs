@@ -25,7 +25,7 @@ public class MenuBook : MonoBehaviour
     private static readonly Vector2 MiniSpot = new Vector2(0f, -328f);   // the small menu's centre: centred, under the top buttons
     private const float MiniScale = 0.18f;             // the small menu is the paper itself, scaled (162 x 203)
     private const float ZoomSeconds = 0.34f;
-    private static readonly Color Brown = new Color(0.36f, 0.22f, 0.09f);
+    private static readonly Color Brown = new Color(0.8f, 0.47f, 0.16f);   // style A letters (owner, 16 October)
     private static readonly Color Cream = new Color(1f, 0.98f, 0.93f);
 
     private LevelManager levelManager;

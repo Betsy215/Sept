@@ -74,12 +74,12 @@ public class SimpleScorePopup : MonoBehaviour
         {
             // Money is whole cents; "$1.5" next to "Tips: $ 0.25" looked like a different unit
             popupText = $" ${basePoints:F2}\n Tips: $ {bonusPoints:F2}";
-            textColor = Color.black;
+            textColor = new Color(0.8f, 0.47f, 0.16f);   // style A (owner, 16 October): orange-brown, cream rim from the font material
         }
         else
         {
             popupText = $"${basePoints:F2}";
-            textColor = Color.black;
+            textColor = new Color(0.8f, 0.47f, 0.16f);   // style A (owner, 16 October): orange-brown, cream rim from the font material
         }
 
         // Set text content and color
