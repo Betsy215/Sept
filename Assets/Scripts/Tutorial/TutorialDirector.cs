@@ -500,7 +500,8 @@ public class TutorialDirector : MonoBehaviour
         captionBox.pivot = new Vector2(0.5f, 1f);
         captionBox.anchoredPosition = new Vector2(0f, -1110f); // over the table, below the order bubble and customer
         captionBox.sizeDelta = new Vector2(1000f, 200f);
-        caption = NewText("Caption", captionBox, font, 64f, new Color(0.36f, 0.22f, 0.09f));
+        caption = NewText("Caption", captionBox, font, 64f, new Color(0.28f, 0.15f, 0.055f));   // hints: dark brown, no rim (owner, 16 October)
+        var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) caption.fontSharedMaterial = plain;
         Stretch(caption.rectTransform);
         caption.rectTransform.offsetMin = new Vector2(40f, 36f);
         caption.rectTransform.offsetMax = new Vector2(-40f, -36f);

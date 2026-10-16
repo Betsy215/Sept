@@ -25,7 +25,8 @@ public class MenuBook : MonoBehaviour
     private static readonly Vector2 MiniSpot = new Vector2(0f, -328f);   // the small menu's centre: centred, under the top buttons
     private const float MiniScale = 0.18f;             // the small menu is the paper itself, scaled (162 x 203)
     private const float ZoomSeconds = 0.34f;
-    private static readonly Color Brown = new Color(0.8f, 0.47f, 0.16f);   // style A letters (owner, 16 October)
+    private static readonly Color Brown = new Color(0.8f, 0.47f, 0.16f);   // button letters, orange like READY (owner, 16 October)
+    private static readonly Color Ink = new Color(0.09f, 0.06f, 0.04f);     // titles: black with the cream rim
     private static readonly Color Cream = new Color(1f, 0.98f, 0.93f);
 
     private LevelManager levelManager;
@@ -362,7 +363,7 @@ public class MenuBook : MonoBehaviour
         panel.AddComponent<DragMove>().Init(crt, canvasRect);
         group = panel.AddComponent<CanvasGroup>();
 
-        var title = NewText("Title", crt, font, 72f, Brown); title.text = "MENU"; title.alignment = TextAlignmentOptions.Center;
+        var title = NewText("Title", crt, font, 72f, Ink); title.text = "MENU"; title.alignment = TextAlignmentOptions.Center;
         Place(title.rectTransform, 0f, 425f, 800f, 90f);
 
         var b = new GameObject("Board", typeof(RectTransform)); b.transform.SetParent(crt, false);

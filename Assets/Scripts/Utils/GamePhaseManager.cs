@@ -130,6 +130,9 @@ public class GamePhaseManager : MonoBehaviour
         var tutorialMessage = string.Format(levelTutorialMessages[messageIndex], currentLevel);
 
         tutorialText.text = tutorialMessage;
+        // Hints: dark brown letters with no rim (owner, 16 October: one text style per purpose)
+        tutorialText.color = new Color(0.28f, 0.15f, 0.055f);
+        var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) tutorialText.fontSharedMaterial = plain;
 
         DebugLog($"Set tutorial message for Level {currentLevel} (Message Index: {messageIndex}): {tutorialMessage}");
     }
