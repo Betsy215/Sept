@@ -3,6 +3,18 @@
 Current open work, as of 13 October 2026 (night). Done items are removed; the dated record is in `Docs/history/`
 (the 9 to 13 October TODO is `history/TODO_2026-10-13_before_rewrite.md`).
 
+## Release 26.10.17 (owner, 16 October evening: "today or this weekend")
+
+- [ ] **Owner decides:** ship without chapter 2 (my pick) or hold for it; re-tune the star lines; release note text; privacy
+  label entry (Usage Data / Product Interaction); the store description's "two customers" wording.
+- [ ] **TestFlight first** (build 5): the one-more-treat ad button, test ads, analytics events, the menu on iPad, shared ovens.
+- [ ] **Store screenshots:** redo for the menu, prices and background; the banner must not say "16 days", use
+  "earn stars along the trip" (owner, 16 October). `Store/screenshots/caption.py`.
+- [ ] **Next release after this one:** stars as a second currency (earned by play, a replay never pays the same star twice;
+  what they buy is open), chapter 2 fully built (`Docs/chapter2-plan.md` steps 3 to 14).
+- [ ] **Backlog (owner, 16 October):** a serve sound for every item (only Juice has one; the menu's placed sound uses it).
+- [ ] The Apple sticker still reads $350 (price 400); the oven notes keep their own colours until the sticker sprite pass.
+
 ## Waiting
 
 - [ ] **Star lines after the price change:** the 16 October check run gave 3 stars on 8 days, 2 on 7, 1 on 1 (owner's call to re-tune with `economy_tune.cs`).
