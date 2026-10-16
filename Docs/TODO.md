@@ -5,7 +5,6 @@ Current open work, as of 13 October 2026 (night). Done items are removed; the da
 
 ## Waiting
 
-- [ ] **Shop prices (owner's call, 16 October):** proposal to raise the shop from $5,350 to about $11,000 so the last items need chapter 2 play (table in the report's Q&A). Set in Shop.unity on a yes, then re-run the driver.
 - [ ] **Privacy label:** with the next submission add "Usage Data / Product Interaction, not linked to you" for Unity Analytics (owner approves).
 
 - [x] **26.10.13 build 4 released** (by 16 October).
