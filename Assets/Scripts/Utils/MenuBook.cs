@@ -18,8 +18,13 @@ public class MenuBook : MonoBehaviour
     private const int SortOrder = 40;                  // under the tutorial canvas (50), over the arrangement UI (0)
     private const float AutoOpenDelay = 2f;            // seconds after the arrangement starts (owner)
     private const float StickerSize = 225f;            // on the paper
-    private const float CarouselSize = 190f;
+    private const float CarouselSize = 140f;
     private const float FlySeconds = 0.38f;
+    private const float CarouselTop = 170f;            // under the settings and pause buttons
+    private static readonly Vector2 BookSpot = new Vector2(80f, -385f);   // the small book, under the sticker line
+    private static readonly Vector2 BookSize = new Vector2(116f, 146f);   // the cover's shape (900 x 1130), small
+    private const float ZoomSeconds = 0.32f;
+    private const float FlipSeconds = 0.3f;
     private static readonly Color Brown = new Color(0.36f, 0.22f, 0.09f);
     private static readonly Color Cream = new Color(1f, 0.98f, 0.93f);
 
@@ -28,10 +33,10 @@ public class MenuBook : MonoBehaviour
     private TMP_FontAsset font;
     private Canvas canvas;
     private RectTransform canvasRect;
-    private GameObject button;
-    private Button buttonComp;
-    private Transform hen, pots;
-    private Vector2? cardSpot;
+    private GameObject button;                          // the small closed book, there during the arrangement
+    private RectTransform hinge;                        // the cover that zooms in and swings open (spine on the left)
+    private Image coverImage;
+    private Coroutine bookMotion;
     private GameObject panel;                           // the paper (draggable)
     private RectTransform board;                        // where the stickers sit on the paper
     private GameObject carousel;
@@ -41,6 +46,10 @@ public class MenuBook : MonoBehaviour
     private bool autoOpened;
 
     public bool IsOpen => panel != null && panel.activeSelf;
+
+    /// Real seconds per frame, or the recorder's fixed step while a clip is being captured (Time.captureFramerate).
+    private static float Dt => Time.captureDeltaTime > 0f ? Time.captureDeltaTime : Time.unscaledDeltaTime;
+    private bool animating;
 
     public void Begin(LevelManager lm, GamePhaseManager gpm)
     {
@@ -60,7 +69,7 @@ public class MenuBook : MonoBehaviour
         var t = 0f;
         while (t < AutoOpenDelay)
         {
-            if (Arranging) t += Time.unscaledDeltaTime; else t = 0f;
+            if (Arranging) t += Dt; else t = 0f;
             yield return null;
         }
         if (!autoOpened && Arranging) Open();
@@ -69,63 +78,143 @@ public class MenuBook : MonoBehaviour
     private void Update()
     {
         var arranging = Arranging;
+        // The small book is only there during the arrangement, never during the day (owner, 16 October)
         if (button != null)
         {
-            var dayOn = phaseManager != null && (arranging || phaseManager.GetCurrentPhase() == GamePhase.PLAYING);
-            var show = dayOn && !IsOpen;
-            if (button.activeSelf != show) { button.SetActive(show); if (show) StartCoroutine(Pop(button.transform, 0.6f)); }
-            buttonComp.interactable = arranging;
-            button.GetComponent<Image>().color = arranging ? Color.white : new Color(0.82f, 0.82f, 0.82f, 0.9f);
+            var show = arranging && !IsOpen && !animating;
+            if (button.activeSelf != show) { button.SetActive(show); if (show && !justClosed) StartCoroutine(Pop(button.transform, 0.6f)); }
+            justClosed = false;
         }
-        if (!arranging && IsOpen) Close();
+        if (!arranging && (IsOpen || animating)) Close();
     }
-
-    /// Keep the card on the table's back band, in the gap between the hen board and the pots (follows them on iPad).
-    private void LateUpdate()
-    {
-        if (button == null || !button.activeSelf) return;
-        var cam = Camera.main; if (cam == null) return;
-        if (hen == null) { var h = GameObject.Find("MoneyFlipClock"); if (h != null) hen = h.transform; }
-        if (pots == null) { var p = GameObject.Find("KitchenPots"); if (p != null) pots = p.transform; }
-        float left = 0.5f, right = 0.7f, bottom = 0.46f;
-        if (hen != null) { var r = hen.GetComponentInChildren<Renderer>(); if (r != null) { left = cam.WorldToViewportPoint(r.bounds.max).x; bottom = cam.WorldToViewportPoint(r.bounds.min).y; } }
-        if (pots != null) { var r = pots.GetComponentInChildren<Renderer>(); if (r != null) right = cam.WorldToViewportPoint(r.bounds.min).x; }
-        // During the arrangement the Ready button covers the hen: stand to the right of Ready instead
-        var ready = phaseManager != null && phaseManager.doneButton != null ? phaseManager.doneButton.transform as RectTransform : null;
-        if (ready != null && ready.gameObject.activeInHierarchy)
-        {
-            var corners = new Vector3[4]; ready.GetWorldCorners(corners);
-            var c = ready.GetComponentInParent<Canvas>(); var ucam = c != null && c.renderMode != RenderMode.ScreenSpaceOverlay ? c.worldCamera : null;
-            var sp = RectTransformUtility.WorldToScreenPoint(ucam, corners[2]);
-            left = Mathf.Max(left, sp.x / Screen.width);
-        }
-        var vp = new Vector2((left + right) / 2f, bottom);
-        if (ready != null && ready.gameObject.activeInHierarchy) cardSpot = vp;   // the spot it took during arrangement
-        else if (cardSpot.HasValue) vp = cardSpot.Value;                            // it stays put all day
-        var size = canvasRect.rect.size;
-        ((RectTransform)button.transform).anchoredPosition = new Vector2((vp.x - 0.5f) * size.x, (vp.y - 0.5f) * size.y);
-    }
+    private bool justClosed;
 
     #region Open, close, switch
 
     public void Open()
     {
         if (SessionManager.Instance == null || !SessionManager.Instance.HasActiveSession()) return;
+        if (IsOpen || animating) return;
         if (panel == null) BuildPanel();
         autoOpened = true;
         Refresh(null);
-        panel.SetActive(true);
-        carousel.SetActive(true);
         ShowArrangeHint(false);
-        StartCoroutine(Pop(panel.transform, 0.92f));
+        bookMotion = StartCoroutine(OpenBook());
     }
 
     public void Close()
     {
-        if (panel != null) panel.SetActive(false);
-        if (carousel != null) carousel.SetActive(false);
-        if (Arranging) ShowArrangeHint(true);
+        if (!Arranging)
+        {
+            // The day started (or the scene is leaving): no motion, just put everything away
+            if (bookMotion != null) StopCoroutine(bookMotion);
+            bookMotion = null; animating = false;
+            if (hinge != null) hinge.gameObject.SetActive(false);
+            if (panel != null) panel.SetActive(false);
+            if (carousel != null) carousel.SetActive(false);
+            busy = false;
+            return;
+        }
+        if (!IsOpen || animating) return;
         busy = false;
+        bookMotion = StartCoroutine(CloseBook());
+    }
+
+    /// The small book zooms up to the paper's place, then its cover swings open on the spine (owner, 16 October).
+    private IEnumerator OpenBook()
+    {
+        animating = true; busy = true;
+        button.SetActive(false);
+        var paper = (RectTransform)panel.transform;
+        SetCover(SmallBookCenter(), BookSize, 0f);
+        var target = paper.anchoredPosition;
+        var size = paper.rect.size;
+        for (var t = 0f; t < ZoomSeconds; t += Dt)
+        {
+            var k = t / ZoomSeconds; var e = 1f - (1f - k) * (1f - k) * (1f - k);
+            SetCover(Vector2.LerpUnclamped(SmallBookCenter(), target, e), Vector2.LerpUnclamped(BookSize, size, e), 0f);
+            hinge.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(k * Mathf.PI) * 4f);
+            yield return null;
+        }
+        SetCover(target, size, 0f);
+        panel.SetActive(true);
+        carousel.SetActive(true);
+        hinge.SetAsLastSibling();
+        for (var t = 0f; t < FlipSeconds; t += Dt)
+        {
+            var k = t / FlipSeconds;
+            SetCover(target, size, 90f * k * k);                             // swings faster as it falls open
+            yield return null;
+        }
+        hinge.gameObject.SetActive(false);
+        StartCoroutine(Pop(carousel.transform, 0.85f));
+        animating = false; busy = false; bookMotion = null;
+    }
+
+    /// Done: the cover swings shut over the paper, then the book shrinks back to its spot under the sticker line.
+    private IEnumerator CloseBook()
+    {
+        animating = true; busy = true;
+        var paper = (RectTransform)panel.transform;
+        var from = paper.anchoredPosition;
+        var size = paper.rect.size;
+        carousel.SetActive(false);
+        SetCover(from, size, 90f);
+        hinge.SetAsLastSibling();
+        for (var t = 0f; t < FlipSeconds; t += Dt)
+        {
+            var k = 1f - t / FlipSeconds;
+            SetCover(from, size, 90f * (1f - (1f - k) * (1f - k)));
+            yield return null;
+        }
+        SetCover(from, size, 0f);
+        panel.SetActive(false);
+        for (var t = 0f; t < ZoomSeconds; t += Dt)
+        {
+            var k = t / ZoomSeconds; var e = k * k * (3f - 2f * k);
+            SetCover(Vector2.LerpUnclamped(from, SmallBookCenter(), e), Vector2.LerpUnclamped(size, BookSize, e), 0f);
+            hinge.localRotation = Quaternion.Euler(0f, 0f, -Mathf.Sin(k * Mathf.PI) * 4f);
+            yield return null;
+        }
+        hinge.gameObject.SetActive(false);
+        justClosed = true;
+        animating = false; busy = false; bookMotion = null;
+        ShowArrangeHint(true);
+        button.SetActive(true);
+        StartCoroutine(Pop(button.transform, 1.15f));                       // lands with a little bounce
+    }
+
+    /// The small book's centre in the canvas's centre-anchored units.
+    private Vector2 SmallBookCenter()
+    {
+        var size = canvasRect.rect.size;
+        return new Vector2(-size.x / 2f + BookSpot.x, size.y / 2f + BookSpot.y);
+    }
+
+    /// Places the cover by its centre and size, opened by angle degrees round the spine (0 = shut, 90 = edge on).
+    private void SetCover(Vector2 center, Vector2 size, float angle)
+    {
+        if (hinge == null) BuildCover();
+        hinge.gameObject.SetActive(true);
+        hinge.anchoredPosition = center - new Vector2(size.x / 2f, 0f);
+        coverImage.rectTransform.sizeDelta = size;
+        coverImage.rectTransform.anchoredPosition = new Vector2(size.x / 2f, 0f);
+        hinge.localRotation = Quaternion.identity;
+        hinge.localScale = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), 1f, 1f);
+        var shade = Mathf.Lerp(1f, 0.72f, angle / 90f);                  // the cover darkens as it turns away
+        coverImage.color = new Color(shade, shade, shade, 1f);
+    }
+
+    private void BuildCover()
+    {
+        var h = new GameObject("BookCover", typeof(RectTransform)); h.transform.SetParent(canvasRect, false);
+        hinge = (RectTransform)h.transform; hinge.anchorMin = hinge.anchorMax = new Vector2(0.5f, 0.5f); hinge.pivot = new Vector2(0f, 0.5f);
+        hinge.sizeDelta = Vector2.zero;
+        coverImage = NewImage("Cover", hinge, Color.white);
+        var s = Resources.Load<Sprite>("UI/menu_cover"); if (s != null) coverImage.sprite = s; else coverImage.color = new Color(0.36f, 0.57f, 0.83f);
+        coverImage.raycastTarget = true;                                      // swallows taps while it moves
+        var crt = coverImage.rectTransform; crt.anchorMin = crt.anchorMax = new Vector2(0f, 0.5f); crt.pivot = new Vector2(0.5f, 0.5f);
+        h.SetActive(false);
     }
 
     /// The arrangement's "Drag to arrange" card would sit over the paper's top: hidden while the menu is open.
@@ -193,7 +282,7 @@ public class MenuBook : MonoBehaviour
             var t = 0f;
             while (t < 0.12f)
             {
-                t += Time.unscaledDeltaTime; var k = Mathf.Clamp01(t / 0.12f);
+                t += Dt; var k = Mathf.Clamp01(t / 0.12f);
                 from.localScale = Vector3.one * (1f + 0.12f * k); from.localRotation = Quaternion.Euler(0, 0, startRot + 8f * k);
                 yield return null;
             }
@@ -213,7 +302,7 @@ public class MenuBook : MonoBehaviour
         var time = 0f;
         while (time < FlySeconds)
         {
-            time += Time.unscaledDeltaTime;
+            time += Dt;
             var k = Mathf.Clamp01(time / FlySeconds); var e = 1f - (1f - k) * (1f - k);   // ease out
             frt.position = Vector3.Lerp(startPos, to.position, e) + Vector3.up * (Mathf.Sin(k * Mathf.PI) * 60f * canvasRect.lossyScale.y);
             frt.sizeDelta = Vector2.Lerp(startSize, endSize, e) * (1f + 0.15f * Mathf.Sin(k * Mathf.PI));
@@ -249,16 +338,15 @@ public class MenuBook : MonoBehaviour
 
     private void BuildButton()
     {
-        // The menu card standing on the table (owner, 14 October): there all day, between the hen board and the
-        // pots; tappable only during the arrangement, dimmed and still at other times
+        // The small closed menu book (owner, 16 October): under the sticker line at the top left, only during the
+        // arrangement; a tap zooms it in and opens it
         var img = NewImage("MenuBookButton", canvasRect, Color.white);
-        var sprite = Resources.Load<Sprite>("UI/menu_book");
-        if (sprite != null) img.sprite = sprite; else img.color = Cream;
+        var sprite = Resources.Load<Sprite>("UI/menu_cover");
+        if (sprite != null) img.sprite = sprite; else img.color = new Color(0.36f, 0.57f, 0.83f);
         img.preserveAspect = true;
-        var rt = img.rectTransform; rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0f);
-        rt.sizeDelta = new Vector2(132f, 143f);
-        buttonComp = img.gameObject.AddComponent<Button>();
-        buttonComp.onClick.AddListener(() => { if (IsOpen) Close(); else Open(); });
+        var rt = img.rectTransform; rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f); rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = BookSpot; rt.sizeDelta = BookSize;
+        img.gameObject.AddComponent<Button>().onClick.AddListener(Open);
         button = img.gameObject;
         button.SetActive(false);
     }
@@ -291,7 +379,7 @@ public class MenuBook : MonoBehaviour
         var strip = NewImage("StickerCarousel", canvasRect, new Color(1f, 1f, 1f, 0f));   // no background (owner)
         carousel = strip.gameObject;
         var srt = strip.rectTransform; srt.anchorMin = new Vector2(0f, 1f); srt.anchorMax = new Vector2(1f, 1f); srt.pivot = new Vector2(0.5f, 1f);
-        srt.anchoredPosition = new Vector2(0f, -215f); srt.sizeDelta = new Vector2(-40f, 230f);
+        srt.anchoredPosition = new Vector2(0f, -CarouselTop); srt.sizeDelta = new Vector2(-40f, 160f);
         strip.gameObject.AddComponent<RectMask2D>();
         var scroll = strip.gameObject.AddComponent<ScrollRect>(); scroll.horizontal = true; scroll.vertical = false; scroll.movementType = ScrollRect.MovementType.Elastic;
         var content = new GameObject("Content", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
@@ -406,7 +494,7 @@ public class MenuBook : MonoBehaviour
         var time = 0f;
         while (time < 0.18f && t != null)
         {
-            time += Time.unscaledDeltaTime; var k = Mathf.Clamp01(time / 0.18f);
+            time += Dt; var k = Mathf.Clamp01(time / 0.18f);
             t.localScale = Vector3.one * Mathf.LerpUnclamped(from, 1f, 1f - (1f - k) * (1f - k));
             yield return null;
         }
@@ -416,7 +504,7 @@ public class MenuBook : MonoBehaviour
     private IEnumerator Shake(RectTransform t)
     {
         var start = t.anchoredPosition; var time = 0f;
-        while (time < 0.3f && t != null) { time += Time.unscaledDeltaTime; t.anchoredPosition = start + new Vector2(Mathf.Sin(time * 60f) * 12f * (1f - time / 0.3f), 0f); yield return null; }
+        while (time < 0.3f && t != null) { time += Dt; t.anchoredPosition = start + new Vector2(Mathf.Sin(time * 60f) * 12f * (1f - time / 0.3f), 0f); yield return null; }
         if (t != null) t.anchoredPosition = start;
     }
 
