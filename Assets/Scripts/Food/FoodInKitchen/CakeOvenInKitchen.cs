@@ -1,16 +1,7 @@
+/// <summary>
+/// One of the kitchen's ovens. Since 16 October 2026 the ovens are shared: what this one bakes comes from the menu
+/// through OvenAssigner, not from this class (it used to bake Cake only). Kept because the scene points at it.
+/// </summary>
 public class CakeOvenInKitchen : OvenKitchenBase
 {
-    protected override void OnRefill()
-    {
-        var cake = FindObjectOfType<Cake>();
-        if (cake != null)
-        {
-            cake.RefillToFull();
-            DebugLog("Cake refilled to full!");
-        }
-        else
-        {
-            DebugLog("ERROR: Cake not found in game scene!");
-        }
-    }
 }

@@ -10,9 +10,10 @@ using UnityEngine.UI;
 ///   3. Swap back to the default sprite when done
 ///   4. Persist baking state across kitchen scene unload/reload
 ///
-/// To add a new oven, subclass this and implement OnRefill().
-/// Set bakeTime in the Inspector (default 10s).
-/// Override GetCooldownKey() if needed (defaults to class name).
+/// Shared ovens (owner, 16 October 2026): the ovens are all the same. When the kitchen loads, OvenAssigner hands
+/// each oven one of the oven foods that are on the menu, in the order they are on; the note on the oven shows that
+/// food, the bake time is the recipe's (BakeTimes), and the bake refills that food. An oven with nothing to bake
+/// shows no note and ignores taps. The three subclasses are kept only because the scene points at them.
 /// </summary>
 public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
 {
@@ -24,8 +25,19 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
     [Header("Audio")] public AudioClip interactSound;
     public AudioClip bakeCompleteSound;
 
-    [Header("Bake Time")] [Tooltip("How long the oven bakes before refilling the food item")]
+    [Header("Bake Time")] [Tooltip("Fallback bake time; the recipe's own time in BakeTimes wins")]
     public float bakeTime = 10f;
+
+    [Header("Shared ovens (owner, 16 October 2026)")]
+    [Tooltip("The food this oven bakes today. OvenAssigner sets it from the menu when the kitchen loads; empty = an idle oven")]
+    public string food = "";
+
+    /// Bake time per recipe, in seconds (owner: the ovens are all the same, each recipe has its own time).
+    public static readonly System.Collections.Generic.Dictionary<string, float> BakeTimes =
+        new System.Collections.Generic.Dictionary<string, float> { { "Bread", 8f }, { "Choux", 10f }, { "Cake", 15f }, { "Cookies", 12f } };
+
+    /// This oven's bake time today: the recipe's, else the Inspector value.
+    public float BakeTime => !string.IsNullOrEmpty(food) && BakeTimes.TryGetValue(food, out var t) ? t : bakeTime;
 
     [Header("Debug")] public bool enableDebugLogs = true;
 
@@ -39,6 +51,8 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         // Capture the default sprite from the Image if not manually assigned
         if (defaultSprite == null && image != null)
             defaultSprite = image.sprite;
+
+        OvenAssigner.EnsureAssigned();   // which food this oven bakes today, from the menu (once per kitchen load)
 
         // The bake timer must outlive the kitchen scene, so it always runs on the persistent helper.
         timerHelper = KitchenTimerHelper.GetOrCreate($"[OvenHelper] {GetCooldownKey()}");
@@ -54,7 +68,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         var pickTime = CooldownRegistry.GetPickTime(GetCooldownKey());
         if (pickTime < 0f) return; // Not baking — show idle
 
-        var remaining = bakeTime - (Time.realtimeSinceStartup - pickTime);
+        var remaining = BakeTime - (Time.realtimeSinceStartup - pickTime);
 
         if (remaining > 0f)
         {
@@ -79,7 +93,8 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         // middle of each oven window; rejecting it made centre taps do nothing).
         var hit = eventData.pointerCurrentRaycast.gameObject;
         if (hit == null || !hit.transform.IsChildOf(transform)) return;
-        if (CooldownRegistry.IsOnCooldown(GetCooldownKey(), bakeTime)) return;
+        if (string.IsNullOrEmpty(food)) return;                                   // an idle oven: nothing on the menu for it
+        if (CooldownRegistry.IsOnCooldown(GetCooldownKey(), BakeTime)) return;
 
         DebugLog($"{gameObject.name} clicked — starting bake!");
 
@@ -88,11 +103,11 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
 
         SetSprite(bakingSprite);
         CooldownRegistry.RecordPickTime(GetCooldownKey());
-        timerHelper.StartTimer(GetCooldownKey(), bakeTime, OnBakeComplete);
+        timerHelper.StartTimer(GetCooldownKey(), BakeTime, OnBakeComplete);
     }
 
     /// True while this oven's bake is running.
-    public bool IsBaking => CooldownRegistry.IsOnCooldown(GetCooldownKey(), bakeTime);
+    public bool IsBaking => CooldownRegistry.IsOnCooldown(GetCooldownKey(), BakeTime);
 
     private void OnBakeComplete()
     {
@@ -111,17 +126,29 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
     }
 
     /// <summary>
-    /// Unique key for the cooldown registry. Defaults to class name.
+    /// Unique key for the cooldown registry: the food being baked (a running bake belongs to its recipe, whichever
+    /// oven holds it today). An oven with no food falls back to its class name.
     /// </summary>
     protected virtual string GetCooldownKey()
     {
-        return GetType().Name;
+        return string.IsNullOrEmpty(food) ? GetType().Name : "Oven:" + food;
     }
 
     /// <summary>
-    /// Override to call the correct RefillToFull() for this oven's food item.
+    /// Refills the table item of the food this oven bakes today.
     /// </summary>
-    protected abstract void OnRefill();
+    protected virtual void OnRefill()
+    {
+        switch (food)
+        {
+            case "Bread": { var f = FindObjectOfType<Bread>(); if (f != null) f.RefillToFull(); break; }
+            case "Choux": { var f = FindObjectOfType<Choux>(); if (f != null) f.RefillToFull(); break; }
+            case "Cake": { var f = FindObjectOfType<Cake>(); if (f != null) f.RefillToFull(); break; }
+            case "Cookies": { var f = FindObjectOfType<Cookies>(); if (f != null) f.RefillToFull(); break; }
+            default: DebugLog("no food to refill"); return;
+        }
+        DebugLog(food + " refilled to full!");
+    }
 
     protected void DebugLog(string message)
     {

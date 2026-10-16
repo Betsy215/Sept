@@ -316,9 +316,18 @@ public class MenuBook : MonoBehaviour
         if (to != null)
         {
             var img = to.GetComponent<Image>(); if (img != null) img.color = Color.white;
-            if (!wasOn) StartCoroutine(Pop(to, 1.12f));                     // pressed onto the paper
+            if (!wasOn) { StartCoroutine(Pop(to, 1.12f)); PlayPlacedSound(food); }   // pressed onto the paper
         }
         busy = false;
+    }
+
+    /// The item's own serve sound when its sticker lands on the paper (owner, 16 October: a "placed" sound; foods
+    /// without a serve sound stay silent for now). The table itself changed the moment the sticker was tapped.
+    private void PlayPlacedSound(string food)
+    {
+        if (levelManager == null || levelManager.serveableItems == null || AudioManager.Instance == null) return;
+        foreach (var item in levelManager.serveableItems)
+            if (item != null && item.GetFoodType() == food && item.serveSound != null) { AudioManager.Instance.PlaySFX(item.serveSound); return; }
     }
 
     #endregion
