@@ -18,7 +18,7 @@ Last updated 14 October 2026, evening (menu book, economy tune, tutorial additio
 | Live | **26.10.13 build 4** (released by the owner by 16 October 2026; version id 0abde827-2bd8-47e1-959e-c9f7d63d06a4). Before it: 26.10.09 build 4, released 12 October |
 | In review | Nothing |
 | TestFlight | 26.10.13 builds 1 to 4 (4 = the submitted one). `ProjectSettings` is at 26.10.13 build 4 |
-| On main after build 4 | 13 October night fixes, and 14 October: the menu book (grid, oven notes, station caps), Cookies back as a buy, the economy tune, Day 0 coffee bags and fruit tree, the gingham order receipt and finish panel, real star shapes, test ads on TestFlight builds, chapter 2 groundwork. Not in any build yet |
+| On main after build 4 | 13 October night fixes, and 14 October: the menu book (grid, oven notes, station caps), Cookies back as a buy, the economy tune, Day 0 coffee bags and fruit tree, the gingham order receipt and finish panel, real star shapes, test ads on TestFlight builds, chapter 2 groundwork. Not in any build yet; 16 October: Unity Analytics (AnalyticsLog, development environment for editor and TestFlight), the menu as a single board that shrinks to a small copy of itself when closed (no table icon). Not in any build yet |
 
 What 26.10.13 brings over 26.10.09: two customers at the counter at once, days on a clock (dusk and night as the
 day ends), patience as three daisies per order (each serve brings one back), the chapter map (16 days, stars,
