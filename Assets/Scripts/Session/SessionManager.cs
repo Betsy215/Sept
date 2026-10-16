@@ -203,13 +203,23 @@ public class SessionManager : MonoBehaviour
         }
     }
 
-    /// Foods that belong to a later chapter. Until the player is in that chapter they cannot be bought, and a session
-    /// that already has one does not show it. Cookies were held back on 13 October; since 14 October they are a
-    /// chapter 1 shop buy and the first use of the menu book (bought while the oven is full = off until switched on).
-    public static readonly Dictionary<string, int> FoodChapter = new Dictionary<string, int>();
+    /// Chapter-only foods (owner, 16 October): a food listed here belongs to one chapter. It is in the shop only in
+    /// that chapter and on the table only on that chapter's days; on another chapter's days it waits greyed in the
+    /// menu's carousel and comes back by itself. A food not listed is common to every chapter. The apple is chapter
+    /// 1's own, and so is the coffee (owner, 16 October); the coconut drink and the ice cream are chapter 2's. The sticker paper's colour says which
+    /// (MenuBook.PaperColour). Cookies were held back on 13 October and are a plain chapter 1 buy since 14 October.
+    public static readonly Dictionary<string, int> FoodChapter = new Dictionary<string, int>
+    {
+        { "Apple", 1 }, { "Coffee", 1 }, { "Coconut", 2 }, { "IceCream", 2 }
+    };
     public static readonly string[] HeldBackFoods = { };   // kept for older callers; FoodChapter decides
-    public static bool IsHeldBack(string foodType) =>
-        foodType != null && FoodChapter.TryGetValue(foodType, out var chapter) && chapter > CurrentChapter;
+    /// 0 for a common food, else the one chapter it belongs to.
+    public static int ChapterOfFood(string foodType) =>
+        foodType != null && FoodChapter.TryGetValue(foodType, out var chapter) ? chapter : 0;
+    /// May this food be sold and played today? Common foods always; a chapter-only food on its own chapter's days.
+    public static bool IsFoodInSeason(string foodType) { var c = ChapterOfFood(foodType); return c == 0 || c == CurrentChapter; }
+    /// Not for sale and not on the table today (the shop and the kitchen hide it).
+    public static bool IsHeldBack(string foodType) => foodType != null && !IsFoodInSeason(foodType);
 
     /// Chapter of the day being played (always 1 while Chapter.Count is 1).
     public static int CurrentChapter =>
@@ -245,13 +255,13 @@ public class SessionManager : MonoBehaviour
     }
 
     /// The one rule: a food is in play (table, kitchen, orders) when it is bought and switched on.
-    public bool IsFoodItemActive(string foodType) => IsFoodItemPurchased(foodType) && IsFoodItemEnabled(foodType);
+    public bool IsFoodItemActive(string foodType) => IsFoodItemPurchased(foodType) && IsFoodItemEnabled(foodType) && IsFoodInSeason(foodType);
 
     /// Foods switched on at this station now (bought ones only).
     public int EnabledCountAtStation(string station)
     {
         var list = EnabledList(); if (list == null) return 0;
-        var n = 0; foreach (var f in list) if (StationOf(f) == station && IsFoodItemPurchased(f)) n++;
+        var n = 0; foreach (var f in list) if (StationOf(f) == station && IsFoodItemPurchased(f) && IsFoodInSeason(f)) n++;
         return n;
     }
 
@@ -260,10 +270,11 @@ public class SessionManager : MonoBehaviour
     {
         reason = "";
         if (!IsFoodItemPurchased(foodType)) { reason = "not bought"; return false; }
+        if (!IsFoodInSeason(foodType)) { reason = "not this chapter"; return false; }
         if (IsFoodItemEnabled(foodType)) return true;
         var st = StationOf(foodType);
         if (EnabledCountAtStation(st) >= CapOf(st)) { reason = $"{st} full"; return false; }
-        var on = 0; foreach (var f in EnabledList() ?? new List<string>()) if (IsFoodItemPurchased(f)) on++;
+        var on = 0; foreach (var f in EnabledList() ?? new List<string>()) if (IsFoodItemPurchased(f) && IsFoodInSeason(f)) on++;
         if (on >= MaxEnabledFoods) { reason = "menu full"; return false; }
         return true;
     }
@@ -273,7 +284,7 @@ public class SessionManager : MonoBehaviour
     {
         reason = "";
         if (!IsFoodItemEnabled(foodType)) return true;
-        var on = 0; foreach (var f in EnabledList() ?? new List<string>()) if (IsFoodItemPurchased(f)) on++;
+        var on = 0; foreach (var f in EnabledList() ?? new List<string>()) if (IsFoodItemPurchased(f) && IsFoodInSeason(f)) on++;
         if (on <= MinEnabledFoods) { reason = $"keep at least {MinEnabledFoods} on"; return false; }
         return true;
     }

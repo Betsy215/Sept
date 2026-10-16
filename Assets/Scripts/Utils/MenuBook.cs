@@ -417,6 +417,15 @@ public class MenuBook : MonoBehaviour
         for (var i = 0; i < foods.Count; i++)
         {
             var food = foods[i];
+            if (!SessionManager.IsFoodInSeason(food))
+            {
+                // Another chapter's food (the apple on a beach day): greyed in the carousel, never on the paper, no tap.
+                // The save keeps it as it was, so it comes back by itself on its own chapter's days (owner, 16 October).
+                offCount++;
+                var st = MakeSticker(food, carouselContent, CarouselSize, true);
+                st.localRotation = Quaternion.Euler(0, 0, (StableHash(food) % 9 - 4) * 1.5f);
+                continue;
+            }
             if (sm.IsFoodItemEnabled(food))
             {
                 // Its own spot on the paper (three across), nudged and tilted the same way every time
@@ -449,17 +458,32 @@ public class MenuBook : MonoBehaviour
         unchecked { var h = 17; foreach (var c in s) h = h * 31 + c; return h & 0x7fffffff; }
     }
 
-    private RectTransform MakeSticker(string food, RectTransform parent, float size)
+    /// The sticker paper's colour says the food's chapter (owner, 16 October): yellow for a food of every chapter,
+    /// mint for chapter 1's own (the apple, the coffee), blue for chapter 2's (coconut, ice cream). No words about it in the game.
+    /// Used for a food without a painted sticker; the painted stickers carry their paper colour themselves.
+    public static Color PaperColour(string food)
+    {
+        switch (SessionManager.ChapterOfFood(food))
+        {
+            case 1: return new Color(0.78f, 0.93f, 0.85f);
+            case 2: return new Color(0.77f, 0.86f, 0.96f);
+            default: return new Color(0.99f, 0.91f, 0.67f);
+        }
+    }
+
+    private RectTransform MakeSticker(string food, RectTransform parent, float size, bool greyed = false)
     {
         var img = NewImage("Sticker_" + food, parent, Color.white);
         var s = Resources.Load<Sprite>("UI/stickers/" + food);
-        if (s != null) img.sprite = s; else img.color = Cream;
+        if (s != null) img.sprite = s; else img.color = PaperColour(food);
+        if (greyed) img.color = new Color(0.55f, 0.55f, 0.55f, 0.7f);
         img.preserveAspect = true;
         var rt = img.rectTransform; rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.sizeDelta = new Vector2(size, size);
         if (s == null)
         {
             var t = NewText("Name", rt, font, 36f, Brown); t.text = food; t.alignment = TextAlignmentOptions.Center; Stretch(t.rectTransform);
         }
+        if (greyed) return rt;
         if (parent != board) img.gameObject.AddComponent<Button>().onClick.AddListener(() => OnStickerTapped(food, rt));
         img.gameObject.AddComponent<Wiggle>().phase = StableHash(food) % 628 / 100f;
         return rt;

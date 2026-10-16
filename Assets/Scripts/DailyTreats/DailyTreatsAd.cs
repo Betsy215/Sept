@@ -20,7 +20,7 @@ public class DailyTreatsAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     private RectTransform canvasRect;
     private Image button, coin, sparkles;
     private RectTransform amount;                 // the "+N" glyphs, laid out at runtime
-    private TextMeshProUGUI label, small;
+    private TextMeshProUGUI label;
     private GameObject close;
     private bool adReady, loading, showing, closed;
     private Coroutine breathing;
@@ -36,7 +36,6 @@ public class DailyTreatsAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     {
         canvasRect = canvas; sparkles = sparklesImage; onCoins = payCoins; onClose = closeBoard; dailyReward = coinAndAmountToHide;
         var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF");
-        var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain");
 
         // The coin alone (the baked "+50" picture goes; the amount is composed per reward)
         coin = NewImage("AdCoin", Load("glyph_coin") != null ? Load("glyph_coin") : null, Color.white);
@@ -51,9 +50,7 @@ public class DailyTreatsAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
         Place(button.rectTransform, 16f, -431f, 548f, 305f);
         button.raycastTarget = true;
         label = NewText("Label", button.rectTransform, font, 58f, new Color(0.8f, 0.47f, 0.16f));
-        label.text = "ONE MORE TREAT"; Place(label.rectTransform, -8f, 22f, 520f, 90f);
-        small = NewText("Small", button.rectTransform, font, 30f, new Color(0.28f, 0.15f, 0.055f));
-        small.text = "watch an ad"; if (plain != null) small.fontSharedMaterial = plain; Place(small.rectTransform, -8f, -40f, 520f, 50f);
+        label.text = "ONE MORE TREAT"; Place(label.rectTransform, -8f, -4f, 520f, 90f);   // the words alone, centred (owner, 16 October: no "watch an ad")
         var b = button.gameObject.AddComponent<Button>(); b.transition = Selectable.Transition.None; b.onClick.AddListener(OnTap);
 
         // A small cross at the board's top right corner
