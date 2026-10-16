@@ -5,8 +5,7 @@ Current open work, as of 13 October 2026 (night). Done items are removed; the da
 
 ## Waiting
 
-- [ ] **26.10.13 build 4 in App Store review** (submitted 13 October 21:41, manual release). Answer anything Apple
-  raises; the owner presses Release.
+- [x] **26.10.13 build 4 released** (by 16 October).
 - [ ] **Owner to decide:** the description and promo text still say "serve two customers at a time" / "keep two
   customers happy at once". The owner said not to say that in a caption. Rewording the description means pulling the
   submission back and resubmitting (MANUAL section 9), or it waits for the next version.

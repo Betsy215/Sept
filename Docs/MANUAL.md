@@ -15,8 +15,8 @@ Last updated 14 October 2026, evening (menu book, economy tune, tutorial additio
 | Owner | Betsy (GitHub Betsy215, developer name BetzzzGame). Use they/them unless told otherwise |
 | Bundle id / app id / team | `com.BetzzzGame.FoodTruckCafe` / 6755611355 / XY39924J9T |
 | Repo | https://github.com/Betsy215/Sept (**public**: never commit keys, issuer ids or tokens), branch `main` |
-| Live | 26.10.09 build 4 (released by the owner 12 October 2026) |
-| In review | **26.10.13 build 4**, submitted 13 October 21:41 (review submission c3872ee1-f57e-4cf7-9346-1a2b55c831d0), release type Manual: after approval the owner presses Release. Version id 0abde827-2bd8-47e1-959e-c9f7d63d06a4 |
+| Live | **26.10.13 build 4** (released by the owner by 16 October 2026; version id 0abde827-2bd8-47e1-959e-c9f7d63d06a4). Before it: 26.10.09 build 4, released 12 October |
+| In review | Nothing |
 | TestFlight | 26.10.13 builds 1 to 4 (4 = the submitted one). `ProjectSettings` is at 26.10.13 build 4 |
 | On main after build 4 | 13 October night fixes, and 14 October: the menu book (grid, oven notes, station caps), Cookies back as a buy, the economy tune, Day 0 coffee bags and fruit tree, the gingham order receipt and finish panel, real star shapes, test ads on TestFlight builds, chapter 2 groundwork. Not in any build yet |
 
