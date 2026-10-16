@@ -161,6 +161,7 @@ public class InterstitialAdService : MonoBehaviour, IUnityAdsLoadListener, IUnit
     public void OnUnityAdsShowComplete(string adUnitId, UnityAdsShowCompletionState state)
     {
         if (adUnitId != AdUnitId) return;
+        AnalyticsLog.AdWatched("interstitial", state == UnityAdsShowCompletionState.COMPLETED);
         Finish();
     }
 

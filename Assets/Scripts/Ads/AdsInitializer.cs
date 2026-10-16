@@ -30,7 +30,7 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
 #endif
 
     /// TestFlight and Xcode builds carry a sandbox receipt (Plugins/iOS/TestFlightCheck.mm). Store builds do not.
-    private static bool IsTestFlightBuild()
+    internal static bool IsTestFlightBuild()
     {
 #if UNITY_IOS && !UNITY_EDITOR
         try { return FTC_IsTestFlight(); } catch (System.Exception) { return false; }

@@ -526,6 +526,7 @@ public class ShopManager : MonoBehaviour
         // On failure the popup stays open with the reason; the player cancels it
         if (TryPurchaseItem(currentPurchaseItem))
         {
+            AnalyticsLog.ShopPurchase(currentPurchaseItem.itemName, currentPurchaseItem.price);
             if (purchaseConfirmationPopup != null)
                 purchaseConfirmationPopup.SetActive(false);
             currentPurchaseItem = null;

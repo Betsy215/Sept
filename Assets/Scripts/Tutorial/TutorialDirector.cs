@@ -306,6 +306,7 @@ public class TutorialDirector : MonoBehaviour
             SessionManager.Instance.RestoreScoreToSnapshot();
             SessionManager.Instance.MarkTutorialSeen();
         }
+        AnalyticsLog.TutorialFinished(saidCount);
 
         // Day 0 is over: on to the map, where day 1 is the next star (12 October; it used to reload into day 1)
         Time.timeScale = 1f;
@@ -337,8 +338,11 @@ public class TutorialDirector : MonoBehaviour
 
     #region Pointer and captions
 
+    private int saidCount;
+
     private void Say(string text)
     {
+        AnalyticsLog.TutorialStep(++saidCount, text);
         caption.text = text;
         caption.gameObject.SetActive(true);
         // The card grows for a second line (owner, 12 October: two lines did not sit well on the one-line card)

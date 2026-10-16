@@ -340,6 +340,7 @@ public class LevelManager : MonoBehaviour
     public void RestartLevel()
     {
         Debug.Log("RestartLevel called");
+        if (!isLevelEnding) AnalyticsLog.DayLeft(currentLevelIndex, "restart");
         if (scoreManager != null) restartPayFactor = scoreManager.payFactor;
 
         // Universal restart method - handles both pause and level complete cases
@@ -641,6 +642,7 @@ public class LevelManager : MonoBehaviour
         // Stars for the map, and the one-time three-star bonus
         var stars = scoreManager != null && scoreManager.starProgressBar != null ? scoreManager.starProgressBar.GetEarnedStarsCount() : 0;
         threeStarBonusPaid = SessionManager.Instance.RecordLevelStars(currentLevelIndex, stars, ThreeStarBonus);
+        AnalyticsLog.DayFinished(currentLevelIndex, stars, levelScore);
 
         // Last day of the chapter: record the high score. The session stays active so every day
         // can still be replayed from the map (it used to end the game here).
@@ -814,6 +816,7 @@ public class LevelManager : MonoBehaviour
     public void GoToMainMenu()
     {
         Debug.Log("GoToMainMenu called");
+        if (!isLevelEnding) AnalyticsLog.DayLeft(currentLevelIndex, "menu");
 
         if (AudioManager.Instance != null)
             AudioManager.Instance.StopMusic();

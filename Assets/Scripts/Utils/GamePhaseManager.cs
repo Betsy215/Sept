@@ -158,6 +158,8 @@ public class GamePhaseManager : MonoBehaviour
     {
         currentPhase = GamePhase.PLAYING;
         DebugLog("=== PLAY PHASE STARTED ===");
+        if (SessionManager.Instance != null && FindObjectOfType<TutorialDirector>() == null)
+            AnalyticsLog.DayStarted(SessionManager.Instance.GetCurrentLevelIndex());
 
         if (refillSystem != null)
             refillSystem.NotifyPhaseChange(currentPhase);

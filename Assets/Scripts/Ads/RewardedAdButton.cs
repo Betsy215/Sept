@@ -135,6 +135,7 @@ public class RewardedAdButton : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
     public void OnUnityAdsShowComplete(string adUnitId, UnityAdsShowCompletionState state)
     {
         if (adUnitId != _adUnitId) return;
+        AnalyticsLog.AdWatched("rewarded", state == UnityAdsShowCompletionState.COMPLETED);
 
         if (state == UnityAdsShowCompletionState.COMPLETED)
         {
