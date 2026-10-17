@@ -440,7 +440,7 @@ public class ShopManager : MonoBehaviour
         var t = icon.Find("Lock");
         if (t == null && locked)
         {
-            var sprite = Resources.Load<Sprite>("Map/lock_small"); if (sprite == null) return;
+            var sprite = Resources.Load<Sprite>("Map/lock_yellow"); if (sprite == null) return;
             var go = new GameObject("Lock", typeof(RectTransform), typeof(Image));
             go.transform.SetParent(icon, false);
             var rt = (RectTransform)go.transform; rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0.5f);
