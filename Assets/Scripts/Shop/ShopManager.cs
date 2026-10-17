@@ -662,7 +662,9 @@ public class ShopManager : MonoBehaviour
             var descH = popupItemInfo.textBounds.size.y + 12f;
             var noteH = 0f;
             if (hasNote) { note.rectTransform.sizeDelta = new Vector2(900f, 400f); note.ForceMeshUpdate(true, true); noteH = note.textBounds.size.y + 10f; }
-            const float regionTop = 170f, regionBottom = -420f, gap = 34f;
+            const float regionBottom = -420f, gap = 34f;
+            var regionTop = 170f;
+            if (popupItemIcon != null) regionTop = Mathf.Min(regionTop, popupItemIcon.rectTransform.anchoredPosition.y - popupItemIcon.rectTransform.sizeDelta.y / 2f - 20f);   // below the picture, tall jugs included
             var blockH = descH + (hasNote ? gap + noteH : 0f);
             var y0 = Mathf.Min(regionTop, regionTop - ((regionTop - regionBottom) - blockH) / 2f);   // never up into the picture
             popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, descH);
