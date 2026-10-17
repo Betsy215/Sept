@@ -52,7 +52,8 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         if (defaultSprite == null && image != null)
             defaultSprite = image.sprite;
 
-        OvenAssigner.EnsureAssigned();   // which food this oven bakes today, from the menu (once per kitchen load)
+        OvenAssigner.EnsureAssigned();
+        KitchenWindow.Apply();   // chapter 2: the beach through the window (16 October)   // which food this oven bakes today, from the menu (once per kitchen load)
 
         // The bake timer must outlive the kitchen scene, so it always runs on the persistent helper.
         timerHelper = KitchenTimerHelper.GetOrCreate($"[OvenHelper] {GetCooldownKey()}");

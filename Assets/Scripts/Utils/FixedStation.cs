@@ -33,19 +33,25 @@ public static class FixedStation
         var machine = fixedFood == "Coffee" ? Object.FindObjectOfType<CoffeeMachine>() : null;
         if (food == null && machine == null) return;
 
-        // the objects in a row from the left: the machine first, then the food; each stands on the station's floor
+        // the objects in a row from the left: the machine first, then the cups; each stands with its drawn feet on the
+        // tray's board. The pictures have empty padding, so the drawn part is measured (fractions of the sprite box:
+        // machine x 0.44 y 0.485 w 0.77 h 0.89; cups x 0.51 y 0.53 w 0.55 h 0.29, from the png alphas, 16 October)
         var x = bounds.min.x + MarginLeft;
-        var floorY = bounds.min.y + MarginBottom;
-        var left = x; var right = x; var top = floorY;
-        foreach (var t in new[] { machine != null ? machine.transform : null, food != null ? food.transform : null })
+        var floorY = bounds.min.y + MarginBottom;        // the tray's bottom edge
+        var feetY = floorY + 0.16f;                       // where the objects stand, inside the tray
+        var left = x; var right = x; var top = feetY;
+        var row = new[] { machine != null ? machine.transform : null, food != null ? food.transform : null };
+        var frac = new[] { new Vector4(0.44f, 0.485f, 0.77f, 0.89f), new Vector4(0.51f, 0.53f, 0.55f, 0.29f) };
+        for (var i = 0; i < row.Length; i++)
         {
-            if (t == null) continue;
+            var t = row[i]; if (t == null) continue;
             var sr = t.GetComponent<SpriteRenderer>(); var b = sr != null ? sr.bounds : new Bounds(t.position, Vector3.one);
-            if (t != (machine != null ? machine.transform : null)) b = new Bounds(b.center, new Vector3(b.size.x * 0.6f, b.size.y * 0.6f, b.size.z));   // the cups' picture has wide empty padding
-            var halfW = b.extents.x; var halfH = b.extents.y;
-            var dx = t.position.x - b.center.x; var dy = t.position.y - b.center.y;   // the pivot's offset from the picture's centre
-            t.position = new Vector3(x + halfW + dx, floorY + halfH + dy, t.position.z);
-            right = x + 2f * halfW; top = Mathf.Max(top, floorY + 2f * halfH);
+            var fr = frac[i];
+            var dc = new Vector2(b.min.x + fr.x * b.size.x, b.min.y + fr.y * b.size.y);        // the drawn part's centre
+            var halfW = fr.z * b.size.x / 2f; var halfH = fr.w * b.size.y / 2f;
+            var dx = t.position.x - dc.x; var dy = t.position.y - dc.y;                       // the pivot's offset from the drawn centre
+            t.position = new Vector3(x + halfW + dx, feetY + halfH + dy, t.position.z);
+            right = x + 2f * halfW; top = Mathf.Max(top, feetY + 2f * halfH);
             x = right + Gap;
         }
 
@@ -55,10 +61,10 @@ public static class FixedStation
         var go = GameObject.Find("FixedStation"); if (go == null) go = new GameObject("FixedStation");
         var r = go.GetComponent<SpriteRenderer>(); if (r == null) r = go.AddComponent<SpriteRenderer>();   // never ?? on a Unity object: a missing component is not C# null
         r.sprite = sprite; r.sortingLayerName = "FoodItems"; r.sortingOrder = -1;
-        var width = (right - left) + 0.24f; var scale = width / sprite.bounds.size.x;         // hugs the machine and the cups with a little air
+        var width = (right - left) + 0.3f; var scale = width / sprite.bounds.size.x;          // hugs the machine and the cups with a little air
         go.transform.localScale = new Vector3(scale, scale * 0.62f, 1f);                       // a flat tray, not a board
         var h = sprite.bounds.size.y * scale * 0.62f;
-        go.transform.position = new Vector3((left + right) / 2f, floorY + h * 0.36f, 0.06f);   // the tray's top edge sits behind the objects' feet
+        go.transform.position = new Vector3((left + right) / 2f, floorY + h / 2f, 0.06f);      // the tray's bottom edge on floorY; the objects' feet inside it
         // the station moves as one: the machine is the handle, the cups and the tray follow (owner, 16 October)
         var grp = go.GetComponent<StationGroup>(); if (grp == null) grp = go.AddComponent<StationGroup>();
         if (machine != null) grp.Bind(machine.transform, food != null ? food.transform : null, go.transform);
