@@ -735,6 +735,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
+      propertyPath: specialNote
+      value: A calm regular, good for busy days
+      objectReference: {fileID: 0}
+    - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
       value: '$ 220
 
@@ -1083,6 +1087,10 @@ PrefabInstance:
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: isAvailable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
+      propertyPath: specialNote
+      value: Two cups per brew
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
@@ -2684,6 +2692,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
+      propertyPath: specialNote
+      value: 'Orders get longer: keep the table full'
+      objectReference: {fileID: 0}
+    - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
       value: '$ 700
 
@@ -4049,6 +4061,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
+      propertyPath: specialNote
+      value: Bakes in any oven, three at a time
+      objectReference: {fileID: 0}
+    - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
       value: '$ 600
 
@@ -4317,6 +4333,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
+      propertyPath: specialNote
+      value: 'Decor: it stays on the table'
+      objectReference: {fileID: 0}
+    - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
       value: '$ 450
 
@@ -4560,6 +4580,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
+      propertyPath: specialNote
+      value: 'Decor: it stays on the table'
+      objectReference: {fileID: 0}
+    - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
       value: '$ 900
 
@@ -4759,6 +4783,10 @@ PrefabInstance:
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemType
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
+      propertyPath: specialNote
+      value: Serve him first, he leaves early
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
@@ -5133,6 +5161,10 @@ PrefabInstance:
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: isAvailable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
+      propertyPath: specialNote
+      value: Three cups on the table
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
