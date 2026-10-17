@@ -114,6 +114,7 @@ public class ShopManager : MonoBehaviour
                 shopItem.gameObject.SetActive(true);
                 var canAfford = session != null && session.CanAfford(shopItem.price);
                 shopItem.UpdateAffordability(canAfford);
+                ShowCardLock(shopItem, IsLockedCard(shopItem));
             }
     }
 
@@ -421,6 +422,29 @@ public class ShopManager : MonoBehaviour
             icon.sizeDelta = new Vector2(h * aspect, h);
             icon.anchoredPosition = centre - new Vector2((0.5f - icon.pivot.x) * icon.rect.width, (0.5f - icon.pivot.y) * icon.rect.height);
         }
+    }
+
+    /// A chapter 2 unlock (Cookies, Coconut) shown with a lock until that chapter is started (owner, 16 October)
+    private static bool IsLockedCard(ShopItemController card) =>
+        card != null && (SessionManager.IsLockedInShop(card.itemName?.Trim()) || SessionManager.IsLockedInShop(card.gameObject.name));
+
+    private static void ShowCardLock(ShopItemController card, bool locked)
+    {
+        var icon = card.transform.Find("ItemIcon"); if (icon == null) return;
+        var t = icon.Find("Lock");
+        if (t == null && locked)
+        {
+            var sprite = Resources.Load<Sprite>("Map/lock_small"); if (sprite == null) return;
+            var go = new GameObject("Lock", typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(icon, false);
+            var rt = (RectTransform)go.transform; rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = new Vector2(0f, 0f); var size = ((RectTransform)icon).rect.height * 0.5f;
+            rt.sizeDelta = new Vector2(size * sprite.rect.width / sprite.rect.height, size);
+            var img = go.GetComponent<Image>(); img.sprite = sprite; img.raycastTarget = false; img.preserveAspect = true;
+            t = go.transform;
+        }
+        if (t != null) t.gameObject.SetActive(locked);
+        var ii = icon.GetComponent<Image>(); if (ii != null && locked) ii.color = new Color(0.75f, 0.75f, 0.75f, 1f);
     }
 
     private static bool IsHeldBackCard(ShopItemController card) =>

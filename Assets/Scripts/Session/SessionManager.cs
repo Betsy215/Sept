@@ -210,7 +210,7 @@ public class SessionManager : MonoBehaviour
     /// (MenuBook.PaperColour). Cookies were held back on 13 October and are a plain chapter 1 buy since 14 October.
     public static readonly Dictionary<string, int> FoodChapter = new Dictionary<string, int>
     {
-        { "Apple", 1 }, { "Coffee", 1 }, { "Coconut", 2 }, { "IceCream", 2 }
+        { "Apple", 1 }, { "Coffee", 1 }, { "IceCream", 2 }   // Coconut is a chapter 2 unlock but plays in any chapter (UnlockChapter)
     };
     public static readonly string[] HeldBackFoods = { };   // kept for older callers; FoodChapter decides
     /// 0 for a common food, else the one chapter it belongs to.
@@ -220,6 +220,13 @@ public class SessionManager : MonoBehaviour
     public static bool IsFoodInSeason(string foodType) { var c = ChapterOfFood(foodType); return c == 0 || c == CurrentChapter; }
     /// Not for sale and not on the table today (the shop and the kitchen hide it).
     public static bool IsHeldBack(string foodType) => foodType != null && !IsFoodInSeason(foodType);
+
+    /// Foods that appear in the shop with a lock until the player has started their chapter (owner, 16 October):
+    /// Cookies and Coconut open with chapter 2, and once bought they play in any chapter.
+    public static readonly Dictionary<string, int> UnlockChapter = new Dictionary<string, int> { { "Cookies", 2 }, { "Coconut", 2 } };
+    /// Chapters the player has reached: 1 plus one per 16 finished days, never past Chapter.Count
+    public static int ChaptersStarted => Mathf.Clamp(1 + (Instance != null ? Instance.GetLevelsCompleted() : 0) / Chapter.Days, 1, Chapter.Count);
+    public static bool IsLockedInShop(string foodType) => foodType != null && UnlockChapter.TryGetValue(foodType, out var c) && c > ChaptersStarted;
 
     /// Chapter of the day being played (always 1 while Chapter.Count is 1).
     public static int CurrentChapter =>
@@ -231,7 +238,7 @@ public class SessionManager : MonoBehaviour
     public static readonly Dictionary<string, string> FoodStation = new Dictionary<string, string>
     {
         { "Bread", "Oven" }, { "Cake", "Oven" }, { "Choux", "Oven" }, { "Cookies", "Oven" },
-        { "Coffee", "Machine" }, { "Juice", "Counter" }, { "Apple", "Counter" }
+        { "Coffee", "Machine" }, { "Juice", "Counter" }, { "Apple", "Counter" }, { "Coconut", "Counter" }
     };
     public static readonly Dictionary<string, int> StationCap = new Dictionary<string, int> { { "Oven", 3 }, { "Machine", 1 }, { "Counter", 2 } };
     public const int MinEnabledFoods = 2;

@@ -53,6 +53,7 @@ public class ShopItemController : MonoBehaviour
 
     private void OnItemClicked()
     {
+        if (SessionManager.IsLockedInShop(itemName) || SessionManager.IsLockedInShop(gameObject.name)) return;   // locked until its chapter (owner, 16 October)
         if (shopManager != null && !isPurchased) shopManager.ShowPurchasePopup(this);
     }
 
