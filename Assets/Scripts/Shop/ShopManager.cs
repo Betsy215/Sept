@@ -654,22 +654,14 @@ public class ShopManager : MonoBehaviour
             var note = EnsureNoteLabel(chalk);
             var hasNote = note != null && !string.IsNullOrWhiteSpace(item.specialNote);
             if (note != null) { note.text = item.specialNote ?? ""; note.gameObject.SetActive(hasNote); }
-            // the words as one block, centred between the picture and the buttons (owner, 16 October: bigger,
-            // centred, never overlapping, the same room for every item)
-            // measure with the real wrapping: lay each label out at its width first, then read the rendered height
-            // (GetPreferredValues ignored the bold hand's wider glyphs and under-measured by a line)
-            popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 800f); popupItemInfo.ForceMeshUpdate(true, true);
-            var descH = popupItemInfo.textBounds.size.y + 12f;
-            var noteH = 0f;
-            if (hasNote) { note.rectTransform.sizeDelta = new Vector2(900f, 400f); note.ForceMeshUpdate(true, true); noteH = note.textBounds.size.y + 10f; }
-            const float regionBottom = -420f, gap = 34f;
-            var regionTop = 170f;
-            if (popupItemIcon != null) regionTop = Mathf.Min(regionTop, popupItemIcon.rectTransform.anchoredPosition.y - popupItemIcon.rectTransform.sizeDelta.y / 2f - 20f);   // below the picture, tall jugs included
-            var blockH = descH + (hasNote ? gap + noteH : 0f);
-            var y0 = Mathf.Min(regionTop, regionTop - ((regionTop - regionBottom) - blockH) / 2f);   // never up into the picture
-            popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, descH);
-            popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, y0 - descH / 2f);
-            if (hasNote) { note.rectTransform.sizeDelta = new Vector2(900f, noteH); note.rectTransform.anchoredPosition = new Vector2(0f, y0 - descH - gap - noteH / 2f); }
+            // fixed places (owner, 16 October): the price and a two-line description in one label, the one-line note
+            // under it; every card's text was cut to fit, so nothing is measured and nothing can overlap
+            var shift = 0f;
+            if (popupItemIcon != null) shift = Mathf.Clamp(190f - (popupItemIcon.rectTransform.anchoredPosition.y - popupItemIcon.rectTransform.sizeDelta.y / 2f), 0f, 60f);   // tall pictures push the block down a little
+            popupItemInfo.alignment = TextAlignmentOptions.Top;
+            popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 330f);
+            popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -5f - shift);          // spans about +160 to -170
+            if (hasNote) { note.rectTransform.sizeDelta = new Vector2(940f, 90f); note.rectTransform.anchoredPosition = new Vector2(0f, -300f - shift); }
         }
 
         if (confirmPurchaseButton != null)

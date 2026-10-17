@@ -3102,7 +3102,7 @@ PrefabInstance:
 
         A big eater:
 
-        one extra item per order'
+        one extra item'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
@@ -5595,7 +5595,7 @@ PrefabInstance:
 
         One more plate
 
-        of cups on the table'
+        of cups'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: upgradeFoodType
