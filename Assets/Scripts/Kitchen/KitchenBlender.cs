@@ -10,9 +10,9 @@ using UnityEngine.UI;
 /// cream colours one by one with a swirl and a shake (BlenderAnim). Built once per kitchen load, every chapter.
 public static class KitchenBlender
 {
-    static readonly Vector2 Min = new Vector2(0.0296f, 0.5005f), Max = new Vector2(0.2065f, 0.6646f);          // the cut-out's box on the background
-    static readonly Vector2 FluidMin = new Vector2(0.2154f, 0.4176f), FluidMax = new Vector2(0.7231f, 0.7824f); // the swirl inside the jar (blender2_cut.py)
-    public static readonly Color Rest = new Color(1f, 0.92f, 0.88f, 1f);                                        // at rest the swirl is the drawing's pale pink
+    static readonly Vector2 Min = new Vector2(0.0296f, 0.5005f), Max = new Vector2(0.2065f, 0.649f);           // the cut-out's box on the background (blender_cut.py)
+    static readonly Vector2 FluidMin = new Vector2(0.1571f, 0.3614f), FluidMax = new Vector2(0.6806f, 0.6912f); // the drink inside the jug (blender_cut.py)
+    public static readonly Color Rest = new Color(1f, 1f, 1f, 0f);                                             // at rest the overlay is invisible: the owner's drink shows as drawn
     public static readonly Color[] Flavours =
     {
         new Color(0.98f, 0.94f, 0.82f),   // vanilla
@@ -23,10 +23,10 @@ public static class KitchenBlender
 
     public static void Apply()
     {
-        // chapter 2: Gemini's steel blender in the style of ChatGPT's maker, the swirl inside (owner, 17 October);
-        // chapter 1: the owner's own cream blender as drawn, cut from the background, no ice cream and no blend
+        // the owner's own cream blender as drawn, cut from the background, with a blade added (owner, 17 October:
+        // "keep the original blender, only add a blade"); in chapter 2 its drink blends the four ice cream colours
         var ch2 = SessionManager.CurrentChapter >= 2;
-        var body = Resources.Load<Sprite>(ch2 ? "Kitchen/blender2" : "Kitchen/blender"); if (body == null) return;
+        var body = Resources.Load<Sprite>("Kitchen/blender"); if (body == null) return;
         Transform bg = null;
         foreach (var canvas in Object.FindObjectsOfType<Canvas>())
             if (canvas.gameObject.scene.name == "KitchenScene") { bg = canvas.transform.Find("bg"); if (bg != null) break; }
@@ -40,7 +40,7 @@ public static class KitchenBlender
 
         var fill = new GameObject("Contents", typeof(RectTransform), typeof(Image)); fill.transform.SetParent(rt, false);
         var frt = (RectTransform)fill.transform; frt.anchorMin = Vector2.zero; frt.anchorMax = Vector2.one; frt.offsetMin = Vector2.zero; frt.offsetMax = Vector2.zero;
-        var fi = fill.GetComponent<Image>(); fi.sprite = Resources.Load<Sprite>("Kitchen/blender2_fill"); fi.preserveAspect = true; fi.raycastTarget = false; fi.color = Rest;
+        var fi = fill.GetComponent<Image>(); fi.sprite = Resources.Load<Sprite>("Kitchen/blender_fill"); fi.preserveAspect = true; fi.raycastTarget = false; fi.color = Rest;
 
         // the drawn body is fitted by height inside the box (preserveAspect), so the jar's box is taken from the fitted rect
         var boxW = rt.rect.width; var boxH = rt.rect.height; var fitW = boxH * body.rect.width / body.rect.height; var padX = (boxW - fitW) / 2f / Mathf.Max(boxW, 1f);
@@ -84,7 +84,7 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         IsBlending = true;
         var rt = (RectTransform)transform;
         var flavours = KitchenBlender.Flavours;
-        var from = KitchenBlender.Rest;
+        var from = new Color(flavours[0].r, flavours[0].g, flavours[0].b, 0f);     // the first flavour fades in over the drawn drink
         for (var i = 0; i < flavours.Length; i++)
         {
             var t = 0f;
@@ -107,7 +107,7 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
             s += Time.unscaledDeltaTime; var k = Mathf.Clamp01(s / 0.6f);
             Shake(rt, 1f - k); Churn(1f - k);
             if (swirl != null) { swirl.color = new Color(1f, 1f, 1f, 0.55f * (1f - k)); swirl.rectTransform.Rotate(0f, 0f, -540f * (1f - k) * Time.unscaledDeltaTime); }
-            if (contents != null) contents.color = Color.Lerp(from, KitchenBlender.Rest, k);
+            if (contents != null) contents.color = new Color(from.r, from.g, from.b, 1f - k);           // the last flavour fades out to the drawn drink
             yield return null;
         }
         rt.anchoredPosition = restPos; rt.localRotation = Quaternion.identity;
