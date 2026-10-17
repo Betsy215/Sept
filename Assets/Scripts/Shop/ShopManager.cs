@@ -640,7 +640,7 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.text = string.Join("\n", lines);
             popupItemInfo.color = Color.white;
             popupItemInfo.richText = true;
-            popupItemInfo.fontSize = 74f; popupItemInfo.alignment = TextAlignmentOptions.Center;
+            popupItemInfo.fontSize = 68f; popupItemInfo.alignment = TextAlignmentOptions.Center;
             popupItemInfo.fontStyle = FontStyles.Bold;
             popupItemInfo.rectTransform.anchorMin = popupItemInfo.rectTransform.anchorMax = new Vector2(0.5f, 0.5f); popupItemInfo.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(-6f, 380f);
@@ -650,9 +650,13 @@ public class ShopManager : MonoBehaviour
             if (note != null) { note.text = item.specialNote ?? ""; note.gameObject.SetActive(hasNote); }
             // the words as one block, centred between the picture and the buttons (owner, 16 October: bigger,
             // centred, never overlapping, the same room for every item)
-            var descH = popupItemInfo.GetPreferredValues(popupItemInfo.text, 960f, Mathf.Infinity).y;
-            var noteH = hasNote ? note.GetPreferredValues(note.text, 900f, Mathf.Infinity).y : 0f;
-            const float regionTop = 150f, regionBottom = -400f, gap = 30f;
+            // measure with the real wrapping: lay each label out at its width first, then read the rendered height
+            // (GetPreferredValues ignored the bold hand's wider glyphs and under-measured by a line)
+            popupItemInfo.rectTransform.sizeDelta = new Vector2(960f, 800f); popupItemInfo.ForceMeshUpdate(true, true);
+            var descH = popupItemInfo.textBounds.size.y + 12f;
+            var noteH = 0f;
+            if (hasNote) { note.rectTransform.sizeDelta = new Vector2(900f, 400f); note.ForceMeshUpdate(true, true); noteH = note.textBounds.size.y + 10f; }
+            const float regionTop = 170f, regionBottom = -420f, gap = 34f;
             var blockH = descH + (hasNote ? gap + noteH : 0f);
             var y0 = regionTop - ((regionTop - regionBottom) - blockH) / 2f;
             popupItemInfo.rectTransform.sizeDelta = new Vector2(960f, descH);
