@@ -31,32 +31,32 @@ U.call("manage_editor", {"action": "stop"}); time.sleep(2)
 ex(open("/tmp/gv_Store1320.cs").read())
 U.call("read_console", {"action": "clear"})
 U.call("manage_editor", {"action": "play"}); time.sleep(6)
-log("FRESH", exf("/tmp/ap/fresh.cs"))
+log("FRESH", exf("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/fresh.cs"))
 console("menu")
 # the tutorial (due on a fresh session) through the real flow: Play goes to GameSceneOne
 log("===== TUTORIAL")
 log(ex('var cp = UnityEngine.Object.FindObjectOfType<ClickPlay>(); if (cp == null) return "no ClickPlay"; var e = new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current); cp.OnPointerDown(e); cp.OnPointerUp(e); return "play clicked on " + cp.name;'))
 time.sleep(4)
-if "GameSceneOne" not in ex(open("/tmp/ap/state.cs").read()):
-    log(exf("/tmp/ap/goday.cs", DAY=0))
+if "GameSceneOne" not in ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/state.cs").read()):
+    log(exf("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/goday.cs", DAY=0))
 time.sleep(7)
 t0 = time.time(); seen = {}
 while time.time() - t0 < 180:
-    r = ex(open("/tmp/ap/tutstep.cs").read()); seen[r] = seen.get(r, 0) + 1
+    r = ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/tutstep.cs").read()); seen[r] = seen.get(r, 0) + 1
     if seen[r] == 1: log("  tut:", r)
     if r in ("T|letsgo",) : break
     if r == "T|none" and time.time() - t0 > 20: break
     time.sleep(1.0)
-time.sleep(5); log("after tutorial", ex(open("/tmp/ap/state.cs").read()))
+time.sleep(5); log("after tutorial", ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/state.cs").read()))
 U.call("manage_camera", {"action": "screenshot", "screenshot_file_name": "ap_tutorial_end", "properties": {"include_image": False}})
 console("tutorial")
 for day in range(0, 16):
     log(f"===== DAY index {day}")
-    log(exf("/tmp/ap/goday.cs", DAY=day)); time.sleep(7)
-    log(ex(open("/tmp/ap/state.cs").read()))
+    log(exf("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/goday.cs", DAY=day)); time.sleep(7)
+    log(ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/state.cs").read()))
     # a one-time hint (the apple tree, 14 October) runs over the arrangement: tap through it like a player
     for _ in range(30):
-        r = ex(open("/tmp/ap/tutstep.cs").read())
+        r = ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/tutstep.cs").read())
         if r == "T|none": break
         if r.startswith("T|tapped"): log("  hint:", r)
         time.sleep(1.0)
@@ -64,28 +64,28 @@ for day in range(0, 16):
     ex(f"UnityEngine.Time.timeScale = {SPEED}f; return \"speed\";")
     counts = {}; t0 = time.time(); last_state = 0
     while time.time() - t0 < 240:
-        r = ex(open("/tmp/ap/step.cs").read())
+        r = ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/step.cs").read())
         kind = r.split("|")[1] if "|" in r else r
         counts[kind] = counts.get(kind, 0) + 1
         if kind == "done": break
         if kind in ("noLM", "noOS", "missing") or not r.startswith("S|"): log("  step:", r)
         if time.time() - last_state > 15:
-            log("  ", ex(open("/tmp/ap/state.cs").read()), counts); last_state = time.time()
+            log("  ", ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/state.cs").read()), counts); last_state = time.time()
         # the tutorial ends on its own board (Let's go): detect leaving the game scene
         if "S|noLM" in r: break
         time.sleep(STEP)
     ex("UnityEngine.Time.timeScale = 1f; return \"speed 1\";")
     time.sleep(1)
-    st = ex(open("/tmp/ap/state.cs").read()); log("END", st, counts, f"{time.time() - t0:.0f}s")
+    st = ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/state.cs").read()); log("END", st, counts, f"{time.time() - t0:.0f}s")
     DAYS.write(f"{day}\t{st}\t{json.dumps(counts)}\n"); DAYS.flush()
     U.call("manage_camera", {"action": "screenshot", "screenshot_file_name": f"ap_day{day:02d}_end", "properties": {"include_image": False}})
     console(f"day {day}")
     if "panel True" in st:
-        log(exf("/tmp/ap/next.cs")); time.sleep(5)
-        log(ex(open("/tmp/ap/state.cs").read()))
+        log(exf("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/next.cs")); time.sleep(5)
+        log(ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/state.cs").read()))
     ex('SceneTransitionManager.Instance.TransitionToScene("Shop"); return "to shop";'); time.sleep(6)
     for _ in range(6):
-        b = ex(open("/tmp/ap/shopbuy.cs").read()); log("  ", b)
+        b = ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/shopbuy.cs").read()); log("  ", b)
         if not b.startswith("B|bought"): break
         time.sleep(1)
     console(f"shop after day {day}")

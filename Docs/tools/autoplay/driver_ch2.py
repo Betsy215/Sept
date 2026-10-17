@@ -36,11 +36,11 @@ time.sleep(8)
 console("ch2 start")
 for day in range(16, 32):
     log(f"===== DAY index {day}")
-    log(exf("/tmp/ap/goday.cs", DAY=day)); time.sleep(7)
-    log(ex(open("/tmp/ap/state.cs").read()))
+    log(exf("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/goday.cs", DAY=day)); time.sleep(7)
+    log(ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/state.cs").read()))
     # a one-time hint (the apple tree, 14 October) runs over the arrangement: tap through it like a player
     for _ in range(30):
-        r = ex(open("/tmp/ap/tutstep.cs").read())
+        r = ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/tutstep.cs").read())
         if r == "T|none": break
         if r.startswith("T|tapped"): log("  hint:", r)
         time.sleep(1.0)
@@ -48,28 +48,28 @@ for day in range(16, 32):
     ex(f"UnityEngine.Time.timeScale = {SPEED}f; return \"speed\";")
     counts = {}; t0 = time.time(); last_state = 0
     while time.time() - t0 < 240:
-        r = ex(open("/tmp/ap/step.cs").read())
+        r = ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/step.cs").read())
         kind = r.split("|")[1] if "|" in r else r
         counts[kind] = counts.get(kind, 0) + 1
         if kind == "done": break
         if kind in ("noLM", "noOS", "missing") or not r.startswith("S|"): log("  step:", r)
         if time.time() - last_state > 15:
-            log("  ", ex(open("/tmp/ap/state.cs").read()), counts); last_state = time.time()
+            log("  ", ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/state.cs").read()), counts); last_state = time.time()
         # the tutorial ends on its own board (Let's go): detect leaving the game scene
         if "S|noLM" in r: break
         time.sleep(STEP)
     ex("UnityEngine.Time.timeScale = 1f; return \"speed 1\";")
     time.sleep(1)
-    st = ex(open("/tmp/ap/state.cs").read()); log("END", st, counts, f"{time.time() - t0:.0f}s")
+    st = ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/state.cs").read()); log("END", st, counts, f"{time.time() - t0:.0f}s")
     DAYS.write(f"{day}\t{st}\t{json.dumps(counts)}\n"); DAYS.flush()
     U.call("manage_camera", {"action": "screenshot", "screenshot_file_name": f"ap_day{day:02d}_end", "properties": {"include_image": False}})
     console(f"day {day}")
     if "panel True" in st:
-        log(exf("/tmp/ap/next.cs")); time.sleep(5)
-        log(ex(open("/tmp/ap/state.cs").read()))
+        log(exf("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/next.cs")); time.sleep(5)
+        log(ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/state.cs").read()))
     ex('SceneTransitionManager.Instance.TransitionToScene("Shop"); return "to shop";'); time.sleep(6)
     for _ in range(6):
-        b = ex(open("/tmp/ap/shopbuy.cs").read()); log("  ", b)
+        b = ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/shopbuy.cs").read()); log("  ", b)
         if not b.startswith("B|bought"): break
         time.sleep(1)
     console(f"shop after day {day}")
