@@ -40,8 +40,8 @@ public static class FixedStation
         foreach (var t in new[] { machine != null ? machine.transform : null, food != null ? food.transform : null })
         {
             if (t == null) continue;
-            var col = t.GetComponent<Collider>(); var col2 = t.GetComponent<Collider2D>(); var sr = t.GetComponent<SpriteRenderer>();
-            var b = col != null ? col.bounds : col2 != null ? col2.bounds : sr != null ? sr.bounds : new Bounds(t.position, Vector3.one);   // the collider hugs the drawing; the sprite has empty padding
+            var sr = t.GetComponent<SpriteRenderer>(); var b = sr != null ? sr.bounds : new Bounds(t.position, Vector3.one);
+            if (t != (machine != null ? machine.transform : null)) b = new Bounds(b.center, new Vector3(b.size.x * 0.6f, b.size.y * 0.6f, b.size.z));   // the cups' picture has wide empty padding
             var halfW = b.extents.x; var halfH = b.extents.y;
             var dx = t.position.x - b.center.x; var dy = t.position.y - b.center.y;   // the pivot's offset from the picture's centre
             t.position = new Vector3(x + halfW + dx, floorY + halfH + dy, t.position.z);
