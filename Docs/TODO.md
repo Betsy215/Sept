@@ -18,7 +18,8 @@ Current open work, as of 13 October 2026 (night). Done items are removed; the da
 - [ ] Ice cream: build the cone mechanic from Gemini's four-section station (`Store/chapter2/icecream_station/gemini_raw_3.jpg`): cut the station, the cone, scoops per flavour; tap the cone to float it, flavour taps add scoops, a red cross clears, serve on match (owner, 16 October).
 - [ ] **ChatGPT list (owner, 16 October):** the apple basket, a new style as well as the 40-degree angle (Gemini's angle-only redraw in `Store/redesign/ai/apple` is not used); the menu sticker paper (a nicer pass on the notes); then the other foods at the angle (coffee machine, juice jug, bread basket, cookie plate, choux board) and their state strips.
 - [ ] **Cookies art is the owner's:** every related sprite is in `Store/handoff/cookies` with a README; the game holds the owner's original plates and my heart cut-outs until they replace them.
-- [ ] Shop descriptions and special notes: the owner tunes the list (report, Current).
+- [ ] Shop descriptions and special notes: the owner tunes the list (report, Current). The popup layout is fixed places (price and two description lines in one label, a one-line note), so any new text must fit two lines at 68 pt bold on 1,000 px and the note one line at 56 pt on 940 px.
+- [ ] **Balance (16 October late run):** a perfect chapter 1 earns about $12,800 against the $8,740 shop; the owner's rule (most but not all) needs prices about 60% higher or more items; owner decides.
 
 ## Waiting
 
