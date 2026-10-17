@@ -647,7 +647,14 @@ public class ShopManager : MonoBehaviour
             // a lighter stroke: the chalk hand's face pulled in a little (thinner letters, owner: "too chunky")
             var mat = popupItemInfo.fontMaterial; if (mat != null && mat.HasProperty("_FaceDilate")) mat.SetFloat("_FaceDilate", 0.08f);
             var note = EnsureNoteLabel(chalk);
-            if (note != null) { note.text = item.specialNote ?? ""; note.gameObject.SetActive(!string.IsNullOrWhiteSpace(item.specialNote)); }
+            if (note != null)
+            {
+                note.text = item.specialNote ?? ""; note.gameObject.SetActive(!string.IsNullOrWhiteSpace(item.specialNote));
+                // right under the description, however many lines it has (the pots' three lines ran into the note)
+                var descH = popupItemInfo.GetPreferredValues(popupItemInfo.text, popupItemInfo.rectTransform.rect.width, Mathf.Infinity).y;
+                var top = popupItemInfo.rectTransform.anchoredPosition.y + popupItemInfo.rectTransform.sizeDelta.y / 2f;
+                note.rectTransform.anchoredPosition = new Vector2(0f, Mathf.Max(top - descH - 100f, -470f));
+            }
         }
 
         if (confirmPurchaseButton != null)
