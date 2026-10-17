@@ -250,6 +250,7 @@ public class SessionManager : MonoBehaviour
     /// Switched on in the menu book (bought or not). No session: everything is on.
     public bool IsFoodItemEnabled(string foodType)
     {
+        if (IsFixedFood(foodType) && IsFoodItemPurchased(foodType)) return true;   // the chapter's fixed food is always on
         if (string.IsNullOrEmpty(foodType)) return true;
         var list = EnabledList(); return list == null || list.Contains(foodType);
     }
@@ -280,9 +281,15 @@ public class SessionManager : MonoBehaviour
     }
 
     /// Can this food be switched off now? At least MinEnabledFoods bought foods must stay on.
+    /// A chapter's fixed food (owner, 16 October): always on the menu, cannot be taken off. Chapter 1 the coffee,
+    /// chapter 2 the ice cream (once it exists).
+    public static readonly Dictionary<int, string> FixedFood = new Dictionary<int, string> { { 1, "Coffee" }, { 2, "IceCream" } };
+    public static bool IsFixedFood(string foodType) => foodType != null && FixedFood.TryGetValue(CurrentChapter, out var f) && f == foodType;
+
     public bool CanDisableFood(string foodType, out string reason)
     {
         reason = "";
+        if (IsFixedFood(foodType)) { reason = "always on the menu this chapter"; return false; }
         if (!IsFoodItemEnabled(foodType)) return true;
         var on = 0; foreach (var f in EnabledList() ?? new List<string>()) if (IsFoodItemPurchased(f) && IsFoodInSeason(f)) on++;
         if (on <= MinEnabledFoods) { reason = $"keep at least {MinEnabledFoods} on"; return false; }

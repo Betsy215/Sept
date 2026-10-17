@@ -447,7 +447,7 @@ public class MenuBook : MonoBehaviour
                 if (sm.TryGetMenuStickerSpot(food, out var spot)) { x = spot.x; y = spot.y; }   // where the player left it
                 st.anchoredPosition = new Vector2(x, y); st.localRotation = Quaternion.Euler(0, 0, rot);
                 st.gameObject.AddComponent<StickerDrag>().Init(this, food, board);
-                AddCross(st, food);
+                if (!SessionManager.IsFixedFood(food)) AddCross(st, food);   // the chapter's fixed food has no cross: it stays (owner, 16 October)
                 placed[food] = st;
                 if (food == hidden) st.GetComponent<Image>().color = new Color(1, 1, 1, 0);
             }
