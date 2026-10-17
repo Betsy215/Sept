@@ -682,22 +682,19 @@ public class LevelManager : MonoBehaviour
         var earnedBeforeLevel = Mathf.Max(0f, totalScore - todayScore - threeStarBonusPaid);
         var earnedAfterSale = totalScore - tips - threeStarBonusPaid;
 
-        if (todayTip != null)
-            todayTip.text = $"Tips Earned: $ {tips:F2}";
-        if (todaySale != null)
-            todaySale.text = $"Today Sale: $ {orderSale:F2}";
-        if (totalEarned != null)
-            totalEarned.text = $"Earned: $ {earnedBeforeLevel:F2}";
+        SetMoneyLine(todayTip, "Tips Earned:", $"$ {tips:F2}");
+        SetMoneyLine(todaySale, "Today Sale:", $"$ {orderSale:F2}");
+        SetMoneyLine(totalEarned, "Earned:", $"$ {earnedBeforeLevel:F2}");
 
         SetupLevelCompleteButtons();
         UpdateUnlockedItemsDisplay();
         yield return new WaitForSeconds(1f);
-        yield return StartCoroutine(AnimateFullTransfer(todaySale, totalEarned, "Order Sale: $ ", "Earned: $ ",
+        yield return StartCoroutine(AnimateFullTransfer(todaySale, totalEarned, "Order Sale:", "Earned:",
             orderSale, earnedAfterSale));
         yield return new WaitForSeconds(1f);
-        yield return StartCoroutine(AnimateFullTransfer(todayTip, totalEarned, "Tips: $ ", "Earned: $ ", tips,
+        yield return StartCoroutine(AnimateFullTransfer(todayTip, totalEarned, "Tips:", "Earned:", tips,
             totalScore - threeStarBonusPaid));
-        if (threeStarBonusPaid > 0 && totalEarned != null) totalEarned.text = $"Earned: $ {totalScore:F2}";
+        if (threeStarBonusPaid > 0) SetMoneyLine(totalEarned, "Earned:", $"$ {totalScore:F2}");
 
         var isLastLevel = currentLevelIndex >= LastDayIndex || Chapter.IsLastDay(currentLevelIndex);
         if (isLastLevel)
@@ -860,6 +857,23 @@ public class LevelManager : MonoBehaviour
         return activeItems.ToArray();
     }
 
+    /// A money line of the day-end note, centred: "Order Sale: $ 85" on one line while it fits the label, else the
+    /// money on its own line under the words, so a long number never runs off the note (owner, 16 October).
+    private const float MoneyLineMaxWidth = 720f;   // inside the day-end note's ruled lines
+
+    public static void SetMoneyLine(TextMeshProUGUI label, string words, string money)
+    {
+        if (label == null) return;
+        label.alignment = TextAlignmentOptions.Center;
+        label.enableWordWrapping = true;
+        label.overflowMode = TextOverflowModes.Overflow;
+        var one = words + " " + money;
+        // the labels are 1,000 wide but the note under them is 860 with ruled margins, so the note's width decides
+        var width = Mathf.Min(label.rectTransform.rect.width - label.margin.x - label.margin.z, MoneyLineMaxWidth);
+        var fits = width <= 0f || label.GetPreferredValues(one, Mathf.Infinity, Mathf.Infinity).x <= width;
+        label.text = fits ? one : words + "\n" + money;
+    }
+
     public IEnumerator AnimateFullTransfer(
         TextMeshProUGUI sourceText,
         TextMeshProUGUI targetText,
@@ -877,10 +891,8 @@ public class LevelManager : MonoBehaviour
         var targetStart = targetFinalAmount - amountToTransfer;
 
         // Set initial values
-        if (sourceText != null)
-            sourceText.text = $"{sourcePrefix}{sourceStart:F0}";
-        if (targetText != null)
-            targetText.text = $"{targetPrefix}{targetStart:F0}";
+        SetMoneyLine(sourceText, sourcePrefix, $"$ {sourceStart:F0}");
+        SetMoneyLine(targetText, targetPrefix, $"$ {targetStart:F0}");
 
         var elapsedTime = 0f;
         var nextSoundTime = 1f;
@@ -901,10 +913,8 @@ public class LevelManager : MonoBehaviour
             var currentTarget = Mathf.Lerp(targetStart, targetFinalAmount, easedProgress);
 
             // Update UI
-            if (sourceText != null)
-                sourceText.text = $"{sourcePrefix}{currentSource:F0}";
-            if (targetText != null)
-                targetText.text = $"{targetPrefix}{currentTarget:F0}";
+            SetMoneyLine(sourceText, sourcePrefix, $"$ {currentSource:F0}");
+            SetMoneyLine(targetText, targetPrefix, $"$ {currentTarget:F0}");
 
             // Play sound every second
             if (elapsedTime >= nextSoundTime)
@@ -918,11 +928,10 @@ public class LevelManager : MonoBehaviour
         }
 
         // Final values
-        if (sourceText != null)
-            sourceText.text = $"{sourcePrefix}0";
+        SetMoneyLine(sourceText, sourcePrefix, "$ 0");
         if (targetText != null)
         {
-            targetText.text = $"{targetPrefix}{targetFinalAmount:F0}";
+            SetMoneyLine(targetText, targetPrefix, $"$ {targetFinalAmount:F0}");
             targetText.color = targetOriginalColor;
         }
 

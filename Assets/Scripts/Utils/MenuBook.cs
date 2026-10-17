@@ -19,7 +19,7 @@ public class MenuBook : MonoBehaviour
     private const int SortOrder = 40;                  // under the tutorial canvas (50), over the arrangement UI (0)
     private const float AutoOpenDelay = 2f;            // seconds after the arrangement starts (owner)
     private const float StickerSize = 225f;            // on the paper
-    private const float CarouselSize = 140f;
+    private const float CarouselSize = 280f;           // doubled (owner, 16 October: the icons were too small)
     private const float FlySeconds = 0.38f;
     private const float CarouselTop = 170f;            // under the settings and pause buttons
     private static readonly Vector2 MiniSpot = new Vector2(0f, -328f);   // the small menu's centre: centred, under the top buttons
@@ -389,7 +389,7 @@ public class MenuBook : MonoBehaviour
         var strip = NewImage("StickerCarousel", canvasRect, new Color(1f, 1f, 1f, 0f));   // no background (owner)
         carousel = strip.gameObject;
         var srt = strip.rectTransform; srt.anchorMin = new Vector2(0f, 1f); srt.anchorMax = new Vector2(1f, 1f); srt.pivot = new Vector2(0.5f, 1f);
-        srt.anchoredPosition = new Vector2(0f, -CarouselTop); srt.sizeDelta = new Vector2(-40f, 160f);
+        srt.anchoredPosition = new Vector2(0f, -CarouselTop); srt.sizeDelta = new Vector2(-40f, 300f);
         strip.gameObject.AddComponent<RectMask2D>();
         var scroll = strip.gameObject.AddComponent<ScrollRect>(); scroll.horizontal = true; scroll.vertical = false; scroll.movementType = ScrollRect.MovementType.Elastic;
         var content = new GameObject("Content", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
@@ -397,7 +397,7 @@ public class MenuBook : MonoBehaviour
         carouselContent = (RectTransform)content.transform;
         carouselContent.anchorMin = new Vector2(0f, 0f); carouselContent.anchorMax = new Vector2(0f, 1f); carouselContent.pivot = new Vector2(0f, 0.5f);
         carouselContent.offsetMin = Vector2.zero; carouselContent.offsetMax = Vector2.zero;
-        var hl = content.GetComponent<HorizontalLayoutGroup>(); hl.spacing = -45f;   // a little overlap, like a pile of stickers hl.padding = new RectOffset(24, 24, 20, 20); hl.childAlignment = TextAnchor.MiddleLeft;
+        var hl = content.GetComponent<HorizontalLayoutGroup>(); hl.spacing = -90f;   // a little overlap, like a pile of stickers hl.padding = new RectOffset(24, 24, 20, 20); hl.childAlignment = TextAnchor.MiddleLeft;
         hl.childControlWidth = false; hl.childControlHeight = false; hl.childForceExpandWidth = false; hl.childForceExpandHeight = false;
         content.GetComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         scroll.content = carouselContent; scroll.viewport = srt;

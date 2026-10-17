@@ -17,7 +17,7 @@ MonoBehaviour:
   ordersPerLevel: 9
   orderDisplayTime: 7
   timeBetweenOrders: 5
-  dayDurationSeconds: 45
+  dayDurationSeconds: 50
   minOrderItems: 2
   maxOrderItems: 4
   starThreshold1: 130

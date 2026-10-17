@@ -47,6 +47,8 @@ public class ShopManager : MonoBehaviour
         foreach (var card in FindObjectsOfType<ShopItemController>(true))
             if (IsHeldBackCard(card)) card.gameObject.SetActive(false);
         EvenOutCharacterIcons();
+        LayoutCards();
+        if (itemScrollRect != null) itemScrollRect.onValueChanged.AddListener(_ => UpdateScrollButtons());   // a finger drag updates the lock too
 
         // FIX: Wait for all ShopItemController.Start() methods to complete
         StartCoroutine(DelayedInitializeShop());
@@ -227,7 +229,7 @@ public class ShopManager : MonoBehaviour
 
     private void ShowPurchaseSuccessFeedback(string message)
     {
-        ShowScoreLabelMessage(message, Color.green);
+        ShowScoreLabelMessage(message, playerScoreOriginalColor);   // the label's own black with its cream rim, not green (owner, 16 October)
     }
 
     private void ShowScoreLabelMessage(string message, Color color)
@@ -373,9 +375,6 @@ public class ShopManager : MonoBehaviour
         var startPos = containerRect.anchoredPosition;
         var targetPos = startPos + new Vector2(0, amount);
 
-        var topBoundary = -38f;
-        var bottomBoundary = BottomBoundary;
-
         targetPos.y = Mathf.Clamp(targetPos.y, topBoundary, bottomBoundary);
 
         if (Mathf.Abs(startPos.y - targetPos.y) < 1f)
@@ -423,8 +422,101 @@ public class ShopManager : MonoBehaviour
     private static bool IsHeldBackCard(ShopItemController card) =>
         card != null && (SessionManager.IsHeldBack(card.itemName?.Trim()) || SessionManager.IsHeldBack(card.upgradeFoodType?.Trim()) || SessionManager.IsHeldBack(card.gameObject.name));
 
-    // The last row with the Cookies card held back (13 October 2026): three rows of cards, 900 apart
-    private const float BottomBoundary = 3290f;   // five rows with the two flower pots (16 October); 2700 with four
+    // Scroll bounds of the card container, set by LayoutCards (16 October); before that the cards were placed by hand
+    // in the scene (rows 900 apart, bottom 3290) and a finger drag could not reach the last rows
+    private float topBoundary = -38f, bottomBoundary = 3290f;
+    private float rowPitch = 800f;
+
+    [Tooltip("The item popup's size; its board is 1,100 wide, wider than the 1,080 screen, so 0.8 leaves about 100 px each side")]
+    public float PopupScale = 0.8f;
+
+    [Header("Card layout (16 October)")]
+    [Tooltip("The cards are laid out at runtime: sorted by price, three columns, scaled down so more fit a screen")]
+    public float cardScale = 0.62f;
+    private const int Columns = 3;
+    private const float ColumnPitchMax = 245f;     // three columns left of the arrow buttons
+    private const float RowPitchMax = 450f;        // three rows on a screen
+    private const float ColumnsCentre = -143f;     // in the container's space: the usable width sits left of the arrows
+
+    /// Sorts the cards cheap to expensive and lays them out in a grid, scaled down (owner, 16 October: "sort shop
+    /// items from cheap to expensive", "shrink the content so more items fit"). Each card's visual centre (icon and
+    /// texts) goes on its grid slot, whatever the card's own rectangle. The content box is sized to the rows so the
+    /// arrows and a finger drag share the same bounds.
+    private void LayoutCards()
+    {
+        if (itemContainer == null) return;
+        var cont = itemContainer.GetComponent<RectTransform>(); if (cont == null) return;
+        var cards = new List<ShopItemController>();
+        foreach (var c in GetAllShopItems()) if (c != null && c.gameObject.activeSelf && !IsHeldBackCard(c)) cards.Add(c);
+        cards.Sort((a, b) => a.price != b.price ? a.price.CompareTo(b.price) : string.CompareOrdinal(a.itemName, b.itemName));
+        var bounds = new List<Rect>();
+        foreach (var c in cards) { c.transform.localScale = Vector3.one; bounds.Add(VisualBounds((RectTransform)c.transform, cont)); }
+        var maxW = 0f; var maxH = 0f;
+        foreach (var b in bounds) { maxW = Mathf.Max(maxW, b.width); maxH = Mathf.Max(maxH, b.height); }
+        var colPitch = Mathf.Min(maxW * cardScale + 24f, ColumnPitchMax);
+        rowPitch = Mathf.Min(maxH * cardScale + 28f, RowPitchMax);   // the people cards' picture boxes are much taller than their figures
+        // The visible window is the masked ShopPanel (the container's parent); the scene's ScrollRect sits on the
+        // container itself with no viewport, so it is pointed at the panel too, which makes a finger drag work
+        var viewport = cont.parent as RectTransform;
+        if (itemScrollRect != null && viewport != null) { itemScrollRect.viewport = viewport; itemScrollRect.content = cont; }
+        var viewH = viewport != null ? viewport.rect.height : 1400f;
+        var rows = Mathf.CeilToInt(cards.Count / (float)Columns);
+        var contentH = Mathf.Max(viewH, rows * rowPitch + 40f);
+        cont.sizeDelta = new Vector2(cont.sizeDelta.x, contentH);
+        var top = contentH / 2f - 20f - rowPitch / 2f;
+        for (var i = 0; i < cards.Count; i++)
+        {
+            var rt = (RectTransform)cards[i].transform;
+            var slot = new Vector2(ColumnsCentre + (i % Columns - 1) * colPitch, top - (i / Columns) * rowPitch);
+            var offset = bounds[i].center - (Vector2)rt.localPosition;   // the visual centre, relative to the card's own point
+            rt.localScale = Vector3.one * cardScale;
+            rt.localPosition = new Vector3(slot.x - offset.x * cardScale, slot.y - offset.y * cardScale, rt.localPosition.z);
+        }
+        var span = Mathf.Max(0f, (contentH - viewH) / 2f);
+        topBoundary = -span; bottomBoundary = span;
+        scrollAmount = rowPitch;
+        cont.anchoredPosition = new Vector2(cont.anchoredPosition.x, topBoundary);
+    }
+
+    /// The box around everything a card draws (icon, price, name), in the container's space
+    private static Rect VisualBounds(RectTransform card, RectTransform space)
+    {
+        var min = new Vector2(float.MaxValue, float.MaxValue); var max = new Vector2(float.MinValue, float.MinValue);
+        var corners = new Vector3[4];
+        foreach (var g in card.GetComponentsInChildren<Graphic>(false))
+        {
+            var rt = g.rectTransform;
+            var tm = g as TMP_Text;
+            if (tm != null)
+            {
+                // a label's rectangle is much taller than its words (300 for a 100 pt price): measure the words
+                var pref = tm.GetPreferredValues(tm.text, rt.rect.width, Mathf.Infinity);
+                var r = rt.rect; var cy = r.center.y;
+                var va = (int)tm.verticalAlignment;
+                if (va == (int)VerticalAlignmentOptions.Top) cy = r.yMax - pref.y / 2f; else if (va == (int)VerticalAlignmentOptions.Bottom) cy = r.yMin + pref.y / 2f;
+                var lo = rt.TransformPoint(new Vector3(r.xMin, cy - pref.y / 2f)); var hi = rt.TransformPoint(new Vector3(r.xMax, cy + pref.y / 2f));
+                Vector2 a = space.InverseTransformPoint(lo), b = space.InverseTransformPoint(hi);
+                min = Vector2.Min(min, Vector2.Min(a, b)); max = Vector2.Max(max, Vector2.Max(a, b));
+                continue;
+            }
+            var img = g as Image;
+            if (img != null && img.sprite != null && img.preserveAspect)
+            {
+                // a tall picture box with a small figure in it: only the drawn part counts
+                var r = rt.rect; var sa = img.sprite.rect.width / img.sprite.rect.height;
+                var w = r.width; var h = w / sa; if (h > r.height) { h = r.height; w = h * sa; }
+                var c = r.center;
+                Vector2 a = space.InverseTransformPoint(rt.TransformPoint(new Vector3(c.x - w / 2f, c.y - h / 2f)));
+                Vector2 b = space.InverseTransformPoint(rt.TransformPoint(new Vector3(c.x + w / 2f, c.y + h / 2f)));
+                min = Vector2.Min(min, Vector2.Min(a, b)); max = Vector2.Max(max, Vector2.Max(a, b));
+                continue;
+            }
+            rt.GetWorldCorners(corners);
+            foreach (var w in corners) { Vector2 l = space.InverseTransformPoint(w); min = Vector2.Min(min, l); max = Vector2.Max(max, l); }
+        }
+        if (min.x > max.x) return new Rect((Vector2)card.localPosition + card.rect.min, card.rect.size);
+        return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+    }
 
     /// At the bottom of the shop the down arrow keeps showing, with a small lock on it: more comes in the next
     /// chapter (owner, 13 October). The lock is the map's lock_small, laid over the button.
@@ -458,9 +550,9 @@ public class ShopManager : MonoBehaviour
         if (containerRect == null) return;
 
         var currentY = containerRect.anchoredPosition.y;
-        var canScrollUp = currentY > -38f;
-        var canScrollDown = currentY < BottomBoundary;
-        ShowDownLock(currentY >= BottomBoundary - 1f);   // only when scrolled all the way down
+        var canScrollUp = currentY > topBoundary + 1f;
+        var canScrollDown = currentY < bottomBoundary;
+        ShowDownLock(currentY >= bottomBoundary - 1f);   // only when scrolled all the way down
 
         if (scrollUpButton != null)
             scrollUpButton.interactable = canScrollUp;
@@ -522,6 +614,7 @@ public class ShopManager : MonoBehaviour
                 buttonText.text = item.purchaseButtonText;
         }
 
+        purchaseConfirmationPopup.transform.localScale = Vector3.one * PopupScale;   // a little smaller than the screen, room left and right (owner, 16 October)
         purchaseConfirmationPopup.SetActive(true);
     }
 
