@@ -16,7 +16,8 @@ Current open work, as of 13 October 2026 (night). Done items are removed; the da
 - [ ] Shop lock on the chapter 2 unlock cards (Cookies, Coconut) renders dark grey instead of the yellow lock the map arrow shows (`ShopManager.ShowCardLock`); find why (a material or tint on the card icons) and make it yellow.
 - [ ] Coffee station: its moved spot is not saved between days (`FixedStation.Place` puts it bottom left every arrangement); save the machine's position if the owner wants it kept.
 - [ ] Ice cream: build the cone mechanic from Gemini's four-section station (`Store/chapter2/icecream_station/gemini_raw_3.jpg`): cut the station, the cone, scoops per flavour; tap the cone to float it, flavour taps add scoops, a red cross clears, serve on match (owner, 16 October).
-- [ ] Gemini redraws at the 40-degree angle: coffee machine, juice jug, bread basket, cookie plate, choux board, then cut the state strips (apple basket done, `Store/redesign/ai/apple`); owner to approve the apple into the game.
+- [ ] **ChatGPT list (owner, 16 October):** the apple basket, a new style as well as the 40-degree angle (Gemini's angle-only redraw in `Store/redesign/ai/apple` is not used); the menu sticker paper (a nicer pass on the notes); then the other foods at the angle (coffee machine, juice jug, bread basket, cookie plate, choux board) and their state strips.
+- [ ] **Cookies art is the owner's:** every related sprite is in `Store/handoff/cookies` with a README; the game holds the owner's original plates and my heart cut-outs until they replace them.
 - [ ] Shop descriptions and special notes: the owner tunes the list (report, Current).
 
 ## Waiting
