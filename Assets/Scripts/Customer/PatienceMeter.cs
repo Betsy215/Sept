@@ -20,6 +20,40 @@ public class PatienceMeter : MonoBehaviour
     static Sprite petalSprite, centreSprite, sparkSprite;
     static bool painted, triedPainted;     // the hand-painted petal and centre in Resources/Patience (Store/artkit/daisy_sprites.py); procedural fallback
 
+    /// Chapter 2's flower (16 October): a five-petal tropical flower from Resources/Patience/<kind>_petal and _centre
+    /// (Store/artkit/hibiscus_options.py). Chapter 1 keeps the daisy. PreviewKind is for editor previews only: when set,
+    /// every new meter uses that kind whatever the chapter.
+    public const string Chapter2Kind = "hibiscus_a";
+    public static string PreviewKind;
+    static readonly Dictionary<string, Sprite[]> kindSprites = new Dictionary<string, Sprite[]>();
+
+    string kind = "daisy";
+    int petalCount = 8;
+    float petalRadius = PetalRadius;
+    Sprite kindPetal, kindCentre;
+
+    static string KindForNow()
+    {
+        if (!string.IsNullOrEmpty(PreviewKind)) return PreviewKind;
+        return SessionManager.CurrentChapter >= 2 ? Chapter2Kind : "daisy";
+    }
+
+    /// Picks the sprite set for this meter; a kind whose sprites are missing falls back to the daisy
+    void PickKind()
+    {
+        kind = KindForNow();
+        if (kind == "daisy") return;
+        if (!kindSprites.TryGetValue(kind, out var set))
+        {
+            set = new[] { Resources.Load<Sprite>("Patience/" + kind + "_petal"), Resources.Load<Sprite>("Patience/" + kind + "_centre") };
+            kindSprites[kind] = set;
+        }
+        if (set[0] == null || set[1] == null) { kind = "daisy"; return; }
+        kindPetal = set[0]; kindCentre = set[1];
+        petalCount = 5;
+        petalRadius = kind == "hibiscus_b" ? 0.14f : 0.115f;   // the plumeria's petals are slimmer, so they sit further out
+    }
+
     OrderSystem.ActiveOrder order;
     readonly Flower[] flowers = new Flower[Flowers];
     float sway;
@@ -80,6 +114,8 @@ public class PatienceMeter : MonoBehaviour
 
     void Build()
     {
+        LoadPainted(); PickKind();
+        var hand = painted || kind != "daisy";   // painted petals get the hand-drawn turn and size
         for (var i = 0; i < Flowers; i++)
         {
             var f = new Flower();
@@ -89,28 +125,28 @@ public class PatienceMeter : MonoBehaviour
             f.head = new GameObject("Head").transform;
             f.head.SetParent(f.root, false);
             f.head.localPosition = new Vector3(0f, 0.04f, 0f);
-            f.petals = new SpriteRenderer[8];
-            f.petalSize = new float[8];
+            f.petals = new SpriteRenderer[petalCount];
+            f.petalSize = new float[petalCount];
             var rng = new System.Random(order != null ? order.slot * 31 + i * 7 : i);   // a hand-drawn daisy: every petal turned and sized a little differently
-            for (var k = 0; k < 8; k++)
+            for (var k = 0; k < petalCount; k++)
             {
-                var angle = 90f - 45f * k;
+                var angle = 90f - 360f / petalCount * k;
                 var p = new GameObject("Petal" + k);
                 p.transform.SetParent(f.head, false);
                 var rad = angle * Mathf.Deg2Rad;
-                p.transform.localPosition = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f) * PetalRadius;
-                var turn = painted ? (float)(rng.NextDouble() * 14.0 - 7.0) : 0f;
-                f.petalSize[k] = painted ? 0.92f + (float)rng.NextDouble() * 0.16f : 1f;
+                p.transform.localPosition = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f) * petalRadius;
+                var turn = hand ? (float)(rng.NextDouble() * 14.0 - 7.0) : 0f;
+                f.petalSize[k] = hand ? 0.92f + (float)rng.NextDouble() * 0.16f : 1f;
                 p.transform.localRotation = Quaternion.Euler(0f, 0f, angle - 90f + turn);
                 var sr = p.AddComponent<SpriteRenderer>();
-                sr.sprite = PetalSprite(); sr.sortingOrder = 5;
+                sr.sprite = kindPetal != null ? kindPetal : PetalSprite(); sr.sortingOrder = 5;
                 f.petals[k] = sr;
             }
             var c = new GameObject("Centre");
             c.transform.SetParent(f.head, false);
             f.centre = c.AddComponent<SpriteRenderer>();
-            f.centre.sprite = CentreSprite(); f.centre.sortingOrder = 6;
-            f.centre.color = painted ? Color.white : new Color(1f, 0.82f, 0.25f);
+            f.centre.sprite = kindCentre != null ? kindCentre : CentreSprite(); f.centre.sortingOrder = 6;
+            f.centre.color = hand ? Color.white : new Color(1f, 0.82f, 0.25f);
             flowers[i] = f;
         }
     }
@@ -131,12 +167,12 @@ public class PatienceMeter : MonoBehaviour
             // petals fade one after another from the top as the flower drains; the head droops and dulls
             for (var k = 0; k < f.petals.Length; k++)
             {
-                var pf = Mathf.Clamp01((s - k / 8f) * 8f);          // this petal's own fill
+                var pf = Mathf.Clamp01((s - (float)k / f.petals.Length) * f.petals.Length);   // this petal's own fill
                 var tint = Mathf.Lerp(0.72f, 1f, s);                   // dull as it wilts
                 f.petals[k].color = new Color(tint, tint, tint * 0.98f, 0.25f + 0.75f * pf);
                 f.petals[k].transform.localScale = Vector3.one * (0.75f + 0.25f * pf) * f.petalSize[k];
             }
-            f.centre.color = painted ? Color.Lerp(new Color(0.78f, 0.68f, 0.52f), Color.white, s) : Color.Lerp(new Color(0.75f, 0.6f, 0.35f), new Color(1f, 0.82f, 0.25f), s);
+            f.centre.color = (painted || kind != "daisy") ? Color.Lerp(new Color(0.78f, 0.68f, 0.52f), Color.white, s) : Color.Lerp(new Color(0.75f, 0.6f, 0.35f), new Color(1f, 0.82f, 0.25f), s);
             var droop = Mathf.Lerp(-42f, 0f, Mathf.SmoothStep(0f, 1f, s));             // head leans over as it wilts
             var alive = Mathf.Sin(sway * 2.2f + i * 1.3f) * 3f * s;                      // a gentle sway while fresh
             f.head.localRotation = Quaternion.Euler(0f, 0f, droop + alive);

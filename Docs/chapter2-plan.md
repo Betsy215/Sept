@@ -29,6 +29,8 @@ only if chapter 2 ever gets an unlock price (new field, never a rename; take the
 | Patience flowers | `PatienceMeter` ~21, 92-134 | cache per chapter; petal count from `petals.Length` (hibiscus 5, daisy 8) |
 | Map | `MapScreen` | pages, see below |
 | Kitchen tree | `KitchenScene` `bg/tree` (14 October: the apple tree is its own Image, `Kitchen/tree_apple.png`; the background `kitchen_bg_notree.png` has the window refilled) | swap the sprite for the coconut palm (owner: "instead of apple tree, use coconut tree in kitchen"); the apples object stays for Apple, a Coconut food would need its own pick object |
+| Kitchen window (owner, 16 October) | `KitchenScene` `bg` | The window's view becomes its own object (an Image in a mask the size of the window glass), not part of the kitchen background: chapter 2 shows the same beach as the table scene but simpler and smaller. Resolution rule: the window object is anchored to the background Image's rect (same anchors and anchored position in the bg's local space), the view image uses `preserveAspect` inside a `RectMask2D`, so any aspect ratio crops the view at the glass instead of stretching it. Test at the four Game view sizes (`gv_*.cs`: iPhone SE, 1320 store, iPad, 886) before and after the swap. |
+| Coconuts (owner, 16 October) | `KitchenScene`, like `apples` | The coconuts are the pick object, like the apples: their own sprites, one cluster (coconuts grow together), big and obvious at the apples' size and style (`Assets/Images/Kitchen/apples*`: reference size and outline), not drawn into the palm. The palm sprite is the tree only; the cluster sits in the crown with its own `PickItem` object and states (full, picked, regrowing) the way the apples work. |
 | Finish text, day range, chapter end | `LevelManager` 82, 631, 684, 698 | done (step 2) |
 
 ## A new food (copy Cookies)
@@ -80,7 +82,7 @@ iPhone and iPad captures.
 8. Shop background swap (owner's pick).
 9. Hibiscus flowers (petal and centre sprites).
 10. Cookies on in chapter 2.
-11. Coconut (table states, order icon, kitchen and shop icons).
+11. Coconut (table states, order icon, kitchen and shop icons; the coconut cluster on the palm as the kitchen pick object, see the window and coconuts rows above).
 12. IceCream (freezer-well steps, cone icons, kitchen tub).
 13. `Chapter.Count = 2`, full test pass.
 14. Driver, doc 07, MANUAL section 6, TODO.

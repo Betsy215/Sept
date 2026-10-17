@@ -258,9 +258,9 @@ public class SimpleScorePopup : MonoBehaviour
         textRect.offsetMin = Vector2.zero;
         textRect.offsetMax = Vector2.zero;
 
-        // In the middle of the order note's white part, under its gingham band (paper 4.png, owner 14 October);
-        // was (-5, 20), above the old receipt's barcode
-        textRect.anchoredPosition = new Vector2(0f, -24f);
+        // Above the white receipt's barcode (paper 4.png; the owner went back to the white receipt on 16 October
+        // after the gingham note of 14 October, which had the text at (0, -24))
+        textRect.anchoredPosition = new Vector2(-5f, 20f);
 
         var textComponent = textObj.AddComponent<TextMeshProUGUI>();
         textComponent.fontSize = popup.fontSize;
