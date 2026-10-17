@@ -133,3 +133,10 @@ From the 7 to 8 October review (details in `Docs/systems`) and the 13 October pl
 - [ ] iPad: hen board beside the truck, pots on the cloth, nothing off screen.
 - [ ] Daily Treats: pays on the next Continue; day 5 bonus.
 - [ ] Kill the app mid-chapter, reopen, Continue: the map shows the right day and stars.
+
+## Ice cream (17 October)
+- The empty section wells are a flat steel paint (`cut_station.py` interior()); a drawn well would read better. Gemini's stainless redraw (`Store/chapter2/icecream_station/gemini_metal_raw.png`) is the alternative box; cutting it needs new section polygons.
+- Scoops drawn in the ice cream squash with the lowered levels (sec*_l2, l1).
+- The autoplay driver cannot build cones: read `OrderSystem.GetCurrentOrderTypesWithVariants()` and call `IceCreamStation.OnTap` (holder, sections by letter, cone).
+- Ice cream pays 35 flat (`ScoreManager.itemPoints`); per-scoop pay is the fairer option. No own scoop/serve sound yet.
+- The owner's "use it in the kitchen" could mean the station stands in the kitchen; built on the table (the 16 October design), to confirm.
