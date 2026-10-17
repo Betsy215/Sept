@@ -159,6 +159,21 @@ plain `python3` has no numpy. Make a new venv if the scratchpad is gone.
 - **Daily Treats:** `DailyTreats.cs` in MainMenu, +50 a day, +100 extra on day 5, paid into the next Continue or new
   game (`ftc.daily.*` PlayerPrefs).
 
+- **Chapter 2 pieces (17 October):** the kitchen blender is its own object (`KitchenBlender.Apply` from the first
+  oven's Awake): chapter 1 shows the owner's cream blender cut from the background (`Resources/Kitchen/blender`,
+  the background `kitchen_bg_notree.png` has it filled in), chapter 2 Gemini's steel one (`blender2`) whose drawn
+  swirl (`blender2_fill`, tinted) churns through the four ice cream colours on a tap (`BlenderAnim`) and then
+  refills the ice cream station. **Ice cream** (`IceCreamStation` on the table object `IceCream`, the chapter 2
+  fixed food, no purchase, no tray under it): four sections of three scoops, the holder; tap the holder or a section
+  for a floating cone, section taps add scoops (three max), the red cross clears, a tap on the cone serves the
+  oldest order wanting that count and those flavours in any order (`OrderItemInstance.variant`, sorted letters
+  v s c m; `OrderSystem.TryServeItem(food, variant)`); the order bubble builds the cone from the parts
+  (`IceCreamOrderIcon`, `Prefabs/IceCream`); 35 points flat. Sprites `Assets/Images/icecream` from
+  `Store/chapter2/icecream_station/cut_station.py` (ChatGPT's station turned metal) and ChatGPT's cones sheet.
+  **Coconuts:** four on the kitchen palm (`CoconutInKitchen` on the window's cluster, only when Coconut is on the
+  menu), one per tap onto the tray (a full tray refuses), regrow after 8 s like the apples; the palm picture has no
+  painted coconuts. The autoplay driver builds cones (`step.cs`); `driver_ch2.py` runs days 17 to 32.
+
 ## 7. Driving the Unity editor
 
 - Open: `open -a /Applications/Unity/Hub/Editor/2022.3.50f1/Unity.app --args -projectPath <repo>`. The MCP for Unity
