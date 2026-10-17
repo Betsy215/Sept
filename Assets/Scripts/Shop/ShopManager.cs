@@ -155,6 +155,12 @@ public class ShopManager : MonoBehaviour
         }
 
         // Check if player has enough score
+        if (SessionManager.IsLockedInShop(item.itemName) || SessionManager.IsLockedInShop(item.gameObject.name))
+        {
+            ShowPurchaseFailedFeedback("Opens with chapter 2");   // the card's lock stops taps; this stops every other path (16 October)
+            return false;
+        }
+
         if (!session.CanAfford(item.price))
         {
             var currentScore = session.GetTotalScore();
