@@ -9,6 +9,22 @@ using UnityEngine.UI;
 public static class KitchenWindow
 {
     static readonly Vector2 GlassMin = new Vector2(0.502f, 0.556f), GlassMax = new Vector2(0.922f, 0.803f);
+    const float CoconutX = 0.55f, CoconutY = 0.60f;   // the cluster's place on the palm picture (measured on palm.png)
+
+    static Sprite glowSprite;
+    /// A soft round glow made once at runtime (like the map's three-star glow)
+    static Sprite GlowSprite()
+    {
+        if (glowSprite != null) return glowSprite;
+        const int n = 64; var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear };
+        var px = new Color[n * n];
+        for (var y = 0; y < n; y++) for (var x = 0; x < n; x++)
+        {
+            var dx = (x + 0.5f - n / 2f) / (n / 2f); var dy = (y + 0.5f - n / 2f) / (n / 2f);
+            var a = Mathf.Clamp01(1f - Mathf.Sqrt(dx * dx + dy * dy)); px[y * n + x] = new Color(1f, 1f, 1f, a * a * a);
+        }
+        tex.SetPixels(px); tex.Apply(); glowSprite = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f)); return glowSprite;
+    }
 
     public static void Apply()
     {
@@ -38,9 +54,15 @@ public static class KitchenWindow
         if (palm != null)
         {
             var p = new GameObject("Palm", typeof(RectTransform), typeof(Image)); p.transform.SetParent(rt, false);
-            var prt = (RectTransform)p.transform; prt.anchorMin = new Vector2(1f, 0f); prt.anchorMax = new Vector2(1f, 0f); prt.pivot = new Vector2(1f, 0f);
-            var ph = glassH * 1.45f; prt.sizeDelta = new Vector2(ph * palm.rect.width / palm.rect.height, ph); prt.anchoredPosition = new Vector2(glassW * 0.12f, -glassH * 0.25f);
+            // along the left side of the window (owner, 16 October), its crown in the glass
+            var prt = (RectTransform)p.transform; prt.anchorMin = new Vector2(0f, 0f); prt.anchorMax = new Vector2(0f, 0f); prt.pivot = new Vector2(0f, 0f);
+            var ph = glassH * 1.45f; prt.sizeDelta = new Vector2(ph * palm.rect.width / palm.rect.height, ph); prt.anchoredPosition = new Vector2(-glassW * 0.16f, -glassH * 0.25f);
             var pi = p.GetComponent<Image>(); pi.sprite = palm; pi.preserveAspect = true; pi.raycastTarget = false;
+            // the coconuts glow softly like the apples, so they read as something to pick (the pick object comes with the Coconut cluster)
+            var glow = new GameObject("CoconutGlow", typeof(RectTransform), typeof(Image)); glow.transform.SetParent(prt, false); glow.transform.SetAsFirstSibling();
+            var grt = (RectTransform)glow.transform; grt.anchorMin = grt.anchorMax = new Vector2(CoconutX, CoconutY); grt.sizeDelta = new Vector2(prt.sizeDelta.x * 0.42f, prt.sizeDelta.x * 0.42f);
+            var gi = glow.GetComponent<Image>(); gi.sprite = GlowSprite(); gi.color = new Color(1f, 0.95f, 0.6f, 0.85f); gi.raycastTarget = false;
+            glow.AddComponent<MapGlowPulse>();
         }
 
         // the apple tree is chapter 1's

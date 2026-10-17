@@ -50,7 +50,8 @@ public static class FixedStation
             var dc = new Vector2(b.min.x + fr.x * b.size.x, b.min.y + fr.y * b.size.y);        // the drawn part's centre
             var halfW = fr.z * b.size.x / 2f; var halfH = fr.w * b.size.y / 2f;
             var dx = t.position.x - dc.x; var dy = t.position.y - dc.y;                       // the pivot's offset from the drawn centre
-            t.position = new Vector3(x + halfW + dx, feetY + halfH + dy, t.position.z);
+            var nudge = i == 1 ? new Vector2(-0.10f, -0.06f) : Vector2.zero;   // the cups a little down and left, deeper on the tray (owner, 16 October)
+            t.position = new Vector3(x + halfW + dx + nudge.x, feetY + halfH + dy + nudge.y, t.position.z);
             right = x + 2f * halfW; top = Mathf.Max(top, feetY + 2f * halfH);
             x = right + Gap;
         }

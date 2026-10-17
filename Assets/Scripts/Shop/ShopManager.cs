@@ -640,21 +640,24 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.text = string.Join("\n", lines);
             popupItemInfo.color = Color.white;
             popupItemInfo.richText = true;
-            popupItemInfo.fontSize = 62f; popupItemInfo.alignment = TextAlignmentOptions.Top;
-            popupItemInfo.fontStyle = FontStyles.Bold;   // bold chalk (owner, 16 October: not readable thin)
-            popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -30f); popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 420f);   // closer under the picture: more room for words (owner, 16 October)
-            if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(-6f, 360f);
-            // a lighter stroke: the chalk hand's face pulled in a little (thinner letters, owner: "too chunky")
+            popupItemInfo.fontSize = 74f; popupItemInfo.alignment = TextAlignmentOptions.Center;
+            popupItemInfo.fontStyle = FontStyles.Bold;
+            popupItemInfo.rectTransform.anchorMin = popupItemInfo.rectTransform.anchorMax = new Vector2(0.5f, 0.5f); popupItemInfo.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(-6f, 380f);
             var mat = popupItemInfo.fontMaterial; if (mat != null && mat.HasProperty("_FaceDilate")) mat.SetFloat("_FaceDilate", 0.08f);
             var note = EnsureNoteLabel(chalk);
-            if (note != null)
-            {
-                note.text = item.specialNote ?? ""; note.gameObject.SetActive(!string.IsNullOrWhiteSpace(item.specialNote));
-                // right under the description, however many lines it has (the pots' three lines ran into the note)
-                var descH = popupItemInfo.GetPreferredValues(popupItemInfo.text, popupItemInfo.rectTransform.rect.width, Mathf.Infinity).y;
-                var top = popupItemInfo.rectTransform.anchoredPosition.y + popupItemInfo.rectTransform.sizeDelta.y / 2f;
-                note.rectTransform.anchoredPosition = new Vector2(0f, Mathf.Max(top - descH - 100f, -470f));
-            }
+            var hasNote = note != null && !string.IsNullOrWhiteSpace(item.specialNote);
+            if (note != null) { note.text = item.specialNote ?? ""; note.gameObject.SetActive(hasNote); }
+            // the words as one block, centred between the picture and the buttons (owner, 16 October: bigger,
+            // centred, never overlapping, the same room for every item)
+            var descH = popupItemInfo.GetPreferredValues(popupItemInfo.text, 960f, Mathf.Infinity).y;
+            var noteH = hasNote ? note.GetPreferredValues(note.text, 900f, Mathf.Infinity).y : 0f;
+            const float regionTop = 150f, regionBottom = -400f, gap = 30f;
+            var blockH = descH + (hasNote ? gap + noteH : 0f);
+            var y0 = regionTop - ((regionTop - regionBottom) - blockH) / 2f;
+            popupItemInfo.rectTransform.sizeDelta = new Vector2(960f, descH);
+            popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, y0 - descH / 2f);
+            if (hasNote) { note.rectTransform.sizeDelta = new Vector2(900f, noteH); note.rectTransform.anchoredPosition = new Vector2(0f, y0 - descH - gap - noteH / 2f); }
         }
 
         if (confirmPurchaseButton != null)
@@ -682,7 +685,7 @@ public class ShopManager : MonoBehaviour
         rt.anchoredPosition = new Vector2(0f, -300f);                       // close under the description, above the buttons (buttons' top is at -519)
         noteLabel = go.GetComponent<TextMeshProUGUI>();
         if (chalk != null) noteLabel.font = chalk; else noteLabel.font = popupItemInfo.font;
-        noteLabel.fontSize = 44f; noteLabel.alignment = TextAlignmentOptions.Top; noteLabel.fontStyle = FontStyles.Bold;
+        noteLabel.fontSize = 56f; noteLabel.alignment = TextAlignmentOptions.Center; noteLabel.fontStyle = FontStyles.Bold;
         var nm = noteLabel.fontMaterial; if (nm != null && nm.HasProperty("_FaceDilate")) nm.SetFloat("_FaceDilate", 0.08f);
         noteLabel.color = new Color(0.62f, 0.93f, 0.6f); noteLabel.enableWordWrapping = true; noteLabel.raycastTarget = false;   // green chalk (owner, 16 October)
         return noteLabel;
