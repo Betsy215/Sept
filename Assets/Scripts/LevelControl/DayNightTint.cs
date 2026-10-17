@@ -37,11 +37,15 @@ public class DayNightTint : MonoBehaviour
     private static readonly Color WindowNight = new Color(0.07f, 0.09f, 0.36f, 0.78f);
 
     private float stage;        // 0 = day, 1 = dusk, 2 = night (fractional while fading)
+    private static DayNightTint current;
+    /// The running day's stage for other scenes (the chapter 2 kitchen window fades its night picture by it)
+    public static float CurrentStage => current != null ? current.stage : 0f;
 
     private static Sprite starSprite;
 
     public void Begin(OrderSystem os)
     {
+        current = this;
         orderSystem = os;
 
         var canvasGo = GameObject.Find("Canvas");

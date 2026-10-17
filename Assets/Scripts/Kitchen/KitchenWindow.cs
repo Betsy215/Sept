@@ -9,22 +9,7 @@ using UnityEngine.UI;
 public static class KitchenWindow
 {
     static readonly Vector2 GlassMin = new Vector2(0.502f, 0.556f), GlassMax = new Vector2(0.922f, 0.803f);
-    const float CoconutX = 0.55f, CoconutY = 0.60f;   // the cluster's place on the palm picture (measured on palm.png)
-
-    static Sprite glowSprite;
-    /// A soft round glow made once at runtime (like the map's three-star glow)
-    static Sprite GlowSprite()
-    {
-        if (glowSprite != null) return glowSprite;
-        const int n = 64; var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear };
-        var px = new Color[n * n];
-        for (var y = 0; y < n; y++) for (var x = 0; x < n; x++)
-        {
-            var dx = (x + 0.5f - n / 2f) / (n / 2f); var dy = (y + 0.5f - n / 2f) / (n / 2f);
-            var a = Mathf.Clamp01(1f - Mathf.Sqrt(dx * dx + dy * dy)); px[y * n + x] = new Color(1f, 1f, 1f, a * a * a);
-        }
-        tex.SetPixels(px); tex.Apply(); glowSprite = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f)); return glowSprite;
-    }
+    const float ClusterX = 0.4035f, ClusterY = 0.6275f, ClusterW = 0.2953f, ClusterH = 0.1538f;   // the cluster's box on the palm picture (measured on palm.png)
 
     public static void Apply()
     {
@@ -58,14 +43,43 @@ public static class KitchenWindow
             var prt = (RectTransform)p.transform; prt.anchorMin = new Vector2(0f, 0f); prt.anchorMax = new Vector2(0f, 0f); prt.pivot = new Vector2(0f, 0f);
             var ph = glassH * 1.45f; prt.sizeDelta = new Vector2(ph * palm.rect.width / palm.rect.height, ph); prt.anchoredPosition = new Vector2(-glassW * 0.16f, -glassH * 0.25f);
             var pi = p.GetComponent<Image>(); pi.sprite = palm; pi.preserveAspect = true; pi.raycastTarget = false;
-            // the coconuts glow softly like the apples, so they read as something to pick (the pick object comes with the Coconut cluster)
-            var glow = new GameObject("CoconutGlow", typeof(RectTransform), typeof(Image)); glow.transform.SetParent(prt, false); glow.transform.SetAsFirstSibling();
-            var grt = (RectTransform)glow.transform; grt.anchorMin = grt.anchorMax = new Vector2(CoconutX, CoconutY); grt.sizeDelta = new Vector2(prt.sizeDelta.x * 0.42f, prt.sizeDelta.x * 0.42f);
-            var gi = glow.GetComponent<Image>(); gi.sprite = GlowSprite(); gi.color = new Color(1f, 0.95f, 0.6f, 0.85f); gi.raycastTarget = false;
-            glow.AddComponent<MapGlowPulse>();
+            // the coconut cluster as its own picture with the apples' halo baked in (Resources/Chapter2/coconuts, cut
+            // from the palm at its own spot), so it reads as something to pick; later the Coconut pick object
+            var cluster = Chapter.Art<Sprite>(2, "coconuts");
+            if (cluster != null)
+            {
+                var c = new GameObject("Coconuts", typeof(RectTransform), typeof(Image)); c.transform.SetParent(prt, false);
+                var crt = (RectTransform)c.transform; crt.anchorMin = crt.anchorMax = new Vector2(ClusterX, ClusterY); crt.pivot = new Vector2(0.5f, 0.5f);
+                crt.sizeDelta = new Vector2(prt.sizeDelta.x * ClusterW, prt.sizeDelta.y * ClusterH); crt.anchoredPosition = Vector2.zero;
+                var ci = c.GetComponent<Image>(); ci.sprite = cluster; ci.preserveAspect = true; ci.raycastTarget = false;
+            }
+        }
+
+        // night through the glass (owner, 16 October): the painted beach night fades in over the day picture as the
+        // day's clock reaches dusk and night, and the palm darkens with it
+        var night = Chapter.Art<Sprite>(2, "bg_night");
+        if (night != null)
+        {
+            var nv = new GameObject("BeachNight", typeof(RectTransform), typeof(Image)); nv.transform.SetParent(rt, false); nv.transform.SetSiblingIndex(1);
+            var nrt = (RectTransform)nv.transform; nrt.anchorMin = vrt.anchorMin; nrt.anchorMax = vrt.anchorMax; nrt.sizeDelta = vrt.sizeDelta; nrt.anchoredPosition = vrt.anchoredPosition;
+            var ni = nv.GetComponent<Image>(); ni.sprite = night; ni.preserveAspect = true; ni.raycastTarget = false; ni.color = new Color(1f, 1f, 1f, 0f);
+            var fade = go.AddComponent<KitchenWindowNight>(); fade.night = ni; fade.palm = rt.Find("Palm") != null ? rt.Find("Palm").GetComponent<Image>() : null;
         }
 
         // the apple tree is chapter 1's
         var tree = bg.Find("tree"); if (tree != null) tree.gameObject.SetActive(false);
+    }
+}
+
+/// Fades the night picture in the chapter 2 kitchen window with the day's clock and dims the palm
+public class KitchenWindowNight : MonoBehaviour
+{
+    public Image night, palm;
+    private void Update()
+    {
+        var st = DayNightTint.CurrentStage;
+        var a = st <= 1f ? 0.5f * st : 0.5f + 0.5f * (st - 1f);
+        if (night != null) night.color = new Color(1f, 1f, 1f, a);
+        if (palm != null) palm.color = Color.Lerp(Color.white, new Color(0.45f, 0.5f, 0.7f), a);
     }
 }
