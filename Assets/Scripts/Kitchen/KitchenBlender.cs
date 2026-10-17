@@ -23,7 +23,10 @@ public static class KitchenBlender
 
     public static void Apply()
     {
-        var body = Resources.Load<Sprite>("Kitchen/blender2"); if (body == null) return;   // Gemini's steel blender in the style of ChatGPT's maker (owner, 17 October)
+        // chapter 2: Gemini's steel blender in the style of ChatGPT's maker, the swirl inside (owner, 17 October);
+        // chapter 1: the owner's own cream blender as drawn, cut from the background, no ice cream and no blend
+        var ch2 = SessionManager.CurrentChapter >= 2;
+        var body = Resources.Load<Sprite>(ch2 ? "Kitchen/blender2" : "Kitchen/blender"); if (body == null) return;
         Transform bg = null;
         foreach (var canvas in Object.FindObjectsOfType<Canvas>())
             if (canvas.gameObject.scene.name == "KitchenScene") { bg = canvas.transform.Find("bg"); if (bg != null) break; }
@@ -32,7 +35,8 @@ public static class KitchenBlender
         var go = new GameObject("Blender", typeof(RectTransform), typeof(Image), typeof(BlenderAnim));
         go.transform.SetParent(bg, false); go.transform.SetAsLastSibling();      // over the window view, under the shelf items (they are elsewhere)
         var rt = (RectTransform)go.transform; rt.anchorMin = Min; rt.anchorMax = Max; rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
-        var img = go.GetComponent<Image>(); img.sprite = body; img.preserveAspect = true; img.raycastTarget = true;
+        var img = go.GetComponent<Image>(); img.sprite = body; img.preserveAspect = true; img.raycastTarget = ch2;
+        if (!ch2) return;                                                                 // chapter 1: the picture alone
 
         var fill = new GameObject("Contents", typeof(RectTransform), typeof(Image)); fill.transform.SetParent(rt, false);
         var frt = (RectTransform)fill.transform; frt.anchorMin = Vector2.zero; frt.anchorMax = Vector2.one; frt.offsetMin = Vector2.zero; frt.offsetMax = Vector2.zero;
