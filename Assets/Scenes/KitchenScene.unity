@@ -240,8 +240,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1900000201}
+  m_Children: []
   m_Father: {fileID: 1810264063}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.31, y: 0.135}
@@ -344,6 +343,7 @@ MonoBehaviour:
   interactSound: {fileID: 0}
   bakeCompleteSound: {fileID: 8300000, guid: 119930a7ddfd0469199ca0e07c48b19d, type: 3}
   bakeTime: 10
+  food: 
   enableDebugLogs: 1
 --- !u!114 &69448904
 MonoBehaviour:
@@ -1265,6 +1265,7 @@ MonoBehaviour:
   interactSound: {fileID: 0}
   bakeCompleteSound: {fileID: 8300000, guid: 119930a7ddfd0469199ca0e07c48b19d, type: 3}
   bakeTime: 8
+  food: 
   enableDebugLogs: 1
 --- !u!114 &845001762
 MonoBehaviour:
@@ -1377,6 +1378,7 @@ MonoBehaviour:
   interactSound: {fileID: 0}
   bakeCompleteSound: {fileID: 8300000, guid: 119930a7ddfd0469199ca0e07c48b19d, type: 3}
   bakeTime: 15
+  food: 
   enableDebugLogs: 1
 --- !u!114 &970044116
 MonoBehaviour:
@@ -2104,116 +2106,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1900000200
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1900000201}
-  - component: {fileID: 1900000203}
-  - component: {fileID: 1900000202}
-  - component: {fileID: 1900000204}
-  - component: {fileID: 1900000205}
-  m_Layer: 6
-  m_Name: cookies
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1900000201
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1900000200}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 65676405}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 190, y: 190}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1900000202
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1900000200}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bae750bfa85b4dcd8ea4964c7efa7fcb, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 1
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1900000203
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1900000200}
-  m_CullTransparentMesh: 1
---- !u!114 &1900000204
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1900000200}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 181b83381ab44205877c07f9120d4a87, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactSound: {fileID: 0}
-  respawnDelay: 8
-  enableDebugLogs: 1
-  popScale: 1.3
-  popDuration: 0.12
-  returnDuration: 0.08
---- !u!114 &1900000205
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1900000200}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a961b5eefb44247a50c3be4e536febf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  associatedFoodType: Cookies
-  keepVisible: 0
-  enableDebugLogs: 1
 --- !u!1 &1931358959
 GameObject:
   m_ObjectHideFlags: 0
