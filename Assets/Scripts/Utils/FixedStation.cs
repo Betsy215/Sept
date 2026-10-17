@@ -8,7 +8,7 @@ public static class FixedStation
 {
     public const float MarginLeft = 0.22f;     // world units beyond the table's own padding
     public const float MarginBottom = 0.18f;
-    public const float Gap = 0.12f;            // between the machine and the cups
+    public const float Gap = 0.18f;            // between the machine and the cups
 
     /// True for the table objects that belong to the chapter's fixed food
     public static bool IsFixed(Component c)
@@ -54,9 +54,12 @@ public static class FixedStation
         var go = GameObject.Find("FixedStation"); if (go == null) go = new GameObject("FixedStation");
         var r = go.GetComponent<SpriteRenderer>(); if (r == null) r = go.AddComponent<SpriteRenderer>();   // never ?? on a Unity object: a missing component is not C# null
         r.sprite = sprite; r.sortingLayerName = "FoodItems"; r.sortingOrder = -1;
-        var width = (right - left) + 0.3f; var scale = width / sprite.bounds.size.x;
+        var width = (right - left) + 0.24f; var scale = width / sprite.bounds.size.x;         // hugs the machine and the cups with a little air
         go.transform.localScale = new Vector3(scale, scale * 0.62f, 1f);                       // a flat tray, not a board
         var h = sprite.bounds.size.y * scale * 0.62f;
         go.transform.position = new Vector3((left + right) / 2f, floorY + h * 0.36f, 0.06f);   // the tray's top edge sits behind the objects' feet
+        // the station moves as one: the machine is the handle, the cups and the tray follow (owner, 16 October)
+        var grp = go.GetComponent<StationGroup>(); if (grp == null) grp = go.AddComponent<StationGroup>();
+        if (machine != null) grp.Bind(machine.transform, food != null ? food.transform : null, go.transform);
     }
 }

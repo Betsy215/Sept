@@ -210,9 +210,9 @@ public class GamePhaseManager : MonoBehaviour
 
             item.InitializeDragging(tableLayer, this, allFoodItems);
             item.SetDraggingEnabled(true);
-            if (FixedStation.IsFixed(item as Component))
+            if (FixedStation.IsFixed(item as Component) && !(item is CoffeeMachine))
             {
-                // serving and brewing stay off like every item during arrangement, but the finger cannot move it
+                // the cups cannot be dragged on their own: the machine is the station's handle and the cups follow it
                 var d = ((Component)item).GetComponent<DraggableFood>(); if (d != null) d.SetDraggingEnabled(false);
             }
 

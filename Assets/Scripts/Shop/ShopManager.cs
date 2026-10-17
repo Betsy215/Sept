@@ -640,8 +640,12 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.text = string.Join("\n", lines);
             popupItemInfo.color = Color.white;
             popupItemInfo.richText = true;
-            popupItemInfo.fontSize = 64f; popupItemInfo.alignment = TextAlignmentOptions.Top;
-            popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -150f); popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 420f);   // under the picture, above the note and the buttons
+            popupItemInfo.fontSize = 62f; popupItemInfo.alignment = TextAlignmentOptions.Top;
+            popupItemInfo.fontStyle = FontStyles.Normal;
+            popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -40f); popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 480f);   // closer under the picture: more room for words (owner, 16 October)
+            if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(-6f, 360f);
+            // a lighter stroke: the chalk hand's face pulled in a little (thinner letters, owner: "too chunky")
+            var mat = popupItemInfo.fontMaterial; if (mat != null && mat.HasProperty("_FaceDilate")) mat.SetFloat("_FaceDilate", -0.12f);
             var note = EnsureNoteLabel(chalk);
             if (note != null) { note.text = item.specialNote ?? ""; note.gameObject.SetActive(!string.IsNullOrWhiteSpace(item.specialNote)); }
         }
@@ -668,10 +672,11 @@ public class ShopManager : MonoBehaviour
         var rt = (RectTransform)go.transform; var src = popupItemInfo.rectTransform;
         rt.anchorMin = src.anchorMin; rt.anchorMax = src.anchorMax; rt.pivot = src.pivot;
         rt.sizeDelta = new Vector2(880f, 130f);
-        rt.anchoredPosition = new Vector2(0f, -440f);                       // between the description and the buttons (buttons' top is at -519)
+        rt.anchoredPosition = new Vector2(0f, -400f);                       // between the description and the buttons (buttons' top is at -519)
         noteLabel = go.GetComponent<TextMeshProUGUI>();
         if (chalk != null) noteLabel.font = chalk; else noteLabel.font = popupItemInfo.font;
-        noteLabel.fontSize = 42f; noteLabel.alignment = TextAlignmentOptions.Top;
+        noteLabel.fontSize = 44f; noteLabel.alignment = TextAlignmentOptions.Top;
+        var nm = noteLabel.fontMaterial; if (nm != null && nm.HasProperty("_FaceDilate")) nm.SetFloat("_FaceDilate", -0.12f);
         noteLabel.color = new Color(1f, 0.93f, 0.67f); noteLabel.enableWordWrapping = true; noteLabel.raycastTarget = false;
         return noteLabel;
     }
