@@ -7,7 +7,7 @@ Current open work, as of 13 October 2026 (night). Done items are removed; the da
 
 - [ ] **Owner decides:** ship without chapter 2 (my pick) or hold for it; re-tune the star lines; release note text; privacy
   label entry (Usage Data / Product Interaction); the store description's "two customers" wording.
-- [ ] **TestFlight first** (26.10.17 build 1, uploaded 16 October evening): the one-more-treat ad button, test ads, analytics events, the menu on iPad, shared ovens.
+- [ ] **TestFlight first** (26.10.17 build 2, uploaded 16 October 17:58; build 1 before it): the one-more-treat ad button, test ads, analytics events, the menu on iPad, shared ovens, the shop layout and popup, the day-end note, the longer days.
 - [ ] **Store screenshots:** redo for the menu, prices and background; the banner must not say "16 days", use
   "earn stars along the trip" (owner, 16 October). `Store/screenshots/caption.py`.
 - [ ] **Next release after this one:** stars as a second currency (earned by play, a replay never pays the same star twice;
