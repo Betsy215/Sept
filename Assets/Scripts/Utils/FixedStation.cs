@@ -20,6 +20,14 @@ public static class FixedStation
         return fixedFood == "Coffee" && c is CoffeeMachine;
     }
 
+    /// The object the player drags to move the whole station: the coffee machine in chapter 1, the ice cream station itself in chapter 2
+    public static bool IsHandle(Component c)
+    {
+        if (c == null) return false;
+        if (c is CoffeeMachine) return true;
+        var item = c as ServeableItem; return item != null && item.GetFoodType() == "IceCream" && IsFixed(c);
+    }
+
     /// Places the fixed food's objects at the bottom left of the table and puts the station under them
     public static void Place(TableLayer table, ServeableItem[] items)
     {
@@ -42,6 +50,7 @@ public static class FixedStation
         var left = x; var right = x; var top = feetY;
         var row = new[] { machine != null ? machine.transform : null, food != null ? food.transform : null };
         var frac = new[] { new Vector4(0.44f, 0.485f, 0.77f, 0.89f), new Vector4(0.51f, 0.53f, 0.55f, 0.29f) };
+        if (fixedFood == "IceCream") frac[1] = new Vector4(0.5f, 0.5f, 1f, 1f);          // the station box picture has no padding (17 October)
         for (var i = 0; i < row.Length; i++)
         {
             var t = row[i]; if (t == null) continue;
@@ -50,7 +59,7 @@ public static class FixedStation
             var dc = new Vector2(b.min.x + fr.x * b.size.x, b.min.y + fr.y * b.size.y);        // the drawn part's centre
             var halfW = fr.z * b.size.x / 2f; var halfH = fr.w * b.size.y / 2f;
             var dx = t.position.x - dc.x; var dy = t.position.y - dc.y;                       // the pivot's offset from the drawn centre
-            var nudge = i == 1 ? new Vector2(-0.10f, -0.06f) : Vector2.zero;   // the cups a little down and left, deeper on the tray (owner, 16 October)
+            var nudge = i == 1 && machine != null ? new Vector2(-0.10f, -0.06f) : Vector2.zero;   // the cups a little down and left, deeper on the tray (owner, 16 October)
             t.position = new Vector3(x + halfW + dx + nudge.x, feetY + halfH + dy + nudge.y, t.position.z);
             right = x + 2f * halfW; top = Mathf.Max(top, feetY + 2f * halfH);
             x = right + Gap;
@@ -69,5 +78,6 @@ public static class FixedStation
         // the station moves as one: the machine is the handle, the cups and the tray follow (owner, 16 October)
         var grp = go.GetComponent<StationGroup>(); if (grp == null) grp = go.AddComponent<StationGroup>();
         if (machine != null) grp.Bind(machine.transform, food != null ? food.transform : null, go.transform);
+        else if (food != null) grp.Bind(food.transform, go.transform);                 // chapter 2: the ice cream station is its own handle
     }
 }

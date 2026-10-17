@@ -100,6 +100,7 @@ public class OrderSystem : MonoBehaviour
         public string foodType;
         public GameObject displayObject;
         public bool isServed = false;
+        public string variant;      // ice cream: the scoops' letters, sorted (count and flavours; owner, 17 October)
 
         public OrderItemInstance(string type, GameObject display)
         {
@@ -123,6 +124,7 @@ public class OrderSystem : MonoBehaviour
         public bool hadCustomer;                 // opened for a customer (false on the original no-customer flow)
         public bool AllServed => items.TrueForAll(i => i.isServed);
         public bool Needs(string food) => items.Exists(i => !i.isServed && i.foodType == food);
+        public bool Needs(string food, string variant) => items.Exists(i => !i.isServed && i.foodType == food && (variant == null || i.variant == variant));
     }
 
     /// The bubble objects and icon container of one slot
@@ -447,12 +449,16 @@ public class OrderSystem : MonoBehaviour
             var displayItem = Instantiate(orderItem.displayPrefab, s.container);
             displayItem.transform.localPosition = itemPosition;
 
+            // ice cream: a random cone (one to three scoops, any flavours) shown as its parts
+            string variant = null;
+            if (foodType == "IceCream") { variant = IceCreamStation.RandomVariant(); var icon = displayItem.GetComponent<IceCreamOrderIcon>(); if (icon != null) icon.Show(variant); }
+
             // Add served item visual component for pop effect
             var servedVisual = displayItem.GetComponent<ServedItemVisual>();
             if (servedVisual == null)
                 servedVisual = displayItem.AddComponent<ServedItemVisual>();
 
-            order.items.Add(new OrderItemInstance(foodType, displayItem));
+            order.items.Add(new OrderItemInstance(foodType, displayItem) { variant = variant });
             order.displayObjects.Add(displayItem);
         }
     }
@@ -486,13 +492,16 @@ public class OrderSystem : MonoBehaviour
     }
 
     /// A tap on a food: serves the oldest open order that still needs it (the customer who came first).
-    public bool TryServeItem(string foodType)
+    public bool TryServeItem(string foodType) => TryServeItem(foodType, null);
+
+    /// variant: for ice cream the cone's scoops (sorted letters); null matches any
+    public bool TryServeItem(string foodType, string variant)
     {
         if (orders.Count == 0) return false;
 
         ActiveOrder target = null;
         foreach (var o in orders)
-            if (o.active && o.Needs(foodType) && (target == null || o.startedAt < target.startedAt)) target = o;
+            if (o.active && o.Needs(foodType, variant) && (target == null || o.startedAt < target.startedAt)) target = o;
 
         if (target == null)
         {
@@ -500,7 +509,7 @@ public class OrderSystem : MonoBehaviour
             return false;
         }
 
-        var itemToServe = target.items.Find(item => item.foodType == foodType && !item.isServed);
+        var itemToServe = target.items.Find(item => item.foodType == foodType && !item.isServed && (variant == null || item.variant == variant));
         itemToServe.isServed = true;
 
         // Play served item visual effect and remove (tracked so the order's clean-up can stop it)
@@ -697,6 +706,17 @@ public class OrderSystem : MonoBehaviour
             foreach (var item in o.items)
                 if (!item.isServed)
                     types.Add(item.foodType);
+        return types;
+    }
+
+    /// The same list with the ice cream variants ("IceCream:vsc"), for the editor auto-play
+    public List<string> GetCurrentOrderTypesWithVariants()
+    {
+        var types = new List<string>();
+        foreach (var o in orders.OrderBy(o => o.startedAt))
+            foreach (var item in o.items)
+                if (!item.isServed)
+                    types.Add(item.variant != null ? item.foodType + ":" + item.variant : item.foodType);
         return types;
     }
 

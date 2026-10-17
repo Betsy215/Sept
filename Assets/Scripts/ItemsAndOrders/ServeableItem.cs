@@ -35,6 +35,10 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     [Header("Debug")] public bool enableDebugLogs = true;
 
     private bool servingEnabled = true;
+    /// True while serving is on (the play phase). The ice cream station reads it to allow its own taps.
+    public bool ServingEnabled => servingEnabled;
+    /// Set by an object that handles its own taps (the ice cream station, 17 October): this component then ignores input.
+    [System.NonSerialized] public bool inputHandledElsewhere;
 
     private RefillableItem refillableItem;
     private RefillSystem refillSystem;
@@ -123,6 +127,7 @@ public class ServeableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     private bool CanAcceptInput()
     {
+        if (inputHandledElsewhere) return false;
         if (!servingEnabled) return false;
         if (Time.timeScale == 0f) return false; // paused
         if (popupCanvas != null && popupCanvas.activeInHierarchy) return false; // pause / level-complete popup is up

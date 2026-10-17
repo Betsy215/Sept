@@ -238,7 +238,7 @@ public class SessionManager : MonoBehaviour
     public static readonly Dictionary<string, string> FoodStation = new Dictionary<string, string>
     {
         { "Bread", "Oven" }, { "Cake", "Oven" }, { "Choux", "Oven" }, { "Cookies", "Oven" },
-        { "Coffee", "Machine" }, { "Juice", "Counter" }, { "Apple", "Counter" }, { "Coconut", "Counter" }
+        { "Coffee", "Machine" }, { "Juice", "Counter" }, { "Apple", "Counter" }, { "Coconut", "Counter" }, { "IceCream", "Machine" }
     };
     public static readonly Dictionary<string, int> StationCap = new Dictionary<string, int> { { "Oven", 3 }, { "Machine", 1 }, { "Counter", 2 } };
     public const int MinEnabledFoods = 2;
@@ -341,6 +341,7 @@ public class SessionManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(foodType)) return true;
         if (IsHeldBack(foodType)) return false;
+        if (IsFixedFood(foodType)) return true;                 // the chapter's fixed food needs no purchase (ice cream in chapter 2; 17 October)
         if (currentSession == null || currentSession.purchasedFoodItems == null) return true;
         return currentSession.purchasedFoodItems.Contains(foodType);
     }

@@ -103,6 +103,8 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         if (contents != null) contents.color = KitchenBlender.Rest;
         if (swirl != null) swirl.color = new Color(1f, 1f, 1f, 0f);
         IsBlending = false;
+        // the blend refills every flavour of the table's ice cream station (owner, 17 October)
+        var station = FindObjectOfType<IceCreamStation>(); if (station != null) station.RefillAll();
     }
 
     private void Shake(RectTransform rt, float amount)
