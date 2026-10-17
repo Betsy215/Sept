@@ -45,13 +45,18 @@ public static class KitchenWindow
             var pi = p.GetComponent<Image>(); pi.sprite = palm; pi.preserveAspect = true; pi.raycastTarget = false;
             // the coconut cluster as its own picture with the apples' halo baked in (Resources/Chapter2/coconuts, cut
             // from the palm at its own spot), so it reads as something to pick; later the Coconut pick object
-            var cluster = Chapter.Art<Sprite>(2, "coconuts");
-            if (cluster != null)
+            // four coconuts, one per tap (owner, 17 October), only when Coconut is on the menu; otherwise the palm's own
+            var four = Chapter.Art<Sprite>(2, "coconuts_4");
+            var coconutOn = SessionManager.Instance != null && SessionManager.Instance.IsFoodItemActive("Coconut");
+            if (four != null && coconutOn)
             {
-                var c = new GameObject("Coconuts", typeof(RectTransform), typeof(Image)); c.transform.SetParent(prt, false);
+                var c = new GameObject("Coconuts", typeof(RectTransform), typeof(Image), typeof(CoconutInKitchen)); c.transform.SetParent(prt, false);
                 var crt = (RectTransform)c.transform; crt.anchorMin = crt.anchorMax = new Vector2(ClusterX, ClusterY); crt.pivot = new Vector2(0.5f, 0.5f);
-                crt.sizeDelta = new Vector2(prt.sizeDelta.x * ClusterW, prt.sizeDelta.y * ClusterH); crt.anchoredPosition = Vector2.zero;
-                var ci = c.GetComponent<Image>(); ci.sprite = cluster; ci.preserveAspect = true; ci.raycastTarget = false;
+                // the old three-coconut box was 254 x 228 px; the four-coconut pictures share one canvas, so the box scales with it
+                crt.sizeDelta = new Vector2(prt.sizeDelta.x * ClusterW * four.rect.width / 254f, prt.sizeDelta.y * ClusterH * four.rect.height / 228f); crt.anchoredPosition = new Vector2(0f, -prt.sizeDelta.y * 0.01f);
+                var ci = c.GetComponent<Image>(); ci.sprite = four; ci.preserveAspect = true; ci.raycastTarget = true;
+                var pick = c.GetComponent<CoconutInKitchen>();
+                for (var i = 1; i <= CoconutInKitchen.Full; i++) pick.states[i - 1] = Chapter.Art<Sprite>(2, "coconuts_" + i);
             }
         }
 
