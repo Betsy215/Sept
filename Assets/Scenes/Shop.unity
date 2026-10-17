@@ -3100,9 +3100,9 @@ PrefabInstance:
       propertyPath: popupInfoText
       value: '$ 700
 
-        A big eater: one extra
+        A big eater:
 
-        item in every order'
+        one extra item per order'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
@@ -3370,9 +3370,9 @@ PrefabInstance:
       propertyPath: popupInfoText
       value: '$ 1500
 
-        Classic strawberry cake,
+        Classic strawberry
 
-        by the slice'
+        cake, by the slice'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
@@ -3920,7 +3920,7 @@ PrefabInstance:
 
         Fresh orange juice,
 
-        squeezed every morning'
+        squeezed each morning'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText

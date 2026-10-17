@@ -658,14 +658,14 @@ public class ShopManager : MonoBehaviour
             // centred, never overlapping, the same room for every item)
             // measure with the real wrapping: lay each label out at its width first, then read the rendered height
             // (GetPreferredValues ignored the bold hand's wider glyphs and under-measured by a line)
-            popupItemInfo.rectTransform.sizeDelta = new Vector2(960f, 800f); popupItemInfo.ForceMeshUpdate(true, true);
+            popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 800f); popupItemInfo.ForceMeshUpdate(true, true);
             var descH = popupItemInfo.textBounds.size.y + 12f;
             var noteH = 0f;
             if (hasNote) { note.rectTransform.sizeDelta = new Vector2(900f, 400f); note.ForceMeshUpdate(true, true); noteH = note.textBounds.size.y + 10f; }
             const float regionTop = 170f, regionBottom = -420f, gap = 34f;
             var blockH = descH + (hasNote ? gap + noteH : 0f);
-            var y0 = regionTop - ((regionTop - regionBottom) - blockH) / 2f;
-            popupItemInfo.rectTransform.sizeDelta = new Vector2(960f, descH);
+            var y0 = Mathf.Min(regionTop, regionTop - ((regionTop - regionBottom) - blockH) / 2f);   // never up into the picture
+            popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, descH);
             popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, y0 - descH / 2f);
             if (hasNote) { note.rectTransform.sizeDelta = new Vector2(900f, noteH); note.rectTransform.anchoredPosition = new Vector2(0f, y0 - descH - gap - noteH / 2f); }
         }
