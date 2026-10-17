@@ -74,13 +74,13 @@ iPhone and iPad captures.
 
 1. `Chapter.cs` with `Count = 1`. **Done 14 October.**
 2. LevelManager day range, chapter end, finish text. **Done 14 October.**
-3. Level25..32Data and `allLevels` to 32, plus the length check (tuning numbers, no art).
+3. Level25..32Data and `allLevels` to 32, plus the length check (tuning numbers, no art). **Done 16 October** (draft tuning continued from days 17 to 24; the length check still to add).
 4. Food gating by chapter (`SessionManager.FoodChapter`, done 14 October, full-chapter driver run clean); the shop boundary still to do.
-5. Map pages (waits for `bg_ch2`, `title_ch2`, arrows).
-6. Beach background day and night (art ready: `Store/chapter2/beach_bg/final_day.png`, `final_night.png`).
-7. Cloth swap (owner's table pick).
-8. Shop background swap (owner's pick).
-9. Hibiscus flowers (petal and centre sprites).
+5. Map pages (waits for `bg_ch2`, `title_ch2`, arrows). **Done 16 October** (`MapScreen.page`, Cancer until the owner picks; `Store/chapter2/map/map_ideas.py`).
+6. Beach background day and night. **Done 16 October** (`Resources/Chapter2/bg_day`, `bg_night`; the painted night fades in over the day picture).
+7. Cloth swap. **Done 16 October** (the owner's stripes, `Resources/Chapter2/cloth`).
+8. Shop background swap. **Done 16 October** (`Resources/Chapter2/shop_bg`).
+9. Hibiscus flowers. **Done 16 October** (`PatienceMeter.Chapter2Kind`, three option sets; the owner picks A, B or C).
 10. Cookies on in chapter 2.
 11. Coconut (table states, order icon, kitchen and shop icons; the coconut cluster on the palm as the kitchen pick object, see the window and coconuts rows above).
 12. IceCream (freezer-well steps, cone icons, kitchen tub).
