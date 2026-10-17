@@ -34,7 +34,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
 
     /// Bake time per recipe, in seconds (owner: the ovens are all the same, each recipe has its own time).
     public static readonly System.Collections.Generic.Dictionary<string, float> BakeTimes =
-        new System.Collections.Generic.Dictionary<string, float> { { "Bread", 8f }, { "Choux", 10f }, { "Cake", 15f }, { "Cookies", 12f } };
+        new System.Collections.Generic.Dictionary<string, float> { { "Bread", 8f }, { "Choux", 10f }, { "Cake", 15f }, { "Cookies", 6f } };
 
     /// This oven's bake time today: the recipe's, else the Inspector value.
     public float BakeTime => !string.IsNullOrEmpty(food) && BakeTimes.TryGetValue(food, out var t) ? t : bakeTime;
