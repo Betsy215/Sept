@@ -1,0 +1,5 @@
+// Chapter 2 star lines (17 October): 30 / 55 / 80 % of a perfect day's score measured by the driver, scaled to the new day lengths, smoothed over three days, never falling
+var table = new System.Collections.Generic.Dictionary<int,int[]> { {17, new[]{230,410,600}}, {18, new[]{240,440,640}}, {19, new[]{270,500,720}}, {20, new[]{300,560,810}}, {21, new[]{300,560,810}}, {22, new[]{300,560,810}}, {23, new[]{300,560,810}}, {24, new[]{300,560,810}}, {25, new[]{300,560,810}}, {26, new[]{300,560,810}}, {27, new[]{300,560,810}}, {28, new[]{300,560,810}}, {29, new[]{300,560,810}}, {30, new[]{300,560,810}}, {31, new[]{300,560,810}}, {32, new[]{300,560,810}} };
+var sb = new System.Text.StringBuilder();
+foreach (var kv in table) { var ld = UnityEditor.AssetDatabase.LoadAssetAtPath<LevelData>("Assets/Entity/Level" + kv.Key + "Data.asset"); if (ld == null) { sb.Append("missing " + kv.Key + "; "); continue; } ld.starThreshold1 = kv.Value[0]; ld.starThreshold2 = kv.Value[1]; ld.starThreshold3 = kv.Value[2]; UnityEditor.EditorUtility.SetDirty(ld); }
+UnityEditor.AssetDatabase.SaveAssets(); return "set " + table.Count + " days " + sb;

@@ -17,12 +17,12 @@ MonoBehaviour:
   ordersPerLevel: 15
   orderDisplayTime: 5
   timeBetweenOrders: 5
-  dayDurationSeconds: 75
+  dayDurationSeconds: 88
   minOrderItems: 2
   maxOrderItems: 4
-  starThreshold1: 980
-  starThreshold2: 1100
-  starThreshold3: 1230
+  starThreshold1: 240
+  starThreshold2: 440
+  starThreshold3: 640
   maxPossibleScore: 50
   backgroundSprite: {fileID: 0}
   useSpecificFoodTypes: 0

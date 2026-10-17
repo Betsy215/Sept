@@ -35,15 +35,15 @@ public static class KitchenBlender
         var go = new GameObject("Blender", typeof(RectTransform), typeof(Image), typeof(BlenderAnim));
         go.transform.SetParent(bg, false); go.transform.SetAsLastSibling();      // over the window view, under the shelf items (they are elsewhere)
         var rt = (RectTransform)go.transform; rt.anchorMin = Min; rt.anchorMax = Max; rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
-        var img = go.GetComponent<Image>(); img.sprite = body; img.preserveAspect = true; img.raycastTarget = ch2;
+        var img = go.GetComponent<Image>(); img.sprite = body; img.preserveAspect = false; img.raycastTarget = ch2;   // stretched exactly like the background it was cut from
         if (!ch2) return;                                                                 // chapter 1: the picture alone
 
         var fill = new GameObject("Contents", typeof(RectTransform), typeof(Image)); fill.transform.SetParent(rt, false);
         var frt = (RectTransform)fill.transform; frt.anchorMin = Vector2.zero; frt.anchorMax = Vector2.one; frt.offsetMin = Vector2.zero; frt.offsetMax = Vector2.zero;
-        var fi = fill.GetComponent<Image>(); fi.sprite = Resources.Load<Sprite>("Kitchen/blender_fill"); fi.preserveAspect = true; fi.raycastTarget = false; fi.color = Rest;
+        var fi = fill.GetComponent<Image>(); fi.sprite = Resources.Load<Sprite>("Kitchen/blender_fill"); fi.preserveAspect = false; fi.raycastTarget = false; fi.color = Rest;
 
         // the drawn body is fitted by height inside the box (preserveAspect), so the jar's box is taken from the fitted rect
-        var boxW = rt.rect.width; var boxH = rt.rect.height; var fitW = boxH * body.rect.width / body.rect.height; var padX = (boxW - fitW) / 2f / Mathf.Max(boxW, 1f);
+        var padX = 0f;                                                                      // no fitting: the picture fills its box like the background
         var jarMin = new Vector2(padX + FluidMin.x * (1f - 2f * padX), FluidMin.y); var jarMax = new Vector2(padX + FluidMax.x * (1f - 2f * padX), FluidMax.y);
         var mask = new GameObject("JarMask", typeof(RectTransform), typeof(RectMask2D)); mask.transform.SetParent(rt, false);
         var mrt = (RectTransform)mask.transform; mrt.anchorMin = jarMin; mrt.anchorMax = jarMax; mrt.offsetMin = Vector2.zero; mrt.offsetMax = Vector2.zero;
