@@ -98,6 +98,7 @@ public class GamePhaseManager : MonoBehaviour
         SetTutorialMessageForCurrentLevel();
 
         LoadSavedFoodPositions();
+        FixedStation.Place(tableLayer, allFoodItems);   // the chapter's fixed food on its station, bottom left (owner, 16 October)
         EnableArrangementMode();
         DisableGameplaySystems();
         arrangmentUI.gameObject.SetActive(true);
@@ -209,6 +210,11 @@ public class GamePhaseManager : MonoBehaviour
 
             item.InitializeDragging(tableLayer, this, allFoodItems);
             item.SetDraggingEnabled(true);
+            if (FixedStation.IsFixed(item as Component))
+            {
+                // serving and brewing stay off like every item during arrangement, but the finger cannot move it
+                var d = ((Component)item).GetComponent<DraggableFood>(); if (d != null) d.SetDraggingEnabled(false);
+            }
 
             DebugLog($"Enabled arrangement mode for {((MonoBehaviour)item).gameObject.name}");
         }
@@ -298,7 +304,7 @@ public class GamePhaseManager : MonoBehaviour
                 // Find saved position for this food type
                 var savedPos = savedPositions.Find(p => p.foodType == item.GetFoodType());
 
-                if (savedPos != null)
+                if (savedPos != null && !FixedStation.IsFixed(item))
                 {
                     // Preserve the original Z position for layering
                     var originalZ = item.transform.position.z;

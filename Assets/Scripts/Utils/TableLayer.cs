@@ -293,6 +293,9 @@ public class TableLayer : MonoBehaviour
     /// <summary>
     /// Clamp a position to stay within table bounds
     /// </summary>
+    /// The area items may be dragged in (cloth, safe area and padding), once the layout has run
+    public Bounds InteractiveBounds => hasCachedBounds ? cachedTableBounds : (tableBounds != null ? tableBounds.bounds : new Bounds());
+
     public Vector3 ClampToTableBounds(Vector3 worldPosition)
     {
         if (!hasCachedBounds && tableBounds == null) return worldPosition;
