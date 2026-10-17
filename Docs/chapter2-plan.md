@@ -83,6 +83,6 @@ iPhone and iPad captures.
 9. Hibiscus flowers. **Done 16 October** (`PatienceMeter.Chapter2Kind`, three option sets; the owner picks A, B or C).
 10. Cookies on in chapter 2.
 11. Coconut (table states, order icon, kitchen and shop icons; the coconut cluster on the palm as the kitchen pick object, see the window and coconuts rows above).
-12. IceCream (freezer-well steps, cone icons, kitchen tub).
+12. IceCream (owner's design, 16 October night): an **ice cream station** on the table (the chapter 2 fixed item, on the station tray at the bottom left like the coffee): a simple ice cream box with a few flavours and some cones beside it. Customers order a cone with scoops; the number of scoops and the flavours are random. The player taps the cone: it floats up; then each tap on a flavour in the box adds a scoop of that flavour to the floating cone; a red cross beside the cone being built clears it to start over; the cone is served when it matches (like the other items, a tap on the order). Art: Gemini or my own (ChatGPT is out of quota); the box, cones, scoops per flavour, the floating cone with up to three scoops.
 13. `Chapter.Count = 2`, full test pass.
 14. Driver, doc 07, MANUAL section 6, TODO.

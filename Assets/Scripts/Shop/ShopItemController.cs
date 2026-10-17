@@ -17,6 +17,9 @@ public class ShopItemController : MonoBehaviour
 
     public string purchaseButtonText = "Buy for 50 Points";
 
+    [Tooltip("A short special note under the description, in the popup's second colour (owner, 16 October); empty for none")] [TextArea(1, 3)]
+    public string specialNote = "";
+
     [Header("State")] public bool isPurchased = false;
 
     private ShopManager shopManager;

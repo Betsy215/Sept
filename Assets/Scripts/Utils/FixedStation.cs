@@ -51,8 +51,8 @@ public static class FixedStation
         // the station: a wooden tray under the row, a little wider than it, its floor at the row's floor
         var sprite = Resources.Load<Sprite>("Table/coffee_station");
         if (sprite == null) return;
-        var go = GameObject.Find("FixedStation") ?? new GameObject("FixedStation");
-        var r = go.GetComponent<SpriteRenderer>() ?? go.AddComponent<SpriteRenderer>();
+        var go = GameObject.Find("FixedStation"); if (go == null) go = new GameObject("FixedStation");
+        var r = go.GetComponent<SpriteRenderer>(); if (r == null) r = go.AddComponent<SpriteRenderer>();   // never ?? on a Unity object: a missing component is not C# null
         r.sprite = sprite; r.sortingLayerName = "FoodItems"; r.sortingOrder = -1;
         var width = (right - left) + 0.5f; var scale = width / sprite.bounds.size.x;
         go.transform.localScale = Vector3.one * scale;

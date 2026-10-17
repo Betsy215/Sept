@@ -607,8 +607,17 @@ public class ShopManager : MonoBehaviour
 
         if (popupItemInfo != null)
         {
-            popupItemInfo.text = item.popupInfoText;
+            // Chalk on the board (owner, 16 October): the chalk hand (Gloria Hallelujah, open licence; Chalkduster is
+            // Apple's and cannot ship), white and fully opaque, the price line in blue chalk, a special note under it
+            var chalk = Resources.Load<TMP_FontAsset>("Fonts & Materials/GloriaHallelujah SDF");
+            if (chalk != null) popupItemInfo.font = chalk;
+            var lines = (item.popupInfoText ?? "").Split('\n');
+            if (lines.Length > 0 && lines[0].TrimStart().StartsWith("$")) lines[0] = "<color=#9FD2FF>" + lines[0] + "</color>";
+            popupItemInfo.text = string.Join("\n", lines);
             popupItemInfo.color = Color.white;
+            popupItemInfo.richText = true;
+            var note = EnsureNoteLabel(chalk);
+            if (note != null) { note.text = item.specialNote ?? ""; note.gameObject.SetActive(!string.IsNullOrWhiteSpace(item.specialNote)); }
         }
 
         if (confirmPurchaseButton != null)
@@ -620,6 +629,25 @@ public class ShopManager : MonoBehaviour
 
         purchaseConfirmationPopup.transform.localScale = Vector3.one * PopupScale;   // a little smaller than the screen, room left and right (owner, 16 October)
         purchaseConfirmationPopup.SetActive(true);
+    }
+
+    private TextMeshProUGUI noteLabel;
+    /// The special-note line under the description: same width, smaller, in a warm chalk yellow
+    private TextMeshProUGUI EnsureNoteLabel(TMP_FontAsset chalk)
+    {
+        if (popupItemInfo == null) return null;
+        if (noteLabel != null) return noteLabel;
+        var go = new GameObject("PopupNote", typeof(RectTransform), typeof(TextMeshProUGUI));
+        go.transform.SetParent(popupItemInfo.transform.parent, false);
+        var rt = (RectTransform)go.transform; var src = popupItemInfo.rectTransform;
+        rt.anchorMin = src.anchorMin; rt.anchorMax = src.anchorMax; rt.pivot = src.pivot;
+        rt.sizeDelta = new Vector2(src.sizeDelta.x, 160f);
+        rt.anchoredPosition = src.anchoredPosition + new Vector2(0f, -src.sizeDelta.y / 2f - 60f);
+        noteLabel = go.GetComponent<TextMeshProUGUI>();
+        if (chalk != null) noteLabel.font = chalk; else noteLabel.font = popupItemInfo.font;
+        noteLabel.fontSize = popupItemInfo.fontSize * 0.72f; noteLabel.alignment = TextAlignmentOptions.Top;
+        noteLabel.color = new Color(1f, 0.93f, 0.67f); noteLabel.enableWordWrapping = true; noteLabel.raycastTarget = false;
+        return noteLabel;
     }
 
     public void ConfirmPurchase()
