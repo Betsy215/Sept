@@ -5,6 +5,16 @@ var os = UnityEngine.Object.FindObjectOfType<OrderSystem>(); if (os == null) ret
 var types = os.GetCurrentOrderTypes();
 if (types.Count == 0) return "S|idle|" + lm.DayTimeLeft.ToString("F1");
 var food = types[0];
+if (food == "IceCream")
+{
+    var st = UnityEngine.Object.FindObjectOfType<IceCreamStation>(); if (st == null) return "S|missing|IceCream";
+    string want = null; foreach (var tv in os.GetCurrentOrderTypesWithVariants()) if (tv.StartsWith("IceCream:")) { want = tv.Substring(9); break; }
+    if (want == null) return "S|missing|IceCream variant";
+    foreach (var ch in want) if (st.Left(IceCreamStation.Letters.IndexOf(ch)) <= 0) { st.RefillAll(); return "S|refill|IceCream"; }
+    st.OnTap(IceCreamTap.Kind.Cross, 0); st.OnTap(IceCreamTap.Kind.Holder, 0);
+    foreach (var ch in want) st.OnTap(IceCreamTap.Kind.Section, IceCreamStation.Letters.IndexOf(ch));
+    st.OnTap(IceCreamTap.Kind.Cone, 0); return "S|served|IceCream:" + want;
+}
 var ev = new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current);
 foreach (var it in UnityEngine.Object.FindObjectsOfType<ServeableItem>())
 {

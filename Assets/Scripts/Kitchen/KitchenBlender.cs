@@ -11,8 +11,8 @@ using UnityEngine.UI;
 public static class KitchenBlender
 {
     static readonly Vector2 Min = new Vector2(0.0296f, 0.5005f), Max = new Vector2(0.2065f, 0.6646f);          // the cut-out's box on the background
-    static readonly Vector2 FluidMin = new Vector2(0.1571f, 0.327f), FluidMax = new Vector2(0.6806f, 0.6254f); // the drink inside the cut-out
-    public static readonly Color Rest = new Color(1f, 1f, 1f, 0f);                                             // at rest the overlay is invisible: the owner's drink shows as drawn
+    static readonly Vector2 FluidMin = new Vector2(0.2154f, 0.4176f), FluidMax = new Vector2(0.7231f, 0.7824f); // the swirl inside the jar (blender2_cut.py)
+    public static readonly Color Rest = new Color(1f, 0.92f, 0.88f, 1f);                                        // at rest the swirl is the drawing's pale pink
     public static readonly Color[] Flavours =
     {
         new Color(0.98f, 0.94f, 0.82f),   // vanilla
@@ -23,7 +23,7 @@ public static class KitchenBlender
 
     public static void Apply()
     {
-        var body = Resources.Load<Sprite>("Kitchen/blender"); if (body == null) return;
+        var body = Resources.Load<Sprite>("Kitchen/blender2"); if (body == null) return;   // Gemini's steel blender in the style of ChatGPT's maker (owner, 17 October)
         Transform bg = null;
         foreach (var canvas in Object.FindObjectsOfType<Canvas>())
             if (canvas.gameObject.scene.name == "KitchenScene") { bg = canvas.transform.Find("bg"); if (bg != null) break; }
@@ -32,14 +32,20 @@ public static class KitchenBlender
         var go = new GameObject("Blender", typeof(RectTransform), typeof(Image), typeof(BlenderAnim));
         go.transform.SetParent(bg, false); go.transform.SetAsLastSibling();      // over the window view, under the shelf items (they are elsewhere)
         var rt = (RectTransform)go.transform; rt.anchorMin = Min; rt.anchorMax = Max; rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
-        var img = go.GetComponent<Image>(); img.sprite = body; img.preserveAspect = false; img.raycastTarget = true;
+        var img = go.GetComponent<Image>(); img.sprite = body; img.preserveAspect = true; img.raycastTarget = true;
 
         var fill = new GameObject("Contents", typeof(RectTransform), typeof(Image)); fill.transform.SetParent(rt, false);
         var frt = (RectTransform)fill.transform; frt.anchorMin = Vector2.zero; frt.anchorMax = Vector2.one; frt.offsetMin = Vector2.zero; frt.offsetMax = Vector2.zero;
-        var fi = fill.GetComponent<Image>(); fi.sprite = Resources.Load<Sprite>("Kitchen/blender_fill"); fi.raycastTarget = false; fi.color = Rest;
+        var fi = fill.GetComponent<Image>(); fi.sprite = Resources.Load<Sprite>("Kitchen/blender2_fill"); fi.preserveAspect = true; fi.raycastTarget = false; fi.color = Rest;
 
-        var swirl = new GameObject("Swirl", typeof(RectTransform), typeof(Image)); swirl.transform.SetParent(rt, false);
-        var srt = (RectTransform)swirl.transform; srt.anchorMin = FluidMin; srt.anchorMax = FluidMax; srt.offsetMin = Vector2.zero; srt.offsetMax = Vector2.zero;
+        // the drawn body is fitted by height inside the box (preserveAspect), so the jar's box is taken from the fitted rect
+        var boxW = rt.rect.width; var boxH = rt.rect.height; var fitW = boxH * body.rect.width / body.rect.height; var padX = (boxW - fitW) / 2f / Mathf.Max(boxW, 1f);
+        var jarMin = new Vector2(padX + FluidMin.x * (1f - 2f * padX), FluidMin.y); var jarMax = new Vector2(padX + FluidMax.x * (1f - 2f * padX), FluidMax.y);
+        var mask = new GameObject("JarMask", typeof(RectTransform), typeof(RectMask2D)); mask.transform.SetParent(rt, false);
+        var mrt = (RectTransform)mask.transform; mrt.anchorMin = jarMin; mrt.anchorMax = jarMax; mrt.offsetMin = Vector2.zero; mrt.offsetMax = Vector2.zero;
+        var swirl = new GameObject("Swirl", typeof(RectTransform), typeof(Image)); swirl.transform.SetParent(mrt, false);
+        var srt = (RectTransform)swirl.transform; srt.anchorMin = new Vector2(0.5f, 0.5f); srt.anchorMax = new Vector2(0.5f, 0.5f);
+        var side = Mathf.Max(mrt.rect.width, mrt.rect.height) * 1.15f; srt.sizeDelta = new Vector2(side, side); srt.anchoredPosition = Vector2.zero;
         var si = swirl.GetComponent<Image>(); si.sprite = Resources.Load<Sprite>("Kitchen/blender_swirl"); si.preserveAspect = true; si.raycastTarget = false; si.color = new Color(1f, 1f, 1f, 0f);
 
         var anim = go.GetComponent<BlenderAnim>(); anim.contents = fi; anim.swirl = si; anim.body = rt;
@@ -74,7 +80,7 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         IsBlending = true;
         var rt = (RectTransform)transform;
         var flavours = KitchenBlender.Flavours;
-        var from = new Color(flavours[0].r, flavours[0].g, flavours[0].b, 0f);
+        var from = KitchenBlender.Rest;
         for (var i = 0; i < flavours.Length; i++)
         {
             var t = 0f;
@@ -83,6 +89,7 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
                 t += Time.unscaledDeltaTime;
                 var k = Mathf.Clamp01(t / (StepSeconds * 0.35f));                        // a quick crossfade, then the colour holds
                 if (contents != null) contents.color = Color.Lerp(from, flavours[i], k);
+                Churn(1f);
                 Shake(rt, 1f);
                 if (swirl != null) { swirl.color = new Color(1f, 1f, 1f, 0.55f); swirl.rectTransform.Rotate(0f, 0f, -540f * Time.unscaledDeltaTime); }
                 yield return null;
@@ -94,17 +101,26 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         while (s < 0.6f)
         {
             s += Time.unscaledDeltaTime; var k = Mathf.Clamp01(s / 0.6f);
-            Shake(rt, 1f - k);
+            Shake(rt, 1f - k); Churn(1f - k);
             if (swirl != null) { swirl.color = new Color(1f, 1f, 1f, 0.55f * (1f - k)); swirl.rectTransform.Rotate(0f, 0f, -540f * (1f - k) * Time.unscaledDeltaTime); }
-            if (contents != null) contents.color = new Color(from.r, from.g, from.b, 1f - k);
+            if (contents != null) contents.color = Color.Lerp(from, KitchenBlender.Rest, k);
             yield return null;
         }
         rt.anchoredPosition = restPos; rt.localRotation = Quaternion.identity;
-        if (contents != null) contents.color = KitchenBlender.Rest;
+        if (contents != null) { contents.color = KitchenBlender.Rest; contents.rectTransform.localScale = Vector3.one; contents.rectTransform.anchoredPosition = Vector2.zero; }
         if (swirl != null) swirl.color = new Color(1f, 1f, 1f, 0f);
         IsBlending = false;
         // the blend refills every flavour of the table's ice cream station (owner, 17 October)
         var station = FindObjectOfType<IceCreamStation>(); if (station != null) station.RefillAll();
+    }
+
+    /// The swirl churns: a quick pulse in height and a sway, as the blades push it round
+    private void Churn(float amount)
+    {
+        if (contents == null) return;
+        var t = Time.unscaledTime;
+        contents.rectTransform.localScale = new Vector3(1f + 0.03f * amount * Mathf.Sin(t * 31f), 1f + 0.05f * amount * Mathf.Sin(t * 23f + 1f), 1f);
+        contents.rectTransform.anchoredPosition = new Vector2(1.5f * amount * Mathf.Sin(t * 19f), 0f);
     }
 
     private void Shake(RectTransform rt, float amount)
