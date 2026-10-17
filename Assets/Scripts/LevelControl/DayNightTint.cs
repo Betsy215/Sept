@@ -54,7 +54,27 @@ public class DayNightTint : MonoBehaviour
             return;
         }
 
-        BuildSky(bg);
+        // Chapter 2 (16 October): the night is a painted picture of the beach that fades in over the day one;
+        // no moon and stars of our own then
+        var nightArt = Chapter.Art<Sprite>(SessionManager.CurrentChapter, "bg_night");
+        if (nightArt != null) BuildNightPicture(bg, nightArt); else BuildSky(bg);
+    }
+
+    private Image nightPicture;
+
+    private void BuildNightPicture(Transform bg, Sprite nightArt)
+    {
+        var src = (RectTransform)bg;
+        var go = new GameObject("NightPicture", typeof(RectTransform), typeof(Image));
+        go.transform.SetParent(bg.parent, false);
+        go.transform.SetSiblingIndex(bg.GetSiblingIndex() + 1);
+        var rt = (RectTransform)go.transform;
+        rt.anchorMin = src.anchorMin; rt.anchorMax = src.anchorMax; rt.pivot = src.pivot;
+        rt.anchoredPosition = src.anchoredPosition; rt.sizeDelta = src.sizeDelta; rt.localScale = src.localScale;
+        nightPicture = go.GetComponent<Image>();
+        nightPicture.sprite = nightArt; nightPicture.preserveAspect = background.preserveAspect;
+        nightPicture.color = new Color(1f, 1f, 1f, 0f);
+        nightPicture.raycastTarget = false;
     }
 
     private void Update()
@@ -64,6 +84,13 @@ public class DayNightTint : MonoBehaviour
         var wanted = WantedStage();
         stage = Mathf.MoveTowards(stage, wanted, Time.deltaTime / FadeSeconds);
 
+        if (nightPicture != null)
+        {
+            // the painted night fades in: half way at dusk, fully at night; the day picture under it is only lightly tinted
+            nightPicture.color = new Color(1f, 1f, 1f, stage <= 1f ? 0.5f * stage : 0.5f + 0.5f * (stage - 1f));
+            background.color = Color.Lerp(DayColor, new Color(0.8f, 0.8f, 0.9f), Mathf.Clamp01(stage));
+        }
+        else
         background.color = stage <= 1f
             ? Color.Lerp(DayColor, DuskColor, stage)
             : Color.Lerp(DuskColor, NightColor, stage - 1f);

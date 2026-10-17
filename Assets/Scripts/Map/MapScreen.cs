@@ -18,6 +18,8 @@ public class MapScreen : MonoBehaviour
     public const string SceneName = "Map";
     public const int ChapterDays = 16;
     public static bool CameFromDay;
+    /// The page shown (0 = chapter 1); chosen from today's chapter when the scene opens, moved by the arrows
+    private int page;
 
     public Sprite truckSprite, boardSprite, starSprite, darkStarSprite, homeSprite;
 
@@ -30,6 +32,14 @@ public class MapScreen : MonoBehaviour
         new Vector2(250, 1530), new Vector2(165, 1430), new Vector2(205, 1315), new Vector2(300, 1275)
     };
 
+    // Chapter 2's constellation (16 October: Cancer, the crab, until the owner picks; Store/chapter2/map/map_ideas.py),
+    // already in the 1080x1920 design space, drawn without the chapter 1 enlargement
+    private static readonly Vector2[] StarsCh2 =
+    {
+        new Vector2(300, 1480), new Vector2(390, 1380), new Vector2(470, 1260), new Vector2(520, 1130), new Vector2(560, 1000), new Vector2(600, 880), new Vector2(660, 770), new Vector2(760, 700), new Vector2(860, 650), new Vector2(760, 560), new Vector2(650, 520), new Vector2(560, 450), new Vector2(480, 560), new Vector2(420, 680), new Vector2(360, 800), new Vector2(300, 920)
+    };
+    private static Vector2[] StarsOf(int page) => page == 0 ? Stars : StarsCh2;
+
     private RectTransform canvasRect;
     private TMP_FontAsset font;
     private GameObject popup;
@@ -39,6 +49,17 @@ public class MapScreen : MonoBehaviour
     {
         Time.timeScale = 1f;
         font = Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF");
+        var sm0 = SessionManager.Instance;
+        var done0 = sm0 != null ? sm0.GetLevelsCompleted() : 0;
+        page = Mathf.Clamp(done0 / ChapterDays, 0, Chapter.Count - 1);   // the page with today's day
+        Build();
+    }
+
+    private void ShowPage(int p)
+    {
+        if (popup != null || leaving) return;
+        page = Mathf.Clamp(p, 0, Chapter.Count - 1);
+        if (canvasRect != null) Destroy(canvasRect.gameObject);
         Build();
     }
 
@@ -47,9 +68,9 @@ public class MapScreen : MonoBehaviour
     // points above are the original 10 October layout
     private const float MapScale = 1.15f;
     private static readonly Vector2 MapCentre = new Vector2(565f, 982f);
-    private static Vector2 P(Vector2 design)
+    private Vector2 P(Vector2 design)
     {
-        var d = MapCentre + (design - MapCentre) * MapScale;
+        var d = page == 0 ? MapCentre + (design - MapCentre) * MapScale : design;
         return new Vector2(d.x - 540f, 960f - d.y);
     }
 
@@ -64,15 +85,18 @@ public class MapScreen : MonoBehaviour
         scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand; // never smaller than 1080 x 1920 in either axis: on an iPad the title and the coins pill stayed clear of the days (review, 12 October)
         canvasRect = go.GetComponent<RectTransform>();
 
-        // Background: the night shop, covering the screen
-        var bg = NewImage("Background", canvasRect, Load("bg_ch1"));
+        // Background: the night shop (chapter 1) or the night beach (chapter 2), covering the screen
+        var bg = NewImage("Background", canvasRect, Load("bg_ch" + (page + 1)) ?? Load("bg_ch1"));
         bg.rectTransform.anchorMin = bg.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         var fit = bg.gameObject.AddComponent<AspectRatioFitter>();
         fit.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
         fit.aspectRatio = bg.sprite != null ? bg.sprite.rect.width / bg.sprite.rect.height : 0.55f;
 
         var sm = SessionManager.Instance;
-        var completed = sm != null ? sm.GetLevelsCompleted() : 0;
+        var Stars = StarsOf(page);
+        var first = page * ChapterDays;                           // this page's first day index
+        var completed = Mathf.Clamp((sm != null ? sm.GetLevelsCompleted() : 0) - first, 0, ChapterDays);   // days done on this page
+        var todayHere = sm == null || (sm.GetLevelsCompleted() / ChapterDays) == page;   // today's day is on this page
         var today = Mathf.Min(completed, ChapterDays - 1);      // the next day to play
         var allDone = completed >= ChapterDays;
 
@@ -97,7 +121,7 @@ public class MapScreen : MonoBehaviour
             var isToday = !allDone && i == today;
             var pos = P(Stars[i]);
             var size = isToday ? 104f : 84f;
-            var dayStars = played && sm != null ? sm.GetLevelStars(i) : 0;
+            var dayStars = played && sm != null ? sm.GetLevelStars(first + i) : 0;
             if (played && dayStars >= 3)
             {
                 // Three stars: the day lights up like a star, a warm glow pulsing behind the circle (no yellow circle)
@@ -129,7 +153,7 @@ public class MapScreen : MonoBehaviour
             }
             if (played || isToday)
             {
-                var day = i;
+                var day = first + i;
                 var btn = dot.gameObject.AddComponent<Button>();
                 btn.transition = Selectable.Transition.None;
                 btn.onClick.AddListener(() => OpenDay(day));
@@ -137,8 +161,8 @@ public class MapScreen : MonoBehaviour
             else dot.raycastTarget = false;
         }
 
-        // The truck beside today's star (beside day 16 once the chapter is done)
-        if (truckSprite != null)
+        // The truck beside today's star (beside day 16 once the chapter is done); on a page ahead of today there is no truck
+        if (truckSprite != null && (todayHere || allDone))
         {
             var at = P(Stars[allDone ? ChapterDays - 1 : today]);
             var truck = NewImage("Truck", canvasRect, truckSprite);
@@ -152,20 +176,31 @@ public class MapScreen : MonoBehaviour
         }
 
         // Title, one line
-        var title = NewImage("Title", canvasRect, Load("title_ch1"));
+        var title = NewImage("Title", canvasRect, Load("title_ch" + (page + 1)) ?? Load("title_ch1"));
         title.rectTransform.anchorMin = title.rectTransform.anchorMax = new Vector2(0.5f, 1f);
         title.rectTransform.pivot = new Vector2(0.5f, 1f);
         title.rectTransform.anchoredPosition = new Vector2(0f, -170f);   // under the Dynamic Island (owner, 13 October: the banner was covered)
         title.rectTransform.sizeDelta = new Vector2(980f, 140f);
         title.raycastTarget = false;
 
-        // Chapter 2: the right arrow, locked
-        var arrow = NewImage("NextChapterLocked", canvasRect, Load("arrow_right_locked"));
+        // The next chapter's arrow: locked while there is no next chapter to show, a button once there is
+        var nextOpen = page + 1 < Chapter.Count;
+        var arrow = NewImage(nextOpen ? "NextChapter" : "NextChapterLocked", canvasRect, Load(nextOpen ? "arrow_right" : "arrow_right_locked"));
         arrow.rectTransform.anchorMin = arrow.rectTransform.anchorMax = new Vector2(1f, 0.5f);
         arrow.rectTransform.pivot = new Vector2(1f, 0.5f);
         arrow.rectTransform.anchoredPosition = new Vector2(10f, -260f);
         arrow.SetNativeSize();
-        arrow.raycastTarget = false;
+        arrow.raycastTarget = nextOpen;
+        if (nextOpen) { var ab = arrow.gameObject.AddComponent<Button>(); ab.transition = Selectable.Transition.None; ab.onClick.AddListener(() => ShowPage(page + 1)); }
+        if (page > 0)
+        {
+            var back = NewImage("PreviousChapter", canvasRect, Load("arrow_left"));
+            back.rectTransform.anchorMin = back.rectTransform.anchorMax = new Vector2(0f, 0.5f);
+            back.rectTransform.pivot = new Vector2(0f, 0.5f);
+            back.rectTransform.anchoredPosition = new Vector2(-10f, -260f);
+            back.SetNativeSize();
+            var bb = back.gameObject.AddComponent<Button>(); bb.transition = Selectable.Transition.None; bb.onClick.AddListener(() => ShowPage(page - 1));
+        }
 
         // Coins and home, along the bottom
         var pill = NewImage("Coins", canvasRect, Load("pill"));

@@ -546,6 +546,14 @@ public class LevelManager : MonoBehaviour
         if (currentLevelData != null && backgroundRenderer != null)
             if (currentLevelData.backgroundSprite != null)
                 backgroundRenderer.sprite = currentLevelData.backgroundSprite;
+        // Chapter art (16 October): chapter 2 days show the beach behind the table (Resources/Chapter2/bg_day); chapter 1 keeps the scene's own
+        var dayArt = Chapter.Art<Sprite>(Chapter.Of(currentLevelIndex), "bg_day");
+        if (dayArt != null)
+        {
+            var canvas = GameObject.Find("Canvas"); var bg = canvas != null ? canvas.transform.Find("bg") : null;
+            var img = bg != null ? bg.GetComponent<Image>() : null;
+            if (img != null) img.sprite = dayArt;
+        }
     }
 
     private void Update()

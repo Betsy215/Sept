@@ -43,6 +43,10 @@ public class ShopManager : MonoBehaviour
         SetupButtonListeners();
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayShopMusic();
+        // Chapter 2 (16 October): the shop in front of the beach (Resources/Chapter2/shop_bg, the owner's pick)
+        var shopArt = Chapter.Art<Sprite>(SessionManager.CurrentChapter, "shop_bg");
+        var shopBg = shopArt != null ? GameObject.Find("bg") : null;
+        if (shopBg != null && shopBg.GetComponent<Image>() != null) shopBg.GetComponent<Image>().sprite = shopArt;
         // cards of foods held back from this release are not shown (Cookies, 13 October)
         foreach (var card in FindObjectsOfType<ShopItemController>(true))
             if (IsHeldBackCard(card)) card.gameObject.SetActive(false);

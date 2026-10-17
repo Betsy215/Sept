@@ -68,6 +68,10 @@ public class TableLayer : MonoBehaviour
             return;
         }
 
+        // Chapter 2 (16 October): the beach cloth (Resources/Chapter2/cloth, the same size and pivot as the picnic one)
+        var cloth = Chapter.Art<Sprite>(SessionManager.CurrentChapter, "cloth");
+        if (cloth != null) tableClothSprite.sprite = cloth;
+
         // Store initial values
         initialTableScale = tableClothSprite.transform.localScale;
         initialTablePosition = tableClothSprite.transform.position;
