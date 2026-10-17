@@ -140,3 +140,4 @@ From the 7 to 8 October review (details in `Docs/systems`) and the 13 October pl
 - The autoplay driver cannot build cones: read `OrderSystem.GetCurrentOrderTypesWithVariants()` and call `IceCreamStation.OnTap` (holder, sections by letter, cone).
 - Ice cream pays 35 flat (`ScoreManager.itemPoints`); per-scoop pay is the fairer option. No own scoop/serve sound yet.
 - The owner's "use it in the kitchen" could mean the station stands in the kitchen; built on the table (the 16 October design), to confirm.
+- Coconut palm (17 October): the crown behind the coconuts is a soft green fill where the painted coconuts were erased (`Resources/Chapter2/palm.png`); a painted frond centre would be nicer (ChatGPT list). The four coconuts are one lobe set four times; a drawn bunch would be nicer too.
