@@ -616,6 +616,8 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.text = string.Join("\n", lines);
             popupItemInfo.color = Color.white;
             popupItemInfo.richText = true;
+            popupItemInfo.fontSize = 64f; popupItemInfo.alignment = TextAlignmentOptions.Top;
+            popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -150f); popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 420f);   // under the picture, above the note and the buttons
             var note = EnsureNoteLabel(chalk);
             if (note != null) { note.text = item.specialNote ?? ""; note.gameObject.SetActive(!string.IsNullOrWhiteSpace(item.specialNote)); }
         }
@@ -641,11 +643,11 @@ public class ShopManager : MonoBehaviour
         go.transform.SetParent(popupItemInfo.transform.parent, false);
         var rt = (RectTransform)go.transform; var src = popupItemInfo.rectTransform;
         rt.anchorMin = src.anchorMin; rt.anchorMax = src.anchorMax; rt.pivot = src.pivot;
-        rt.sizeDelta = new Vector2(src.sizeDelta.x, 160f);
-        rt.anchoredPosition = src.anchoredPosition + new Vector2(0f, -src.sizeDelta.y / 2f - 60f);
+        rt.sizeDelta = new Vector2(880f, 130f);
+        rt.anchoredPosition = new Vector2(0f, -440f);                       // between the description and the buttons (buttons' top is at -519)
         noteLabel = go.GetComponent<TextMeshProUGUI>();
         if (chalk != null) noteLabel.font = chalk; else noteLabel.font = popupItemInfo.font;
-        noteLabel.fontSize = popupItemInfo.fontSize * 0.72f; noteLabel.alignment = TextAlignmentOptions.Top;
+        noteLabel.fontSize = 42f; noteLabel.alignment = TextAlignmentOptions.Top;
         noteLabel.color = new Color(1f, 0.93f, 0.67f); noteLabel.enableWordWrapping = true; noteLabel.raycastTarget = false;
         return noteLabel;
     }

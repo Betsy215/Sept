@@ -54,9 +54,9 @@ public static class FixedStation
         var go = GameObject.Find("FixedStation"); if (go == null) go = new GameObject("FixedStation");
         var r = go.GetComponent<SpriteRenderer>(); if (r == null) r = go.AddComponent<SpriteRenderer>();   // never ?? on a Unity object: a missing component is not C# null
         r.sprite = sprite; r.sortingLayerName = "FoodItems"; r.sortingOrder = -1;
-        var width = (right - left) + 0.5f; var scale = width / sprite.bounds.size.x;
-        go.transform.localScale = Vector3.one * scale;
-        var h = sprite.bounds.size.y * scale;
-        go.transform.position = new Vector3((left + right) / 2f, floorY + h * 0.30f, 0.06f);   // the tray's top edge sits behind the objects' feet
+        var width = (right - left) + 0.3f; var scale = width / sprite.bounds.size.x;
+        go.transform.localScale = new Vector3(scale, scale * 0.62f, 1f);                       // a flat tray, not a board
+        var h = sprite.bounds.size.y * scale * 0.62f;
+        go.transform.position = new Vector3((left + right) / 2f, floorY + h * 0.36f, 0.06f);   // the tray's top edge sits behind the objects' feet
     }
 }
