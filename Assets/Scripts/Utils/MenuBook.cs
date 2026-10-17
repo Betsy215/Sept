@@ -442,7 +442,7 @@ public class MenuBook : MonoBehaviour
                 var col = i % 3; var row = i / 3;
                 var x = (col - 1) * 255f + (float)(rng.NextDouble() * 40 - 20);
                 var y = 245f - row * 250f + (float)(rng.NextDouble() * 30 - 15);
-                var rot = (float)(rng.NextDouble() * 18 - 9);
+                var rot = (float)(rng.NextDouble() * 8 - 4);   // a small tilt only; the sprites are drawn straight (owner, 16 October)
                 var st = MakeSticker(food, board, StickerSize);
                 if (sm.TryGetMenuStickerSpot(food, out var spot)) { x = spot.x; y = spot.y; }   // where the player left it
                 st.anchoredPosition = new Vector2(x, y); st.localRotation = Quaternion.Euler(0, 0, rot);
