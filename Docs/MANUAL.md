@@ -219,6 +219,9 @@ plain `python3` has no numpy. Make a new venv if the scratchpad is gone.
   (`ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO`, about 10 minutes), upload with `-exportArchive` and
   `Builds/archives/exportOptions-upload.plist`; poll `GET /v1/builds?filter[app]=6755611355&sort=-uploadedDate`
   until VALID (5 to 20 minutes). Full steps: `Docs/ios-testing-and-release.md`. Reopen the editor afterwards.
+  Editor open, or batchmode without a licence (18 October: the Hub's licensing client needs a Mac admin password once):
+  export from inside the editor with `Docs/tools/build_in_editor.cs` through the bridge (a `unity_mcp.py` copy with
+  `timeout=2400`; the call blocks about 30 s for an incremental export), then the same archive and upload.
 - **API:** `python3 Docs/tools/asc_token.py` gives a 15-minute JWT. `Docs/tools/asc_fill.py texts|build|screenshots|
   preview IPHONE_67|status` fills a version (ids, `BUILD` and asset paths at the top). Create a version:
   `POST /v1/appStoreVersions` (platform IOS, versionString, releaseType MANUAL, app). Submit: `POST /v1/reviewSubmissions`,
