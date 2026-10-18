@@ -643,10 +643,11 @@ public class ShopManager : MonoBehaviour
             if (chalk != null) popupItemInfo.font = chalk;
             var lines = (item.popupInfoText ?? "").Split('\n');
             if (lines.Length > 0 && lines[0].TrimStart().StartsWith("$")) lines[0] = "<color=#9FD2FF>" + lines[0] + "</color>";
-            popupItemInfo.text = string.Join("\n", lines);
+            var shown = DisplayName(item);                                                                    // the card's name on top (owner, 18 October: "why is it a big eater instead of chef")
+            popupItemInfo.text = (shown != null ? "<size=70>" + shown + "</size>\n" : "") + string.Join("\n", lines);
             popupItemInfo.color = Color.white;
             popupItemInfo.richText = true;
-            popupItemInfo.fontSize = 68f; popupItemInfo.alignment = TextAlignmentOptions.Center;
+            popupItemInfo.fontSize = 60f; popupItemInfo.alignment = TextAlignmentOptions.Center;                        // four lines now: name, price, two of description (18 October)
             popupItemInfo.fontStyle = FontStyles.Bold;
             popupItemInfo.rectTransform.anchorMin = popupItemInfo.rectTransform.anchorMax = new Vector2(0.5f, 0.5f); popupItemInfo.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(0f, 380f);   // dead centre, like the texts (owner, 18 October)
@@ -658,11 +659,11 @@ public class ShopManager : MonoBehaviour
             // fixed places (owner, 16 October): the price and a two-line description in one label, the one-line note
             // under it; every card's text was cut to fit, so nothing is measured and nothing can overlap
             var shift = 0f;
-            if (popupItemIcon != null) shift = Mathf.Clamp(190f - (popupItemIcon.rectTransform.anchoredPosition.y - popupItemIcon.rectTransform.sizeDelta.y / 2f), 0f, 60f);   // tall pictures push the block down a little
+            if (popupItemIcon != null) shift = Mathf.Clamp(190f - (popupItemIcon.rectTransform.anchoredPosition.y - popupItemIcon.rectTransform.sizeDelta.y / 2f), 0f, 40f);   // tall pictures push the block down a little
             popupItemInfo.alignment = TextAlignmentOptions.Top;
-            popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 330f);
-            popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -5f - shift);          // spans about +160 to -170
-            if (hasNote) { note.fontSize = 50f; note.rectTransform.sizeDelta = new Vector2(900f, 140f); note.rectTransform.anchoredPosition = new Vector2(0f, -355f - shift); }   // up to two lines (Chef, Yoga coach: 18 October)
+            popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 420f);
+            popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -50f - shift);         // spans about +160 to -260
+            if (hasNote) { note.fontSize = 46f; note.rectTransform.sizeDelta = new Vector2(900f, 130f); note.rectTransform.anchoredPosition = new Vector2(0f, -430f - shift * 0.5f); }   // up to two lines (Chef, Yoga coach: 18 October)
         }
 
         if (confirmPurchaseButton != null)
@@ -674,6 +675,19 @@ public class ShopManager : MonoBehaviour
 
         purchaseConfirmationPopup.transform.localScale = Vector3.one * PopupScale;   // a little smaller than the screen, room left and right (owner, 16 October)
         purchaseConfirmationPopup.SetActive(true);
+    }
+
+    /// The name shown on the popup's first line (the card keys stay as they are; the two Upgrade cards differ by object name)
+    private static readonly Dictionary<string, string> popupNames = new Dictionary<string, string> {
+        { "Yoga", "Yoga coach" }, { "PotFlowers", "Flower pot" }, { "PotGreen", "Green pot" }, { "IceCream", "Ice cream" },
+        { "CoffeeMachineUpgrade", "Coffee machine" }, { "CoffeeUpgrade", "Extra cup" } };
+    private static string DisplayName(ShopItemController item)
+    {
+        if (item == null) return null;
+        if (popupNames.TryGetValue(item.gameObject.name, out var byObject)) return byObject;
+        var key = item.itemName ?? "";
+        if (popupNames.TryGetValue(key, out var byKey)) return byKey;
+        return key.Length > 0 ? key : null;
     }
 
     private TextMeshProUGUI noteLabel;

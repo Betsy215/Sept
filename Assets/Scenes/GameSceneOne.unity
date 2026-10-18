@@ -5400,32 +5400,32 @@ MonoBehaviour:
   holderSprite: {fileID: 21300000, guid: e019150ef05a54d21af562704ed30cb7, type: 3}
   sectionRects:
   - serializedVersion: 2
-    x: 0.0955
-    y: 0.5446
-    width: 0.3528
-    height: 0.258
+    x: 0.1848
+    y: 0.5429
+    width: 0.2749
+    height: 0.2482
   - serializedVersion: 2
-    x: 0.4032
-    y: 0.6706
-    width: 0.3015
-    height: 0.1962
+    x: 0.4246
+    y: 0.6641
+    width: 0.235
+    height: 0.1887
   - serializedVersion: 2
-    x: 0.4828
-    y: 0.4732
-    width: 0.3634
-    height: 0.2699
+    x: 0.4866
+    y: 0.4742
+    width: 0.2832
+    height: 0.2596
   - serializedVersion: 2
-    x: 0.221
-    y: 0.3662
-    width: 0.3316
-    height: 0.2866
+    x: 0.2826
+    y: 0.3713
+    width: 0.2584
+    height: 0.2757
   holderRect:
     serializedVersion: 2
-    x: 0.8276
-    y: 0.0369
-    width: 0.1724
-    height: 0.5101
-  buildPoint: {x: 0.42, y: 1.12}
+    x: 0.7553
+    y: 0.0546
+    width: 0.1344
+    height: 0.4906
+  buildPoint: {x: 0.4377, y: 1.0963}
   scoopStep: 0.62
   firstScoopDrop: 0.22
   scoopSound: {fileID: 0}
