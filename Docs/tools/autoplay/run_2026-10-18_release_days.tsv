@@ -1,0 +1,16 @@
+0	ST|GameSceneOne|lvl 1|money 242.83|score 143|stars 3|done 1|panel True	{"idle": 10, "served": 8, "brew": 12, "done": 1}
+1	ST|GameSceneOne|lvl 2|money 451.66|score 219|stars 3|done 2|panel True	{"idle": 12, "served": 10, "brew": 8, "done": 1}
+2	ST|GameSceneOne|lvl 3|money 436.49|score 265|stars 3|done 3|panel True	{"idle": 12, "served": 12, "brew": 15, "done": 1}
+3	ST|GameSceneOne|lvl 4|money 1083.32|score 547|stars 3|done 4|panel True	{"idle": 11, "served": 19, "refill": 1, "brew": 3, "done": 1}
+4	ST|GameSceneOne|lvl 5|money 650.32|score 267|stars 2|done 5|panel True	{"idle": 12, "served": 13, "brew": 13, "refill": 1, "done": 1}
+5	ST|GameSceneOne|lvl 6|money 1081.32|score 431|stars 2|done 6|panel True	{"idle": 10, "served": 17, "brew": 18, "refill": 1, "done": 1}
+6	ST|GameSceneOne|lvl 7|money 545.32|score 464|stars 1|done 7|panel True	{"idle": 12, "served": 19, "brew": 11, "done": 1}
+7	ST|GameSceneOne|lvl 8|money 1512.32|score 867|stars 3|done 8|panel True	{"idle": 12, "served": 27, "refill": 4, "brew": 3, "done": 1}
+8	ST|GameSceneOne|lvl 9|money 1193.32|score 1081|stars 3|done 9|panel True	{"idle": 13, "served": 31, "brew": 7, "refill": 3, "done": 1}
+9	ST|GameSceneOne|lvl 10|money 2441.82|score 1369|stars 3|done 10|panel True	{"idle": 13, "served": 32, "refill": 4, "done": 1}
+10	ST|GameSceneOne|lvl 11|money 1197.23|score 855|stars 3|done 11|panel True	{"idle": 15, "served": 26, "brew": 7, "refill": 2, "done": 1}
+11	ST|GameSceneOne|lvl 12|money 1791.61|score 1174|stars 3|done 12|panel True	{"idle": 11, "served": 35, "brew": 6, "done": 1}
+12	ST|GameSceneOne|lvl 13|money 3070.77|score 1179|stars 3|done 13|panel True	{"idle": 11, "served": 37, "brew": 6, "refill": 1, "done": 1}
+13	ST|GameSceneOne|lvl 14|money 4437.86|score 1267|stars 3|done 14|panel True	{"idle": 14, "served": 36, "refill": 2, "brew": 6, "done": 1}
+14	ST|GameSceneOne|lvl 15|money 5557.44|score 1020|stars 3|done 15|panel True	{"idle": 16, "served": 30, "brew": 7, "refill": 2, "done": 1}
+15	ST|GameSceneOne|lvl 16|money 6887.44|score 1230|stars 3|done 16|panel True	{"idle": 14, "served": 38, "refill": 4, "brew": 3, "done": 1}
