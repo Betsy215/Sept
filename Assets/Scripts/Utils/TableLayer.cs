@@ -70,7 +70,16 @@ public class TableLayer : MonoBehaviour
 
         // Chapter 2 (16 October): the beach cloth (Resources/Chapter2/cloth, the same size and pivot as the picnic one)
         var cloth = Chapter.Art<Sprite>(SessionManager.CurrentChapter, "cloth");
-        if (cloth != null) tableClothSprite.sprite = cloth;
+        if (cloth != null && tableClothSprite.sprite != null && cloth != tableClothSprite.sprite)
+        {
+            // the back-edge shadow (child TableOuterShadow) is placed in the scene for the picnic cloth's top edge;
+            // a taller cloth would leave it floating as a dark line across the stripes (owner, 18 October)
+            var oldTop = tableClothSprite.sprite.bounds.max.y;
+            tableClothSprite.sprite = cloth;
+            var edge = tableClothSprite.transform.Find("TableOuterShadow");
+            if (edge != null) edge.localPosition += new Vector3(0f, cloth.bounds.max.y - oldTop, 0f);
+        }
+        else if (cloth != null) tableClothSprite.sprite = cloth;
 
         // Store initial values
         initialTableScale = tableClothSprite.transform.localScale;
