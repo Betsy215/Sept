@@ -72,6 +72,8 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     // Collision detection
     private float itemRadius;
+    /// The drag system's own collision radius for this item (read by FixedStation to keep things off the station)
+    public float ItemRadius => itemRadius;
     private Coroutine overlapCheckCoroutine;
     private static readonly WaitForSeconds OverlapCheckInterval = new(0.1f); // no per-tick allocation
 

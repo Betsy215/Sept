@@ -99,6 +99,7 @@ public class GamePhaseManager : MonoBehaviour
 
         LoadSavedFoodPositions();
         FixedStation.Place(tableLayer, allFoodItems);   // the chapter's fixed food on its station, bottom left (owner, 16 October)
+        FixedStation.PushOthersOff(tableLayer, allFoodItems);   // nothing may sit on the station (owner, 18 October)
         EnableArrangementMode();
         DisableGameplaySystems();
         arrangmentUI.gameObject.SetActive(true);
