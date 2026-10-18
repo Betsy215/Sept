@@ -647,7 +647,7 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.text = (shown != null ? shown + "\n" : "") + string.Join("\n", lines);
             popupItemInfo.color = Color.white;
             popupItemInfo.richText = true;
-            popupItemInfo.fontSize = 70f; popupItemInfo.alignment = TextAlignmentOptions.Center;                        // name, price, description all one size (owner, 18 October)
+            popupItemInfo.fontSize = 70f; popupItemInfo.lineSpacing = -18f; popupItemInfo.alignment = TextAlignmentOptions.Center;   // one size, tighter lines (owner, 18 October)
             popupItemInfo.fontStyle = FontStyles.Bold;
             popupItemInfo.rectTransform.anchorMin = popupItemInfo.rectTransform.anchorMax = new Vector2(0.5f, 0.5f); popupItemInfo.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(0f, 380f);   // dead centre, like the texts (owner, 18 October)
@@ -663,7 +663,7 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.alignment = TextAlignmentOptions.Top;
             popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 420f);
             popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -50f - shift);         // spans about +160 to -260
-            if (hasNote) { note.fontSize = 66f; note.rectTransform.sizeDelta = new Vector2(1000f, 200f); note.rectTransform.anchoredPosition = new Vector2(0f, -360f - shift * 0.5f); }   // up to two lines (Chef, Yoga coach: 18 October)
+            if (hasNote) { note.fontSize = 66f; note.lineSpacing = -18f; note.rectTransform.sizeDelta = new Vector2(1000f, 200f); note.rectTransform.anchoredPosition = new Vector2(0f, -405f - shift * 0.5f); }   // a clear gap under the description   // up to two lines (Chef, Yoga coach: 18 October)
         }
 
         if (confirmPurchaseButton != null)
