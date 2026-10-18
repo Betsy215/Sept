@@ -142,3 +142,5 @@ From the 7 to 8 October review (details in `Docs/systems`) and the 13 October pl
 - The owner's "use it in the kitchen" could mean the station stands in the kitchen; built on the table (the 16 October design), to confirm.
 - Coconut palm (17 October): the crown behind the coconuts is a soft green fill where the painted coconuts were erased (`Resources/Chapter2/palm.png`); a painted frond centre would be nicer (ChatGPT list). The four coconuts are one lobe set four times; a drawn bunch would be nicer too.
 - Shop item: a clock (owner, 17 October backlog) on the table's top edge with the other fixed things (truck button, hen, pots); it shows the day's time so the player knows when the store closes. Not started.
+- Ice cream wells (18 October): the empty well is still a flat steel paint (`cut_station.py` interior()); the sinking levels (`levels_redraw.py`) are the owner's direction.
+- Coffee tray (18 October): redrawn at the 40-degree view (`Store/artkit/coffee_station40.py`, old flat one kept as `coffee_station_flat_v1.png`); the machine and cups stand at 0.34 of the tray's height. Verify in play.
