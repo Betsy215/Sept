@@ -74,10 +74,17 @@ public class TableLayer : MonoBehaviour
         {
             // the back-edge shadow (child TableOuterShadow) is placed in the scene for the picnic cloth's top edge;
             // a taller cloth would leave it floating as a dark line across the stripes (owner, 18 October)
-            var oldTop = tableClothSprite.sprite.bounds.max.y;
+            var oldBounds = tableClothSprite.sprite.bounds;
             tableClothSprite.sprite = cloth;
             var edge = tableClothSprite.transform.Find("TableOuterShadow");
-            if (edge != null) edge.localPosition += new Vector3(0f, cloth.bounds.max.y - oldTop, 0f);
+            if (edge != null)
+            {
+                edge.localPosition += new Vector3(0f, cloth.bounds.max.y - oldBounds.max.y, 0f);
+                // the cloth transform is scaled to the screen from the sprite's size, so a bigger sprite would shrink the
+                // child shadow: undo that, it keeps the length and thickness it has on the picnic cloth
+                var ls = edge.localScale;
+                edge.localScale = new Vector3(ls.x * oldBounds.size.x / cloth.bounds.size.x, ls.y * oldBounds.size.y / cloth.bounds.size.y, ls.z);
+            }
         }
         else if (cloth != null) tableClothSprite.sprite = cloth;
 
