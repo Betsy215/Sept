@@ -9,7 +9,7 @@ using UnityEngine;
 public static class Chapter
 {
     public const int Days = MapScreen.ChapterDays;
-    public static int Count = 1;                   // 2 when every chapter 2 piece is in (plan step 13); a field so an editor recipe can flip it for a chapter 2 test
+    public static int Count = 2;                   // chapter 2 is on since 18 October 2026 (the owner: release with chapter 2); a field so a recipe can still flip it
     public static int TotalDays => Days * Count;
 
     /// Chapter (1-based) of a day index (0-based).

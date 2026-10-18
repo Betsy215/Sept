@@ -28,7 +28,8 @@ def console(tag):
 SPEED = float(sys.argv[1]) if len(sys.argv) > 1 else 1.5
 STEP = float(sys.argv[2]) if len(sys.argv) > 2 else 1.0
 U.call("manage_editor", {"action": "stop"}); time.sleep(2)
-ex(open("/tmp/gv_Store1320.cs").read())
+import os
+if os.path.exists("/tmp/gv_Store1320.cs"): ex(open("/tmp/gv_Store1320.cs").read())
 U.call("read_console", {"action": "clear"})
 U.call("manage_editor", {"action": "play"}); time.sleep(6)
 log("FRESH", exf("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/fresh.cs"))
@@ -60,7 +61,7 @@ for day in range(0, 16):
         if r == "T|none": break
         if r.startswith("T|tapped"): log("  hint:", r)
         time.sleep(1.0)
-    log(ex(open("/tmp/startday.cs").read())); time.sleep(1)
+    log(ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/startday.cs").read())); time.sleep(1)
     ex(f"UnityEngine.Time.timeScale = {SPEED}f; return \"speed\";")
     counts = {}; t0 = time.time(); last_state = 0
     while time.time() - t0 < 240:

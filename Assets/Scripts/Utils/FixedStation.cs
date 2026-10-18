@@ -66,6 +66,26 @@ public static class FixedStation
             x = right + Gap;
         }
 
+        // the player's moved spot (owner, 18 October: "save the coffee station's moved spot"): the fixed food's own saved
+        // position (UpdateFoodPositions saves every active item, the station among them) shifts the whole group, kept on the table
+        if (food != null && SessionManager.Instance != null && SessionManager.Instance.HasSavedPositions())
+        {
+            var saved = SessionManager.Instance.GetCurrentSession().savedFoodPositions.Find(p => p.foodType == fixedFood);
+            if (saved != null)
+            {
+                var shift = new Vector2(saved.x - food.transform.position.x, saved.y - food.transform.position.y);
+                var sx = Mathf.Clamp(shift.x, bounds.min.x + 0.1f - left, bounds.max.x - 0.1f - right);
+                var sy = Mathf.Clamp(shift.y, bounds.min.y + 0.1f - floorY, bounds.max.y - 0.1f - top);
+                foreach (var t in row)
+                {
+                    if (t == null) continue;
+                    var p = t.position + new Vector3(sx, sy, 0f); var d = t.GetComponent<DraggableFood>();
+                    if (d != null) d.SetRestPosition(p); else t.position = p;
+                }
+                left += sx; right += sx; floorY += sy; top += sy;
+            }
+        }
+
         // the station: a wooden tray under the row, a little wider than it, its floor at the row's floor.
         // Chapter 2's ice cream box stands on its own (owner, 17 October: no board under it); an old tray object goes
         if (fixedFood == "IceCream") { var old = GameObject.Find("FixedStation"); if (old != null) old.SetActive(false); return; }

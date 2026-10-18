@@ -76,8 +76,12 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
     public void Blend()
     {
         if (IsBlending) return;
+        // the blend's own sound (owner, 18 October): a motor whirr spinning up and down, Resources/Kitchen/blender_blend
+        if (blendSound == null) blendSound = Resources.Load<AudioClip>("Kitchen/blender_blend");
+        if (blendSound != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(blendSound);
         StartCoroutine(Run());
     }
+    private AudioClip blendSound;
 
     private IEnumerator Run()
     {
