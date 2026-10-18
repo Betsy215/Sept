@@ -161,6 +161,18 @@ public class ScoreManager : MonoBehaviour
         return points;
     }
 
+    /// Ice cream pays per scoop (owner, 18 October): the item's points times the scoops on the cone, one award
+    public float AwardItemPointsValue(string itemType, int times)
+    {
+        times = Mathf.Max(1, times);
+        var points = GetPointsForItem(itemType) * times;
+        currentScore += points;
+        currentOrderItemPoints += points;
+        if (starProgressBar != null) starProgressBar.UpdateDisplay(currentScore);
+        PlayPointsSound();
+        return points;
+    }
+
     /// Completion bonus for one order: its own points, time left and customer tip multiplier (12 October 2026)
     public void AwardOrderCompletionBonus(float remainingTime, float basepoints, float tipMultiplier)
     {

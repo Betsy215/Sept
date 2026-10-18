@@ -46,9 +46,8 @@ public static class FixedStation
         // machine x 0.44 y 0.485 w 0.77 h 0.89; cups x 0.51 y 0.53 w 0.55 h 0.29, from the png alphas, 16 October)
         var x = bounds.min.x + MarginLeft;
         var floorY = bounds.min.y + MarginBottom;        // the tray's bottom edge (its front face and shadow included)
-        var feetY = floorY + 0.16f;                       // where the objects stand; raised onto the board once the tray's size is known (18 October)
+        var feetY = floorY + 0.16f;                       // where the objects stand, inside the tray
         var left = x; var right = x; var top = feetY;
-        var placed = new System.Collections.Generic.List<(Transform t, float yOff)>();
         var row = new[] { machine != null ? machine.transform : null, food != null ? food.transform : null };
         var frac = new[] { new Vector4(0.44f, 0.485f, 0.77f, 0.89f), new Vector4(0.51f, 0.53f, 0.55f, 0.29f) };
         if (fixedFood == "IceCream") frac[1] = new Vector4(0.5f, 0.5f, 1f, 1f);          // the station box picture has no padding (17 October)
@@ -62,7 +61,6 @@ public static class FixedStation
             var dx = t.position.x - dc.x; var dy = t.position.y - dc.y;                       // the pivot's offset from the drawn centre
             var nudge = i == 1 && machine != null ? new Vector2(-0.10f, -0.06f) : Vector2.zero;   // the cups a little down and left, deeper on the tray (owner, 16 October)
             t.position = new Vector3(x + halfW + dx + nudge.x, feetY + halfH + dy + nudge.y, t.position.z);
-            placed.Add((t, halfH + dy + nudge.y));
             right = x + 2f * halfW; top = Mathf.Max(top, feetY + 2f * halfH);
             x = right + Gap;
         }
@@ -76,12 +74,9 @@ public static class FixedStation
         var r = go.GetComponent<SpriteRenderer>(); if (r == null) r = go.AddComponent<SpriteRenderer>();   // never ?? on a Unity object: a missing component is not C# null
         r.sprite = sprite; r.sortingLayerName = "FoodItems"; r.sortingOrder = -1;
         var width = (right - left) + 0.3f; var scale = width / sprite.bounds.size.x;          // hugs the machine and the cups with a little air
-        go.transform.localScale = new Vector3(scale, scale, 1f);                               // drawn at the 40-degree view (18 October): no squash
-        var h = sprite.bounds.size.y * scale;
-        go.transform.position = new Vector3((left + right) / 2f, floorY + h / 2f, 0.06f);      // the tray's bottom edge on floorY
-        // the objects stand on the board: its front edge is 0.324 of the picture up from the bottom (coffee_station40.py)
-        feetY = floorY + 0.34f * h;
-        foreach (var (t, yOff) in placed) t.position = new Vector3(t.position.x, feetY + yOff, t.position.z);
+        go.transform.localScale = new Vector3(scale, scale * 0.62f, 1f);                       // the 0.62 squash is the 40-degree foreshortening of the board (sin 40)
+        var h = sprite.bounds.size.y * scale * 0.62f;
+        go.transform.position = new Vector3((left + right) / 2f, floorY + h / 2f, 0.06f);      // the tray's bottom edge on floorY; the objects' feet inside it
         // the station moves as one: the machine is the handle, the cups and the tray follow (owner, 16 October)
         var grp = go.GetComponent<StationGroup>(); if (grp == null) grp = go.AddComponent<StationGroup>();
         if (machine != null) grp.Bind(machine.transform, food != null ? food.transform : null, go.transform);

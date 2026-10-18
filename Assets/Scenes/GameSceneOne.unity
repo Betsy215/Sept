@@ -4943,7 +4943,7 @@ MonoBehaviour:
   - itemType: Coconut
     points: 30
   - itemType: IceCream
-    points: 35
+    points: 15
   enableScorePopups: 1
   gameCanvas: {fileID: 1907019807}
   popupFont: {fileID: 11400000, guid: 0361640937a4447a09258110a454af31, type: 2}
