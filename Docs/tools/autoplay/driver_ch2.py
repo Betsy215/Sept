@@ -32,7 +32,7 @@ import os
 if os.path.exists("/tmp/gv_Store1320.cs"): ex(open("/tmp/gv_Store1320.cs").read())
 U.call("read_console", {"action": "clear"})
 U.call("manage_editor", {"action": "play"}); time.sleep(6)
-log("CH2 SESSION", exf("/tmp/ap/ch2_session.cs"))
+log("CH2 SESSION", exf("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/ch2_session.cs"))
 time.sleep(8)
 console("ch2 start")
 for day in range(16, 32):
