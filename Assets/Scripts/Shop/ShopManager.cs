@@ -644,10 +644,10 @@ public class ShopManager : MonoBehaviour
             var lines = (item.popupInfoText ?? "").Split('\n');
             if (lines.Length > 0 && lines[0].TrimStart().StartsWith("$")) lines[0] = "<color=#9FD2FF>" + lines[0] + "</color>";
             var shown = DisplayName(item);                                                                    // the card's name on top (owner, 18 October: "why is it a big eater instead of chef")
-            popupItemInfo.text = (shown != null ? "<size=70>" + shown + "</size>\n" : "") + string.Join("\n", lines);
+            popupItemInfo.text = (shown != null ? shown + "\n" : "") + string.Join("\n", lines);
             popupItemInfo.color = Color.white;
             popupItemInfo.richText = true;
-            popupItemInfo.fontSize = 60f; popupItemInfo.alignment = TextAlignmentOptions.Center;                        // four lines now: name, price, two of description (18 October)
+            popupItemInfo.fontSize = 70f; popupItemInfo.alignment = TextAlignmentOptions.Center;                        // name, price, description all one size (owner, 18 October)
             popupItemInfo.fontStyle = FontStyles.Bold;
             popupItemInfo.rectTransform.anchorMin = popupItemInfo.rectTransform.anchorMax = new Vector2(0.5f, 0.5f); popupItemInfo.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(0f, 380f);   // dead centre, like the texts (owner, 18 October)
@@ -663,7 +663,7 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.alignment = TextAlignmentOptions.Top;
             popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 420f);
             popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -50f - shift);         // spans about +160 to -260
-            if (hasNote) { note.fontSize = 46f; note.rectTransform.sizeDelta = new Vector2(900f, 130f); note.rectTransform.anchoredPosition = new Vector2(0f, -430f - shift * 0.5f); }   // up to two lines (Chef, Yoga coach: 18 October)
+            if (hasNote) { note.fontSize = 66f; note.rectTransform.sizeDelta = new Vector2(1000f, 200f); note.rectTransform.anchoredPosition = new Vector2(0f, -360f - shift * 0.5f); }   // up to two lines (Chef, Yoga coach: 18 October)
         }
 
         if (confirmPurchaseButton != null)
