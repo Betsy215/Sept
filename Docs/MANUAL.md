@@ -211,6 +211,8 @@ plain `python3` has no numpy. Make a new venv if the scratchpad is gone.
 - Other scripts: `daisy_sprites.py` (patience petals), `cloth_picnic.py` (cloth), `edge_soft.py` (edge shadow),
   `pots_round.py`, `money_hen.py` (fallback hen), brush engine `Store/artkit/brush` (26 brushes, Da Cookie grain).
 
+- **Table item shadows (18 October):** every table sprite carries the owner's hard navy shadow (rgb 45,45,66 at 82 %) to the lower left, light from the upper right; new sprites go through `Store/table/shadows/navy_shadows.py` (originals in `orig/`), and a padded canvas means converting any rect fractions that refer to the sprite (the ice cream station's in GameSceneOne).
+
 ## 9. Store and release
 
 - **Build:** bump `bundleVersion` / `buildNumber: iPhone:` in `ProjectSettings/ProjectSettings.asset`; close the editor;
