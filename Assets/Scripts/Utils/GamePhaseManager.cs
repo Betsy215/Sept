@@ -316,7 +316,8 @@ public class GamePhaseManager : MonoBehaviour
                     if (tableLayer != null)
                         position = tableLayer.ClampToTableBounds(position);
 
-                    item.transform.position = position;
+                    var savedDrag = item.GetComponent<DraggableFood>();
+                    if (savedDrag != null) savedDrag.SetRestPosition(position); else item.transform.position = position;   // the rest position too, or the wiggle pulls it back (18 October)
 
                     DebugLog($"Loaded saved position for {item.GetFoodType()}: ({savedPos.x:F2}, {savedPos.y:F2})");
                 }

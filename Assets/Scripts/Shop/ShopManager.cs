@@ -560,7 +560,7 @@ public class ShopManager : MonoBehaviour
         var t = scrollDownButton.transform.Find("Lock");
         if (t == null)
         {
-            var sprite = Resources.Load<Sprite>("Map/lock_small");
+            var sprite = Resources.Load<Sprite>("Map/lock_yellow");   // the coloured lock (owner, 18 October)
             if (sprite == null) return;
             var go = new GameObject("Lock", typeof(RectTransform), typeof(Image));
             go.transform.SetParent(scrollDownButton.transform, false);

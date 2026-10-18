@@ -556,6 +556,17 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         originalPosition = transform.localPosition;
     }
 
+    /// Moves the item by code and makes that its rest position, so the arrangement wiggle (which swings round
+    /// originalPosition) does not pull it back to where the scene put it (18 October: the coconut tray slid back
+    /// onto the ice cream station after being pushed off).
+    public void SetRestPosition(Vector3 world)
+    {
+        world.z = transform.position.z;
+        transform.position = world;
+        originalPosition = transform.localPosition;
+        lastValidPosition = world;
+    }
+
     private void ApplyTouchedVisuals()
     {
         if (spriteRenderer != null) spriteRenderer.color = touchedColor;

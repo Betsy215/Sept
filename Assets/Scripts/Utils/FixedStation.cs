@@ -60,7 +60,8 @@ public static class FixedStation
             var halfW = fr.z * b.size.x / 2f; var halfH = fr.w * b.size.y / 2f;
             var dx = t.position.x - dc.x; var dy = t.position.y - dc.y;                       // the pivot's offset from the drawn centre
             var nudge = i == 1 && machine != null ? new Vector2(-0.10f, -0.06f) : Vector2.zero;   // the cups a little down and left, deeper on the tray (owner, 16 October)
-            t.position = new Vector3(x + halfW + dx + nudge.x, feetY + halfH + dy + nudge.y, t.position.z);
+            var target = new Vector3(x + halfW + dx + nudge.x, feetY + halfH + dy + nudge.y, t.position.z);
+            var tdrag = t.GetComponent<DraggableFood>(); if (tdrag != null) tdrag.SetRestPosition(target); else t.position = target;
             right = x + 2f * halfW; top = Mathf.Max(top, feetY + 2f * halfH);
             x = right + Gap;
         }
@@ -112,7 +113,8 @@ public static class FixedStation
                     it.transform.position = p;
                     if (!Touches(it.transform, Radius(it), fixedParts, live, it)) { best = p; bestD = d; }
                 }
-            it.transform.position = best ?? start;
+            var dest = best ?? start; var drag = it.GetComponent<DraggableFood>();
+            if (drag != null) drag.SetRestPosition(dest); else it.transform.position = dest;
             if (best != null) Debug.Log($"FixedStation: moved {it.GetFoodType()} off the station to {best.Value}");
         }
     }
