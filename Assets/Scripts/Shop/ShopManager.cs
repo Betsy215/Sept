@@ -649,7 +649,8 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.fontSize = 68f; popupItemInfo.alignment = TextAlignmentOptions.Center;
             popupItemInfo.fontStyle = FontStyles.Bold;
             popupItemInfo.rectTransform.anchorMin = popupItemInfo.rectTransform.anchorMax = new Vector2(0.5f, 0.5f); popupItemInfo.rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(-6f, 380f);
+            if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(0f, 380f);   // dead centre, like the texts (owner, 18 October)
+            popupItemInfo.margin = Vector4.zero;                                                               // the scene's right margin pushed the texts left
             var mat = popupItemInfo.fontMaterial; if (mat != null && mat.HasProperty("_FaceDilate")) mat.SetFloat("_FaceDilate", 0.08f);
             var note = EnsureNoteLabel(chalk);
             var hasNote = note != null && !string.IsNullOrWhiteSpace(item.specialNote);
@@ -661,7 +662,7 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.alignment = TextAlignmentOptions.Top;
             popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 330f);
             popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -5f - shift);          // spans about +160 to -170
-            if (hasNote) { note.rectTransform.sizeDelta = new Vector2(940f, 90f); note.rectTransform.anchoredPosition = new Vector2(0f, -300f - shift); }
+            if (hasNote) { note.fontSize = 50f; note.rectTransform.sizeDelta = new Vector2(900f, 140f); note.rectTransform.anchoredPosition = new Vector2(0f, -355f - shift); }   // up to two lines (Chef, Yoga coach: 18 October)
         }
 
         if (confirmPurchaseButton != null)
