@@ -69,7 +69,7 @@ store page and marketing before more content. Re-read the numbers in November.
 | --- | --- | --- |
 | `Desktop/Sept/FoodTruckCafe` | Unity project and repo | yes |
 | `FoodTruckCafe/Art/kitchen_layers` | The owner's kitchen painting as 21 layer PNGs (1080 x 1920, alpha) with a README | yes |
-| `FoodTruckCafe/Docs/tools/recipes` | Every editor recipe (`*.cs` method bodies for `execute_code`) and capture shell scripts | yes |
+| `FoodTruckCafe/Docs/tools/recipes` | Every editor recipe (`*.cs` method bodies for `execute_code`) and capture shell scripts; `recipes/ap/` holds the 18 October play, session, kitchen, popup and ice cream tap recipes; `capture_s19.sh` captures every screen of both chapters plus iPad and iPhone SE (bash, about 15 minutes) | yes |
 | `FoodTruckCafe/Docs/tools/autoplay` | Full-chapter autoplay driver (`driver.py`) and its recipes; `run_2026-10-13_days.tsv` | yes |
 | `FoodTruckCafe/Captures` | Editor captures (`visual3`, `release-26.10.13`) | no (gitignored) |
 | `FoodTruckCafe/Assets/Screenshots` | Where the MCP `shot` writes | no (gitignored) |
@@ -80,10 +80,12 @@ store page and marketing before more content. Re-read the numbers in November.
 | `Desktop/Sept/Store/redesign` | Table redesign: 40-degree angle guides (`*40.py`), ChatGPT briefs `ai/<item>/` | no |
 | `Desktop/Sept/Store/characters` | Customer art: `plain` (no outline), `shadowed` (the in-game set), `orig_game` | no |
 | `Desktop/Sept/Store/chapter2` | Beach background, Shop background picks | no |
+| `Desktop/Sept/Store/handoff` | What the owner gets to repaint: `layers.py` builds `layered/` (a PSD per sprite group plus same-size PNG layers, README), copied to iCloud Drive `FoodTruckCafe art/layered`; the flat game files in `icecream/`, `coconut/`, `cookies/` mirror the iCloud folders | no |
+| `Desktop/Sept/Store/artkit/venv` | The durable Python for art scripts (numpy, pillow, scipy, opencv, pytoshop, psd-tools) | no |
 | `~/.private_keys/AuthKey_<id>.p8`, `asc.json` | App Store Connect API key, key id, issuer | never |
 
-Scratch Python with numpy, scipy, pillow, opencv: the session scratchpad venv (`.../scratchpad/venv/bin/python`);
-plain `python3` has no numpy. Make a new venv if the scratchpad is gone.
+Python with numpy, scipy, pillow, opencv, pytoshop, psd-tools: `Store/artkit/venv/bin/python` (made 19 October);
+plain `python3` has no numpy.
 
 ## 4. Doc map
 

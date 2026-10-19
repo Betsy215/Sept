@@ -1,0 +1,11 @@
+var target = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
+if (target != UnityEditor.BuildTarget.iOS) return "active target is " + target;
+if (UnityEditor.EditorApplication.isPlaying) return "still playing";
+UnityEditor.EditorApplication.delayCall += () => {
+    var path = "/Users/betzthebest/Desktop/Sept/Builds/iOS-26.10.18-1";
+    var scenes = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(System.Linq.Enumerable.Where(UnityEditor.EditorBuildSettings.scenes, s => s.enabled), s => s.path));
+    var options = new UnityEditor.BuildPlayerOptions { scenes = scenes, locationPathName = path, target = UnityEditor.BuildTarget.iOS, options = UnityEditor.BuildOptions.None };
+    var report = UnityEditor.BuildPipeline.BuildPlayer(options);
+    System.IO.File.WriteAllText("/Users/betzthebest/Desktop/Sept/Builds/export-26.10.18-1.result", report.summary.result + " " + report.summary.totalErrors + " errors " + report.summary.totalTime.TotalSeconds.ToString("F0") + " s\n");
+};
+return "build scheduled";

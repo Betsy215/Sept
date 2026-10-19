@@ -1,0 +1,12 @@
+var shop = UnityEngine.Object.FindObjectOfType<ShopManager>(); if (shop == null) return "no shop";
+var info = shop.popupItemInfo; var note = info.transform.parent.Find("PopupNote"); if (note == null) return "no note";
+var old = info.transform.parent.Find("NoteBackDemo"); if (old != null) UnityEngine.Object.DestroyImmediate(old.gameObject);
+var bytes = System.IO.File.ReadAllBytes("/Users/betzthebest/Desktop/Sept/Store/ui/popup_note/back_LETTER.png");
+var tex = new UnityEngine.Texture2D(2, 2, UnityEngine.TextureFormat.RGBA32, false); tex.LoadImage(bytes); tex.filterMode = UnityEngine.FilterMode.Bilinear;
+var sp = UnityEngine.Sprite.Create(tex, new UnityEngine.Rect(0, 0, tex.width, tex.height), new UnityEngine.Vector2(0.5f, 0.5f), 100f);
+var go = new UnityEngine.GameObject("NoteBackDemo", typeof(UnityEngine.RectTransform), typeof(UnityEngine.UI.Image)); go.transform.SetParent(info.transform.parent, false);
+go.transform.SetSiblingIndex(note.GetSiblingIndex());
+var rt = (UnityEngine.RectTransform)go.transform; var nr = (UnityEngine.RectTransform)note; rt.anchorMin = nr.anchorMin; rt.anchorMax = nr.anchorMax; rt.pivot = nr.pivot;
+rt.anchoredPosition = nr.anchoredPosition + new UnityEngine.Vector2(0f, -4f); rt.sizeDelta = new UnityEngine.Vector2(940f, 178f);
+var img = go.GetComponent<UnityEngine.UI.Image>(); img.sprite = sp; img.raycastTarget = false; img.preserveAspect = false;
+return "back LETTER";
