@@ -1,10 +1,11 @@
 using UnityEngine;
 using System.Collections;
 
-/// Plate of heart cookies (12 October 2026): the same count-to-sprite rule as Choux, 3 cookies on a plate.
+/// Plate of heart cookies (12 October 2026): the same count-to-sprite rule as Choux. Six cookies on a plate since
+/// 18 October (owner): three on the plate and three stacked on top, k0..k6; the top layer is served first.
 public class Cookies : MonoBehaviour
 {
-    [SerializeField] private Sprite[] cookiesSprites = new Sprite[4]; // index 0 = empty plate, 3 = three cookies
+    [SerializeField] private Sprite[] cookiesSprites = new Sprite[7]; // index 0 = empty plate, 6 = six cookies (3 + 3 stacked)
 
     private RefillableItem refillableItem;
     private SpriteRenderer spriteRenderer;

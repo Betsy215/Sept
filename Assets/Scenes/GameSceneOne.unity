@@ -6843,7 +6843,7 @@ SpriteRenderer:
   m_SortingLayerID: 1328505229
   m_SortingLayer: 3
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: bae750bfa85b4dcd8ea4964c7efa7fcb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c0f3a7d84e6b4b8f9a1d2e3f40506174, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -6904,7 +6904,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   enableHoldToRefill: 0
-  customMaxCount: 3
+  customMaxCount: 6
   customStartingCount: -1
   customRefillTime: 0
   refillBar: {fileID: 0}
@@ -6929,6 +6929,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: a101439079ba4050a3d831b09a031f1e, type: 3}
   - {fileID: 21300000, guid: bd5918b883494ecfac5f3afe4568f454, type: 3}
   - {fileID: 21300000, guid: bae750bfa85b4dcd8ea4964c7efa7fcb, type: 3}
+  - {fileID: 21300000, guid: c0f3a7d84e6b4b8f9a1d2e3f40506172, type: 3}
+  - {fileID: 21300000, guid: c0f3a7d84e6b4b8f9a1d2e3f40506173, type: 3}
+  - {fileID: 21300000, guid: c0f3a7d84e6b4b8f9a1d2e3f40506174, type: 3}
 --- !u!1 &1907019804
 GameObject:
   m_ObjectHideFlags: 0
