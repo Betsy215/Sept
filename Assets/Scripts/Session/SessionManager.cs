@@ -298,7 +298,11 @@ public class SessionManager : MonoBehaviour
         reason = "";
         if (IsFixedFood(foodType)) { reason = "always on the menu this chapter"; return false; }
         if (!IsFoodItemEnabled(foodType)) return true;
-        var on = 0; foreach (var f in EnabledList() ?? new List<string>()) if (IsFoodItemPurchased(f) && IsFoodInSeason(f)) on++;
+        var list = EnabledList() ?? new List<string>();
+        var on = 0; foreach (var f in list) if (IsFoodItemPurchased(f) && IsFoodInSeason(f)) on++;
+        // The chapter's fixed food counts as one of the foods on: Coffee sits in the enabled list in chapter 1, the
+        // ice cream never does in chapter 2 (no purchase), so without this chapter 2 asked for one food more (owner, 21 October).
+        if (FixedFood.TryGetValue(CurrentChapter, out var fixedFood) && !list.Contains(fixedFood) && IsFoodItemActive(fixedFood)) on++;
         if (on <= MinEnabledFoods) { reason = $"keep at least {MinEnabledFoods} on"; return false; }
         return true;
     }

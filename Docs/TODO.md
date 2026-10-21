@@ -62,7 +62,7 @@ model (Vase/Lantern/Radio, no day clock) and only worth updating if the tune nee
 ## Known issues found by the 21 October scan, not fixed (owner's call)
 
 - [ ] Chapter 2 shop still sells the coffee machine upgrade (800) although the coffee is off the table all chapter (the cup upgrade is hidden because its `upgradeFoodType` is Coffee; the machine's is CoffeeMachine, which `FoodChapter` does not list). Fix: `{ "CoffeeMachine", 1 }` in `SessionManager.FoodChapter`; check nothing else reads it through `IsFoodItemPurchased` first.
-- [ ] "Keep at least 2 on" counts differently per chapter: Coffee sits in `enabledFoodItems` (chapter 1), IceCream never does (fixed food by `IsFixedFood`), so chapter 2 needs the ice cream plus two others on. `SessionManager.CanDisableFood` could count the fixed food.
+- [x] "Keep at least 2 on" counted differently per chapter (Coffee sits in `enabledFoodItems`, IceCream never does): fixed 21 October afternoon on the owner's tick, `SessionManager.CanDisableFood` counts the chapter's fixed food when it is not in the list. Compiled offline; check in play in a chapter 2 session: with the ice cream plus two foods on, one of the two can go off.
 
 ## Later
 
