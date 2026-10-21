@@ -35,7 +35,7 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
             var session = SessionManager.Instance.GetCurrentSession();
             if (session != null)
                 // Enable continue only if player finished at least 1 level
-                canContinue = session.levelsCompleted >= 1;
+                canContinue = session.tutorialSeen || session.levelsCompleted >= 1;   // after the tutorial too (21 October)
         }
 
         // Enable/disable button

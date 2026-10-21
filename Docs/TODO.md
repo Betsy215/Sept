@@ -59,6 +59,11 @@ hand). Check run (14 October): three stars on 14 of 16 days, two on days 1 and 5
 fourth shop row, back since 14 October) are the late money sink for now; `Docs/economy_sim.py` is still the old
 model (Vase/Lantern/Radio, no day clock) and only worth updating if the tune needs more work.
 
+## Known issues found by the 21 October scan, not fixed (owner's call)
+
+- [ ] Chapter 2 shop still sells the coffee machine upgrade (800) although the coffee is off the table all chapter (the cup upgrade is hidden because its `upgradeFoodType` is Coffee; the machine's is CoffeeMachine, which `FoodChapter` does not list). Fix: `{ "CoffeeMachine", 1 }` in `SessionManager.FoodChapter`; check nothing else reads it through `IsFoodItemPurchased` first.
+- [ ] "Keep at least 2 on" counts differently per chapter: Coffee sits in `enabledFoodItems` (chapter 1), IceCream never does (fixed food by `IsFixedFood`), so chapter 2 needs the ice cream plus two others on. `SessionManager.CanDisableFood` could count the fixed food.
+
 ## Later
 
 - [ ] Rating prompt (`SKStoreReviewController` after a three-star day or day 5): not built (owner, 14 October: backlog).

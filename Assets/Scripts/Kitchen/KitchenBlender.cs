@@ -79,6 +79,9 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         // the blend's own sound (owner, 18 October): a motor whirr spinning up and down, Resources/Kitchen/blender_blend
         if (blendSound == null) blendSound = Resources.Load<AudioClip>("Kitchen/blender_blend");
         if (blendSound != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(blendSound);
+        // the blend refills every flavour of the table's ice cream station (owner, 17 October); done as the blend starts,
+        // because closing the kitchen mid-blend unloads the scene and the coroutine with it (21 October)
+        var station = FindObjectOfType<IceCreamStation>(); if (station != null) station.RefillAll();
         StartCoroutine(Run());
     }
     private AudioClip blendSound;
@@ -118,8 +121,6 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         if (contents != null) { contents.color = KitchenBlender.Rest; contents.rectTransform.localScale = Vector3.one; contents.rectTransform.anchoredPosition = Vector2.zero; }
         if (swirl != null) swirl.color = new Color(1f, 1f, 1f, 0f);
         IsBlending = false;
-        // the blend refills every flavour of the table's ice cream station (owner, 17 October)
-        var station = FindObjectOfType<IceCreamStation>(); if (station != null) station.RefillAll();
     }
 
     /// The swirl churns: a quick pulse in height and a sway, as the blades push it round

@@ -419,7 +419,7 @@ public class MenuBook : MonoBehaviour
         var foods = new List<string>();
         if (levelManager != null && levelManager.serveableItems != null)
             foreach (var item in levelManager.serveableItems)
-                if (item != null && sm.IsFoodItemPurchased(item.GetFoodType()) && !foods.Contains(item.GetFoodType()))
+                if (item != null && OwnsFood(sm, item.GetFoodType()) && !foods.Contains(item.GetFoodType()))
                     foods.Add(item.GetFoodType());
 
         var offCount = 0;
@@ -461,6 +461,11 @@ public class MenuBook : MonoBehaviour
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(carouselContent);
     }
+
+    /// Bought (or the chapter's fixed food), in season or not: IsFoodItemPurchased says no to an out-of-season food, which
+    /// hid it from the carousel instead of greying it (21 October).
+    private static bool OwnsFood(SessionManager sm, string food) =>
+        SessionManager.IsFixedFood(food) || (sm.GetCurrentSession()?.purchasedFoodItems?.Contains(food) ?? false) || (SessionManager.IsFoodInSeason(food) && sm.IsFoodItemPurchased(food));
 
     private static int StableHash(string s)
     {

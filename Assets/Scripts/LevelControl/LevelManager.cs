@@ -500,7 +500,13 @@ public class LevelManager : MonoBehaviour
     public void ReapplyServeableItems()
     {
         ApplyServeableItemSettings();
-        if (gamePhaseManager != null) gamePhaseManager.SendMessage("RefreshDraggableCache", SendMessageOptions.DontRequireReceiver);
+        if (gamePhaseManager != null)
+        {
+            gamePhaseManager.SendMessage("RefreshDraggableCache", SendMessageOptions.DontRequireReceiver);
+            // a food switched on now must be draggable now, not from tomorrow (21 October): dragging is only switched on
+            // when the arrangement starts, so a newly shown item had no drag, no wiggle and no overlap check
+            if (gamePhaseManager.GetCurrentPhase() == GamePhase.ARRANGEMENT) gamePhaseManager.SendMessage("EnableArrangementMode", SendMessageOptions.DontRequireReceiver);
+        }
         if (orderSystem != null) orderSystem.SendMessage("UpdateActiveFoodTypes", SendMessageOptions.DontRequireReceiver);
     }
 

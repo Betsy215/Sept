@@ -1,0 +1,16 @@
+0	ST|GameSceneOne|lvl 1|money 256.83|score 157|stars 3|done 1|panel True	{"idle": 15, "served": 8, "brew": 11, "done": 1}
+1	ST|GameSceneOne|lvl 2|money 595.16|score 348|stars 3|done 2|panel True	{"idle": 12, "served": 14, "brew": 7, "refill": 1, "done": 1}
+2	ST|GameSceneOne|lvl 3|money 775.16|score 460|stars 3|done 3|panel True	{"idle": 10, "served": 18, "brew": 8, "refill": 1, "done": 1}
+3	ST|GameSceneOne|lvl 4|money 696.16|score 521|stars 3|done 4|panel True	{"idle": 7, "served": 21, "brew": 4, "refill": 2, "done": 1}
+4	ST|GameSceneOne|lvl 5|money 1253.82|score 458|stars 3|done 5|panel True	{"idle": 11, "served": 17, "brew": 12, "refill": 2, "done": 1}
+5	ST|GameSceneOne|lvl 6|money 1365.82|score 1012|stars 3|done 6|panel True	{"idle": 10, "served": 24, "refill": 3, "brew": 7, "done": 1}
+6	ST|GameSceneOne|lvl 7|money 2164.82|score 699|stars 3|done 7|panel True	{"idle": 10, "served": 25, "brew": 6, "refill": 2, "done": 1}
+7	ST|GameSceneOne|lvl 8|money 1459.32|score 915|stars 3|done 8|panel True	{"idle": 12, "served": 23, "brew": 7, "refill": 2, "done": 1}
+8	ST|GameSceneOne|lvl 9|money 1139.82|score 981|stars 3|done 9|panel True	{"idle": 13, "served": 29, "brew": 8, "refill": 1, "done": 1}
+9	ST|GameSceneOne|lvl 10|money 1422.32|score 983|stars 3|done 10|panel True	{"idle": 15, "served": 27, "brew": 7, "refill": 1, "done": 1}
+10	ST|GameSceneOne|lvl 11|money 1826.07|score 984|stars 3|done 11|panel True	{"idle": 11, "served": 30, "brew": 9, "refill": 1, "done": 1}
+11	ST|GameSceneOne|lvl 12|money 2996.90|score 1071|stars 3|done 12|panel True	{"idle": 13, "served": 32, "refill": 2, "brew": 3, "done": 1}
+12	ST|GameSceneOne|lvl 13|money 4063.57|score 967|stars 3|done 13|panel True	{"idle": 13, "served": 30, "brew": 10, "refill": 2, "done": 1}
+13	ST|GameSceneOne|lvl 14|money 5598.16|score 1435|stars 3|done 14|panel True	{"idle": 12, "served": 39, "refill": 3, "brew": 3, "done": 1}
+14	ST|GameSceneOne|lvl 15|money 6805.04|score 1107|stars 3|done 15|panel True	{"idle": 13, "served": 32, "brew": 6, "refill": 2, "done": 1}
+15	ST|GameSceneOne|lvl 16|money 8080.87|score 1176|stars 3|done 16|panel True	{"idle": 16, "served": 34, "refill": 2, "brew": 6, "done": 1}

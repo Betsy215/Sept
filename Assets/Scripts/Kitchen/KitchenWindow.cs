@@ -57,6 +57,7 @@ public static class KitchenWindow
                 var ci = c.GetComponent<Image>(); ci.sprite = four; ci.preserveAspect = true; ci.raycastTarget = true;
                 var pick = c.GetComponent<CoconutInKitchen>();
                 for (var i = 1; i <= CoconutInKitchen.Full; i++) pick.states[i - 1] = Chapter.Art<Sprite>(2, "coconuts_" + i);
+                pick.Show();   // the count survives a kitchen reload; show that many, not always four (21 October)
             }
         }
 

@@ -36,7 +36,7 @@ public class CoconutInKitchen : MonoBehaviour, IPointerClickHandler
         Show();
     }
 
-    private void Show()
+    public void Show()
     {
         if (image == null) return;
         image.enabled = Count > 0;

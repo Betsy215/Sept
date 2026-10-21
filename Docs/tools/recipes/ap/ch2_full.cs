@@ -4,6 +4,5 @@ sm.StartNewSession(); sm.MarkTutorialSeen(); var s = sm.GetCurrentSession();
 foreach (var f in new[]{"Juice","Apple","Choux","Cake","Cookies","Coconut"}) if (!s.purchasedFoodItems.Contains(f)) s.purchasedFoodItems.Add(f);
 foreach (var c in new[]{"Grandma","Chef","Yoga","Businessman"}) if (!s.purchasedCharacters.Contains(c)) s.purchasedCharacters.Add(c);
 sm.UpgradeFood("Coffee"); sm.UpgradeFood("CoffeeMachine");
-sm.SetFoodEnabled("Coconut", true); sm.SetFoodEnabled("Juice", true);
-s.levelsCompleted = 16; sm.AddScoreImmediately(9000f); sm.SetCurrentLevel(16);
+s.levelsCompleted = 16; sm.AddScoreImmediately(9000f); sm.SetCurrentLevel(16); sm.SetFoodEnabled("Coconut", true); sm.SetFoodEnabled("Juice", true);   // after the level is set: Coconut is a chapter 2 food (21 October)
 SceneTransitionManager.Instance.TransitionToScene("GameSceneOne"); return "chapter 2 day 17, everything bought";

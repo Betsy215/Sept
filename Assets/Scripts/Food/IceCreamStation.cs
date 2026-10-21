@@ -96,6 +96,7 @@ public class IceCreamStation : MonoBehaviour
     {
         if (Time.timeScale == 0f) return false;
         if (item != null && !item.ServingEnabled) return false;      // arrangement: the station is dragged, not used
+        if (item != null && item.popupCanvas != null && item.popupCanvas.activeInHierarchy) return false;   // the finish board is up (21 October)
         return true;
     }
 

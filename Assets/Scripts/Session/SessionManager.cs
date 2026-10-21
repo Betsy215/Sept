@@ -210,7 +210,7 @@ public class SessionManager : MonoBehaviour
     /// (MenuBook.PaperColour). Cookies were held back on 13 October and are a plain chapter 1 buy since 14 October.
     public static readonly Dictionary<string, int> FoodChapter = new Dictionary<string, int>
     {
-        { "Apple", 1 }, { "Coffee", 1 }, { "IceCream", 2 }   // Coconut is a chapter 2 unlock but plays in any chapter (UnlockChapter)
+        { "Apple", 1 }, { "Coffee", 1 }, { "IceCream", 2 }, { "Coconut", 2 }   // Coconut: bought with chapter 2 (UnlockChapter) and, since only the chapter 2 kitchen has the palm to pick from, played on chapter 2 days only (21 October)
     };
     public static readonly string[] HeldBackFoods = { };   // kept for older callers; FoodChapter decides
     /// 0 for a common food, else the one chapter it belongs to.
@@ -426,6 +426,7 @@ public class SessionManager : MonoBehaviour
         // Kitchen bakes and cooldowns live in static/persistent helpers; a new game starts them fresh
         KitchenTimerHelper.CancelAll();
         CooldownRegistry.ClearAll();
+        CoconutInKitchen.Count = CoconutInKitchen.Full;   // the palm's coconuts are static too (21 October)
 
         Debug.Log("New session started!");
 

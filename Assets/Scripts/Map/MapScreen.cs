@@ -118,7 +118,7 @@ public class MapScreen : MonoBehaviour
         for (var i = 0; i < Stars.Length; i++)
         {
             var played = i < completed;
-            var isToday = !allDone && i == today;
+            var isToday = todayHere && !allDone && i == today;   // a page ahead of today has no today (21 October)
             var pos = P(Stars[i]);
             var size = isToday ? 104f : 84f;
             var dayStars = played && sm != null ? sm.GetLevelStars(first + i) : 0;
@@ -184,7 +184,8 @@ public class MapScreen : MonoBehaviour
         title.raycastTarget = false;
 
         // The next chapter's arrow: locked while there is no next chapter to show, a button once there is
-        var nextOpen = page + 1 < Chapter.Count;
+        // (21 October) and only once every day of this page is done: before that a new player could open chapter 2 and play day 17 first
+        var nextOpen = page + 1 < Chapter.Count && completed >= ChapterDays;
         var arrow = NewImage(nextOpen ? "NextChapter" : "NextChapterLocked", canvasRect, Load(nextOpen ? "arrow_right" : "arrow_right_locked"));
         arrow.rectTransform.anchorMin = arrow.rectTransform.anchorMax = new Vector2(1f, 0.5f);
         arrow.rectTransform.pivot = new Vector2(1f, 0.5f);
