@@ -44,10 +44,15 @@ store page and marketing before more content. Re-read the numbers in November.
    https://claude.ai/code/artifact/726347e1-dd8c-42fd-917b-be80474ff9ae, two tabs:
    - **Report** (body node `9a385004-98ab`): fixed sections with short headings only. **Never add, rename or
      remove a section without the owner asking** (owner, 14 October: "stop changing the report structures"). Order:
-     **Next** (Who / Now / Waiting-on table, always first), **Q&A** (only answers to questions the owner asked;
-     cleared once they have read them), **Current** (the task in hand: its drawings, captures and short bullets;
-     the newest pass replaces the old one), **MVP** (the next release), **Backlog**, **Chapter 2**, **Analysis**
-     (store and ads numbers). Questions to the owner go in Next's "You" row, not in Q&A.
+     **Next** (Who / Now / Waiting-on table, always first; each cell one bullet list, rewritten whole at the start
+     and end of every batch: the owner reads it first), **Q&A** (only answers to questions the owner asked, every
+     question gets one, cleared once ticked), **Current** (the task in hand: dated bold lead, short bullets, pictures,
+     newest first; superseded entries removed), **MVP** (the next release), **Backlog**, **Analysis** (store and ads
+     numbers only). The Chapter 2 section was removed at the owner's word on 18 October 2026; never re-add it.
+     Questions to the owner go in Next's "You" row, not in Q&A. Every Q&A and Current entry ends with a check list
+     (`- [ ] Seen, remove this` plus the choices); read the doc with `sinceRev` before each write, delete what is
+     ticked, act on ticked choices. Removed entries are in the doc history (`view` with `atRev`). The full playbook,
+     grammar and current block ids are in Claude's memory file `report-writing-playbook.md`.
    - **Visuals** (body node `fa3ac61b-f7d8`, owner 14 October: keep as it is, they like it): real game captures only, never mock-ups ("everything needs to be from
      real game play, not by guess"). Holds the store-page assets of the current version, plus a temporary
      "Test before release" section when asked (remove it after the submission).
@@ -80,7 +85,7 @@ store page and marketing before more content. Re-read the numbers in November.
 | `Desktop/Sept/Store/redesign` | Table redesign: 40-degree angle guides (`*40.py`), ChatGPT briefs `ai/<item>/` | no |
 | `Desktop/Sept/Store/characters` | Customer art: `plain` (no outline), `shadowed` (the in-game set), `orig_game` | no |
 | `Desktop/Sept/Store/chapter2` | Beach background, Shop background picks | no |
-| `Desktop/Sept/Store/handoff` | What the owner gets to repaint: `layers.py` builds `layered/` (a PSD per sprite group plus same-size PNG layers, README), copied to iCloud Drive `FoodTruckCafe art/layered`; the flat game files in `icecream/`, `coconut/`, `cookies/` mirror the iCloud folders | no |
+| `Desktop/Sept/Store/handoff` | Hand-off history: `icloud_backup_2026-10-18_2030/` (the old per-purpose iCloud layout with the layered PSDs), `layered/` and `layers.py` (retired PSD builder), `owner_updates_<date>/` (copies of what the owner drops in iCloud). The live hand-off is iCloud Drive `FoodTruckCafe art/`: ONE flat folder, one object per PNG, named `<group>_<object>.png`, table items at 40 degrees, no docs, no PSDs, no sheets (owner, 18 October). The owner's own `Updates/` subfolder inside it is their drop place (never delete owner-made folders); check it at the start of every art batch, cut the files into the game, refresh the flat copies | no |
 | `Desktop/Sept/Store/artkit/venv` | The durable Python for art scripts (numpy, pillow, scipy, opencv, pytoshop, psd-tools) | no |
 | `~/.private_keys/AuthKey_<id>.p8`, `asc.json` | App Store Connect API key, key id, issuer | never |
 
@@ -214,6 +219,15 @@ plain `python3` has no numpy.
 - Other scripts: `daisy_sprites.py` (patience petals), `cloth_picnic.py` (cloth), `edge_soft.py` (edge shadow),
   `pots_round.py`, `money_hen.py` (fallback hen), brush engine `Store/artkit/brush` (26 brushes, Da Cookie grain).
 
+- **Cookie plates (18 October night):** the plate holds six cookies (`Cookies.cs`, `customMaxCount` 6 in GameSceneOne,
+  sprites `Assets/Images/cookies/k0..k6`, the full plate k6 is the shop card picture). Built by
+  `Store/artkit/plate_hearts/plate_six2.py <plate> <red> <choc> <pink> <outdir>`: the owner's heart-rim plate
+  (`Updates/plate_original_k0_empty.png`, rim ellipse 0.79, a 38-degree camera, left as drawn) with the three
+  40-degree hearts (red = the squashed cut of the owner's red, chocolate and pink = the owner's repainted hearts),
+  three where the originals sat and three on top turned 24, 20 and 10 degrees with a soft shadow; the same hearts
+  are the order icons `cookie_red/choc/pink.png`. A driver run with six per plate scored the same as with three
+  (`Docs/tools/autoplay/run_2026-10-19_sixcookies_days.tsv`), so no star line moved. Plain `python3` lacks numpy;
+  use `Store/artkit/venv/bin/python`.
 - **Table item shadows (18 October):** every table sprite carries the owner's hard navy shadow (rgb 45,45,66 at 82 %) to the lower left, light from the upper right; new sprites go through `Store/table/shadows/navy_shadows.py` (originals in `orig/`), and a padded canvas means converting any rect fractions that refer to the sprite (the ice cream station's in GameSceneOne).
 
 ## 9. Store and release
