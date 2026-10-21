@@ -222,9 +222,13 @@ plain `python3` has no numpy.
   (`choux_board5.py`, `K` = 1.0; the 40-degree stretch K = 1.52 is parked for the next release).
 - **Table redesign (next release):** one camera for everything, 40 degrees above the table, long lens (approved
   13 October). Per item give ChatGPT the original painting plus the angle guide from `Store/redesign/*40.py`, prompt
-  in `Store/redesign/ai/<item>/prompts.md`; cut the states with `Store/redesign/ai/cut_states.py`. Done: cake, bread,
-  apples (then reverted to the originals at the owner's word). Briefs ready: juice, choux, cookies, coffee cups,
-  machine, cake redo (flat napkin, no pink cut face). ChatGPT free plan: about three pictures a day; wait a few
+  in `Store/redesign/ai/<item>/prompts.md`; cut the states with `Store/redesign/ai/cut_states.py`. Done 13 October: cake, bread,
+  apples (bread and apples then reverted to the originals at the owner's word). 21 October: a second round briefed with
+  the owner's heart-rim plate as the camera reference (`Store/redesign/ai/chatgpt_2026-10-21/`, README there); the
+  owner picked the apple basket and the bread basket, juice stays as drawn. Cut by `cut_pick.py` in that folder: the
+  basket body scaled and placed on the old frame's basket footprint (canvas sizes kept, 366x379 and 496x496), ChatGPT's
+  soft shadow repainted as the hard navy, the white inside the handle made transparent; the replaced frames are in
+  `cut/orig_assets`. Still to brief: choux, coffee cups, machine, cake redo (flat napkin, no pink cut face). ChatGPT free plan: about three pictures a day; wait a few
   seconds after an upload before typing or the text is lost. Gemini keeps a style but redraws shapes.
 - Other scripts: `daisy_sprites.py` (patience petals), `cloth_picnic.py` (cloth), `edge_soft.py` (edge shadow),
   `pots_round.py`, `money_hen.py` (fallback hen), brush engine `Store/artkit/brush` (26 brushes, Da Cookie grain).
