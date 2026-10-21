@@ -4,7 +4,7 @@ Read this first in every session on this project. It is the current state: what 
 where things live, how the game works now, and how each recurring job is done. Dated change notes are in
 `Docs/history/` (the 12 to 13 October log and the pre-rewrite manual and TODO are there).
 
-Last updated 14 October 2026, evening (menu book, economy tune, tutorial additions, test ads on TestFlight; chapter 2 parked).
+Last updated 21 October 2026 (eight bug fixes, Coconut a chapter 2 food, the verify21 recipes, recv.py; earlier: menu book, economy tune, chapter 2).
 
 ## 1. State of the project
 
@@ -180,7 +180,8 @@ plain `python3` has no numpy.
   `Store/chapter2/icecream_station/cut_station.py` (ChatGPT's station turned metal) and ChatGPT's cones sheet.
   **Coconuts:** four on the kitchen palm (`CoconutInKitchen` on the window's cluster, only when Coconut is on the
   menu), one per tap onto the tray (a full tray refuses), regrow after 8 s like the apples; the palm picture has no
-  painted coconuts. The autoplay driver builds cones (`step.cs`); `driver_ch2.py` runs days 17 to 32.
+  painted coconuts. Since 21 October Coconut is a chapter 2 food in `FoodChapter` (only the chapter 2 kitchen has a palm,
+  so on a chapter 1 day it was unservable); test session recipes enable it after `SetCurrentLevel(16)`. The autoplay driver builds cones (`step.cs`); `driver_ch2.py` runs days 17 to 32.
 
 ## 7. Driving the Unity editor
 
@@ -195,6 +196,15 @@ plain `python3` has no numpy.
   `closekitchen.cs`, `tomap.cs`, `toshop.cs`, `freshshop.cs`, `tut.cs`, `ff_dusk.cs` / `ff_night.cs` (jump the day
   clock), `gv_<Store1320|iPad|iPhoneSE|Preview886>.cs` (Game view size; set it **before** Play), `decor.cs` (scene
   edits for the table decor, truck sprite, edge shadow, kitchen cookies off).
+- **21 October fixes, verified by `Docs/tools/recipes/verify21/run21.sh` (+ `run21c.sh`):** the chapter 2 map arrow opens
+  only once chapter 1 is done (`MapScreen`), Continue works right after the tutorial, a food switched on in the menu is
+  draggable at once (`LevelManager.ReapplyServeableItems` re-runs `EnableArrangementMode`), the blender refills the
+  station as the blend starts (closing the kitchen mid-blend killed the coroutine), the palm cluster shows the real count
+  after a kitchen reload and resets on a new game, out-of-season stickers are greyed in the carousel (`MenuBook.OwnsFood`),
+  no ice cream taps under the finish board. Runs of 21 October: `run_2026-10-21_days.tsv` (16 days, three stars each),
+  `run_2026-10-21_ch2_days.tsv` (day 17 two stars, the rest three), no exceptions.
+- `Docs/tools/recv.py <outdir>`: local receiver (127.0.0.1:8765) to pull ChatGPT/Gemini images out of the page (POST the
+  `blob:` src from the JS tool). ChatGPT free plan: exactly three pictures a day.
 - Capture scripts: `capture_one.sh <size>` (table + two-order play), `capture_store.sh <size>` (the five store
   shots), `capture_release.sh` (12-screen release series), `record_video.sh` (preview footage with `PreviewRecorder`).
 - **Full chapter test:** `python3 Docs/tools/autoplay/driver.py 1.5 1.0` (time scale, seconds per action) plays the
