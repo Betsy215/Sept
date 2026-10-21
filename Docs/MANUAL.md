@@ -237,7 +237,7 @@ plain `python3` has no numpy.
   sprites `Assets/Images/cookies/k0..k6`, the full plate k6 is the shop card picture). Built by
   `Store/artkit/plate_hearts/plate_six2.py <plate> <red> <choc> <pink> <outdir>`: the owner's heart-rim plate
   (`Updates/plate_original_k0_empty.png`, rim ellipse 0.79, a 38-degree camera, left as drawn) with the three
-  40-degree hearts (red = the squashed cut of the owner's red, chocolate and pink = the owner's repainted hearts),
+  40-degree hearts (all three the owner's repainted hearts since 21 October 12:04, when their red landed in Updates; the old red cut is in `Store/artkit/plate_hearts/old_red_2026-10-18`; capture chain `recipes/capture_rc21.sh` with `ap/ch2_cookies.cs`),
   three where the originals sat and three on top turned 24, 20 and 10 degrees with a soft shadow; the same hearts
   are the order icons `cookie_red/choc/pink.png`. A driver run with six per plate scored the same as with three
   (`Docs/tools/autoplay/run_2026-10-19_sixcookies_days.tsv`), so no star line moved. Plain `python3` lacks numpy;
