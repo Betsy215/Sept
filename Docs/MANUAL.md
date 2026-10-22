@@ -182,6 +182,10 @@ plain `python3` has no numpy.
   menu), one per tap onto the tray (a full tray refuses), regrow after 8 s like the apples; the palm picture has no
   painted coconuts. Since 21 October Coconut is a chapter 2 food in `FoodChapter` (only the chapter 2 kitchen has a palm,
   so on a chapter 1 day it was unservable); test session recipes enable it after `SetCurrentLevel(16)`. The autoplay driver builds cones (`step.cs`); `driver_ch2.py` runs days 17 to 32.
+  **At night (21 October evening)** the palm darkens like the chapter 1 apple tree: a navy copy of the palm sprite (`PalmNight`, a
+  child of the window's Palm) fades in with the day's clock in `DayNightTint`'s window colours (dusk 0.40, night 0.78 alpha),
+  the coconut cluster sits above it and stays bright, like the apples; the old multiplicative palm dim is gone. Captures:
+  `recipes/capture_cn21.sh` (chapter 2 kitchen by day and at night, `night_hold.cs` freezes the clock at night).
 
 ## 7. Driving the Unity editor
 
