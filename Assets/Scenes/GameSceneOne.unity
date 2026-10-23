@@ -3808,6 +3808,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 77afef645dce4f758bd7ca54cad221ff, type: 3}
   - {fileID: 21300000, guid: 75cf5b8c20ba4c5981befcf9eff4870e, type: 3}
   - {fileID: 21300000, guid: 5ee9fbdcc25541b3846d039ca484bfd5, type: 3}
+  - {fileID: 21300000, guid: f899556802ca43829ccf4d2c3aeb47e0, type: 3}
+  - {fileID: 21300000, guid: dd688966827044bd874cb9b9c73ecc3e, type: 3}
 --- !u!114 &1077775575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3822,7 +3824,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   enableHoldToRefill: 0
-  customMaxCount: 3
+  customMaxCount: 5
   customStartingCount: -1
   customRefillTime: 0
   refillBar: {fileID: 0}

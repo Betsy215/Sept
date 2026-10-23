@@ -1,10 +1,10 @@
 using UnityEngine;
 using System.Collections;
 
-/// Tray of coconuts with straws (16 October 2026, chapter 2 unlock, playable in any chapter): the same count-to-sprite rule as Cookies, 3 on a tray.
+/// Tray of coconuts with straws (16 October 2026, chapter 2 unlock, playable in any chapter): the same count-to-sprite rule as Cookies; 5 on a tray since 23 October 2026 (owner: "five coconut on the tray on the table"), pictures n0..n5.
 public class Coconut : MonoBehaviour
 {
-    [SerializeField] private Sprite[] coconutSprites = new Sprite[4]; // index 0 = empty plate, 3 = three cookies
+    [SerializeField] private Sprite[] coconutSprites = new Sprite[6]; // index 0 = empty tray, 5 = five coconuts
 
     private RefillableItem refillableItem;
     private SpriteRenderer spriteRenderer;
