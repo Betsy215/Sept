@@ -201,6 +201,16 @@ plain `python3` has no numpy.
   child of the window's Palm) fades in with the day's clock in `DayNightTint`'s window colours (dusk 0.40, night 0.78 alpha),
   the coconut cluster sits above it and stays bright, like the apples; the old multiplicative palm dim is gone. Captures:
   `recipes/capture_cn21.sh` (chapter 2 kitchen by day and at night, `night_hold.cs` freezes the clock at night).
+  **One row, two levels (owner, 22 October):** the station is one row of four wells (vanilla, strawberry, chocolate, mint)
+  with the holder at the right end, box canvas 1200 x 420 at scene scale 0.28. Two flavours are open by default
+  (`IceCreamStation.BaseFlavours`); wells 3 and 4 wear a lid (`lidSprite`, `lidRects`) and refuse taps until the shop's
+  "Two more flavours" card (`IceCreamUpgrade`, Upgrade of `IceCream`, 900, chapter 2 shop only, one level:
+  `SessionManager.MaxUpgradeLevel`) sets IceCream level 2 (`ActiveFlavours`); orders ask only for open flavours
+  (`RandomVariant`). Art contract: every part on the box canvas at its place; `Docs/tools/icecream_row_cut.py <parts>`
+  crops them into `Assets/Images/icecream`, writes the rects, the collider and the scale into GameSceneOne
+  (`--holder-keep x y` keeps the game's holder.png, which the cone-count states derive from);
+  `Docs/tools/icecream_upgrade_card.py` added the shop card (a copy of the Coconut card's objects). Blockout parts and
+  painter: `Store/chapter2/icecream_station/row/`.
 
 ## 7. Driving the Unity editor
 

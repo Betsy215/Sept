@@ -21,12 +21,19 @@ public class IceCreamStation : MonoBehaviour
     public const int Flavours = 4, PerSection = 3, MaxScoops = 3, ConesFull = 4;
     public static readonly string Letters = "vscm";                 // vanilla, strawberry, chocolate, mint: the order letters
     public static readonly string[] Names = { "vanilla", "strawberry", "chocolate", "mint" };
+    public const int BaseFlavours = 2;                              // the station opens with two flavours; the shop's "Two more flavours" upgrade opens all four (owner, 22 October 2026)
+    /// How many flavours are open today: two until the shop's ice cream upgrade (IceCream level 2), then four
+    public static int ActiveFlavours =>
+        SessionManager.Instance != null && SessionManager.Instance.GetFoodUpgradeLevel("IceCream") >= 2 ? Flavours : BaseFlavours;
+    public static bool IsOpen(int flavour) => flavour >= 0 && flavour < ActiveFlavours;
 
     [Header("Pictures")] public Sprite[] sectionLevels = new Sprite[Flavours * PerSection];   // [flavour * 3 + (level - 1)]
     public Sprite coneSprite; public Sprite[] scoopSprites = new Sprite[Flavours]; public Sprite crossSprite; public Sprite holderSprite;
+    public Sprite lidSprite;                                        // the lid over a well that is not open yet (22 October)
     [Header("Layout, fractions of the box picture (0..1 from its bottom left)")]
     public Rect[] sectionRects = new Rect[Flavours];        // where each section's picture sits
     public Rect holderRect;
+    public Rect[] lidRects = new Rect[Flavours];            // where a closed well's lid sits; an empty rect means over the section's own rect
     public Vector2 buildPoint = new Vector2(0.5f, 1.15f);    // where the floating cone stands
     [Header("Build")] public float scoopStep = 0.62f;        // each scoop this much of a scoop's height above the one below
     public float firstScoopDrop = 0.22f;                      // the first scoop sits this much of its height into the cone
@@ -40,6 +47,7 @@ public class IceCreamStation : MonoBehaviour
     private Transform build; private bool building;
     private OrderSystem orderSystem; private ServeableItem item; private SpriteRenderer box;
     private Coroutine shake;
+    private SpriteRenderer[] lids = new SpriteRenderer[Flavours];   // the closed wells' lids (22 October)
 
     public bool IsBuilding => building;
     public int Left(int flavour) => left[Mathf.Clamp(flavour, 0, Flavours - 1)];
@@ -70,6 +78,13 @@ public class IceCreamStation : MonoBehaviour
             var col = go.GetComponent<BoxCollider>(); col.size = new Vector3(r.width * b.size.x * 0.9f, r.height * b.size.y * 0.9f, 0.2f);
             var tap = go.GetComponent<IceCreamTap>(); tap.station = this; tap.kind = IceCreamTap.Kind.Section; tap.index = i;
             sections[i] = sr;
+            if (i >= BaseFlavours && lidSprite != null)            // a lid over the wells the upgrade opens; the section's collider under it takes the tap (refused while closed)
+            {
+                var lr = lidRects != null && i < lidRects.Length && lidRects[i].width > 0f ? lidRects[i] : r;
+                var lid = new GameObject("Lid" + i, typeof(SpriteRenderer)); lid.transform.SetParent(transform, false);
+                lid.transform.localPosition = At(lr.center) + Vector3.back * 0.025f;
+                lids[i] = lid.GetComponent<SpriteRenderer>(); lids[i].sortingLayerName = layer; lids[i].sortingOrder = order + 3; lids[i].sprite = lidSprite;
+            }
         }
         var h = new GameObject("Holder", typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); h.transform.SetParent(transform, false);
         h.transform.localPosition = At(holderRect.center) + Vector3.back * 0.02f;
@@ -144,7 +159,7 @@ public class IceCreamStation : MonoBehaviour
     private void AddScoop(int flavour)
     {
         if (!building || cone.Count >= MaxScoops) { Reject(); return; }
-        if (left[flavour] <= 0) { Reject(); return; }
+        if (!IsOpen(flavour) || left[flavour] <= 0) { Reject(); return; }
         left[flavour]--; cone.Add(flavour);
         var r = scoopRenderers[cone.Count - 1]; if (r != null) { r.sprite = scoopSprites[flavour]; r.enabled = true; StartCoroutine(Pop(r.transform)); }
         if (scoopSound != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(scoopSound);
@@ -163,7 +178,7 @@ public class IceCreamStation : MonoBehaviour
     public static string RandomVariant()
     {
         var n = Random.Range(1, MaxScoops + 1); var l = new List<char>();
-        for (var i = 0; i < n; i++) l.Add(Letters[Random.Range(0, Flavours)]);
+        for (var i = 0; i < n; i++) l.Add(Letters[Random.Range(0, ActiveFlavours)]);   // orders ask only for open flavours
         l.Sort(); return new string(l.ToArray());
     }
 
@@ -193,8 +208,9 @@ public class IceCreamStation : MonoBehaviour
         for (var i = 0; i < Flavours; i++)
         {
             if (sections[i] == null) continue;
+            var open = IsOpen(i); if (lids[i] != null) lids[i].enabled = !open;
             var lv = Mathf.Clamp(left[i], 0, PerSection);
-            sections[i].enabled = lv > 0;
+            sections[i].enabled = open && lv > 0;
             if (lv > 0) sections[i].sprite = sectionLevels[i * PerSection + lv - 1];
         }
     }

@@ -793,8 +793,12 @@ public class SessionManager : MonoBehaviour
         return currentSession?.foodUpgradeLevels ?? new Dictionary<string, int>();
     }
 
-    public bool CanUpgradeFood(string foodType, int maxLevel = 3)
+    /// The top level of an upgrade: the coffee pair go to 3; the ice cream station has one step, two more flavours (22 October)
+    public static int MaxUpgradeLevel(string foodType) => foodType == "IceCream" ? 2 : 3;
+
+    public bool CanUpgradeFood(string foodType, int maxLevel = 0)
     {
+        if (maxLevel <= 0) maxLevel = MaxUpgradeLevel(foodType);
         var currentLevel = GetFoodUpgradeLevel(foodType);
         return currentLevel < maxLevel;
     }
