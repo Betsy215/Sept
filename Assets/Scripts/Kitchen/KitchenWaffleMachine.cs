@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// The kitchen waffle machine (owner, 22 October 2026: "a refill system for the cones too, a waffle machine in
-/// kitchen"). Chapter 2 only. It sits on the counter's right, under the window, built at kitchen load like the
+/// kitchen"). Chapter 2 only. It sits on the counter's front left, in front of the blender, built at kitchen load like the
 /// blender and anchored to the background's rectangle so every phone sees it at the same spot. A tap refills the
 /// table's cone holder to four (done as the tap lands, like the blender's refill: closing the kitchen mid-bake
 /// unloads the scene and the coroutine with it) and plays the bake (WaffleAnim): the plate glows, steam rises,
@@ -13,7 +13,9 @@ using UnityEngine.UI;
 /// (Kitchen/waffle_cone, or the station's own cone picture when that is missing).
 public static class KitchenWaffleMachine
 {
-    static readonly Vector2 Min = new Vector2(0.655f, 0.49f), Max = new Vector2(0.933f, 0.6046f);   // the box on the 1080 x 1920 background (300 x 220 px)
+    // the box on the 1080 x 1920 background: the counter's front-left corner, over the painted whisk (210 x 157 px, the 300 x 220
+    // picture at 0.7). The counter's right is the strawberry cake's place (owner, 22 October night: "it needs to be placed somewhere else").
+    static readonly Vector2 Min = new Vector2(0.03f, 0.418f), Max = new Vector2(0.225f, 0.50f);
 
     public static void Apply()
     {

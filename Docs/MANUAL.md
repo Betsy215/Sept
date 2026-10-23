@@ -183,7 +183,8 @@ plain `python3` has no numpy.
   served or cleared, an empty holder refuses with a shake, the holder picture per count comes from
   `Resources/IceCream/holder_0..4` (the cone sprite session's files; `holderSprite` greyed when they are missing). The
   **kitchen waffle machine** (`KitchenWaffleMachine.Apply` from the first oven's Awake, chapter 2 only, on the counter's
-  right under the window, box x 0.655 to 0.933, y 0.49 to 0.6046 of the background, 300 x 220 px) refills the holder as the
+  front left in front of the blender, box x 0.03 to 0.225, y 0.418 to 0.50 of the background, 210 x 157 px; the counter's
+  right is the cake's place) refills the holder as the
   tap lands and plays the bake (`WaffleAnim`: a warm glow, three steam puffs, the lid opens, a cone pops out, the lid
   shuts). Pictures `Resources/Kitchen/waffle_closed`, `waffle_open`, `waffle_steam`, optional `waffle_cone` and
   `waffle_bake` sound (none yet): the pictures are the brief session's 22 October drafts (`Store/redesign/icecream_row/out`), ChatGPT's version waits for the quota and the owner's pick. The driver
