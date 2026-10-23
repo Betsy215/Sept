@@ -43,6 +43,12 @@ public static class KitchenWindow
             var prt = (RectTransform)p.transform; prt.anchorMin = new Vector2(0f, 0f); prt.anchorMax = new Vector2(0f, 0f); prt.pivot = new Vector2(0f, 0f);
             var ph = glassH * 1.45f; prt.sizeDelta = new Vector2(ph * palm.rect.width / palm.rect.height, ph); prt.anchoredPosition = new Vector2(-glassW * 0.16f, -glassH * 0.25f);
             var pi = p.GetComponent<Image>(); pi.sprite = palm; pi.preserveAspect = true; pi.raycastTarget = false;
+            // night (21 October): a navy copy of the palm laid over it, the same colours DayNightTint lays over the
+            // chapter 1 window and its apple tree, so the palm turns into a silhouette with the sky; the coconuts are
+            // added after it and stay bright, like the apples
+            var pn = new GameObject("PalmNight", typeof(RectTransform), typeof(Image)); pn.transform.SetParent(prt, false);
+            var pnrt = (RectTransform)pn.transform; pnrt.anchorMin = Vector2.zero; pnrt.anchorMax = Vector2.one; pnrt.offsetMin = Vector2.zero; pnrt.offsetMax = Vector2.zero;
+            var pni = pn.GetComponent<Image>(); pni.sprite = palm; pni.preserveAspect = true; pni.raycastTarget = false; pni.color = new Color(0f, 0f, 0f, 0f);
             // the coconut cluster as its own picture with the apples' halo baked in (Resources/Chapter2/coconuts, cut
             // from the palm at its own spot), so it reads as something to pick; later the Coconut pick object
             // four coconuts, one per tap (owner, 17 October), only when Coconut is on the menu; otherwise the palm's own
@@ -69,7 +75,8 @@ public static class KitchenWindow
             var nv = new GameObject("BeachNight", typeof(RectTransform), typeof(Image)); nv.transform.SetParent(rt, false); nv.transform.SetSiblingIndex(1);
             var nrt = (RectTransform)nv.transform; nrt.anchorMin = vrt.anchorMin; nrt.anchorMax = vrt.anchorMax; nrt.sizeDelta = vrt.sizeDelta; nrt.anchoredPosition = vrt.anchoredPosition;
             var ni = nv.GetComponent<Image>(); ni.sprite = night; ni.preserveAspect = true; ni.raycastTarget = false; ni.color = new Color(1f, 1f, 1f, 0f);
-            var fade = go.AddComponent<KitchenWindowNight>(); fade.night = ni; fade.palm = rt.Find("Palm") != null ? rt.Find("Palm").GetComponent<Image>() : null;
+            var fade = go.AddComponent<KitchenWindowNight>(); fade.night = ni;
+            var palmNight = rt.Find("Palm/PalmNight"); fade.palmNight = palmNight != null ? palmNight.GetComponent<Image>() : null;
         }
 
         // the apple tree is chapter 1's
@@ -77,15 +84,17 @@ public static class KitchenWindow
     }
 }
 
-/// Fades the night picture in the chapter 2 kitchen window with the day's clock and dims the palm
+/// Fades the night picture in the chapter 2 kitchen window with the day's clock and darkens the palm under its navy
+/// copy, the way the chapter 1 window and apple tree darken under DayNightTint's overlay (same colours and alphas)
 public class KitchenWindowNight : MonoBehaviour
 {
-    public Image night, palm;
+    public Image night, palmNight;
+    static readonly Color Dusk = new Color(0.30f, 0.34f, 0.72f, 0.40f), Night = new Color(0.07f, 0.09f, 0.36f, 0.78f);   // DayNightTint.WindowDusk / WindowNight
     private void Update()
     {
         var st = DayNightTint.CurrentStage;
         var a = st <= 1f ? 0.5f * st : 0.5f + 0.5f * (st - 1f);
         if (night != null) night.color = new Color(1f, 1f, 1f, a);
-        if (palm != null) palm.color = Color.Lerp(Color.white, new Color(0.45f, 0.5f, 0.7f), a);
+        if (palmNight != null) palmNight.color = st <= 1f ? new Color(Dusk.r, Dusk.g, Dusk.b, Dusk.a * st) : Color.Lerp(Dusk, Night, st - 1f);
     }
 }
