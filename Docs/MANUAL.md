@@ -186,7 +186,7 @@ plain `python3` has no numpy.
   right under the window, box x 0.655 to 0.933, y 0.49 to 0.6046 of the background, 300 x 220 px) refills the holder as the
   tap lands and plays the bake (`WaffleAnim`: a warm glow, three steam puffs, the lid opens, a cone pops out, the lid
   shuts). Pictures `Resources/Kitchen/waffle_closed`, `waffle_open`, `waffle_steam`, optional `waffle_cone` and
-  `waffle_bake` sound: the 22 October files are flat grey stand-ins until the drawing session's art lands. The driver
+  `waffle_bake` sound (none yet): the pictures are the brief session's 22 October drafts (`Store/redesign/icecream_row/out`), ChatGPT's version waits for the quota and the owner's pick. The driver
   (`step.cs`) calls `RefillCones` when the holder is empty. Check after the merge: `Docs/tools/recipes/verify22/run22.sh`.
   Cone holder fill states (22 October, for the waffle machine refill): `Resources/IceCream/holder_0..4.png`, 0 to 4
   cones, cut from `holder.png` by `Store/chapter2/icecream_station/holder_states.py` (same 195 x 267 canvas and

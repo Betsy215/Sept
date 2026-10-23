@@ -141,7 +141,7 @@ From the 7 to 8 October review (details in `Docs/systems`) and the 13 October pl
 - [ ] Kill the app mid-chapter, reopen, Continue: the map shows the right day and stars.
 
 ## Ice cream (17 October)
-- Cone refill (22 October, `worktree-waffle-machine`): the waffle machine's pictures are flat grey stand-ins (`Resources/Kitchen/waffle_*`), no bake sound (`Kitchen/waffle_bake` is loaded if someone adds it); the holder level pictures `Resources/IceCream/holder_0..4` come from the cone sprite session. Design call left open for the owner: a cone cleared with the red cross is gone (like the scoops); giving it back would be one line in `ClearCone`.
+- Cone refill (22 October, `worktree-waffle-machine`): the waffle machine's pictures are the brief session's drafts (`Resources/Kitchen/waffle_*`, from `Store/redesign/icecream_row/out`; ChatGPT's version waits for the quota, the owner picks), no bake sound (`Kitchen/waffle_bake` is loaded if someone adds it); the holder level pictures `Resources/IceCream/holder_0..4` come from the cone sprite session. Design call left open for the owner: a cone cleared with the red cross is gone (like the scoops); giving it back would be one line in `ClearCone`.
 - The empty section wells are a flat steel paint (`cut_station.py` interior()); a drawn well would read better. Gemini's stainless redraw (`Store/chapter2/icecream_station/gemini_metal_raw.png`) is the alternative box; cutting it needs new section polygons.
 - Scoops drawn in the ice cream squash with the lowered levels (sec*_l2, l1).
 - The autoplay driver cannot build cones: read `OrderSystem.GetCurrentOrderTypesWithVariants()` and call `IceCreamStation.OnTap` (holder, sections by letter, cone).
