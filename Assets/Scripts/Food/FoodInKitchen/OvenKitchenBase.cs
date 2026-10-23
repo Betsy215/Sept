@@ -55,6 +55,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         OvenAssigner.EnsureAssigned();
         KitchenWindow.Apply();   // chapter 2: the beach through the window (16 October)
         KitchenBlender.Apply();  // the blender as its own object, every chapter (17 October)   // which food this oven bakes today, from the menu (once per kitchen load)
+        KitchenWaffleMachine.Apply();   // chapter 2: the waffle machine that refills the cone holder (22 October)
 
         // The bake timer must outlive the kitchen scene, so it always runs on the persistent helper.
         timerHelper = KitchenTimerHelper.GetOrCreate($"[OvenHelper] {GetCooldownKey()}");
