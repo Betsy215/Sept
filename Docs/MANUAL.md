@@ -59,7 +59,7 @@ store page and marketing before more content. Re-read the numbers in November.
    - Images: upload with the Artifact tool (`asset: true`), then Docs `create` a blob from the asset id, then
      `![alt](blob/<id>)` in markdown.
    - Write in short, plain sentences. Chat replies are one or two lines plus the link; substance goes in the report.
-     Direct questions in chat get a short chat answer too, and the answer also goes in Q&A.
+     Every question in chat, even a quick one ("where is it", "did you update the report"), gets its own Q&A entry at once, before the Current work it belongs to (owner, 23 October: "you don't answer me things in q&a section anymore"); a short chat answer too.
 4. **Decide, don't ask**, except for real owner choices (store wording, art direction, anything outward-facing).
 5. **Never type passwords**; the owner signs in to App Store Connect, Unity and Apple themselves.
 6. Commit each working change with a message saying what was broken or added, push to `origin main`, end the
