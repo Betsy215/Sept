@@ -5403,22 +5403,22 @@ MonoBehaviour:
   lidSprite: {fileID: 21300000, guid: 259d000950c54ea981a16cb8f89b990c, type: 3}
   sectionRects:
   - serializedVersion: 2
-    x: 0.0625
-    y: 0.4262
-    width: 0.1583
-    height: 0.3190
+    x: 0.0633
+    y: 0.4238
+    width: 0.1708
+    height: 0.3214
   - serializedVersion: 2
     x: 0.2500
-    y: 0.4381
-    width: 0.1592
-    height: 0.3095
+    y: 0.4262
+    width: 0.1633
+    height: 0.3214
   - serializedVersion: 2
-    x: 0.4383
-    y: 0.4405
-    width: 0.1625
-    height: 0.3024
+    x: 0.4375
+    y: 0.4429
+    width: 0.1608
+    height: 0.3000
   - serializedVersion: 2
-    x: 0.6233
+    x: 0.6183
     y: 0.4381
     width: 0.1608
     height: 0.3119
@@ -5440,15 +5440,15 @@ MonoBehaviour:
     width: 0.0000
     height: 0.0000
   - serializedVersion: 2
-    x: 0.4283
+    x: 0.4275
     y: 0.4071
-    width: 0.1783
-    height: 0.3429
+    width: 0.1767
+    height: 0.3452
   - serializedVersion: 2
-    x: 0.6142
+    x: 0.6067
     y: 0.4071
-    width: 0.1792
-    height: 0.3429
+    width: 0.1825
+    height: 0.3452
   buildPoint: {x: 0.42, y: 1.22}
   scoopStep: 0.62
   firstScoopDrop: 0.22
