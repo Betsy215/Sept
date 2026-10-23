@@ -5401,25 +5401,25 @@ MonoBehaviour:
   lidSprite: {fileID: 21300000, guid: 259d000950c54ea981a16cb8f89b990c, type: 3}
   sectionRects:
   - serializedVersion: 2
-    x: 0.0550
-    y: 0.3905
-    width: 0.1667
-    height: 0.3619
+    x: 0.0625
+    y: 0.4262
+    width: 0.1583
+    height: 0.3190
   - serializedVersion: 2
-    x: 0.2442
-    y: 0.3905
-    width: 0.1658
-    height: 0.3595
+    x: 0.2500
+    y: 0.4381
+    width: 0.1592
+    height: 0.3095
   - serializedVersion: 2
-    x: 0.4317
-    y: 0.3905
-    width: 0.1667
-    height: 0.3619
+    x: 0.4383
+    y: 0.4405
+    width: 0.1625
+    height: 0.3024
   - serializedVersion: 2
-    x: 0.6200
-    y: 0.3905
-    width: 0.1667
-    height: 0.3619
+    x: 0.6233
+    y: 0.4381
+    width: 0.1608
+    height: 0.3119
   holderRect:
     serializedVersion: 2
     x: 0.8333
@@ -5438,15 +5438,15 @@ MonoBehaviour:
     width: 0.0000
     height: 0.0000
   - serializedVersion: 2
-    x: 0.4258
-    y: 0.3738
-    width: 0.1792
-    height: 0.3738
+    x: 0.4283
+    y: 0.4071
+    width: 0.1783
+    height: 0.3429
   - serializedVersion: 2
-    x: 0.6133
-    y: 0.3738
-    width: 0.1800
-    height: 0.3738
+    x: 0.6142
+    y: 0.4071
+    width: 0.1792
+    height: 0.3429
   buildPoint: {x: 0.42, y: 1.22}
   scoopStep: 0.62
   firstScoopDrop: 0.22
@@ -5556,7 +5556,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.56, y: -5.02, z: -0.05}
-  m_LocalScale: {x: 0.28, y: 0.28, z: 1}
+  m_LocalScale: {x: 0.31, y: 0.31, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
