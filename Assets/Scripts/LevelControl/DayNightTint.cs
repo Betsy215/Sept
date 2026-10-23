@@ -145,7 +145,12 @@ public class DayNightTint : MonoBehaviour
         // The window pane's share of the kitchen background image (measured on the painting)
         var go = new GameObject("NightWindow", typeof(RectTransform), typeof(Image));
         go.transform.SetParent(bg, false);
-        go.transform.SetAsFirstSibling(); // under the shelf, ovens and basket that sit in front of the window
+        // Over the apple tree (bg/tree, chapter 1) so the tree darkens with the sky and the strip of daytime sky cut
+        // into its sprite is tinted too (owner, 21 October: the tree's crop and the night overlay looked bad with
+        // the tree left bright on top); still under the shelf, ovens and basket that sit in front of the window.
+        // Chapter 2 hides the tree and draws its own window view, so the overlay stays first there.
+        var tree = bg.Find("tree");
+        go.transform.SetSiblingIndex(tree != null && tree.gameObject.activeSelf ? tree.GetSiblingIndex() + 1 : 0);
         var rt = (RectTransform)go.transform;
         rt.anchorMin = new Vector2(0.502f, 0.556f);
         rt.anchorMax = new Vector2(0.922f, 0.803f);
@@ -169,9 +174,10 @@ public class DayNightTint : MonoBehaviour
 
         var moon = Resources.Load<Sprite>("Tutorial/moon");
         if (moon != null) MakeAnchoredImage(skyRt, "Moon", moon, new Vector2(0.70f, 0.66f), new Vector2(0.92f, 0.90f));
-        MakeAnchoredImage(skyRt, "Star", StarSprite(), new Vector2(0.28f, 0.80f), new Vector2(0.33f, 0.86f));
-        MakeAnchoredImage(skyRt, "Star", StarSprite(), new Vector2(0.50f, 0.88f), new Vector2(0.54f, 0.93f));
-        MakeAnchoredImage(skyRt, "Star", StarSprite(), new Vector2(0.58f, 0.62f), new Vector2(0.61f, 0.66f));
+        // in the open sky to the right of the tree (the tree fills the left 60 % of the glass), clear of the moon
+        MakeAnchoredImage(skyRt, "Star", StarSprite(), new Vector2(0.65f, 0.86f), new Vector2(0.70f, 0.92f));
+        MakeAnchoredImage(skyRt, "Star", StarSprite(), new Vector2(0.93f, 0.57f), new Vector2(0.97f, 0.61f));
+        MakeAnchoredImage(skyRt, "Star", StarSprite(), new Vector2(0.66f, 0.60f), new Vector2(0.69f, 0.64f));
         return true;
     }
 
