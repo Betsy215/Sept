@@ -178,6 +178,10 @@ plain `python3` has no numpy.
   v s c m; `OrderSystem.TryServeItem(food, variant)`); the order bubble builds the cone from the parts
   (`IceCreamOrderIcon`, `Prefabs/IceCream`); 35 points flat. Sprites `Assets/Images/icecream` from
   `Store/chapter2/icecream_station/cut_station.py` (ChatGPT's station turned metal) and ChatGPT's cones sheet.
+  Cone holder fill states (22 October, for the waffle machine refill): `Resources/IceCream/holder_0..4.png`, 0 to 4
+  cones, cut from `holder.png` by `Store/chapter2/icecream_station/holder_states.py` (same 195 x 267 canvas and
+  centre pivot, so `holderRect` holds; `holder_4` is `holder.png` itself; the empty stand's back wire and dish are
+  painted). Loaded by `Resources.Load<Sprite>("IceCream/holder_" + n)`, `holderSprite` stays the scene fallback.
   **Coconuts:** four on the kitchen palm (`CoconutInKitchen` on the window's cluster, only when Coconut is on the
   menu), one per tap onto the tray (a full tray refuses), regrow after 8 s like the apples; the palm picture has no
   painted coconuts. Since 21 October Coconut is a chapter 2 food in `FoodChapter` (only the chapter 2 kitchen has a palm,
