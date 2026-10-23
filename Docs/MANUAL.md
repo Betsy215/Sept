@@ -178,6 +178,16 @@ plain `python3` has no numpy.
   v s c m; `OrderSystem.TryServeItem(food, variant)`); the order bubble builds the cone from the parts
   (`IceCreamOrderIcon`, `Prefabs/IceCream`); 35 points flat. Sprites `Assets/Images/icecream` from
   `Store/chapter2/icecream_station/cut_station.py` (ChatGPT's station turned metal) and ChatGPT's cones sheet.
+  **Cones run out too (22 October, branch `worktree-waffle-machine` until merged):** the holder stacks four
+  (`IceCreamStation.ConesFull`, `ConesLeft`, `TakeCone` in `StartCone`, `RefillCones`); a started cone is gone whether
+  served or cleared, an empty holder refuses with a shake, the holder picture per count comes from
+  `Resources/IceCream/holder_0..4` (the cone sprite session's files; `holderSprite` greyed when they are missing). The
+  **kitchen waffle machine** (`KitchenWaffleMachine.Apply` from the first oven's Awake, chapter 2 only, on the counter's
+  right under the window, box x 0.655 to 0.933, y 0.49 to 0.6046 of the background, 300 x 220 px) refills the holder as the
+  tap lands and plays the bake (`WaffleAnim`: a warm glow, three steam puffs, the lid opens, a cone pops out, the lid
+  shuts). Pictures `Resources/Kitchen/waffle_closed`, `waffle_open`, `waffle_steam`, optional `waffle_cone` and
+  `waffle_bake` sound: the 22 October files are flat grey stand-ins until the drawing session's art lands. The driver
+  (`step.cs`) calls `RefillCones` when the holder is empty. Check after the merge: `Docs/tools/recipes/verify22/run22.sh`.
   **Coconuts:** four on the kitchen palm (`CoconutInKitchen` on the window's cluster, only when Coconut is on the
   menu), one per tap onto the tray (a full tray refuses), regrow after 8 s like the apples; the palm picture has no
   painted coconuts. Since 21 October Coconut is a chapter 2 food in `FoodChapter` (only the chapter 2 kitchen has a palm,

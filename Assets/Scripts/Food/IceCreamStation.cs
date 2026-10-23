@@ -12,9 +12,13 @@ using UnityEngine.EventSystems;
 /// The object carries a ServeableItem (foodType "IceCream") for the level, order and menu lists, but its taps are
 /// handled here, not by it. The pictures: Assets/Images/icecream (ChatGPT's station and cones, cut by
 /// Store/chapter2/icecream_station/cut_station.py).
+/// Cones run out too (owner, 22 October 2026): the holder stacks four; every cone started takes one (served or
+/// cleared, it is gone like the scoops), an empty holder refuses with a shake, and the kitchen waffle machine
+/// (KitchenWaffleMachine) refills the stack to four. The holder picture per count: Resources/IceCream/holder_0..4,
+/// holderSprite when a level picture is missing.
 public class IceCreamStation : MonoBehaviour
 {
-    public const int Flavours = 4, PerSection = 3, MaxScoops = 3;
+    public const int Flavours = 4, PerSection = 3, MaxScoops = 3, ConesFull = 4;
     public static readonly string Letters = "vscm";                 // vanilla, strawberry, chocolate, mint: the order letters
     public static readonly string[] Names = { "vanilla", "strawberry", "chocolate", "mint" };
 
@@ -29,6 +33,7 @@ public class IceCreamStation : MonoBehaviour
     public AudioClip scoopSound, serveSound;
 
     private readonly int[] left = { PerSection, PerSection, PerSection, PerSection };
+    private int cones = ConesFull; private SpriteRenderer holderRenderer;
     private readonly List<int> cone = new List<int>();        // flavours on the floating cone, bottom first
     private SpriteRenderer[] sections = new SpriteRenderer[Flavours];
     private SpriteRenderer coneRenderer, crossRenderer; private SpriteRenderer[] scoopRenderers = new SpriteRenderer[MaxScoops];
@@ -38,6 +43,7 @@ public class IceCreamStation : MonoBehaviour
 
     public bool IsBuilding => building;
     public int Left(int flavour) => left[Mathf.Clamp(flavour, 0, Flavours - 1)];
+    public int ConesLeft => cones;
 
     private void Awake()
     {
@@ -46,7 +52,7 @@ public class IceCreamStation : MonoBehaviour
         Build();
     }
 
-    private void Start() { orderSystem = FindObjectOfType<OrderSystem>(); RefreshSections(); }
+    private void Start() { orderSystem = FindObjectOfType<OrderSystem>(); RefreshSections(); RefreshHolder(); }
 
     /// The children: the sections, the holder, the floating cone with its scoops and the cross; built once
     private void Build()
@@ -67,7 +73,7 @@ public class IceCreamStation : MonoBehaviour
         }
         var h = new GameObject("Holder", typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); h.transform.SetParent(transform, false);
         h.transform.localPosition = At(holderRect.center) + Vector3.back * 0.02f;
-        var hr = h.GetComponent<SpriteRenderer>(); hr.sortingLayerName = layer; hr.sortingOrder = order + 2; hr.sprite = holderSprite;
+        var hr = h.GetComponent<SpriteRenderer>(); hr.sortingLayerName = layer; hr.sortingOrder = order + 2; hr.sprite = holderSprite; holderRenderer = hr;
         h.GetComponent<BoxCollider>().size = new Vector3(holderRect.width * b.size.x, holderRect.height * b.size.y, 0.2f);
         var ht = h.GetComponent<IceCreamTap>(); ht.station = this; ht.kind = IceCreamTap.Kind.Holder;
 
@@ -106,17 +112,33 @@ public class IceCreamStation : MonoBehaviour
         switch (kind)
         {
             case IceCreamTap.Kind.Holder: if (!building) StartCone(); break;
-            case IceCreamTap.Kind.Section: if (!building) StartCone(); AddScoop(index); break;
+            case IceCreamTap.Kind.Section: if (!building && !StartCone()) break; AddScoop(index); break;
             case IceCreamTap.Kind.Cross: ClearCone(); break;
             case IceCreamTap.Kind.Cone: Serve(); break;
         }
     }
 
-    private void StartCone()
+    /// A cone off the holder; false (and a shake) when the holder is empty: the waffle machine in the kitchen refills it
+    private bool StartCone()
     {
+        if (!TakeCone()) { Reject(); return false; }
         building = true; cone.Clear();
         foreach (var s in scoopRenderers) if (s != null) s.enabled = false;
         if (build != null) { build.gameObject.SetActive(true); StartCoroutine(Float(build)); }
+        return true;
+    }
+
+    public bool TakeCone() { if (cones <= 0) return false; cones--; RefreshHolder(); return true; }
+
+    /// The holder back to four cones: the kitchen waffle machine's job (owner, 22 October)
+    public void RefillCones() { cones = ConesFull; RefreshHolder(); }
+
+    private void RefreshHolder()
+    {
+        if (holderRenderer == null) return;
+        var s = Resources.Load<Sprite>("IceCream/holder_" + Mathf.Clamp(cones, 0, ConesFull));
+        holderRenderer.sprite = s != null ? s : holderSprite;
+        holderRenderer.color = s == null && cones <= 0 ? new Color(0.6f, 0.6f, 0.6f, 0.7f) : Color.white;   // no level picture yet: an empty stack greys
     }
 
     private void AddScoop(int flavour)

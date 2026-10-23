@@ -10,6 +10,7 @@ if (food == "IceCream")
     var st = UnityEngine.Object.FindObjectOfType<IceCreamStation>(); if (st == null) return "S|missing|IceCream";
     string want = null; foreach (var tv in os.GetCurrentOrderTypesWithVariants()) if (tv.StartsWith("IceCream:")) { want = tv.Substring(9); break; }
     if (want == null) return "S|missing|IceCream variant";
+    if (st.ConesLeft <= 0) { st.RefillCones(); return "S|refill|Cones"; }   // the kitchen waffle machine's trip (22 October)
     foreach (var ch in want) if (st.Left(IceCreamStation.Letters.IndexOf(ch)) <= 0) { st.RefillAll(); return "S|refill|IceCream"; }
     st.OnTap(IceCreamTap.Kind.Cross, 0); st.OnTap(IceCreamTap.Kind.Holder, 0);
     foreach (var ch in want) st.OnTap(IceCreamTap.Kind.Section, IceCreamStation.Letters.IndexOf(ch));
