@@ -182,6 +182,16 @@ plain `python3` has no numpy.
   menu), one per tap onto the tray (a full tray refuses), regrow after 8 s like the apples; the palm picture has no
   painted coconuts. Since 21 October Coconut is a chapter 2 food in `FoodChapter` (only the chapter 2 kitchen has a palm,
   so on a chapter 1 day it was unservable); test session recipes enable it after `SetCurrentLevel(16)`. The autoplay driver builds cones (`step.cs`); `driver_ch2.py` runs days 17 to 32.
+  **One row, two levels (owner, 22 October):** the station is one row of four wells (vanilla, strawberry, chocolate, mint)
+  with the holder at the right end, box canvas 1200 x 420 at scene scale 0.28. Two flavours are open by default
+  (`IceCreamStation.BaseFlavours`); wells 3 and 4 wear a lid (`lidSprite`, `lidRects`) and refuse taps until the shop's
+  "Two more flavours" card (`IceCreamUpgrade`, Upgrade of `IceCream`, 900, chapter 2 shop only, one level:
+  `SessionManager.MaxUpgradeLevel`) sets IceCream level 2 (`ActiveFlavours`); orders ask only for open flavours
+  (`RandomVariant`). Art contract: every part on the box canvas at its place; `Docs/tools/icecream_row_cut.py <parts>`
+  crops them into `Assets/Images/icecream`, writes the rects, the collider and the scale into GameSceneOne
+  (`--holder-keep x y` keeps the game's holder.png, which the cone-count states derive from);
+  `Docs/tools/icecream_upgrade_card.py` added the shop card (a copy of the Coconut card's objects). Blockout parts and
+  painter: `Store/chapter2/icecream_station/row/`.
 
 ## 7. Driving the Unity editor
 
