@@ -10,8 +10,11 @@ using UnityEngine.UI;
 /// cream colours one by one with a swirl and a shake (BlenderAnim). Built once per kitchen load, every chapter.
 public static class KitchenBlender
 {
-    static readonly Vector2 Min = new Vector2(0.0296f, 0.5005f), Max = new Vector2(0.2065f, 0.649f);           // the cut-out's box on the background (blender_cut.py)
-    static readonly Vector2 FluidMin = new Vector2(0.1571f, 0.3614f), FluidMax = new Vector2(0.6806f, 0.6912f); // the drink inside the jug (blender_cut.py)
+    // the owner's new blender (23 October 2026, Store/artkit/blender/owner_blender_layers.py): the same spot and height as the
+    // cut-out's box, the width follows the new drawing's proportions (290 x 355 instead of 191 x 285)
+    static readonly Vector2 Min = new Vector2(0.0296f, 0.5005f), Max = new Vector2(0.2453f, 0.649f);
+    static readonly Vector2 FluidMin = new Vector2(0.2034f, 0.3662f), FluidMax = new Vector2(0.7172f, 0.7549f); // the drink inside the jug (layout.json)
+    static readonly Vector2 BladeMin = new Vector2(0.3241f, 0.6873f), BladeMax = new Vector2(0.5690f, 0.8592f); // the blending element the owner drew (layout.json)
     public static readonly Color Rest = new Color(1f, 1f, 1f, 0f);                                             // at rest the overlay is invisible: the owner's drink shows as drawn
     public static readonly Color[] Flavours =
     {
@@ -36,6 +39,16 @@ public static class KitchenBlender
         go.transform.SetParent(bg, false); go.transform.SetAsLastSibling();      // over the window view, under the shelf items (they are elsewhere)
         var rt = (RectTransform)go.transform; rt.anchorMin = Min; rt.anchorMax = Max; rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
         var img = go.GetComponent<Image>(); img.sprite = body; img.preserveAspect = false; img.raycastTarget = ch2;   // stretched exactly like the background it was cut from
+        // the blending element the owner drew, its own layer so the blend can spin it (owner, 23 October: "that blending
+        // thing turns on and swirls"); at rest it simply sits where it was drawn, in every chapter
+        Image bladeImage = null;
+        var bladeSprite = Resources.Load<Sprite>("Kitchen/blender_blade");
+        if (bladeSprite != null)
+        {
+            var blade = new GameObject("Blade", typeof(RectTransform), typeof(Image)); blade.transform.SetParent(rt, false);
+            var brt = (RectTransform)blade.transform; brt.anchorMin = BladeMin; brt.anchorMax = BladeMax; brt.offsetMin = Vector2.zero; brt.offsetMax = Vector2.zero;
+            bladeImage = blade.GetComponent<Image>(); bladeImage.sprite = bladeSprite; bladeImage.preserveAspect = false; bladeImage.raycastTarget = false;
+        }
         if (!ch2) return;                                                                 // chapter 1: the picture alone
 
         var fill = new GameObject("Contents", typeof(RectTransform), typeof(Image)); fill.transform.SetParent(rt, false);
@@ -52,14 +65,25 @@ public static class KitchenBlender
         var side = Mathf.Max(mrt.rect.width, mrt.rect.height) * 1.15f; srt.sizeDelta = new Vector2(side, side); srt.anchoredPosition = Vector2.zero;
         var si = swirl.GetComponent<Image>(); si.sprite = Resources.Load<Sprite>("Kitchen/blender_swirl"); si.preserveAspect = true; si.raycastTarget = false; si.color = new Color(1f, 1f, 1f, 0f);
 
-        var anim = go.GetComponent<BlenderAnim>(); anim.contents = fi; anim.swirl = si; anim.body = rt;
+        var anim = go.GetComponent<BlenderAnim>(); anim.contents = fi; anim.swirl = si; anim.body = rt; anim.blade = bladeImage;
+        if (bladeImage != null) bladeImage.transform.SetAsLastSibling();                 // the blade turns in front of the tinted drink and the swirl
     }
 }
 
 /// The blend: a shake, the swirl turning, the drink's colour stepping through the four flavours, then the rest colour again.
 public class BlenderAnim : MonoBehaviour, IPointerClickHandler
 {
-    public Image contents, swirl; public RectTransform body;
+    public Image contents, swirl, blade; public RectTransform body;
+    public static float BladeTurnsPerSecond = 2.5f;   // the blending element spins about its vertical axis (seen as a width squeeze and flip)
+
+    /// The blade seen turning: its width follows the cosine of the turn, flipping as it passes edge-on
+    private void Spin(float amount)
+    {
+        if (blade == null) return;
+        var c = Mathf.Cos(Time.unscaledTime * BladeTurnsPerSecond * 2f * Mathf.PI);
+        var sx = Mathf.Lerp(1f, c, amount); if (Mathf.Abs(sx) < 0.08f) sx = sx < 0f ? -0.08f : 0.08f;
+        blade.rectTransform.localScale = new Vector3(sx, 1f, 1f);
+    }
     public static float StepSeconds = 0.7f;      // per flavour; a test recipe can slow it down for captures
     public bool IsBlending { get; private set; }
     private Vector2 restPos;
@@ -100,7 +124,7 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
                 t += Time.unscaledDeltaTime;
                 var k = Mathf.Clamp01(t / (StepSeconds * 0.35f));                        // a quick crossfade, then the colour holds
                 if (contents != null) contents.color = Color.Lerp(from, flavours[i], k);
-                Churn(1f);
+                Churn(1f); Spin(1f);
                 Shake(rt, 1f);
                 if (swirl != null) { swirl.color = new Color(1f, 1f, 1f, 0.55f); swirl.rectTransform.Rotate(0f, 0f, -540f * Time.unscaledDeltaTime); }
                 yield return null;
@@ -112,7 +136,7 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         while (s < 0.6f)
         {
             s += Time.unscaledDeltaTime; var k = Mathf.Clamp01(s / 0.6f);
-            Shake(rt, 1f - k); Churn(1f - k);
+            Shake(rt, 1f - k); Churn(1f - k); Spin(1f - k);
             if (swirl != null) { swirl.color = new Color(1f, 1f, 1f, 0.55f * (1f - k)); swirl.rectTransform.Rotate(0f, 0f, -540f * (1f - k) * Time.unscaledDeltaTime); }
             if (contents != null) contents.color = new Color(from.r, from.g, from.b, 1f - k);           // the last flavour fades out to the drawn drink
             yield return null;
@@ -120,6 +144,7 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         rt.anchoredPosition = restPos; rt.localRotation = Quaternion.identity;
         if (contents != null) { contents.color = KitchenBlender.Rest; contents.rectTransform.localScale = Vector3.one; contents.rectTransform.anchoredPosition = Vector2.zero; }
         if (swirl != null) swirl.color = new Color(1f, 1f, 1f, 0f);
+        if (blade != null) blade.rectTransform.localScale = Vector3.one;
         IsBlending = false;
     }
 
@@ -144,6 +169,7 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         var rt = (RectTransform)transform; rt.anchoredPosition = restPos; rt.localRotation = Quaternion.identity;
         if (contents != null) contents.color = KitchenBlender.Rest;
         if (swirl != null) swirl.color = new Color(1f, 1f, 1f, 0f);
+        if (blade != null) blade.rectTransform.localScale = Vector3.one;
         IsBlending = false;
     }
 }
