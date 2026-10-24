@@ -35,6 +35,12 @@ public class IceCreamStation : MonoBehaviour
     public Rect holderRect;
     public Rect[] lidRects = new Rect[Flavours];            // where a closed well's lid sits; an empty rect means over the section's own rect
     public Vector2 buildPoint = new Vector2(0.5f, 1.15f);    // where the floating cone stands
+    [Header("Two-flavour station (level 1, owner 23 October 2026: half the size, two wells, no lids; the same canvas)")]
+    public Sprite smallBoxSprite;                             // the short box; null = the old look (the long box with two lids)
+    public Sprite[] smallSectionLevels = new Sprite[BaseFlavours * PerSection];   // [flavour * 3 + (level - 1)] for the two wells
+    public Rect[] smallSectionRects = new Rect[BaseFlavours];
+    public Rect smallHolderRect;
+    public Vector2 smallBuildPoint = new Vector2(0.27f, 1.22f);
     [Header("Build")] public float scoopStep = 0.62f;        // each scoop this much of a scoop's height above the one below
     public float firstScoopDrop = 0.22f;                      // the first scoop sits this much of its height into the cone
     public AudioClip scoopSound, serveSound;
@@ -48,6 +54,7 @@ public class IceCreamStation : MonoBehaviour
     private OrderSystem orderSystem; private ServeableItem item; private SpriteRenderer box;
     private Coroutine shake;
     private SpriteRenderer[] lids = new SpriteRenderer[Flavours];   // the closed wells' lids (22 October)
+    private Sprite[] activeLevels;                                  // the section pictures of the box in use (small or long)
 
     public bool IsBuilding => building;
     public int Left(int flavour) => left[Mathf.Clamp(flavour, 0, Flavours - 1)];
@@ -67,18 +74,33 @@ public class IceCreamStation : MonoBehaviour
     {
         if (transform.Find("Sec0") != null) return;
         var layer = box != null ? box.sortingLayerName : "Default"; var order = box != null ? box.sortingOrder : 0;
+        // level 1 (two flavours): the half-size two-well box with its own fills and holder spot (owner, 23 October 2026); the
+        // long four-well box once the shop's "Two more flavours" card is bought. Both pictures share one canvas, so the rects
+        // stay fractions of the same bounds.
+        var small = ActiveFlavours < Flavours && smallBoxSprite != null;
+        if (small && box != null) box.sprite = smallBoxSprite;
+        activeLevels = small ? smallSectionLevels : sectionLevels;
+        var rects = small ? smallSectionRects : sectionRects; var hRect = small ? smallHolderRect : holderRect; var bp = small ? smallBuildPoint : buildPoint;
+        var count = small ? BaseFlavours : Flavours;
         var b = box != null && box.sprite != null ? box.sprite.bounds : new Bounds(Vector3.zero, Vector3.one);   // local units of this object
         Vector3 At(Vector2 frac) => new Vector3(b.min.x + frac.x * b.size.x, b.min.y + frac.y * b.size.y, 0f);
-        for (var i = 0; i < Flavours; i++)
+        var drag = GetComponent<BoxCollider>();                  // the drag collider spans the canvas; the short box uses only its left part
+        if (small && drag != null)
         {
-            var r = sectionRects[i];
+            var ext = Mathf.Clamp01(hRect.xMax + 0.02f); var full = drag.size.x;
+            drag.size = new Vector3(full * ext, drag.size.y, drag.size.z);
+            drag.center = new Vector3(drag.center.x - full * (1f - ext) * 0.5f, drag.center.y, drag.center.z);
+        }
+        for (var i = 0; i < count; i++)
+        {
+            var r = rects[i];
             var go = new GameObject("Sec" + i, typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); go.transform.SetParent(transform, false);
             go.transform.localPosition = At(r.center) + Vector3.back * 0.02f;
-            var sr = go.GetComponent<SpriteRenderer>(); sr.sortingLayerName = layer; sr.sortingOrder = order + 1; sr.sprite = sectionLevels[i * PerSection + PerSection - 1];
+            var sr = go.GetComponent<SpriteRenderer>(); sr.sortingLayerName = layer; sr.sortingOrder = order + 1; sr.sprite = activeLevels[i * PerSection + PerSection - 1];
             var col = go.GetComponent<BoxCollider>(); col.size = new Vector3(r.width * b.size.x * 0.9f, r.height * b.size.y * 0.9f, 0.2f);
             var tap = go.GetComponent<IceCreamTap>(); tap.station = this; tap.kind = IceCreamTap.Kind.Section; tap.index = i;
             sections[i] = sr;
-            if (i >= BaseFlavours && lidSprite != null)            // a lid over the wells the upgrade opens; the section's collider under it takes the tap (refused while closed)
+            if (!small && i >= BaseFlavours && lidSprite != null)  // a lid over the wells the upgrade opens; the section's collider under it takes the tap (refused while closed)
             {
                 var lr = lidRects != null && i < lidRects.Length && lidRects[i].width > 0f ? lidRects[i] : r;
                 var lid = new GameObject("Lid" + i, typeof(SpriteRenderer)); lid.transform.SetParent(transform, false);
@@ -87,12 +109,12 @@ public class IceCreamStation : MonoBehaviour
             }
         }
         var h = new GameObject("Holder", typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); h.transform.SetParent(transform, false);
-        h.transform.localPosition = At(holderRect.center) + Vector3.back * 0.02f;
+        h.transform.localPosition = At(hRect.center) + Vector3.back * 0.02f;
         var hr = h.GetComponent<SpriteRenderer>(); hr.sortingLayerName = layer; hr.sortingOrder = order + 2; hr.sprite = holderSprite; holderRenderer = hr;
-        h.GetComponent<BoxCollider>().size = new Vector3(holderRect.width * b.size.x, holderRect.height * b.size.y, 0.2f);
+        h.GetComponent<BoxCollider>().size = new Vector3(hRect.width * b.size.x, hRect.height * b.size.y, 0.2f);
         var ht = h.GetComponent<IceCreamTap>(); ht.station = this; ht.kind = IceCreamTap.Kind.Holder;
 
-        build = new GameObject("Build").transform; build.SetParent(transform, false); build.localPosition = At(buildPoint) + Vector3.back * 0.03f;
+        build = new GameObject("Build").transform; build.SetParent(transform, false); build.localPosition = At(bp) + Vector3.back * 0.03f;
         var c = new GameObject("Cone", typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); c.transform.SetParent(build, false);
         coneRenderer = c.GetComponent<SpriteRenderer>(); coneRenderer.sortingLayerName = layer; coneRenderer.sortingOrder = order + 5; coneRenderer.sprite = coneSprite;
         var ct = c.GetComponent<IceCreamTap>(); ct.station = this; ct.kind = IceCreamTap.Kind.Cone;
@@ -211,7 +233,7 @@ public class IceCreamStation : MonoBehaviour
             var open = IsOpen(i); if (lids[i] != null) lids[i].enabled = !open;
             var lv = Mathf.Clamp(left[i], 0, PerSection);
             sections[i].enabled = open && lv > 0;
-            if (lv > 0) sections[i].sprite = sectionLevels[i * PerSection + lv - 1];
+            if (lv > 0) sections[i].sprite = (activeLevels ?? sectionLevels)[i * PerSection + lv - 1];
         }
     }
 

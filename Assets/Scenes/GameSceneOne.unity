@@ -5450,6 +5450,32 @@ MonoBehaviour:
     width: 0.1825
     height: 0.3452
   buildPoint: {x: 0.42, y: 1.22}
+  smallBoxSprite: {fileID: 21300000, guid: cb7076279b044499a952da3fe2c7ef8b, type: 3}
+  smallSectionLevels:
+  - {fileID: 21300000, guid: 563a5be097ff41e4b5784850bcd2bc43, type: 3}
+  - {fileID: 21300000, guid: 6748866d6f1841a9922988658074ad9c, type: 3}
+  - {fileID: 21300000, guid: 13c7aa8063aa4497a7d299c22bfa0c71, type: 3}
+  - {fileID: 21300000, guid: 2de88789aa8146db8cd691940c684632, type: 3}
+  - {fileID: 21300000, guid: b53c21dea1d043508d9c46d5fadb627d, type: 3}
+  - {fileID: 21300000, guid: c95676b491284507aa3d387b0343fb88, type: 3}
+  smallSectionRects:
+  - serializedVersion: 2
+    x: 0.0650
+    y: 0.4381
+    width: 0.1592
+    height: 0.3071
+  - serializedVersion: 2
+    x: 0.2492
+    y: 0.4357
+    width: 0.1592
+    height: 0.3119
+  smallHolderRect:
+    serializedVersion: 2
+    x: 0.4592
+    y: 0.0095
+    width: 0.1625
+    height: 0.6357
+  smallBuildPoint: {x: 0.237, y: 1.22}
   scoopStep: 0.62
   firstScoopDrop: 0.22
   scoopSound: {fileID: 0}
