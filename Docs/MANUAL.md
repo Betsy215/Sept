@@ -190,11 +190,9 @@ plain `python3` has no numpy.
   **Cones run out too (22 October, branch `worktree-waffle-machine` until merged):** the holder stacks four
   (`IceCreamStation.ConesFull`, `ConesLeft`, `TakeCone` in `StartCone`, `RefillCones`); a started cone is gone whether
   served or cleared, an empty holder refuses with a shake, the holder picture per count comes from
-  `Resources/IceCream/holder_0..4` (the cone sprite session's files; `holderSprite` greyed when they are missing). The
-  **kitchen waffle machine** (`KitchenWaffleMachine.Apply` from the first oven's Awake, chapter 2 only, on the counter's
-  front left in front of the blender, box x 0.03 to 0.225, y 0.418 to 0.50 of the background, 210 x 157 px; the counter's
-  right is the cake's place) refills the holder as the
-  tap lands and plays the bake (`WaffleAnim`: a warm glow, three steam puffs, the lid opens, a cone pops out, the lid
+  `Resources/IceCream/holder_0..4` (the cone sprite session's files; `holderSprite` greyed when they are missing). Until 25 October the
+  **kitchen waffle machine** (`KitchenWaffleMachine.Apply`, now a no-op: `OnTheTable`) refilled the holder as the
+  tap landed and played the bake (`WaffleAnim`: a warm glow, three steam puffs, the lid opens, a cone pops out, the lid
   shuts). Pictures `Resources/Kitchen/waffle_closed`, `waffle_open`, `waffle_steam`, optional `waffle_cone` and
   `waffle_bake` sound (none yet): the pictures are the brief session's 22 October drafts (`Store/redesign/icecream_row/out`), ChatGPT's version waits for the quota and the owner's pick. The driver
   (`step.cs`) calls `RefillCones` when the holder is empty. Check after the merge: `Docs/tools/recipes/verify22/run22.sh`.
@@ -210,16 +208,22 @@ plain `python3` has no numpy.
   child of the window's Palm) fades in with the day's clock in `DayNightTint`'s window colours (dusk 0.40, night 0.78 alpha),
   the coconut cluster sits above it and stays bright, like the apples; the old multiplicative palm dim is gone. Captures:
   `recipes/capture_cn21.sh` (chapter 2 kitchen by day and at night, `night_hold.cs` freezes the clock at night).
-  **One row, two levels (owner, 22 October):** the station is one row of four wells (vanilla, strawberry, chocolate, mint)
-  with the holder at the right end, box canvas 1200 x 420 at scene scale 0.28. Two flavours are open by default
-  (`IceCreamStation.BaseFlavours`); wells 3 and 4 wear a lid (`lidSprite`, `lidRects`) and refuse taps until the shop's
-  "Two more flavours" card (`IceCreamUpgrade`, Upgrade of `IceCream`, 900, chapter 2 shop only, one level:
-  `SessionManager.MaxUpgradeLevel`) sets IceCream level 2 (`ActiveFlavours`); orders ask only for open flavours
-  (`RandomVariant`). Art contract: every part on the box canvas at its place; `Docs/tools/icecream_row_cut.py <parts>`
-  crops them into `Assets/Images/icecream`, writes the rects, the collider and the scale into GameSceneOne
-  (`--holder-keep x y` keeps the game's holder.png, which the cone-count states derive from);
-  `Docs/tools/icecream_upgrade_card.py` added the shop card (a copy of the Coconut card's objects). Blockout parts and
-  painter: `Store/chapter2/icecream_station/row/`.
+  **One row, two levels (owner, 22 October; reshaped 25 October):** the station is one row of wells with the cone stack and the
+  waffle machine at its right end, box canvas 1200 x 420 at scene scale 0.31. Level 1 (two flavours, `IceCreamStation.BaseFlavours`)
+  shows the SHORT box: the owner's long box cut to its right two wells with the right end mirrored as the left end
+  (`Store/redesign/icecream_row/v1navy/owner_small2.py`, cut by `Docs/tools/icecream_small_cut.py --holder-keep <x> 149`;
+  `smallBoxSprite`, `smallSectionLevels`, `smallSectionRects`, `smallHolderRect`, `smallBuildPoint`). The shop's "Two more flavours"
+  card (`IceCreamUpgrade`, Upgrade of `IceCream`, 900, chapter 2 shop only, one level: `SessionManager.MaxUpgradeLevel`) sets IceCream
+  level 2 (`ActiveFlavours`) and the LONG four-well box (the owner's repaint, `front_out/station_box.png`); orders ask only for open
+  flavours (`RandomVariant`). **No lids** (owner, 25 October: "we don't need the lid ever"): the lid sprite, field and rects are gone.
+  **No stand:** the cones stack on themselves (`Resources/IceCream/holder_0..4`, 100 x 267, `cone_stack.py`; `holder.png` = four);
+  the station's `holderRect` is that canvas. **The waffle machine stands on the table** right of the stack (owner, 25 October: the
+  cast-iron one, smaller): `Resources/IceCream/waffle_closed|open` (300 x 220, the owner's iCloud copies), drawn at `waffleHeight`
+  0.6 of the stack's height, `waffleGap` after it; a tap (`IceCreamTap.Kind.Waffle`) bakes the stack back to four and flips the lid
+  open for half a second (`BakeCones`); a full stack refuses. The kitchen machine is retired (`KitchenWaffleMachine.OnTheTable`).
+  Art contract: every part on the box canvas at its place; `Docs/tools/icecream_row_cut.py <parts>` crops the long set into
+  `Assets/Images/icecream`, writes the rects, the collider and the scale into GameSceneOne; `icecream_upgrade_card.py` added the
+  shop card. Blockout parts and painter: `Store/chapter2/icecream_station/row/`.
 
 ## 7. Driving the Unity editor
 
