@@ -3,11 +3,14 @@
 Current open work, as of 13 October 2026 (night). Done items are removed; the dated record is in `Docs/history/`
 (the 9 to 13 October TODO is `history/TODO_2026-10-13_before_rewrite.md`).
 
-## Release 26.10.17 (owner, 16 October evening: "today or this weekend")
+## Release 26.10.18 with chapter 2 (owner, 25 October: "release today/tomorrow")
 
-- [ ] **Owner decides:** ship without chapter 2 (my pick) or hold for it; re-tune the star lines; release note text; privacy
-  label entry (Usage Data / Product Interaction); the store description's "two customers" wording.
-- [ ] **TestFlight first** (26.10.17 build 2, uploaded 16 October 17:58; build 1 before it): the one-more-treat ad button, test ads, analytics events, the menu on iPad, shared ovens, the shop layout and popup, the day-end note, the longer days.
+- [x] **Build 4 to TestFlight** (25 October morning, from the `coconut-five` worktree: everything on the branch, the owner's blender, station box and cone holder included).
+- [ ] **Owner plays build 4** ("Chapter 2 test" button on the main menu), says "good" or what is wrong (a fix = build 5).
+- [ ] **Owner's yes on the texts** (drafts in the report's MVP and in `Docs/tools/asc_release.py`: What's New; the description's "two customers" line stays unless ticked), the screenshot choice (keep the 26.10.13 set or new captures), release on approval or manual.
+- [ ] **On "submit":** `asc_release.py 26.10.18 create`, `build 4`, `submit`; the owner sets the privacy label (Usage Data, Product Interaction, not linked to you) in App Store Connect.
+- [ ] **Main:** the owner merges `worktree-coconut-five` (fast-forward) and pushes, so main matches the shipped build; then a play check on main and fresh captures for the Visuals tab (needs the Unity bridge: Start Server in Window, MCP for Unity).
+- [ ] Not in this release: the coconut tray redraw (ChatGPT), new store screenshots unless ticked, a driver run of the merged branch (bridge down on 25 October).
 - [ ] **Store screenshots:** redo for the menu, prices and background; the banner must not say "16 days", use
   "earn stars along the trip" (owner, 16 October). `Store/screenshots/caption.py`.
 - [ ] **Next release after this one:** stars as a second currency (earned by play, a replay never pays the same star twice;

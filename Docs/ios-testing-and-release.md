@@ -135,6 +135,8 @@ The whole TestFlight path runs from the terminal and the Unity editor link; only
 5. **Upload**: `xcodebuild -exportArchive -archivePath <xcarchive> -exportOptionsPlist Builds/archives/exportOptions-upload.plist -exportPath <scratch> -allowProvisioningUpdates` (method app-store-connect, destination upload). This uses the Apple ID signed into Xcode; the API key cannot create the distribution certificate.
 6. **Processing**: poll `GET /v1/builds?filter[app]=6755611355&sort=-uploadedDate` with the App Store Connect API (brackets URL-encoded) until `processingState` is `VALID`, usually 10 to 20 minutes. The internal TestFlight group receives it automatically.
 7. **Submission** (owner's explicit go only): create the version in App Store Connect, attach the build, What's New, screenshots, App Privacy check, submit.
+   Scripted since 25 October 2026: `python3 -I Docs/tools/asc_release.py <version> status|create|build <n>|submit|release` (create copies the live version's texts and sets What's New from the script; App Store Connect carries the screenshots over; the privacy label stays manual).
+   Worktree exports (23 to 25 October 2026): `Unity -batchmode -quit -projectPath <worktree> -buildTarget iOS -executeMethod CommandLineBuild.iOS -exportPath ... -logFile ...` works while the main editor is open on the main checkout (about 6 minutes fresh, 20 s incremental); then the same archive and upload.
 
 Editor notes: Unity Ads shows a placeholder ad in play mode after Next Level (Skip and Close buttons on a DontDestroyOnLoad object called Placeholder); the game continues underneath it. Closing it fires the ad-finished callback, which reloads the Shop.
 
