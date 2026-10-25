@@ -40,8 +40,9 @@ public class IceCreamStation : MonoBehaviour
     public Rect smallHolderRect;
     public Vector2 smallBuildPoint = new Vector2(0.27f, 1.22f);
     [Header("Waffle machine on the table (owner, 25 October 2026: beside the cone stack, the cast-iron one, smaller)")]
-    public float waffleHeight = 0.38f;                        // its height as a share of the box picture's height (420 px canvas: about 160 px)
+    public float waffleHeight = 0.5f;                         // its height as a share of the box picture's height (owner, 25 October afternoon: bigger; was 0.38)
     public float waffleGap = 0.02f;                           // gap above the cone row, a fraction of the box picture's height
+    public float waffleShift = -0.04f;                        // sideways from the row's centre, a fraction of the box width (owner, 25 October: "move it to the left a little", centred on the six cones)
     public const int WafflesPerSession = 2; public const float WaffleSeconds = 8f;   // one session bakes two cones in 8 s (owner, 25 October)
     [Header("Build")] public float scoopStep = 0.62f;        // each scoop this much of a scoop's height above the one below
     public float firstScoopDrop = 0.22f;                      // the first scoop sits this much of its height into the cone
@@ -93,9 +94,15 @@ public class IceCreamStation : MonoBehaviour
         if (waffleClosed != null)
         {
             var wh = waffleHeight; var ww = wh * waffleClosed.rect.width / waffleClosed.rect.height * b.size.y / b.size.x;
-            wRect = new Rect(hRect.x + (hRect.width - ww) * 0.5f, hRect.yMax + waffleGap, ww, wh);
+            wRect = new Rect(hRect.x + (hRect.width - ww) * 0.5f + waffleShift, hRect.yMax + waffleGap, ww, wh);
         }
         var drag = GetComponent<BoxCollider>();                  // the drag collider spans the canvas; the short box uses only its left part
+        if (drag != null && wRect.yMax > 1f)                     // the machine stands above the box picture: the drag collider grows to cover it, so the group moves as one in the arrangement (owner, 25 October)
+        {
+            var fullY = drag.size.y; var extY = wRect.yMax + 0.02f;
+            drag.size = new Vector3(drag.size.x, fullY * extY, drag.size.z);
+            drag.center = new Vector3(drag.center.x, drag.center.y + fullY * (extY - 1f) * 0.5f, drag.center.z);
+        }
         if (small && drag != null)
         {
             var ext = Mathf.Clamp(Mathf.Max(hRect.xMax, wRect.xMax) + 0.02f, 0f, 1.5f); var full = drag.size.x;

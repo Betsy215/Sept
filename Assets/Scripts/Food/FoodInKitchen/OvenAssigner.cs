@@ -105,8 +105,8 @@ public static class OvenAssigner
 
 /// <summary>
 /// The recipe picker (owner, 25 October 2026): a tap on an idle oven shows the notes of the oven foods on today's
-/// menu, next to that oven, no card behind them (like the menu's carousel); a tap on a note starts the bake there, a tap
-/// anywhere else closes the picker and nothing bakes. A recipe
+/// menu as big stickers on a centred panel in the shop panel's style (the afternoon's ask; the morning's "no card, next to
+/// the oven" look is gone); a tap on a note starts the bake there, a tap outside the panel closes the picker and nothing bakes. A recipe
 /// already baking in another oven is greyed out. One picker at a time; it lives in the kitchen's canvas and goes
 /// with the kitchen scene.
 /// </summary>
@@ -114,7 +114,11 @@ public class OvenPicker : MonoBehaviour
 {
     private static OvenPicker open;
     private OvenKitchenBase oven;
-    private const float Tile = 130f, Gap = 14f, Pad = 18f;
+    // Owner, 25 October 2026, afternoon: "make the stickers bigger, it's like an overlay effect ... the only thing the player
+    // can interact with, clicking anywhere else cancels it ... a transparent overlay behind the stickers, like the shop panel".
+    // So: a centred panel in the shop panel's style (the built-in rounded UI sprite, white at 70 %), big notes in a grid of
+    // three to a row, a full-screen blocker behind it; a tap outside the panel closes, a tap on the panel does nothing.
+    private const float Tile = 290f, Gap = 24f, Pad = 40f; private const int PerRow = 3;
 
     public static void Open(OvenKitchenBase forOven, List<string> recipes)
     {
@@ -123,7 +127,6 @@ public class OvenPicker : MonoBehaviour
         foreach (var c in Object.FindObjectsOfType<Canvas>())
             if (c.gameObject.scene.name == "KitchenScene") { canvas = c; break; }
         if (canvas == null || forOven == null) return;
-        var canvasRect = (RectTransform)canvas.transform;
 
         // a see-through blocker over the whole kitchen: a tap on it closes the picker
         var root = new GameObject("OvenPicker", typeof(RectTransform), typeof(Image), typeof(OvenPicker));
@@ -133,29 +136,23 @@ public class OvenPicker : MonoBehaviour
         var picker = root.GetComponent<OvenPicker>(); picker.oven = forOven; open = picker;
         var closer = root.AddComponent<PickerCloser>(); closer.picker = picker;
 
-        // the card, above the oven, kept inside the canvas
-        var n = recipes.Count;
+        // the panel, centred on the screen, in the shop panel's style
+        var n = recipes.Count; var cols = Mathf.Min(n, PerRow); var rows = (n + PerRow - 1) / PerRow;
         var card = new GameObject("Card", typeof(RectTransform), typeof(Image)); card.transform.SetParent(root.transform, false);
         var crt = (RectTransform)card.transform; crt.anchorMin = crt.anchorMax = new Vector2(0.5f, 0.5f);
-        crt.sizeDelta = new Vector2(n * Tile + (n - 1) * Gap + 2 * Pad, Tile + 2 * Pad);
-        card.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);   // no card: the notes alone, like the menu's carousel (owner, 25 October)
-        var cam = canvas.worldCamera != null ? canvas.worldCamera : Camera.main;
-        var ovenRt = (RectTransform)forOven.transform;
-        Vector2 local;
-        var screen = RectTransformUtility.WorldToScreenPoint(cam, ovenRt.position);
-        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screen, cam, out local)) local = Vector2.zero;
-        var half = canvasRect.rect.size * 0.5f; var size = crt.sizeDelta;
-        var y = local.y + ovenRt.rect.height * 0.5f + size.y * 0.5f + 24f;
-        if (y + size.y * 0.5f > half.y - 20f) y = local.y - ovenRt.rect.height * 0.5f - size.y * 0.5f - 24f;   // no room above: below
-        var x = Mathf.Clamp(local.x, -half.x + size.x * 0.5f + 20f, half.x - size.x * 0.5f - 20f);
-        crt.anchoredPosition = new Vector2(x, y);
+        crt.sizeDelta = new Vector2(cols * Tile + (cols - 1) * Gap + 2 * Pad, rows * Tile + (rows - 1) * Gap + 2 * Pad);
+        crt.anchoredPosition = Vector2.zero;
+        var panel = card.GetComponent<Image>(); panel.sprite = Resources.GetBuiltinResource<Sprite>("UISprite.psd"); panel.type = Image.Type.Sliced;
+        panel.color = new Color(1f, 1f, 1f, 0.698f);                  // the shop panel's white at 70 %
 
         for (var i = 0; i < n; i++)
         {
-            var recipe = recipes[i];
+            var recipe = recipes[i]; var col = i % PerRow; var row = i / PerRow;
+            var inRow = Mathf.Min(PerRow, n - row * PerRow); var rowW = inRow * Tile + (inRow - 1) * Gap;   // a short last row is centred
             var tile = new GameObject("Note_" + recipe, typeof(RectTransform), typeof(Image), typeof(Button)); tile.transform.SetParent(card.transform, false);
-            var trt = (RectTransform)tile.transform; trt.anchorMin = trt.anchorMax = new Vector2(0f, 0.5f); trt.pivot = new Vector2(0f, 0.5f);
-            trt.sizeDelta = new Vector2(Tile, Tile); trt.anchoredPosition = new Vector2(Pad + i * (Tile + Gap), 0f);
+            var trt = (RectTransform)tile.transform; trt.anchorMin = trt.anchorMax = new Vector2(0.5f, 1f); trt.pivot = new Vector2(0.5f, 0.5f);
+            trt.sizeDelta = new Vector2(Tile, Tile);
+            trt.anchoredPosition = new Vector2(-rowW * 0.5f + Tile * 0.5f + col * (Tile + Gap), -(Pad + Tile * 0.5f + row * (Tile + Gap)));
             trt.localRotation = Quaternion.Euler(0f, 0f, ((i * 7 + 3) % 9 - 4) * 1.5f);   // a small tilt each, as in the carousel
             var img = tile.GetComponent<Image>(); img.sprite = OvenAssigner.NoteFor(recipe); img.preserveAspect = true;
             var busy = OvenKitchenBase.IsRecipeBaking(recipe);
