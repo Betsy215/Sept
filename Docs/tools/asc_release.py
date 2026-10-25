@@ -19,7 +19,7 @@ TOKEN = subprocess.run(["python3", "-I", os.path.join(os.path.dirname(os.path.ab
 WHATS_NEW = """Chapter 2: a beach stop with 16 new days
 Ice cream cones and coconuts
 A menu board: pick what you serve each day
-Shared ovens, a bigger shop, longer days
+Buy more ovens, bake any recipe in any oven
 Fixes"""
 DESCRIPTION_EDITS = {}  # {"old words": "new words"}; filled only on the owner's tick, e.g. the "two customers" line
 
