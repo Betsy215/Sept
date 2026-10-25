@@ -16,13 +16,13 @@ MonoBehaviour:
   levelName: Day 5
   ordersPerLevel: 9
   orderDisplayTime: 7
-  timeBetweenOrders: 5
+  timeBetweenOrders: 4
   dayDurationSeconds: 50
   minOrderItems: 2
   maxOrderItems: 4
-  starThreshold1: 110
-  starThreshold2: 200
-  starThreshold3: 290
+  starThreshold1: 130
+  starThreshold2: 230
+  starThreshold3: 330
   maxPossibleScore: 50
   backgroundSprite: {fileID: 0}
   useSpecificFoodTypes: 0

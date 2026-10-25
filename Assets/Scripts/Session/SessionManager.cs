@@ -63,7 +63,7 @@ public class SessionData
         sessionStartTime = DateTime.Now;
         isActive = true;
 
-        purchasedFoodItems = new List<string> { "Bread", "Coffee" };
+        purchasedFoodItems = new List<string> { "Bread", "Coffee", "Apple" };   // three foods from the start (owner, 25 October 2026: apple, bread, coffee; no Apple card in the shop)
         enabledFoodItems = new List<string> { "Bread", "Coffee" };
         foodUpgradeLevels = new Dictionary<string, int>()
         {
@@ -225,8 +225,8 @@ public class SessionManager : MonoBehaviour
     /// Foods that appear in the shop with a lock until the player has started their chapter (owner, 16 October):
     /// Cookies and Coconut open with chapter 2, and once bought they play in any chapter.
     public static readonly Dictionary<string, int> UnlockChapter = new Dictionary<string, int> { { "Cookies", 2 }, { "Coconut", 2 } };
-    /// Chapters the player has reached: 1 plus one per 16 finished days, never past Chapter.Count
-    public static int ChaptersStarted => Mathf.Clamp(1 + (Instance != null ? Instance.GetLevelsCompleted() : 0) / Chapter.Days, 1, Chapter.Count);
+    /// Chapters the player has reached: the chapter of the next day to play (12 days in chapter 1, 16 in chapter 2), never past Chapter.Count
+    public static int ChaptersStarted => Mathf.Clamp(Chapter.Of(Instance != null ? Instance.GetLevelsCompleted() : 0), 1, Chapter.Count);
     public static bool IsLockedInShop(string foodType) => foodType != null && UnlockChapter.TryGetValue(foodType, out var c) && c > ChaptersStarted;
 
     /// Chapter of the day being played (always 1 while Chapter.Count is 1).

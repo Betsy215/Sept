@@ -422,6 +422,14 @@ public class MenuBook : MonoBehaviour
                 if (item != null && OwnsFood(sm, item.GetFoodType()) && !foods.Contains(item.GetFoodType()))
                     foods.Add(item.GetFoodType());
 
+        // Paper slots (three across): a food the player has placed keeps its spot; a food without one (just bought) takes the
+        // first slot no placed sticker sits on, so it never lands on top of another (owner, 25 October 2026: new stickers
+        // appeared in the first spot over what was there)
+        var taken = new HashSet<int>();
+        foreach (var f in foods)
+            if (sm.IsFoodItemEnabled(f) && SessionManager.IsFoodInSeason(f) && sm.TryGetMenuStickerSpot(f, out var sp))
+                taken.Add(Mathf.Clamp(Mathf.RoundToInt(sp.x / 255f) + 1, 0, 2) + 3 * Mathf.Clamp(Mathf.RoundToInt((245f - sp.y) / 250f), 0, 9));
+        var nextFree = 0;
         var offCount = 0;
         for (var i = 0; i < foods.Count; i++)
         {
@@ -439,12 +447,15 @@ public class MenuBook : MonoBehaviour
             {
                 // Its own spot on the paper (three across), nudged and tilted the same way every time
                 var rng = new System.Random(StableHash(food));
-                var col = i % 3; var row = i / 3;
+                var hasSpot = sm.TryGetMenuStickerSpot(food, out var spot);
+                var slot = 0;
+                if (!hasSpot) { while (taken.Contains(nextFree)) nextFree++; slot = nextFree; taken.Add(slot); }
+                var col = slot % 3; var row = slot / 3;
                 var x = (col - 1) * 255f + (float)(rng.NextDouble() * 40 - 20);
                 var y = 245f - row * 250f + (float)(rng.NextDouble() * 30 - 15);
                 var rot = (float)(rng.NextDouble() * 8 - 4);   // a small tilt only; the sprites are drawn straight (owner, 16 October)
                 var st = MakeSticker(food, board, StickerSize);
-                if (sm.TryGetMenuStickerSpot(food, out var spot)) { x = spot.x; y = spot.y; }   // where the player left it
+                if (hasSpot) { x = spot.x; y = spot.y; }   // where the player left it
                 st.anchoredPosition = new Vector2(x, y); st.localRotation = Quaternion.Euler(0, 0, rot);
                 st.gameObject.AddComponent<StickerDrag>().Init(this, food, board);
                 if (!SessionManager.IsFixedFood(food)) AddCross(st, food);   // the chapter's fixed food has no cross: it stays (owner, 16 October)

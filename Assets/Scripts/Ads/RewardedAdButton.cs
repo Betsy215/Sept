@@ -21,7 +21,7 @@ public class RewardedAdButton : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
     [SerializeField] private float _maxRetryDelaySeconds = 30f;
 
     [Header("Reward Settings")] [SerializeField]
-    private float _coinsPerAd = 5f;
+    private float _coinsPerAd = 50f;   // owner, 25 October 2026: 50 per ad (was 5)
 
     [Header("UI References (auto-found if empty)")] [SerializeField]
     private Button _button;

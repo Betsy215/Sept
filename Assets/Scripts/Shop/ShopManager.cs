@@ -453,8 +453,11 @@ public class ShopManager : MonoBehaviour
         var ii = icon.GetComponent<Image>(); if (ii != null && locked) ii.color = new Color(0.75f, 0.75f, 0.75f, 1f);
     }
 
+    /// Cards that left the shop for good: Apple is owned from the start (owner, 25 October 2026: apple, bread and coffee as the three default items)
+    private static readonly string[] RemovedCards = { "Apple" };
     private static bool IsHeldBackCard(ShopItemController card) =>
-        card != null && (SessionManager.IsHeldBack(card.itemName?.Trim()) || SessionManager.IsHeldBack(card.upgradeFoodType?.Trim()) || SessionManager.IsHeldBack(card.gameObject.name));
+        card != null && (SessionManager.IsHeldBack(card.itemName?.Trim()) || SessionManager.IsHeldBack(card.upgradeFoodType?.Trim()) || SessionManager.IsHeldBack(card.gameObject.name)
+                         || System.Array.IndexOf(RemovedCards, card.itemName?.Trim()) >= 0);
 
     // Scroll bounds of the card container, set by LayoutCards (16 October); before that the cards were placed by hand
     // in the scene (rows 900 apart, bottom 3290) and a finger drag could not reach the last rows

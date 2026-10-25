@@ -4715,7 +4715,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 450
+      value: 900
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -4959,7 +4959,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: price
-      value: 900
+      value: 450
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: itemIcon
@@ -5567,7 +5567,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: specialNote
-      value: Three cups at once
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
@@ -5762,7 +5762,7 @@ MonoBehaviour:
   _rewardSFX: {fileID: 8300000, guid: b69079fb1909948c688fc9740c9b15a9, type: 3}
   _retryDelaySeconds: 3
   _maxRetryDelaySeconds: 30
-  _coinsPerAd: 5
+  _coinsPerAd: 50
   _button: {fileID: 0}
   _buttonLabel: {fileID: 0}
   _infoLabel: {fileID: 0}
@@ -6261,7 +6261,7 @@ MonoBehaviour:
 
     One more oven in the kitchen'
   purchaseButtonText: $ 500
-  specialNote: Any oven bakes any recipe
+  specialNote: 
   isPurchased: 0
 --- !u!1 &1340369352
 GameObject:

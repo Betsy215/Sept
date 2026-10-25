@@ -16,20 +16,20 @@ using UnityEngine.UI;
 public class MapScreen : MonoBehaviour
 {
     public const string SceneName = "Map";
-    public const int ChapterDays = 16;
     public static bool CameFromDay;
     /// The page shown (0 = chapter 1); chosen from today's chapter when the scene opens, moved by the arrows
     private int page;
 
     public Sprite truckSprite, boardSprite, starSprite, darkStarSprite, homeSprite;
 
-    // Scorpio in the 1080x1920 design space (origin top left): claws top right, tail curling bottom left
+    // Scorpio in the 1080x1920 design space (origin top left): claws top right, tail curling bottom left.
+    // Twelve days since 25 October 2026 (owner): the 16-star layout thinned to 12 along the same curve
     private static readonly Vector2[] Stars =
     {
-        new Vector2(640, 730), new Vector2(720, 620), new Vector2(790, 520), new Vector2(880, 435),
+        new Vector2(640, 730), new Vector2(760, 570), new Vector2(880, 435),
         new Vector2(965, 530), new Vector2(800, 710), new Vector2(700, 830), new Vector2(615, 950),
-        new Vector2(545, 1090), new Vector2(505, 1230), new Vector2(470, 1380), new Vector2(380, 1510),
-        new Vector2(250, 1530), new Vector2(165, 1430), new Vector2(205, 1315), new Vector2(300, 1275)
+        new Vector2(535, 1120), new Vector2(480, 1330), new Vector2(380, 1510),
+        new Vector2(230, 1520), new Vector2(165, 1400)
     };
 
     // Chapter 2's constellation (16 October: Cancer, the crab, until the owner picks; Store/chapter2/map/map_ideas.py),
@@ -51,7 +51,7 @@ public class MapScreen : MonoBehaviour
         font = Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF");
         var sm0 = SessionManager.Instance;
         var done0 = sm0 != null ? sm0.GetLevelsCompleted() : 0;
-        page = Mathf.Clamp(done0 / ChapterDays, 0, Chapter.Count - 1);   // the page with today's day
+        page = Mathf.Clamp(Chapter.Of(done0) - 1, 0, Chapter.Count - 1);   // the page with today's day
         Build();
     }
 
@@ -94,11 +94,12 @@ public class MapScreen : MonoBehaviour
 
         var sm = SessionManager.Instance;
         var Stars = StarsOf(page);
-        var first = page * ChapterDays;                           // this page's first day index
-        var completed = Mathf.Clamp((sm != null ? sm.GetLevelsCompleted() : 0) - first, 0, ChapterDays);   // days done on this page
-        var todayHere = sm == null || (sm.GetLevelsCompleted() / ChapterDays) == page;   // today's day is on this page
-        var today = Mathf.Min(completed, ChapterDays - 1);      // the next day to play
-        var allDone = completed >= ChapterDays;
+        var days = Chapter.DaysIn(page + 1);                     // this chapter's days (12 in chapter 1, 16 in chapter 2)
+        var first = Chapter.FirstDay(page + 1);                   // this page's first day index
+        var completed = Mathf.Clamp((sm != null ? sm.GetLevelsCompleted() : 0) - first, 0, days);   // days done on this page
+        var todayHere = sm == null || Chapter.Of(sm.GetLevelsCompleted()) - 1 == page;   // today's day is on this page
+        var today = Mathf.Min(completed, days - 1);              // the next day to play
+        var allDone = completed >= days;
 
         // Lines between the stars: bright up to today, faint after
         for (var i = 0; i < Stars.Length - 1; i++)
@@ -164,7 +165,7 @@ public class MapScreen : MonoBehaviour
         // The truck beside today's star (beside day 16 once the chapter is done); on a page ahead of today there is no truck
         if (truckSprite != null && (todayHere || allDone))
         {
-            var at = P(Stars[allDone ? ChapterDays - 1 : today]);
+            var at = P(Stars[allDone ? days - 1 : today]);
             var truck = NewImage("Truck", canvasRect, truckSprite);
             var h = 120f; var w = h * truckSprite.rect.width / truckSprite.rect.height;
             // beside today's star; above day 16 once the chapter is done (to its right it would cover day 11)
@@ -185,7 +186,7 @@ public class MapScreen : MonoBehaviour
 
         // The next chapter's arrow: locked while there is no next chapter to show, a button once there is
         // (21 October) and only once every day of this page is done: before that a new player could open chapter 2 and play day 17 first
-        var nextOpen = page + 1 < Chapter.Count && completed >= ChapterDays;
+        var nextOpen = page + 1 < Chapter.Count && completed >= days;
         var arrow = NewImage(nextOpen ? "NextChapter" : "NextChapterLocked", canvasRect, Load(nextOpen ? "arrow_right" : "arrow_right_locked"));
         arrow.rectTransform.anchorMin = arrow.rectTransform.anchorMax = new Vector2(1f, 0.5f);
         arrow.rectTransform.pivot = new Vector2(1f, 0.5f);
