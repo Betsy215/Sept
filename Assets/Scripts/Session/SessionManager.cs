@@ -68,7 +68,8 @@ public class SessionData
         foodUpgradeLevels = new Dictionary<string, int>()
         {
             { "Coffee", 1 },
-            { "CoffeeMachine", 1 }
+            { "CoffeeMachine", 1 },
+            { "Oven", 1 }          // ovens are bought (owner, 25 October 2026): one at the start, the shop sells the second and third
         };
         purchasedCharacters = new List<string> { "Girl", "Boy", "Kid" };
         purchasedDecor = new List<string>();
@@ -240,7 +241,8 @@ public class SessionManager : MonoBehaviour
         { "Bread", "Oven" }, { "Cake", "Oven" }, { "Choux", "Oven" }, { "Cookies", "Oven" },
         { "Coffee", "Machine" }, { "Juice", "Counter" }, { "Apple", "Counter" }, { "Coconut", "Counter" }, { "IceCream", "Machine" }
     };
-    public static readonly Dictionary<string, int> StationCap = new Dictionary<string, int> { { "Oven", 3 }, { "Machine", 1 }, { "Counter", 2 } };
+    // No Oven cap since 25 October 2026 (owner: any oven bakes any recipe, so every baked food can be on the menu at once)
+    public static readonly Dictionary<string, int> StationCap = new Dictionary<string, int> { { "Oven", 99 }, { "Machine", 1 }, { "Counter", 2 } };
     public const int MinEnabledFoods = 2;
     public const int MaxEnabledFoods = 9;   // the menu paper holds nine stickers (owner, 14 October)
     public static string StationOf(string foodType) => foodType != null && FoodStation.TryGetValue(foodType, out var st) ? st : "Other";
@@ -795,6 +797,26 @@ public class SessionManager : MonoBehaviour
 
     /// The top level of an upgrade: the coffee pair go to 3; the ice cream station has one step, two more flavours (22 October)
     public static int MaxUpgradeLevel(string foodType) => foodType == "IceCream" ? 2 : 3;
+
+    /// How many ovens the player owns, 1 to 3 (owner, 25 October 2026): the "Oven" upgrade level. One at the start; the
+    /// shop's OvenUpgrade card adds the second and the third. A save from before (no "Oven" level) keeps as many ovens as
+    /// it had oven foods bought, one at least, so nobody loses an oven they were baking in.
+    public int OvensOwned
+    {
+        get
+        {
+            if (currentSession == null) return 1;
+            if (currentSession.foodUpgradeLevels == null || !currentSession.foodUpgradeLevels.ContainsKey("Oven"))
+            {
+                var had = 0;
+                foreach (var f in currentSession.purchasedFoodItems ?? new List<string>()) if (StationOf(f) == "Oven") had++;
+                var n = Mathf.Clamp(had, 1, 3);
+                if (currentSession.foodUpgradeLevels != null) { currentSession.foodUpgradeLevels["Oven"] = n; SaveSession(); }
+                return n;
+            }
+            return Mathf.Clamp(currentSession.foodUpgradeLevels["Oven"], 1, 3);
+        }
+    }
 
     public bool CanUpgradeFood(string foodType, int maxLevel = 0)
     {

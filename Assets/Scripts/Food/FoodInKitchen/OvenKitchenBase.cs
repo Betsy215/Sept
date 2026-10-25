@@ -1,19 +1,20 @@
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// Base class for kitchen oven items that:
-///   1. Swap to a "baking" sprite when clicked
-///   2. Refill the target food item after a bake time
-///   3. Swap back to the default sprite when done
-///   4. Persist baking state across kitchen scene unload/reload
-///
-/// Shared ovens (owner, 16 October 2026): the ovens are all the same. When the kitchen loads, OvenAssigner hands
-/// each oven one of the oven foods that are on the menu, in the order they are on; the note on the oven shows that
-/// food, the bake time is the recipe's (BakeTimes), and the bake refills that food. An oven with nothing to bake
-/// shows no note and ignores taps. The three subclasses are kept only because the scene points at them.
+/// A kitchen oven. Any oven bakes any recipe (owner, 25 October 2026: "every oven to be available for any recipe"):
+///   1. A tap on an idle oven opens the recipe picker (OvenPicker): the notes of the oven foods on today's menu.
+///      With a single recipe on the menu the bake starts at once.
+///   2. The pick starts the bake: the oven swaps to its lit sprite and shows that recipe's note for as long as it bakes.
+///      An idle oven shows no note.
+///   3. When the bake ends the recipe's table item is refilled, the note goes, the oven goes dark again.
+///   4. The bake survives the kitchen closing (the timer runs on a persistent helper, the state in CooldownRegistry
+///      and Recipes, both keyed by the oven's spot).
+/// Ovens are bought (owner, 25 October): the player starts with one (the top one), the shop's "OvenUpgrade" card adds
+/// the second and the third (SessionManager.OvensOwned). An oven not yet owned stands dark with a lock and ignores taps
+/// (OvenAssigner sets that up at kitchen load). The three subclasses are kept only because the scene points at them.
 /// </summary>
 public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
 {
@@ -28,16 +29,22 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
     [Header("Bake Time")] [Tooltip("Fallback bake time; the recipe's own time in BakeTimes wins")]
     public float bakeTime = 10f;
 
-    [Header("Shared ovens (owner, 16 October 2026)")]
-    [Tooltip("The food this oven bakes today. OvenAssigner sets it from the menu when the kitchen loads; empty = an idle oven")]
+    [Header("Recipe")]
+    [Tooltip("The recipe this oven is baking now (set by the picker, cleared when the bake ends); empty = idle. Read-only in the Inspector.")]
     public string food = "";
 
     /// Bake time per recipe, in seconds (owner: the ovens are all the same, each recipe has its own time).
-    public static readonly System.Collections.Generic.Dictionary<string, float> BakeTimes =
-        new System.Collections.Generic.Dictionary<string, float> { { "Bread", 8f }, { "Choux", 10f }, { "Cake", 15f }, { "Cookies", 6f } };
+    public static readonly Dictionary<string, float> BakeTimes =
+        new Dictionary<string, float> { { "Bread", 8f }, { "Choux", 10f }, { "Cake", 15f }, { "Cookies", 6f } };
 
-    /// This oven's bake time today: the recipe's, else the Inspector value.
+    /// The recipe each oven (by cooldown key) is baking, kept across kitchen loads with the pick times.
+    public static readonly Dictionary<string, string> Recipes = new Dictionary<string, string>();
+
+    /// This oven's bake time now: the recipe's, else the Inspector value.
     public float BakeTime => !string.IsNullOrEmpty(food) && BakeTimes.TryGetValue(food, out var t) ? t : bakeTime;
+
+    /// False for an oven the player has not bought yet (OvenAssigner decides at kitchen load).
+    [System.NonSerialized] public bool owned = true;
 
     [Header("Debug")] public bool enableDebugLogs = true;
 
@@ -52,10 +59,10 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         if (defaultSprite == null && image != null)
             defaultSprite = image.sprite;
 
-        OvenAssigner.EnsureAssigned();
-        KitchenWindow.Apply();   // chapter 2: the beach through the window (16 October)
-        KitchenBlender.Apply();  // the blender as its own object, every chapter (17 October)   // which food this oven bakes today, from the menu (once per kitchen load)
-        KitchenWaffleMachine.Apply();   // chapter 2: the waffle machine that refills the cone holder (22 October)
+        OvenAssigner.EnsureAssigned();   // owned and locked ovens, the note pictures (once per kitchen load)
+        KitchenWindow.Apply();           // chapter 2: the beach through the window (16 October)
+        KitchenBlender.Apply();          // the blender as its own object, every chapter (17 October)
+        KitchenWaffleMachine.Apply();    // chapter 2: the waffle machine that refills the cone holder (22 October)
 
         // The bake timer must outlive the kitchen scene, so it always runs on the persistent helper.
         timerHelper = KitchenTimerHelper.GetOrCreate($"[OvenHelper] {GetCooldownKey()}");
@@ -63,61 +70,91 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
     }
 
     /// <summary>
-    /// On scene reload: if still baking, restore the baking sprite and re-attach to the running
+    /// On scene reload: if still baking, restore the lit sprite and the note and re-attach to the running
     /// timer (or resume the remaining time if no timer is running).
     /// </summary>
     private void CheckBakingStateOnWake()
     {
-        var pickTime = CooldownRegistry.GetPickTime(GetCooldownKey());
-        if (pickTime < 0f) return; // Not baking — show idle
-
+        var key = GetCooldownKey();
+        var pickTime = CooldownRegistry.GetPickTime(key);
+        if (pickTime < 0f || !Recipes.TryGetValue(key, out var recipe) || string.IsNullOrEmpty(recipe))
+        {
+            if (pickTime >= 0f) CooldownRegistry.ClearPickTime(key);   // a pick time without a recipe (a reload mid-bake): idle
+            food = ""; ShowNote(false); return;
+        }
+        food = recipe;
         var remaining = BakeTime - (Time.realtimeSinceStartup - pickTime);
 
         if (remaining > 0f)
         {
-            DebugLog($"Still baking ({remaining:F1}s remaining) — restoring baking sprite");
-            SetSprite(bakingSprite);
-            timerHelper.StartTimer(GetCooldownKey(), remaining, OnBakeComplete);
+            DebugLog($"Still baking {food} ({remaining:F1}s remaining) — restoring baking sprite");
+            SetSprite(bakingSprite); ShowNote(true);
+            timerHelper.StartTimer(key, remaining, OnBakeComplete);
         }
         else
         {
             // Finished baking while we were away — refill immediately
             DebugLog("Bake finished while scene was unloaded — refilling now");
-            CooldownRegistry.ClearPickTime(GetCooldownKey());
+            CooldownRegistry.ClearPickTime(key);
             OnRefill();
-            SetSprite(defaultSprite);
+            Recipes.Remove(key); food = "";
+            SetSprite(defaultSprite); ShowNote(false);
         }
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         if (Time.timeScale == 0f) return; // paused: UI taps still arrive, gameplay must not
-        // Accept taps on the oven or any of its decorations (the bread-note sticker covers the
-        // middle of each oven window; rejecting it made centre taps do nothing).
+        // Accept taps on the oven or any of its decorations (the note covers the middle of each oven window;
+        // rejecting it made centre taps do nothing).
         var hit = eventData.pointerCurrentRaycast.gameObject;
         if (hit == null || !hit.transform.IsChildOf(transform)) return;
-        if (string.IsNullOrEmpty(food)) return;                                   // an idle oven: nothing on the menu for it
-        if (CooldownRegistry.IsOnCooldown(GetCooldownKey(), BakeTime)) return;
+        if (!owned) return;                                                       // locked: bought in the shop
+        if (IsBaking) return;
 
-        DebugLog($"{gameObject.name} clicked — starting bake!");
+        var recipes = OvenAssigner.RecipesOnTheMenu();
+        if (recipes.Count == 0) { DebugLog("nothing to bake on today's menu"); return; }
+        if (recipes.Count == 1) { StartBake(recipes[0]); return; }                 // one recipe: no picker to pick from
+        OvenPicker.Open(this, recipes);
+    }
+
+    /// Start baking a recipe now (the picker's choice, or the only one on the menu).
+    public void StartBake(string recipe)
+    {
+        if (!owned || IsBaking || string.IsNullOrEmpty(recipe)) return;
+        food = recipe;
+        var key = GetCooldownKey();
+        Recipes[key] = recipe;
+        DebugLog($"{gameObject.name} bakes {recipe} for {BakeTime:F0} s");
 
         if (interactSound != null && AudioManager.Instance != null)
             AudioManager.Instance.PlaySFX(interactSound);
 
-        SetSprite(bakingSprite);
-        CooldownRegistry.RecordPickTime(GetCooldownKey());
-        timerHelper.StartTimer(GetCooldownKey(), BakeTime, OnBakeComplete);
+        SetSprite(bakingSprite); ShowNote(true);
+        CooldownRegistry.RecordPickTime(key);
+        timerHelper.StartTimer(key, BakeTime, OnBakeComplete);
     }
 
     /// True while this oven's bake is running.
-    public bool IsBaking => CooldownRegistry.IsOnCooldown(GetCooldownKey(), BakeTime);
+    public bool IsBaking => CooldownRegistry.GetPickTime(GetCooldownKey()) >= 0f && CooldownRegistry.IsOnCooldown(GetCooldownKey(), BakeTime);
+
+    /// True when some oven is baking this recipe right now (the picker greys it out).
+    public static bool IsRecipeBaking(string recipe)
+    {
+        foreach (var kv in Recipes)
+            if (kv.Value == recipe && BakeTimes.TryGetValue(recipe, out var t) && CooldownRegistry.IsOnCooldown(kv.Key, t)) return true;
+        return false;
+    }
 
     private void OnBakeComplete()
     {
         DebugLog("Bake complete!");
-        CooldownRegistry.ClearPickTime(GetCooldownKey());
+        var key = GetCooldownKey();
+        CooldownRegistry.ClearPickTime(key);
+        if (string.IsNullOrEmpty(food) && Recipes.TryGetValue(key, out var r)) food = r;   // a destroyed instance keeps its field; a fresh one reads the registry
         OnRefill();
-        SetSprite(defaultSprite);
+        Recipes.Remove(key); food = "";
+        SetSprite(defaultSprite); ShowNote(false);
         if (bakeCompleteSound != null && AudioManager.Instance != null)
             AudioManager.Instance.PlaySFX(bakeCompleteSound);
     }
@@ -128,17 +165,30 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
             image.sprite = sprite;
     }
 
-    /// <summary>
-    /// Unique key for the cooldown registry: the food being baked (a running bake belongs to its recipe, whichever
-    /// oven holds it today). An oven with no food falls back to its class name.
-    /// </summary>
-    protected virtual string GetCooldownKey()
+    /// The note on the oven: the recipe's picture while it bakes, nothing otherwise (owner, 25 October).
+    private void ShowNote(bool on)
     {
-        return string.IsNullOrEmpty(food) ? GetType().Name : "Oven:" + food;
+        if (this == null) return;   // the callback of a destroyed instance
+        foreach (Transform child in transform)
+        {
+            if (!child.name.StartsWith("sticker") || child.GetComponent<KitchenFoodGate>() != null) continue;
+            var img = child.GetComponent<Image>();
+            if (on && img != null) { var s = OvenAssigner.NoteFor(food); if (s != null) { img.sprite = s; img.preserveAspect = true; } }
+            child.gameObject.SetActive(on && img != null && img.sprite != null);
+            break;   // the first note only
+        }
     }
 
     /// <summary>
-    /// Refills the table item of the food this oven bakes today.
+    /// Unique key for the cooldown registry: the oven's spot (a bake belongs to the oven it runs in, whatever the recipe).
+    /// </summary>
+    protected virtual string GetCooldownKey()
+    {
+        return "Oven:" + (transform.parent != null ? transform.parent.name + "/" : "") + gameObject.name;
+    }
+
+    /// <summary>
+    /// Refills the table item of the recipe this oven baked.
     /// </summary>
     protected virtual void OnRefill()
     {

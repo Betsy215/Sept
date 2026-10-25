@@ -1,5 +1,10 @@
 # 04 Kitchen
 
+> **Ovens changed on 16 and 25 October 2026.** Section 3's oven state machine and section 4's per-oven foods describe the 7 October
+> game. Now: any oven bakes any recipe chosen from the recipe picker (`OvenPicker`), the note shows only while baking, the bake
+> is keyed by the oven's spot, and ovens are bought (`SessionManager.OvensOwned`, the shop's `OvenUpgrade` card). See `Docs/MANUAL.md`
+> section 6, "Ovens".
+
 Maintenance notes for the kitchen: the additive `KitchenScene`, its ovens and taps, and the timers that keep running after it closes. Verified against the sources and scene YAML on 7 October 2026. Line numbers are 1-based. The per-item refill numbers (max counts, delays, points) are in `Docs/maintenance.md`, section "Refill system", and are not repeated here.
 
 Files:

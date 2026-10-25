@@ -5460,22 +5460,22 @@ MonoBehaviour:
   - {fileID: 21300000, guid: c95676b491284507aa3d387b0343fb88, type: 3}
   smallSectionRects:
   - serializedVersion: 2
-    x: 0.0650
+    x: 0.0675
     y: 0.4381
-    width: 0.1592
+    width: 0.1600
     height: 0.3071
   - serializedVersion: 2
-    x: 0.2492
+    x: 0.2517
     y: 0.4357
     width: 0.1592
     height: 0.3119
   smallHolderRect:
     serializedVersion: 2
-    x: 0.4592
+    x: 0.4642
     y: 0.0095
     width: 0.1625
     height: 0.6357
-  smallBuildPoint: {x: 0.237, y: 1.22}
+  smallBuildPoint: {x: 0.239, y: 1.22}
   scoopStep: 0.62
   firstScoopDrop: 0.22
   scoopSound: {fileID: 0}

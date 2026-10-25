@@ -6,6 +6,8 @@ Current open work, as of 13 October 2026 (night). Done items are removed; the da
 ## Release 26.10.18 with chapter 2 (owner, 25 October: "release today/tomorrow")
 
 - [x] **Build 4 to TestFlight** (25 October morning, from the `coconut-five` worktree: everything on the branch, the owner's blender, station box and cone holder included).
+- [x] **Owner's 25 October batch** (build 5): the chapter 2 cloth's short dark edge line (TableLayer: the edge shadow was shrunk twice), the palm's blurred crown (`Store/artkit/palm_crown.py`), the two-well station cut from the owner's box (`owner_small.py`), the menu saved across days with no oven cap, ovens bought in the shop and the recipe picker. Open: the owner's eye on the crown and the picker; the kitchen doc (`Docs/systems/04-kitchen.md`) still describes the 7 October ovens.
+- [ ] **Ovens, owner's adjustments expected:** the card price (500, same for the second and the third), whether one recipe on the menu should still show the picker, the locked ovens' look (greyed with the small lock), the picker's place (above the oven, inside the screen).
 - [ ] **Owner plays build 4** ("Chapter 2 test" button on the main menu), says "good" or what is wrong (a fix = build 5).
 - [ ] **Owner's yes on the texts** (drafts in the report's MVP and in `Docs/tools/asc_release.py`: What's New; the description's "two customers" line stays unless ticked), the screenshot choice (keep the 26.10.13 set or new captures), release on approval or manual.
 - [ ] **On "submit":** `asc_release.py 26.10.18 create`, `build 4`, `submit`; the owner sets the privacy label (Usage Data, Product Interaction, not linked to you) in App Store Connect.

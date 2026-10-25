@@ -42,7 +42,7 @@ public static class Chapter2TestButton
         sm.StartNewSession(); sm.MarkTutorialSeen(); var s = sm.GetCurrentSession();
         foreach (var f in new[] { "Juice", "Apple", "Choux", "Cake", "Cookies", "Coconut" }) if (!s.purchasedFoodItems.Contains(f)) s.purchasedFoodItems.Add(f);
         foreach (var c in new[] { "Grandma", "Chef", "Yoga", "Businessman" }) if (!s.purchasedCharacters.Contains(c)) s.purchasedCharacters.Add(c);
-        sm.UpgradeFood("Coffee"); sm.UpgradeFood("CoffeeMachine");
+        sm.UpgradeFood("Coffee"); sm.UpgradeFood("CoffeeMachine"); sm.UpgradeFood("Oven"); sm.UpgradeFood("Oven");   // all three ovens (25 October)
         s.levelsCompleted = 16; sm.AddScoreImmediately(9000f); sm.SetCurrentLevel(16); sm.SetFoodEnabled("Coconut", true); sm.SetFoodEnabled("Juice", true);
         var t = SceneTransitionManager.Instance; if (t != null) t.TransitionToScene("GameSceneOne"); else SceneManager.LoadScene("GameSceneOne");
     }

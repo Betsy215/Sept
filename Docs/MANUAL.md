@@ -4,7 +4,7 @@ Read this first in every session on this project. It is the current state: what 
 where things live, how the game works now, and how each recurring job is done. Dated change notes are in
 `Docs/history/` (the 12 to 13 October log and the pre-rewrite manual and TODO are there).
 
-Last updated 25 October 2026 (release plan for 26.10.18, build 4, asc_release.py; 21 October: eight bug fixes, Coconut a chapter 2 food, the verify21 recipes, recv.py; earlier: menu book, economy tune, chapter 2).
+Last updated 25 October 2026 (ovens bought and free of recipe, the recipe picker, the saved menu, the owner's short station, the cloth-edge and palm-crown fixes, build 5; release plan for 26.10.18, asc_release.py; 21 October: eight bug fixes, Coconut a chapter 2 food, the verify21 recipes, recv.py; earlier: menu book, economy tune, chapter 2).
 
 ## 1. State of the project
 
@@ -147,16 +147,25 @@ plain `python3` has no numpy.
   the same gap) and the pots (`TableDecor/KitchenPots` in GameSceneOne).
 - **Menu book (14 October):** `SessionData.enabledFoodItems` beside `purchasedFoodItems`; a food is in play when
   bought AND on (`SessionManager.IsFoodItemActive`, read by the table, `KitchenFoodGate`, and so the orders).
-  Stations and caps in `SessionManager.FoodStation` / `StationCap` (oven 3, machine 1, counter 2), at least two on.
+  Stations and caps in `SessionManager.FoodStation` / `StationCap` (oven none since 25 October, machine 1, counter 2), at least two on.
   `MenuBook.cs` draws the placeholder panel in code (button left of Ready during the arrangement; never on Day 0).
   Cookies are a shop buy again (600, fourth row, `BottomBoundary` 2700); `FoodChapter` is empty until chapter 2. The book
-  is a grid; the baked foods' icons are their oven notes (`Resources/UI/stickers`). Ovens are shared since
-  16 October (`OvenAssigner`, run from the first oven's Awake): the oven foods that are on go to the ovens top to
-  bottom (spot1, spot2, spot3) in the order they were switched on, each oven's first `sticker` child takes that
-  food's note (pictures collected from the scene's own stickers), its `KitchenFoodGate` is pointed at the food
-  (`keepVisible`: no food = no note, baking asleep), the bake time is the recipe's (`OvenKitchenBase.BakeTimes`:
-  Bread 8, Choux 10, Cake 15, Cookies 12 s), a running bake is keyed by the food. Cookies bake in an oven; the
-  shelf plate (`CookiesInKitchen`) is disabled, a decoration. The three oven subclasses are empty shells. The coffee machine follows Coffee.
+  is a grid; the baked foods' icons are their oven notes (`Resources/UI/stickers`). **The menu is saved across days**
+  (`SessionData.enabledFoodItems`, written by every sticker move): a bought food goes onto the paper at once
+  (`PurchaseFoodItem`, unless the menu or its station is full), a food taken off stays off until the player puts it back.
+  **Ovens (owner, 25 October 2026):** any oven bakes any recipe. A tap on an idle owned oven opens the recipe picker
+  (`OvenPicker` in OvenAssigner.cs: the oven notes of the baked foods on today's menu, next to the oven; one recipe on the
+  menu bakes at once without the picker; a recipe baking in another oven is greyed). The oven shows that recipe's note
+  only while it bakes (`OvenKitchenBase.ShowNote`), the bake time is the recipe's (`BakeTimes`: Bread 8, Choux 10, Cake 15,
+  Cookies 6 s), the bake is keyed by the oven's spot (`Oven:spot1/oven2`; `OvenKitchenBase.Recipes` remembers the recipe
+  across kitchen loads) and refills that food's table item. **Ovens are bought:** the player starts with one (the top one,
+  spot1/oven2, the tutorial's); the shop's `OvenUpgrade` card (Upgrade of "Oven", 500, sold twice: "Second oven", "Third
+  oven"; `Docs/tools/oven_card.py`, picture `Images/Kitchen/ovens/oven_card_icon.png`) raises `SessionManager.OvensOwned`
+  (the Oven upgrade level, 1 to 3; a save from before keeps as many ovens as it had oven foods bought). `OvenAssigner`
+  (first oven's Awake) collects the note pictures from the scene's stickers, marks the first `OvensOwned` ovens owned and the
+  rest locked (greyed, `Map/lock_small`, taps ignored), hides every note and switches the old per-oven `KitchenFoodGate`s off.
+  Cookies bake in an oven; the shelf plate (`CookiesInKitchen`) is disabled, a decoration. The three oven subclasses are
+  empty shells. The coffee machine follows Coffee.
 - **Shop:** three rows (`BottomBoundary` 1800); at the bottom the down arrow shows a lock (more next chapter);
   people icons share one height (`EvenOutCharacterIcons`). Prices: Juice 150, Grandma 300, Chef 300, Coffee up 350,
   Apple 350, Yoga 500, Machine up 600, Businessman 700, Choux 750, Cake 750.

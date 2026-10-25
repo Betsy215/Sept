@@ -80,10 +80,13 @@ public class TableLayer : MonoBehaviour
             if (edge != null)
             {
                 edge.localPosition += new Vector3(0f, cloth.bounds.max.y - oldBounds.max.y, 0f);
-                // the cloth transform is scaled to the screen from the sprite's size, so a bigger sprite would shrink the
-                // child shadow: undo that, it keeps the length and thickness it has on the picnic cloth
+                // the cloth transform is scaled to the screen from the sprite's size, so a bigger sprite shrinks the
+                // child shadow with it: grow the child's local scale by the same ratio, so it keeps the length and thickness
+                // it has on the picnic cloth. (Until 25 October this divided instead of multiplying, which left the beach
+                // cloth a quarter-length, quarter-thick band: the short dark line at the cloth's top edge in the owner's
+                // TestFlight screenshot, bugs/IMG_9758.)
                 var ls = edge.localScale;
-                edge.localScale = new Vector3(ls.x * oldBounds.size.x / cloth.bounds.size.x, ls.y * oldBounds.size.y / cloth.bounds.size.y, ls.z);
+                edge.localScale = new Vector3(ls.x * cloth.bounds.size.x / oldBounds.size.x, ls.y * cloth.bounds.size.y / oldBounds.size.y, ls.z);
             }
         }
         else if (cloth != null) tableClothSprite.sprite = cloth;

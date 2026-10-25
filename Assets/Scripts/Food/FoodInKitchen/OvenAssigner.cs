@@ -1,20 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// Shared ovens (owner, 16 October 2026): "ovens are all the same, which oven doesn't matter; each recipe has its own
-/// cooking time". When the kitchen loads, the oven foods that are on the menu (bought, switched on, in season, station
-/// Oven, in the order they are on) are handed to the ovens top to bottom (spot1, spot2, spot3). Each oven's first
-/// "sticker" child becomes its note and takes the picture of that food's note (the pictures are collected from the
-/// scene's own stickers before anything moves: Choux on oven1, Bread on oven2, Cake and Cookies on oven3); the oven's
-/// KitchenFoodGate is pointed at the food so the note shows and the baking wakes exactly as before. Spare stickers
-/// and the Cookies plate's tap are switched off: Cookies bake in an oven like the rest. Runs once per kitchen load,
-/// from the first oven's Awake.
+/// Sets the ovens up when the kitchen loads (owner, 25 October 2026: ovens are bought one by one, any oven bakes any
+/// recipe, an oven shows a note only while it bakes). Runs once per kitchen load, from the first oven's Awake:
+///   - the note pictures are collected from the scene's own stickers (Choux on oven1, Bread on oven2, Cake and the
+///     Cookies note on oven3) before anything is hidden, with Resources/UI/stickers/<food> as the fallback;
+///   - the ovens are ordered top to bottom (spot1, spot2, spot3); the first SessionManager.OvensOwned are owned, the rest
+///     stand dark with a lock and ignore taps;
+///   - every note is hidden (a baking oven shows its own again in CheckBakingStateOnWake), the old per-oven
+///     KitchenFoodGates are switched off (they would put the oven to sleep when "its" food is off the menu), and the
+///     Cookies plate's tap stays off: Cookies bake in an oven like the rest.
+/// Before 25 October this handed each oven one menu food (shared ovens, 16 October).
 /// </summary>
 public static class OvenAssigner
 {
     private static int assignedFrame = -1;
+    private static readonly Dictionary<string, Sprite> notes = new Dictionary<string, Sprite>();
+    public static readonly string[] OvenFoods = { "Bread", "Choux", "Cake", "Cookies" };   // the picker's order
 
     public static void EnsureAssigned()
     {
@@ -24,6 +29,27 @@ public static class OvenAssigner
         catch (System.Exception ex) { Debug.LogWarning("[OvenAssigner] " + ex.Message); }
     }
 
+    /// The note picture of a recipe: the kitchen's own sticker for it, else the menu sticker.
+    public static Sprite NoteFor(string food)
+    {
+        if (string.IsNullOrEmpty(food)) return null;
+        if (notes.TryGetValue(food, out var s) && s != null) return s;
+        s = Resources.Load<Sprite>("UI/stickers/" + food);
+        if (s != null) notes[food] = s;
+        return s;
+    }
+
+    /// The oven recipes on today's menu (bought, switched on, in season), in the picker's order.
+    public static List<string> RecipesOnTheMenu()
+    {
+        var list = new List<string>();
+        var sm = SessionManager.Instance;
+        if (sm == null || !sm.HasActiveSession()) { list.AddRange(OvenFoods); return list; }   // no session (the kitchen opened on its own in the editor)
+        foreach (var f in OvenFoods)
+            if (SessionManager.StationOf(f) == "Oven" && sm.IsFoodItemActive(f)) list.Add(f);
+        return list;
+    }
+
     private static void Assign()
     {
         var ovens = new List<OvenKitchenBase>(Object.FindObjectsOfType<OvenKitchenBase>(true));
@@ -31,7 +57,6 @@ public static class OvenAssigner
         ovens.Sort((a, b) => string.CompareOrdinal(SpotName(a), SpotName(b)));
 
         // The note pictures, by the food each sticker was painted for
-        var notes = new Dictionary<string, Sprite>();
         foreach (var oven in ovens)
         {
             var gate = oven.GetComponent<KitchenFoodGate>();
@@ -42,47 +67,131 @@ public static class OvenAssigner
                 var img = child.GetComponent<Image>(); if (img == null || img.sprite == null) continue;
                 var childGate = child.GetComponent<KitchenFoodGate>();
                 var food = childGate != null ? childGate.associatedFoodType?.Trim() : ownFood;
-                if (!string.IsNullOrEmpty(food) && !notes.ContainsKey(food)) notes[food] = img.sprite;
+                if (!string.IsNullOrEmpty(food) && OvenKitchenBase.BakeTimes.ContainsKey(food) && !notes.ContainsKey(food)) notes[food] = img.sprite;
             }
         }
 
-        // The oven foods that are on today, in the order they were switched on
         var sm = SessionManager.Instance;
-        var on = new List<string>();
-        if (sm != null && sm.HasActiveSession() && sm.GetCurrentSession() != null)
-        {
-            var list = sm.GetCurrentSession().enabledFoodItems ?? sm.GetCurrentSession().purchasedFoodItems;
-            if (list != null)
-                foreach (var f in list)
-                    if (SessionManager.StationOf(f) == "Oven" && sm.IsFoodItemActive(f) && !on.Contains(f)) on.Add(f);
-        }
-        else return;   // no session (the kitchen opened on its own in the editor): leave the scene as painted
+        var ownedCount = sm != null && sm.HasActiveSession() ? sm.OvensOwned : ovens.Count;   // no session: every oven works, as painted
 
         for (var i = 0; i < ovens.Count; i++)
         {
             var oven = ovens[i];
-            var food = i < on.Count ? on[i] : "";
-            oven.food = food;
+            var owned = i < ownedCount;
+            oven.owned = owned;
+            oven.food = "";
             var gate = oven.GetComponent<KitchenFoodGate>();
-            if (gate != null) { gate.associatedFoodType = string.IsNullOrEmpty(food) ? "none" : food; gate.keepVisible = true; }
-            var first = true;
+            if (gate != null) gate.enabled = false;   // the oven no longer belongs to one food
             foreach (Transform child in oven.transform)
             {
-                if (!child.name.StartsWith("sticker")) continue;
-                var childGate = child.GetComponent<KitchenFoodGate>();
-                if (childGate != null) { childGate.associatedFoodType = "none"; child.gameObject.SetActive(false); continue; }   // a spare note (the old Cookies note)
-                if (!first) { child.gameObject.SetActive(false); continue; }
-                first = false;
-                var img = child.GetComponent<Image>();
-                if (img != null && !string.IsNullOrEmpty(food) && notes.TryGetValue(food, out var sprite)) { img.sprite = sprite; img.preserveAspect = true; }
-                child.gameObject.SetActive(!string.IsNullOrEmpty(food));
+                if (child.name.StartsWith("sticker"))
+                {
+                    var childGate = child.GetComponent<KitchenFoodGate>();
+                    if (childGate != null) { childGate.enabled = false; childGate.associatedFoodType = "none"; }   // the old Cookies note
+                    child.gameObject.SetActive(false);
+                }
+                else if (child.name == "Lock") child.gameObject.SetActive(!owned);
             }
-            Debug.Log($"[OvenAssigner] {SpotName(oven)} bakes {(string.IsNullOrEmpty(food) ? "nothing" : food)}");
+            var img = oven.GetComponent<Image>();
+            if (img != null) img.color = owned ? Color.white : new Color(0.45f, 0.45f, 0.5f, 1f);
+            if (!owned && oven.transform.Find("Lock") == null) AddLock(oven);
+            Debug.Log($"[OvenAssigner] {SpotName(oven)} {(owned ? "owned" : "locked")}");
         }
 
         // Cookies bake in an oven now: the plate on the shelf is a decoration, its tap does nothing
         foreach (var plate in Object.FindObjectsOfType<CookiesInKitchen>(true)) plate.enabled = false;
     }
 
+    /// The lock on an oven the player has not bought: the shop's small lock, centred on the oven window.
+    private static void AddLock(OvenKitchenBase oven)
+    {
+        var sprite = Resources.Load<Sprite>("Map/lock_small") ?? Resources.Load<Sprite>("Map/lock_yellow");
+        if (sprite == null) return;
+        var go = new GameObject("Lock", typeof(RectTransform), typeof(Image)); go.transform.SetParent(oven.transform, false);
+        var rt = (RectTransform)go.transform; rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.sizeDelta = new Vector2(80f, 80f); rt.anchoredPosition = Vector2.zero;
+        var img = go.GetComponent<Image>(); img.sprite = sprite; img.preserveAspect = true; img.raycastTarget = false;
+    }
+
     private static string SpotName(OvenKitchenBase o) => o.transform.parent != null ? o.transform.parent.name + "/" + o.name : o.name;
+}
+
+/// <summary>
+/// The recipe picker (owner, 25 October 2026): a tap on an idle oven shows the notes of the oven foods on today's
+/// menu, next to that oven; a tap on a note starts the bake there, a tap anywhere else closes the picker. A recipe
+/// already baking in another oven is greyed out. One picker at a time; it lives in the kitchen's canvas and goes
+/// with the kitchen scene.
+/// </summary>
+public class OvenPicker : MonoBehaviour
+{
+    private static OvenPicker open;
+    private OvenKitchenBase oven;
+    private const float Tile = 130f, Gap = 14f, Pad = 18f;
+
+    public static void Open(OvenKitchenBase forOven, List<string> recipes)
+    {
+        Close();
+        Canvas canvas = null;
+        foreach (var c in Object.FindObjectsOfType<Canvas>())
+            if (c.gameObject.scene.name == "KitchenScene") { canvas = c; break; }
+        if (canvas == null || forOven == null) return;
+        var canvasRect = (RectTransform)canvas.transform;
+
+        // a see-through blocker over the whole kitchen: a tap on it closes the picker
+        var root = new GameObject("OvenPicker", typeof(RectTransform), typeof(Image), typeof(OvenPicker));
+        root.transform.SetParent(canvas.transform, false); root.transform.SetAsLastSibling();
+        var rrt = (RectTransform)root.transform; rrt.anchorMin = Vector2.zero; rrt.anchorMax = Vector2.one; rrt.offsetMin = rrt.offsetMax = Vector2.zero;
+        root.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.001f);
+        var picker = root.GetComponent<OvenPicker>(); picker.oven = forOven; open = picker;
+        var closer = root.AddComponent<PickerCloser>(); closer.picker = picker;
+
+        // the card, above the oven, kept inside the canvas
+        var n = recipes.Count;
+        var card = new GameObject("Card", typeof(RectTransform), typeof(Image)); card.transform.SetParent(root.transform, false);
+        var crt = (RectTransform)card.transform; crt.anchorMin = crt.anchorMax = new Vector2(0.5f, 0.5f);
+        crt.sizeDelta = new Vector2(n * Tile + (n - 1) * Gap + 2 * Pad, Tile + 2 * Pad);
+        card.GetComponent<Image>().color = new Color(0.99f, 0.96f, 0.90f, 0.97f);
+        var cam = canvas.worldCamera != null ? canvas.worldCamera : Camera.main;
+        var ovenRt = (RectTransform)forOven.transform;
+        Vector2 local;
+        var screen = RectTransformUtility.WorldToScreenPoint(cam, ovenRt.position);
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screen, cam, out local)) local = Vector2.zero;
+        var half = canvasRect.rect.size * 0.5f; var size = crt.sizeDelta;
+        var y = local.y + ovenRt.rect.height * 0.5f + size.y * 0.5f + 24f;
+        if (y + size.y * 0.5f > half.y - 20f) y = local.y - ovenRt.rect.height * 0.5f - size.y * 0.5f - 24f;   // no room above: below
+        var x = Mathf.Clamp(local.x, -half.x + size.x * 0.5f + 20f, half.x - size.x * 0.5f - 20f);
+        crt.anchoredPosition = new Vector2(x, y);
+
+        for (var i = 0; i < n; i++)
+        {
+            var recipe = recipes[i];
+            var tile = new GameObject("Note_" + recipe, typeof(RectTransform), typeof(Image), typeof(Button)); tile.transform.SetParent(card.transform, false);
+            var trt = (RectTransform)tile.transform; trt.anchorMin = trt.anchorMax = new Vector2(0f, 0.5f); trt.pivot = new Vector2(0f, 0.5f);
+            trt.sizeDelta = new Vector2(Tile, Tile); trt.anchoredPosition = new Vector2(Pad + i * (Tile + Gap), 0f);
+            var img = tile.GetComponent<Image>(); img.sprite = OvenAssigner.NoteFor(recipe); img.preserveAspect = true;
+            var busy = OvenKitchenBase.IsRecipeBaking(recipe);
+            img.color = busy ? new Color(1f, 1f, 1f, 0.35f) : Color.white;
+            var btn = tile.GetComponent<Button>(); btn.interactable = !busy;
+            var chosen = recipe;
+            btn.onClick.AddListener(() => picker.Pick(chosen));
+        }
+    }
+
+    public static void Close()
+    {
+        if (open != null) Object.Destroy(open.gameObject);
+        open = null;
+    }
+
+    private void Pick(string recipe)
+    {
+        if (oven != null) oven.StartBake(recipe);
+        Close();
+    }
+
+    /// A tap on the blocker (not on a note) closes the picker.
+    private class PickerCloser : MonoBehaviour, IPointerClickHandler
+    {
+        public OvenPicker picker;
+        public void OnPointerClick(PointerEventData e) { if (e.pointerCurrentRaycast.gameObject == gameObject) Close(); }
+    }
 }

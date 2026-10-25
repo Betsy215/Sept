@@ -684,6 +684,8 @@ public class ShopManager : MonoBehaviour
     private static string DisplayName(ShopItemController item)
     {
         if (item == null) return null;
+        if (item.gameObject.name == "OvenUpgrade" || item.upgradeFoodType == "Oven")   // the same card sells the second and then the third oven (25 October)
+            return SessionManager.Instance != null && SessionManager.Instance.OvensOwned >= 2 ? "Third oven" : "Second oven";
         if (popupNames.TryGetValue(item.gameObject.name, out var byObject)) return byObject;
         var key = item.itemName ?? "";
         if (popupNames.TryGetValue(key, out var byKey)) return byKey;
