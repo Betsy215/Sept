@@ -379,9 +379,16 @@ public class MenuBook : MonoBehaviour
         board = (RectTransform)b.transform; Place(board, 0f, 5f, 760f, 720f);
 
 
-        var done = NewImage("DoneButton", crt, new Color(0.98f, 0.78f, 0.36f));
-        Place(done.rectTransform, 0f, -415f, 280f, 100f);
-        var dt = NewText("Label", done.rectTransform, font, 50f, Brown); dt.text = "DONE"; dt.alignment = TextAlignmentOptions.Center; Stretch(dt.rectTransform);
+        // the cookie slab of the arrangement's READY button with DONE on it (owner, 25 October 2026); the plain yellow
+        // rectangle with a text label stays as the fallback when the picture is missing
+        var doneSprite = Resources.Load<Sprite>("UI/btn_done");
+        var done = NewImage("DoneButton", crt, doneSprite != null ? Color.white : new Color(0.98f, 0.78f, 0.36f));
+        if (doneSprite != null) { done.sprite = doneSprite; done.preserveAspect = true; Place(done.rectTransform, 0f, -415f, 300f, 200f); }
+        else
+        {
+            Place(done.rectTransform, 0f, -415f, 280f, 100f);
+            var dt = NewText("Label", done.rectTransform, font, 50f, Brown); dt.text = "DONE"; dt.alignment = TextAlignmentOptions.Center; Stretch(dt.rectTransform);
+        }
         done.gameObject.AddComponent<Button>().onClick.AddListener(Close);
         doneButton = done.gameObject;
 
