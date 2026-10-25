@@ -4,7 +4,7 @@ Read this first in every session on this project. It is the current state: what 
 where things live, how the game works now, and how each recurring job is done. Dated change notes are in
 `Docs/history/` (the 12 to 13 October log and the pre-rewrite manual and TODO are there).
 
-Last updated 25 October 2026 (afternoon: bigger coconut tray on a 640 x 560 canvas with all six states rebuilt by `Store/artkit/art25.py`, spoon-free level-1 wells, cropped apple tree, waffle machine 0.5 and centred, picker panel; ovens bought and free of recipe, the recipe picker, the saved menu, the owner's short station, the cloth-edge and palm-crown fixes, build 5; release plan for 26.10.18, asc_release.py; 21 October: eight bug fixes, Coconut a chapter 2 food, the verify21 recipes, recv.py; earlier: menu book, economy tune, chapter 2).
+Last updated 25 October 2026 (afternoon: the coconut tray hugging its five coconuts (`Store/artkit/coconut_tray_hug.py`, 479 x 438), spoon-free level-1 wells, cropped apple tree, waffle machine 0.5 and centred, picker panel; ovens bought and free of recipe, the recipe picker, the saved menu, the owner's short station, the cloth-edge and palm-crown fixes, build 5; release plan for 26.10.18, asc_release.py; 21 October: eight bug fixes, Coconut a chapter 2 food, the verify21 recipes, recv.py; earlier: menu book, economy tune, chapter 2).
 
 ## 1. State of the project
 
@@ -221,7 +221,7 @@ plain `python3` has no numpy.
   **No stand:** the cones stand in a ROW of six (`Resources/IceCream/holder_0..6`, 390 x 124, `cone_row.py`; `holder.png` = six;
   `ConesFull` 6); the station's `holderRect` is that canvas. **The waffle machine stands on the table behind the row**, centred over
   it (owner, 25 October: the cast-iron one, smaller, behind): `Resources/IceCream/waffle_closed|open` (300 x 220, the owner's iCloud
-  copies), `waffleHeight` 0.5 of the box picture's height (0.38 until the 25 October afternoon), `waffleGap` above the row,
+  copies until 25 October 15:00, since then the owner's own black machine from iCloud Updates with the open state built from its pixels by `Store/redesign/waffle/waffle_owner_open.py`, 300 x 263), `waffleHeight` 0.58 of the box picture's height (0.38 until the 25 October afternoon, 0.5 for the painter's sprite), `waffleGap` above the row,
   `waffleShift` -0.01 of the box width (owner: bigger, a little to the left; measured centred over the six cones within 4 px before the shift), the drag collider
   grown to cover it so station, machine and cone row move as one in the arrangement; a tap (`IceCreamTap.Kind.Waffle`) starts a
   session (`BakeCones`): 8 s closed with a warm pulse, then the lid opens on two waffles for 1.2 s and two cones join the row
