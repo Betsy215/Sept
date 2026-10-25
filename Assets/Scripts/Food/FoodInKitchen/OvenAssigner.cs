@@ -90,26 +90,14 @@ public static class OvenAssigner
                     if (childGate != null) { childGate.enabled = false; childGate.associatedFoodType = "none"; }   // the old Cookies note
                     child.gameObject.SetActive(false);
                 }
-                else if (child.name == "Lock") child.gameObject.SetActive(!owned);
             }
-            var img = oven.GetComponent<Image>();
-            if (img != null) img.color = owned ? Color.white : new Color(0.45f, 0.45f, 0.5f, 1f);
-            if (!owned && oven.transform.Find("Lock") == null) AddLock(oven);
-            Debug.Log($"[OvenAssigner] {SpotName(oven)} {(owned ? "owned" : "locked")}");
+            // an oven not bought shows nothing at all (owner, 25 October: "just show nothing instead of a locked oven")
+            oven.gameObject.SetActive(owned);
+            Debug.Log($"[OvenAssigner] {SpotName(oven)} {(owned ? "owned" : "not bought: hidden")}");
         }
 
         // Cookies bake in an oven now: the plate on the shelf is a decoration, its tap does nothing
         foreach (var plate in Object.FindObjectsOfType<CookiesInKitchen>(true)) plate.enabled = false;
-    }
-
-    /// The lock on an oven the player has not bought: the shop's small lock, centred on the oven window.
-    private static void AddLock(OvenKitchenBase oven)
-    {
-        var sprite = Resources.Load<Sprite>("Map/lock_small") ?? Resources.Load<Sprite>("Map/lock_yellow");
-        if (sprite == null) return;
-        var go = new GameObject("Lock", typeof(RectTransform), typeof(Image)); go.transform.SetParent(oven.transform, false);
-        var rt = (RectTransform)go.transform; rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.sizeDelta = new Vector2(80f, 80f); rt.anchoredPosition = Vector2.zero;
-        var img = go.GetComponent<Image>(); img.sprite = sprite; img.preserveAspect = true; img.raycastTarget = false;
     }
 
     private static string SpotName(OvenKitchenBase o) => o.transform.parent != null ? o.transform.parent.name + "/" + o.name : o.name;
@@ -117,7 +105,8 @@ public static class OvenAssigner
 
 /// <summary>
 /// The recipe picker (owner, 25 October 2026): a tap on an idle oven shows the notes of the oven foods on today's
-/// menu, next to that oven; a tap on a note starts the bake there, a tap anywhere else closes the picker. A recipe
+/// menu, next to that oven, no card behind them (like the menu's carousel); a tap on a note starts the bake there, a tap
+/// anywhere else closes the picker and nothing bakes. A recipe
 /// already baking in another oven is greyed out. One picker at a time; it lives in the kitchen's canvas and goes
 /// with the kitchen scene.
 /// </summary>
@@ -149,7 +138,7 @@ public class OvenPicker : MonoBehaviour
         var card = new GameObject("Card", typeof(RectTransform), typeof(Image)); card.transform.SetParent(root.transform, false);
         var crt = (RectTransform)card.transform; crt.anchorMin = crt.anchorMax = new Vector2(0.5f, 0.5f);
         crt.sizeDelta = new Vector2(n * Tile + (n - 1) * Gap + 2 * Pad, Tile + 2 * Pad);
-        card.GetComponent<Image>().color = new Color(0.99f, 0.96f, 0.90f, 0.97f);
+        card.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);   // no card: the notes alone, like the menu's carousel (owner, 25 October)
         var cam = canvas.worldCamera != null ? canvas.worldCamera : Camera.main;
         var ovenRt = (RectTransform)forOven.transform;
         Vector2 local;
@@ -167,6 +156,7 @@ public class OvenPicker : MonoBehaviour
             var tile = new GameObject("Note_" + recipe, typeof(RectTransform), typeof(Image), typeof(Button)); tile.transform.SetParent(card.transform, false);
             var trt = (RectTransform)tile.transform; trt.anchorMin = trt.anchorMax = new Vector2(0f, 0.5f); trt.pivot = new Vector2(0f, 0.5f);
             trt.sizeDelta = new Vector2(Tile, Tile); trt.anchoredPosition = new Vector2(Pad + i * (Tile + Gap), 0f);
+            trt.localRotation = Quaternion.Euler(0f, 0f, ((i * 7 + 3) % 9 - 4) * 1.5f);   // a small tilt each, as in the carousel
             var img = tile.GetComponent<Image>(); img.sprite = OvenAssigner.NoteFor(recipe); img.preserveAspect = true;
             var busy = OvenKitchenBase.IsRecipeBaking(recipe);
             img.color = busy ? new Color(1f, 1f, 1f, 0.35f) : Color.white;
