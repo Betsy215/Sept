@@ -251,6 +251,9 @@ plain `python3` has no numpy.
   `blob:` src from the JS tool). ChatGPT free plan: exactly three pictures a day.
 - Capture scripts: `capture_one.sh <size>` (table + two-order play), `capture_store.sh <size>` (the five store
   shots), `capture_release.sh` (12-screen release series), `record_video.sh` (preview footage with `PreviewRecorder`).
+  `capture_s25.sh` (25 October: every screen of both chapters at the store size plus iPad and iPhone SE, the chapter 2 waffle
+  session, cone row and station level 2; about 18 minutes) and `capture_s25_ipad.sh` (the iPad store shots and the recipe
+  picker) feed `Store/visuals/build_sheets_s25.py` and `build_sprites_s25.py` for the Visuals tab, and `Store/screenshots/final4`.
 - **Full chapter test:** `python3 Docs/tools/autoplay/driver.py 1.5 1.0` (time scale, seconds per action) plays the
   tutorial through its real taps, then days 1 to 16 with the shop between days, logging state, purchases and the
   console to `/tmp/ap/run.log` and `/tmp/ap/days.tsv`. About 20 minutes. Its recipes must sit in `/tmp/ap` (copy
