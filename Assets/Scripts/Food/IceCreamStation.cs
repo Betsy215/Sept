@@ -29,11 +29,9 @@ public class IceCreamStation : MonoBehaviour
 
     [Header("Pictures")] public Sprite[] sectionLevels = new Sprite[Flavours * PerSection];   // [flavour * 3 + (level - 1)]
     public Sprite coneSprite; public Sprite[] scoopSprites = new Sprite[Flavours]; public Sprite crossSprite; public Sprite holderSprite;
-    public Sprite lidSprite;                                        // the lid over a well that is not open yet (22 October)
     [Header("Layout, fractions of the box picture (0..1 from its bottom left)")]
     public Rect[] sectionRects = new Rect[Flavours];        // where each section's picture sits
     public Rect holderRect;
-    public Rect[] lidRects = new Rect[Flavours];            // where a closed well's lid sits; an empty rect means over the section's own rect
     public Vector2 buildPoint = new Vector2(0.5f, 1.15f);    // where the floating cone stands
     [Header("Two-flavour station (level 1, owner 23 October 2026: half the size, two wells, no lids; the same canvas)")]
     public Sprite smallBoxSprite;                             // the short box; null = the old look (the long box with two lids)
@@ -41,6 +39,9 @@ public class IceCreamStation : MonoBehaviour
     public Rect[] smallSectionRects = new Rect[BaseFlavours];
     public Rect smallHolderRect;
     public Vector2 smallBuildPoint = new Vector2(0.27f, 1.22f);
+    [Header("Waffle machine on the table (owner, 25 October 2026: beside the cone stack, the cast-iron one, smaller)")]
+    public float waffleHeight = 0.6f;                         // its height as a share of the cone stack's picture height
+    public float waffleGap = 0.01f;                           // gap from the stack's right edge, a fraction of the box picture
     [Header("Build")] public float scoopStep = 0.62f;        // each scoop this much of a scoop's height above the one below
     public float firstScoopDrop = 0.22f;                      // the first scoop sits this much of its height into the cone
     public AudioClip scoopSound, serveSound;
@@ -53,8 +54,8 @@ public class IceCreamStation : MonoBehaviour
     private Transform build; private bool building;
     private OrderSystem orderSystem; private ServeableItem item; private SpriteRenderer box;
     private Coroutine shake;
-    private SpriteRenderer[] lids = new SpriteRenderer[Flavours];   // the closed wells' lids (22 October)
     private Sprite[] activeLevels;                                  // the section pictures of the box in use (small or long)
+    private SpriteRenderer waffleRenderer; private Sprite waffleClosed, waffleOpen; private Coroutine waffleBake;
 
     public bool IsBuilding => building;
     public int Left(int flavour) => left[Mathf.Clamp(flavour, 0, Flavours - 1)];
@@ -84,10 +85,18 @@ public class IceCreamStation : MonoBehaviour
         var count = small ? BaseFlavours : Flavours;
         var b = box != null && box.sprite != null ? box.sprite.bounds : new Bounds(Vector3.zero, Vector3.one);   // local units of this object
         Vector3 At(Vector2 frac) => new Vector3(b.min.x + frac.x * b.size.x, b.min.y + frac.y * b.size.y, 0f);
+        // the waffle machine's place: right of the cone stack, standing on the same line, waffleHeight of the stack's height
+        waffleClosed = Resources.Load<Sprite>("IceCream/waffle_closed"); waffleOpen = Resources.Load<Sprite>("IceCream/waffle_open");
+        var wRect = new Rect(0f, 0f, 0f, 0f);
+        if (waffleClosed != null)
+        {
+            var wh = hRect.height * waffleHeight; var ww = wh * waffleClosed.rect.width / waffleClosed.rect.height * b.size.y / b.size.x;
+            wRect = new Rect(hRect.xMax + waffleGap, hRect.yMin, ww, wh);
+        }
         var drag = GetComponent<BoxCollider>();                  // the drag collider spans the canvas; the short box uses only its left part
         if (small && drag != null)
         {
-            var ext = Mathf.Clamp01(hRect.xMax + 0.02f); var full = drag.size.x;
+            var ext = Mathf.Clamp01(Mathf.Max(hRect.xMax, wRect.xMax) + 0.02f); var full = drag.size.x;
             drag.size = new Vector3(full * ext, drag.size.y, drag.size.z);
             drag.center = new Vector3(drag.center.x - full * (1f - ext) * 0.5f, drag.center.y, drag.center.z);
         }
@@ -100,19 +109,22 @@ public class IceCreamStation : MonoBehaviour
             var col = go.GetComponent<BoxCollider>(); col.size = new Vector3(r.width * b.size.x * 0.9f, r.height * b.size.y * 0.9f, 0.2f);
             var tap = go.GetComponent<IceCreamTap>(); tap.station = this; tap.kind = IceCreamTap.Kind.Section; tap.index = i;
             sections[i] = sr;
-            if (!small && i >= BaseFlavours && lidSprite != null)  // a lid over the wells the upgrade opens; the section's collider under it takes the tap (refused while closed)
-            {
-                var lr = lidRects != null && i < lidRects.Length && lidRects[i].width > 0f ? lidRects[i] : r;
-                var lid = new GameObject("Lid" + i, typeof(SpriteRenderer)); lid.transform.SetParent(transform, false);
-                lid.transform.localPosition = At(lr.center) + Vector3.back * 0.025f;
-                lids[i] = lid.GetComponent<SpriteRenderer>(); lids[i].sortingLayerName = layer; lids[i].sortingOrder = order + 3; lids[i].sprite = lidSprite;
-            }
         }
         var h = new GameObject("Holder", typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); h.transform.SetParent(transform, false);
         h.transform.localPosition = At(hRect.center) + Vector3.back * 0.02f;
         var hr = h.GetComponent<SpriteRenderer>(); hr.sortingLayerName = layer; hr.sortingOrder = order + 2; hr.sprite = holderSprite; holderRenderer = hr;
         h.GetComponent<BoxCollider>().size = new Vector3(hRect.width * b.size.x, hRect.height * b.size.y, 0.2f);
         var ht = h.GetComponent<IceCreamTap>(); ht.station = this; ht.kind = IceCreamTap.Kind.Holder;
+
+        if (waffleClosed != null)
+        {
+            var wf = new GameObject("Waffle", typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); wf.transform.SetParent(transform, false);
+            wf.transform.localPosition = At(wRect.center) + Vector3.back * 0.02f;
+            var k = wRect.height * b.size.y / waffleClosed.bounds.size.y; wf.transform.localScale = new Vector3(k, k, 1f);
+            waffleRenderer = wf.GetComponent<SpriteRenderer>(); waffleRenderer.sortingLayerName = layer; waffleRenderer.sortingOrder = order + 2; waffleRenderer.sprite = waffleClosed;
+            wf.GetComponent<BoxCollider>().size = new Vector3(waffleClosed.bounds.size.x, waffleClosed.bounds.size.y, 0.2f);
+            var wt = wf.GetComponent<IceCreamTap>(); wt.station = this; wt.kind = IceCreamTap.Kind.Waffle;
+        }
 
         build = new GameObject("Build").transform; build.SetParent(transform, false); build.localPosition = At(bp) + Vector3.back * 0.03f;
         var c = new GameObject("Cone", typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); c.transform.SetParent(build, false);
@@ -152,7 +164,27 @@ public class IceCreamStation : MonoBehaviour
             case IceCreamTap.Kind.Section: if (!building && !StartCone()) break; AddScoop(index); break;
             case IceCreamTap.Kind.Cross: ClearCone(); break;
             case IceCreamTap.Kind.Cone: Serve(); break;
+            case IceCreamTap.Kind.Waffle: BakeCones(); break;
         }
+    }
+
+    /// The waffle machine on the table (owner, 25 October): a tap bakes the stack back to four; a full stack refuses
+    private void BakeCones()
+    {
+        if (cones >= ConesFull) { Reject(); return; }
+        RefillCones();
+        var bake = Resources.Load<AudioClip>("Kitchen/waffle_bake"); if (bake != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(bake);
+        if (waffleBake != null) StopCoroutine(waffleBake);
+        waffleBake = StartCoroutine(WaffleBake());
+    }
+
+    private IEnumerator WaffleBake()
+    {
+        if (waffleRenderer != null && waffleOpen != null) waffleRenderer.sprite = waffleOpen;
+        if (holderRenderer != null) StartCoroutine(Pop(holderRenderer.transform));
+        yield return new WaitForSeconds(0.55f);
+        if (waffleRenderer != null && waffleClosed != null) waffleRenderer.sprite = waffleClosed;
+        waffleBake = null;
     }
 
     /// A cone off the holder; false (and a shake) when the holder is empty: the waffle machine in the kitchen refills it
@@ -167,7 +199,7 @@ public class IceCreamStation : MonoBehaviour
 
     public bool TakeCone() { if (cones <= 0) return false; cones--; RefreshHolder(); return true; }
 
-    /// The holder back to four cones: the kitchen waffle machine's job (owner, 22 October)
+    /// The stack back to four cones: the table's waffle machine (owner, 25 October; the kitchen's until then)
     public void RefillCones() { cones = ConesFull; RefreshHolder(); }
 
     private void RefreshHolder()
@@ -230,7 +262,7 @@ public class IceCreamStation : MonoBehaviour
         for (var i = 0; i < Flavours; i++)
         {
             if (sections[i] == null) continue;
-            var open = IsOpen(i); if (lids[i] != null) lids[i].enabled = !open;
+            var open = IsOpen(i);
             var lv = Mathf.Clamp(left[i], 0, PerSection);
             sections[i].enabled = open && lv > 0;
             if (lv > 0) sections[i].sprite = (activeLevels ?? sectionLevels)[i * PerSection + lv - 1];
@@ -265,10 +297,10 @@ public class IceCreamStation : MonoBehaviour
     private void OnDisable() { if (build != null) build.gameObject.SetActive(false); building = false; cone.Clear(); }
 }
 
-/// A tap target on the station: a section, the holder, the floating cone or the cross
+/// A tap target on the station: a section, the cone stack, the floating cone, the cross or the waffle machine
 public class IceCreamTap : MonoBehaviour, IPointerClickHandler
 {
-    public enum Kind { Section, Holder, Cone, Cross }
+    public enum Kind { Section, Holder, Cone, Cross, Waffle }
     public IceCreamStation station; public Kind kind; public int index;
     public void OnPointerClick(PointerEventData eventData)
     {

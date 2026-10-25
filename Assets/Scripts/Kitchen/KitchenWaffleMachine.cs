@@ -17,8 +17,12 @@ public static class KitchenWaffleMachine
     // picture at 0.7). The counter's right is the strawberry cake's place (owner, 22 October night: "it needs to be placed somewhere else").
     static readonly Vector2 Min = new Vector2(0.03f, 0.418f), Max = new Vector2(0.225f, 0.50f);
 
+    /// Since 25 October 2026 the machine stands on the table beside the cone stack (IceCreamStation); the kitchen has none.
+    public static bool OnTheTable = true;
+
     public static void Apply()
     {
+        if (OnTheTable) return;
         if (SessionManager.CurrentChapter < 2) return;
         var closed = Resources.Load<Sprite>("Kitchen/waffle_closed"); if (closed == null) return;
         Transform bg = null;

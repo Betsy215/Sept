@@ -5400,7 +5400,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 0c91fa7954df54fd4b72e6df45e3682f, type: 3}
   crossSprite: {fileID: 21300000, guid: 063a355dffa0c4a999362f880d5f7b2c, type: 3}
   holderSprite: {fileID: 21300000, guid: e019150ef05a54d21af562704ed30cb7, type: 3}
-  lidSprite: {fileID: 21300000, guid: 259d000950c54ea981a16cb8f89b990c, type: 3}
   sectionRects:
   - serializedVersion: 2
     x: 0.0675
@@ -5426,29 +5425,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0.8333
     y: 0.0095
-    width: 0.1625
+    width: 0.0833
     height: 0.6357
-  lidRects:
-  - serializedVersion: 2
-    x: 0.0000
-    y: 0.0000
-    width: 0.0000
-    height: 0.0000
-  - serializedVersion: 2
-    x: 0.0000
-    y: 0.0000
-    width: 0.0000
-    height: 0.0000
-  - serializedVersion: 2
-    x: 0.4275
-    y: 0.4071
-    width: 0.1767
-    height: 0.3452
-  - serializedVersion: 2
-    x: 0.6067
-    y: 0.4071
-    width: 0.1825
-    height: 0.3452
   buildPoint: {x: 0.42, y: 1.22}
   smallBoxSprite: {fileID: 21300000, guid: cb7076279b044499a952da3fe2c7ef8b, type: 3}
   smallSectionLevels:
@@ -5460,22 +5438,22 @@ MonoBehaviour:
   - {fileID: 21300000, guid: c95676b491284507aa3d387b0343fb88, type: 3}
   smallSectionRects:
   - serializedVersion: 2
-    x: 0.0675
-    y: 0.4381
-    width: 0.1600
-    height: 0.3071
+    x: 0.1067
+    y: 0.4405
+    width: 0.1583
+    height: 0.3024
   - serializedVersion: 2
-    x: 0.2517
-    y: 0.4357
-    width: 0.1592
-    height: 0.3119
+    x: 0.2867
+    y: 0.4381
+    width: 0.1575
+    height: 0.3071
   smallHolderRect:
     serializedVersion: 2
-    x: 0.4642
+    x: 0.5025
     y: 0.0095
-    width: 0.1625
+    width: 0.0833
     height: 0.6357
-  smallBuildPoint: {x: 0.239, y: 1.22}
+  smallBuildPoint: {x: 0.275, y: 1.22}
   scoopStep: 0.62
   firstScoopDrop: 0.22
   scoopSound: {fileID: 0}
