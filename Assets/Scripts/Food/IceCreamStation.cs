@@ -12,13 +12,13 @@ using UnityEngine.EventSystems;
 /// The object carries a ServeableItem (foodType "IceCream") for the level, order and menu lists, but its taps are
 /// handled here, not by it. The pictures: Assets/Images/icecream (ChatGPT's station and cones, cut by
 /// Store/chapter2/icecream_station/cut_station.py).
-/// Cones run out too (owner, 22 October 2026): the holder stacks four; every cone started takes one (served or
+/// Cones run out too (owner, 22 October 2026; a row of six since 25 October): the row holds six; every cone started takes one (served or
 /// cleared, it is gone like the scoops), an empty holder refuses with a shake, and the kitchen waffle machine
 /// (KitchenWaffleMachine) refills the stack to four. The holder picture per count: Resources/IceCream/holder_0..4,
 /// holderSprite when a level picture is missing.
 public class IceCreamStation : MonoBehaviour
 {
-    public const int Flavours = 4, PerSection = 3, MaxScoops = 3, ConesFull = 4;
+    public const int Flavours = 4, PerSection = 3, MaxScoops = 3, ConesFull = 6;   // six cones in a row (owner, 25 October 2026)
     public static readonly string Letters = "vscm";                 // vanilla, strawberry, chocolate, mint: the order letters
     public static readonly string[] Names = { "vanilla", "strawberry", "chocolate", "mint" };
     public const int BaseFlavours = 2;                              // the station opens with two flavours; the shop's "Two more flavours" upgrade opens all four (owner, 22 October 2026)
@@ -40,14 +40,15 @@ public class IceCreamStation : MonoBehaviour
     public Rect smallHolderRect;
     public Vector2 smallBuildPoint = new Vector2(0.27f, 1.22f);
     [Header("Waffle machine on the table (owner, 25 October 2026: beside the cone stack, the cast-iron one, smaller)")]
-    public float waffleHeight = 0.6f;                         // its height as a share of the cone stack's picture height
-    public float waffleGap = 0.01f;                           // gap from the stack's right edge, a fraction of the box picture
+    public float waffleHeight = 0.38f;                        // its height as a share of the box picture's height (420 px canvas: about 160 px)
+    public float waffleGap = 0.02f;                           // gap above the cone row, a fraction of the box picture's height
+    public const int WafflesPerSession = 2; public const float WaffleSeconds = 8f;   // one session bakes two cones in 8 s (owner, 25 October)
     [Header("Build")] public float scoopStep = 0.62f;        // each scoop this much of a scoop's height above the one below
     public float firstScoopDrop = 0.22f;                      // the first scoop sits this much of its height into the cone
     public AudioClip scoopSound, serveSound;
 
     private readonly int[] left = { PerSection, PerSection, PerSection, PerSection };
-    private int cones = ConesFull; private SpriteRenderer holderRenderer;
+    private int cones = ConesFull; private SpriteRenderer holderRenderer;   // the cone row's picture (holder_0..6)
     private readonly List<int> cone = new List<int>();        // flavours on the floating cone, bottom first
     private SpriteRenderer[] sections = new SpriteRenderer[Flavours];
     private SpriteRenderer coneRenderer, crossRenderer; private SpriteRenderer[] scoopRenderers = new SpriteRenderer[MaxScoops];
@@ -85,18 +86,19 @@ public class IceCreamStation : MonoBehaviour
         var count = small ? BaseFlavours : Flavours;
         var b = box != null && box.sprite != null ? box.sprite.bounds : new Bounds(Vector3.zero, Vector3.one);   // local units of this object
         Vector3 At(Vector2 frac) => new Vector3(b.min.x + frac.x * b.size.x, b.min.y + frac.y * b.size.y, 0f);
-        // the waffle machine's place: right of the cone stack, standing on the same line, waffleHeight of the stack's height
+        // the waffle machine's place: behind the cone row (higher on the table), centred over it (owner, 25 October: "behind,
+        // higher in Y, instead of next to the cones"); its height a share of the box picture's height
         waffleClosed = Resources.Load<Sprite>("IceCream/waffle_closed"); waffleOpen = Resources.Load<Sprite>("IceCream/waffle_open");
         var wRect = new Rect(0f, 0f, 0f, 0f);
         if (waffleClosed != null)
         {
-            var wh = hRect.height * waffleHeight; var ww = wh * waffleClosed.rect.width / waffleClosed.rect.height * b.size.y / b.size.x;
-            wRect = new Rect(hRect.xMax + waffleGap, hRect.yMin, ww, wh);
+            var wh = waffleHeight; var ww = wh * waffleClosed.rect.width / waffleClosed.rect.height * b.size.y / b.size.x;
+            wRect = new Rect(hRect.x + (hRect.width - ww) * 0.5f, hRect.yMax + waffleGap, ww, wh);
         }
         var drag = GetComponent<BoxCollider>();                  // the drag collider spans the canvas; the short box uses only its left part
         if (small && drag != null)
         {
-            var ext = Mathf.Clamp01(Mathf.Max(hRect.xMax, wRect.xMax) + 0.02f); var full = drag.size.x;
+            var ext = Mathf.Clamp(Mathf.Max(hRect.xMax, wRect.xMax) + 0.02f, 0f, 1.5f); var full = drag.size.x;
             drag.size = new Vector3(full * ext, drag.size.y, drag.size.z);
             drag.center = new Vector3(drag.center.x - full * (1f - ext) * 0.5f, drag.center.y, drag.center.z);
         }
@@ -168,21 +170,32 @@ public class IceCreamStation : MonoBehaviour
         }
     }
 
-    /// The waffle machine on the table (owner, 25 October): a tap bakes the stack back to four; a full stack refuses
+    /// The waffle machine on the table (owner, 25 October): a tap starts a session, 8 s closed, then the lid opens on two
+    /// waffles and two cones join the stack; a full stack or a running session refuses
+    public bool IsBakingWaffles => waffleBake != null;
     private void BakeCones()
     {
-        if (cones >= ConesFull) { Reject(); return; }
-        RefillCones();
+        if (cones >= ConesFull || waffleBake != null) { Reject(); return; }
         var bake = Resources.Load<AudioClip>("Kitchen/waffle_bake"); if (bake != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(bake);
-        if (waffleBake != null) StopCoroutine(waffleBake);
         waffleBake = StartCoroutine(WaffleBake());
     }
 
     private IEnumerator WaffleBake()
     {
+        if (waffleRenderer != null && waffleClosed != null) waffleRenderer.sprite = waffleClosed;
+        if (waffleRenderer != null) StartCoroutine(Pop(waffleRenderer.transform));
+        var t = 0f;
+        while (t < WaffleSeconds)
+        {
+            t += Time.deltaTime;
+            if (waffleRenderer != null) waffleRenderer.color = Color.Lerp(Color.white, new Color(1f, 0.92f, 0.82f), 0.5f + 0.5f * Mathf.Sin(t * 5f));   // a warm pulse while it bakes
+            yield return null;
+        }
+        if (waffleRenderer != null) waffleRenderer.color = Color.white;
         if (waffleRenderer != null && waffleOpen != null) waffleRenderer.sprite = waffleOpen;
+        cones = Mathf.Min(ConesFull, cones + WafflesPerSession); RefreshHolder();
         if (holderRenderer != null) StartCoroutine(Pop(holderRenderer.transform));
-        yield return new WaitForSeconds(0.55f);
+        yield return new WaitForSeconds(1.2f);
         if (waffleRenderer != null && waffleClosed != null) waffleRenderer.sprite = waffleClosed;
         waffleBake = null;
     }
@@ -294,7 +307,11 @@ public class IceCreamStation : MonoBehaviour
         t.localPosition = rest; shake = null;
     }
 
-    private void OnDisable() { if (build != null) build.gameObject.SetActive(false); building = false; cone.Clear(); }
+    private void OnDisable()
+    {
+        if (build != null) build.gameObject.SetActive(false); building = false; cone.Clear();
+        if (waffleBake != null) { StopCoroutine(waffleBake); waffleBake = null; if (waffleRenderer != null) { waffleRenderer.color = Color.white; if (waffleClosed != null) waffleRenderer.sprite = waffleClosed; } }
+    }
 }
 
 /// A tap target on the station: a section, the cone stack, the floating cone, the cross or the waffle machine

@@ -5425,8 +5425,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0.8333
     y: 0.0095
-    width: 0.0833
-    height: 0.6357
+    width: 0.3250
+    height: 0.2952
   buildPoint: {x: 0.42, y: 1.22}
   smallBoxSprite: {fileID: 21300000, guid: cb7076279b044499a952da3fe2c7ef8b, type: 3}
   smallSectionLevels:
@@ -5451,8 +5451,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0.5025
     y: 0.0095
-    width: 0.0833
-    height: 0.6357
+    width: 0.3250
+    height: 0.2952
   smallBuildPoint: {x: 0.275, y: 1.22}
   scoopStep: 0.62
   firstScoopDrop: 0.22
