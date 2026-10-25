@@ -216,11 +216,13 @@ plain `python3` has no numpy.
   card (`IceCreamUpgrade`, Upgrade of `IceCream`, 900, chapter 2 shop only, one level: `SessionManager.MaxUpgradeLevel`) sets IceCream
   level 2 (`ActiveFlavours`) and the LONG four-well box (the owner's repaint, `front_out/station_box.png`); orders ask only for open
   flavours (`RandomVariant`). **No lids** (owner, 25 October: "we don't need the lid ever"): the lid sprite, field and rects are gone.
-  **No stand:** the cones stack on themselves (`Resources/IceCream/holder_0..4`, 100 x 267, `cone_stack.py`; `holder.png` = four);
-  the station's `holderRect` is that canvas. **The waffle machine stands on the table** right of the stack (owner, 25 October: the
-  cast-iron one, smaller): `Resources/IceCream/waffle_closed|open` (300 x 220, the owner's iCloud copies), drawn at `waffleHeight`
-  0.6 of the stack's height, `waffleGap` after it; a tap (`IceCreamTap.Kind.Waffle`) bakes the stack back to four and flips the lid
-  open for half a second (`BakeCones`); a full stack refuses. The kitchen machine is retired (`KitchenWaffleMachine.OnTheTable`).
+  **No stand:** the cones stand in a ROW of six (`Resources/IceCream/holder_0..6`, 390 x 124, `cone_row.py`; `holder.png` = six;
+  `ConesFull` 6); the station's `holderRect` is that canvas. **The waffle machine stands on the table behind the row**, centred over
+  it (owner, 25 October: the cast-iron one, smaller, behind): `Resources/IceCream/waffle_closed|open` (300 x 220, the owner's iCloud
+  copies), `waffleHeight` 0.38 of the box picture's height, `waffleGap` above the row; a tap (`IceCreamTap.Kind.Waffle`) starts a
+  session (`BakeCones`): 8 s closed with a warm pulse, then the lid opens on two waffles for 1.2 s and two cones join the row
+  (`WafflesPerSession`, `WaffleSeconds`); a running session or a full row refuses. The 40-degree rounded machine (both colourways,
+  `Store/redesign/waffle/waffle40.py`) waits for the owner's pick. The kitchen machine is retired (`KitchenWaffleMachine.OnTheTable`).
   Art contract: every part on the box canvas at its place; `Docs/tools/icecream_row_cut.py <parts>` crops the long set into
   `Assets/Images/icecream`, writes the rects, the collider and the scale into GameSceneOne; `icecream_upgrade_card.py` added the
   shop card. Blockout parts and painter: `Store/chapter2/icecream_station/row/`.
