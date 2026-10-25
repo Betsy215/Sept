@@ -42,7 +42,7 @@ public class IceCreamStation : MonoBehaviour
     [Header("Waffle machine on the table (owner, 25 October 2026: beside the cone stack, the cast-iron one, smaller)")]
     public float waffleHeight = 0.5f;                         // its height as a share of the box picture's height (owner, 25 October afternoon: bigger; was 0.38)
     public float waffleGap = 0.02f;                           // gap above the cone row, a fraction of the box picture's height
-    public float waffleShift = -0.04f;                        // sideways from the row's centre, a fraction of the box width (owner, 25 October: "move it to the left a little", centred on the six cones)
+    public float waffleShift = -0.01f;                      // sideways from the row's centre, a fraction of the box width (owner, 25 October: "move it to the left a little", centred on the six cones)
     public const int WafflesPerSession = 2; public const float WaffleSeconds = 8f;   // one session bakes two cones in 8 s (owner, 25 October)
     [Header("Build")] public float scoopStep = 0.62f;        // each scoop this much of a scoop's height above the one below
     public float firstScoopDrop = 0.22f;                      // the first scoop sits this much of its height into the cone

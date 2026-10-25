@@ -118,7 +118,7 @@ public class OvenPicker : MonoBehaviour
     // can interact with, clicking anywhere else cancels it ... a transparent overlay behind the stickers, like the shop panel".
     // So: a centred panel in the shop panel's style (the built-in rounded UI sprite, white at 70 %), big notes in a grid of
     // three to a row, a full-screen blocker behind it; a tap outside the panel closes, a tap on the panel does nothing.
-    private const float Tile = 290f, Gap = 24f, Pad = 40f; private const int PerRow = 3;
+    private const float Tile = 260f, Gap = 24f, Pad = 36f; private const int PerRow = 3;
 
     public static void Open(OvenKitchenBase forOven, List<string> recipes)
     {
@@ -142,7 +142,7 @@ public class OvenPicker : MonoBehaviour
         var crt = (RectTransform)card.transform; crt.anchorMin = crt.anchorMax = new Vector2(0.5f, 0.5f);
         crt.sizeDelta = new Vector2(cols * Tile + (cols - 1) * Gap + 2 * Pad, rows * Tile + (rows - 1) * Gap + 2 * Pad);
         crt.anchoredPosition = Vector2.zero;
-        var panel = card.GetComponent<Image>(); panel.sprite = Resources.GetBuiltinResource<Sprite>("UISprite.psd"); panel.type = Image.Type.Sliced;
+        var panel = card.GetComponent<Image>(); panel.sprite = RoundedPanel(); panel.type = Image.Type.Sliced;
         panel.color = new Color(1f, 1f, 1f, 0.698f);                  // the shop panel's white at 70 %
 
         for (var i = 0; i < n; i++)
@@ -167,6 +167,26 @@ public class OvenPicker : MonoBehaviour
     {
         if (open != null) Object.Destroy(open.gameObject);
         open = null;
+    }
+
+    /// A white rounded rectangle drawn once at runtime (the editor's built-in UISprite is not loadable in a build), sliced
+    /// so it stretches to any panel size with the corners kept: the shop panel's look.
+    private static Sprite rounded;
+    private static Sprite RoundedPanel()
+    {
+        if (rounded != null) return rounded;
+        const int S = 64, R = 20;
+        var tex = new Texture2D(S, S, TextureFormat.RGBA32, false); var px = new Color[S * S];
+        for (var y = 0; y < S; y++)
+            for (var x = 0; x < S; x++)
+            {
+                var cx = Mathf.Clamp(x, R, S - 1 - R); var cy = Mathf.Clamp(y, R, S - 1 - R);
+                var d = Vector2.Distance(new Vector2(x, y), new Vector2(cx, cy));
+                px[y * S + x] = new Color(1f, 1f, 1f, Mathf.Clamp01(R - d + 0.5f));
+            }
+        tex.SetPixels(px); tex.Apply(); tex.filterMode = FilterMode.Bilinear;
+        rounded = Sprite.Create(tex, new Rect(0, 0, S, S), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, new Vector4(R + 2, R + 2, R + 2, R + 2));
+        return rounded;
     }
 
     private void Pick(string recipe)

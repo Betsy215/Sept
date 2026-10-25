@@ -4,7 +4,7 @@ Read this first in every session on this project. It is the current state: what 
 where things live, how the game works now, and how each recurring job is done. Dated change notes are in
 `Docs/history/` (the 12 to 13 October log and the pre-rewrite manual and TODO are there).
 
-Last updated 25 October 2026 (ovens bought and free of recipe, the recipe picker, the saved menu, the owner's short station, the cloth-edge and palm-crown fixes, build 5; release plan for 26.10.18, asc_release.py; 21 October: eight bug fixes, Coconut a chapter 2 food, the verify21 recipes, recv.py; earlier: menu book, economy tune, chapter 2).
+Last updated 25 October 2026 (afternoon: bigger coconut tray on a 640 x 560 canvas with all six states rebuilt by `Store/artkit/art25.py`, spoon-free level-1 wells, cropped apple tree, waffle machine 0.5 and centred, picker panel; ovens bought and free of recipe, the recipe picker, the saved menu, the owner's short station, the cloth-edge and palm-crown fixes, build 5; release plan for 26.10.18, asc_release.py; 21 October: eight bug fixes, Coconut a chapter 2 food, the verify21 recipes, recv.py; earlier: menu book, economy tune, chapter 2).
 
 ## 1. State of the project
 
@@ -153,7 +153,9 @@ plain `python3` has no numpy.
   is a grid; the baked foods' icons are their oven notes (`Resources/UI/stickers`). **The menu is saved across days**
   (`SessionData.enabledFoodItems`, written by every sticker move): a bought food goes onto the paper at once
   (`PurchaseFoodItem`, unless the menu or its station is full), a food taken off stays off until the player puts it back.
-  **Ovens (owner, 25 October 2026):** any oven bakes any recipe. A tap on an idle owned oven opens the recipe picker
+  **Ovens (owner, 25 October 2026):** any oven bakes any recipe. A tap on an idle owned oven opens the recipe picker (since the
+  25 October afternoon a centred panel in the shop panel's style, white at 70 % with rounded corners drawn in code, notes 260 px three
+  to a row, a tap outside the panel closes it; the shop's oven card shows the off oven without a sticker)
   (`OvenPicker` in OvenAssigner.cs: the oven notes of the baked foods on today's menu, next to the oven; one recipe on the
   menu bakes at once without the picker; a recipe baking in another oven is greyed). The oven shows that recipe's note
   only while it bakes (`OvenKitchenBase.ShowNote`), the bake time is the recipe's (`BakeTimes`: Bread 8, Choux 10, Cake 15,
@@ -219,7 +221,9 @@ plain `python3` has no numpy.
   **No stand:** the cones stand in a ROW of six (`Resources/IceCream/holder_0..6`, 390 x 124, `cone_row.py`; `holder.png` = six;
   `ConesFull` 6); the station's `holderRect` is that canvas. **The waffle machine stands on the table behind the row**, centred over
   it (owner, 25 October: the cast-iron one, smaller, behind): `Resources/IceCream/waffle_closed|open` (300 x 220, the owner's iCloud
-  copies), `waffleHeight` 0.38 of the box picture's height, `waffleGap` above the row; a tap (`IceCreamTap.Kind.Waffle`) starts a
+  copies), `waffleHeight` 0.5 of the box picture's height (0.38 until the 25 October afternoon), `waffleGap` above the row,
+  `waffleShift` -0.01 of the box width (owner: bigger, a little to the left; measured centred over the six cones within 4 px before the shift), the drag collider
+  grown to cover it so station, machine and cone row move as one in the arrangement; a tap (`IceCreamTap.Kind.Waffle`) starts a
   session (`BakeCones`): 8 s closed with a warm pulse, then the lid opens on two waffles for 1.2 s and two cones join the row
   (`WafflesPerSession`, `WaffleSeconds`); a running session or a full row refuses. The 40-degree rounded machine (both colourways,
   `Store/redesign/waffle/waffle40.py`) waits for the owner's pick. The kitchen machine is retired (`KitchenWaffleMachine.OnTheTable`).
