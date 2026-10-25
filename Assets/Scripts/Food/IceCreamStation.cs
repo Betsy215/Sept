@@ -40,7 +40,7 @@ public class IceCreamStation : MonoBehaviour
     public Rect smallHolderRect;
     public Vector2 smallBuildPoint = new Vector2(0.27f, 1.22f);
     [Header("Waffle machine on the table (owner, 25 October 2026: beside the cone stack, the cast-iron one, smaller)")]
-    public float waffleHeight = 0.5f;                         // its height as a share of the box picture's height (owner, 25 October afternoon: bigger; was 0.38)
+    public float waffleHeight = 0.58f;                        // its height as a share of the box picture's height (owner, 25 October afternoon: bigger; was 0.38; 0.58 since the owner's own drawing, whose canvas has more air above the machine)
     public float waffleGap = 0.02f;                           // gap above the cone row, a fraction of the box picture's height
     public float waffleShift = -0.01f;                      // sideways from the row's centre, a fraction of the box width (owner, 25 October: "move it to the left a little", centred on the six cones)
     public const int WafflesPerSession = 2; public const float WaffleSeconds = 8f;   // one session bakes two cones in 8 s (owner, 25 October)
