@@ -50,6 +50,8 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
 
     private Image image;
     private KitchenTimerHelper timerHelper;
+    private string cooldownKey;   // cached in Awake: the timer's callback can run on a destroyed instance (the kitchen closed mid-bake),
+                                  // where transform and gameObject throw MissingReferenceException (the 25 October scan)
 
     protected virtual void Awake()
     {
@@ -64,6 +66,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         KitchenBlender.Apply();          // the blender as its own object, every chapter (17 October)
         KitchenWaffleMachine.Apply();    // chapter 2: the waffle machine that refills the cone holder (22 October)
 
+        cooldownKey = "Oven:" + (transform.parent != null ? transform.parent.name + "/" : "") + gameObject.name;
         // The bake timer must outlive the kitchen scene, so it always runs on the persistent helper.
         timerHelper = KitchenTimerHelper.GetOrCreate($"[OvenHelper] {GetCooldownKey()}");
         CheckBakingStateOnWake();
@@ -148,8 +151,8 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
 
     private void OnBakeComplete()
     {
-        DebugLog("Bake complete!");
         var key = GetCooldownKey();
+        DebugLog("Bake complete: " + key);
         CooldownRegistry.ClearPickTime(key);
         if (string.IsNullOrEmpty(food) && Recipes.TryGetValue(key, out var r)) food = r;   // a destroyed instance keeps its field; a fresh one reads the registry
         OnRefill();
@@ -161,8 +164,8 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
 
     private void SetSprite(Sprite sprite)
     {
-        if (image != null && sprite != null)
-            image.sprite = sprite;
+        if (this == null || image == null || sprite == null) return;   // a destroyed instance's callback
+        image.sprite = sprite;
     }
 
     /// The note on the oven: the recipe's picture while it bakes, nothing otherwise (owner, 25 October).
@@ -184,7 +187,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
     /// </summary>
     protected virtual string GetCooldownKey()
     {
-        return "Oven:" + (transform.parent != null ? transform.parent.name + "/" : "") + gameObject.name;
+        return cooldownKey ?? ("Oven:" + (transform.parent != null ? transform.parent.name + "/" : "") + gameObject.name);
     }
 
     /// <summary>
@@ -205,6 +208,6 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
 
     protected void DebugLog(string message)
     {
-        if (enableDebugLogs) Debug.Log($"[{GetType().Name}] {message}");
+        if (this != null && enableDebugLogs) Debug.Log($"[{GetType().Name}] {message}");
     }
 }
