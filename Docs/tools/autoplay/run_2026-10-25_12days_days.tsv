@@ -1,0 +1,12 @@
+0	ST|GameSceneOne|lvl 1|money 252.83|score 153|stars 3|done 1|panel True	{"idle": 10, "served": 9, "brew": 13, "done": 1}
+1	ST|GameSceneOne|lvl 2|money 509.16|score 266|stars 3|done 2|panel True	{"idle": 11, "served": 12, "brew": 8, "done": 1}
+2	ST|GameSceneOne|lvl 3|money 736.33|score 507|stars 3|done 3|panel True	{"idle": 10, "served": 18, "brew": 7, "refill": 2, "done": 1}
+3	ST|GameSceneOne|lvl 4|money 561.66|score 425|stars 3|done 4|panel True	{"idle": 7, "served": 19, "brew": 10, "refill": 3, "done": 1}
+4	ST|GameSceneOne|lvl 5|money 1339.83|score 678|stars 3|done 5|panel True	{"idle": 10, "served": 25, "refill": 4, "brew": 4, "done": 1}
+5	ST|GameSceneOne|lvl 6|money 1343.83|score 904|stars 3|done 6|panel True	{"idle": 7, "served": 29, "refill": 4, "brew": 2, "done": 1}
+6	ST|GameSceneOne|lvl 7|money 2368.83|score 925|stars 3|done 7|panel True	{"idle": 12, "served": 25, "refill": 4, "brew": 5, "done": 1}
+7	ST|GameSceneOne|lvl 8|money 1399.83|score 751|stars 2|done 8|panel True	{"idle": 13, "served": 20, "brew": 10, "done": 1}
+8	ST|GameSceneOne|lvl 9|money 2038.33|score 639|stars 2|done 9|panel True	{"idle": 10, "served": 23, "brew": 16, "refill": 1, "done": 1}
+9	ST|GameSceneOne|lvl 10|money 1447.83|score 810|stars 2|done 10|panel True	{"idle": 14, "served": 26, "brew": 8, "refill": 2, "done": 1}
+10	ST|GameSceneOne|lvl 11|money 1086.99|score 819|stars 2|done 11|panel True	{"idle": 11, "served": 28, "brew": 9, "refill": 3, "done": 1}
+11	ST|GameSceneOne|lvl 12|money 2129.48|score 942|stars 3|done 12|panel True	{"idle": 11, "served": 31, "brew": 7, "refill": 3, "done": 1}
