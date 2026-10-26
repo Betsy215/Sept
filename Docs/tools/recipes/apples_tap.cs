@@ -1,2 +1,2 @@
 var a = UnityEngine.Object.FindObjectOfType<AppleInKitchen>(); if (a == null) return "no apples";
-a.OnPointerClick(new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current)); return "apples";
+var ok = a.Take(); return "apple taken " + ok + ", left on the tree " + AppleInKitchen.Count;
