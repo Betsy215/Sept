@@ -55,7 +55,8 @@ public class IceCreamStation : MonoBehaviour
     public float rowGap = 0.0f;                              // between the box's bottom and the dishes' tops, a fraction of the canvas height
     public float wellHit = 1.2f;                              // a well's tap area against its picture (owner, 26 October 2026: bigger in all directions)
     public float dishHitHeight = 1.3f;                        // a glass's tap area height against its picture, the extra above it (the scoop heap)
-    public float waffleHitHeight = 0.82f;                     // the machine's tap area height, trimmed from the top (owner: slightly shorter)
+    public float waffleHitHeight = 0.82f;
+    public float waffleRise = 0.06f;                          // the machine sits this much higher (fraction of the box height), clear of the glasses' tap areas (owner, 26 October 2026)                     // the machine's tap area height, trimmed from the top (owner: slightly shorter)
     public float trashScale = 0.5f;                          // the trash can's size against its picture (owner, 26 October 2026: slightly smaller)
     public float liftScale = 1.5f;                            // a lifted dish grows this much
     public float liftRise = 0.1f;                            // and rises this share of its height
@@ -77,6 +78,7 @@ public class IceCreamStation : MonoBehaviour
     {
         public Transform root; public SpriteRenderer back, bowl, bowlFront, front; public SpriteRenderer[] scoops = new SpriteRenderer[MaxScoops]; public GameObject trash;
         public bool waffle; public readonly List<int> flavours = new List<int>(); public Vector3 rest; public float scale; public int order;
+        public BoxCollider hit; public Vector3 hitSize, hitCentre;   // the resting tap area, restored when the glass is put down
         public bool Empty => !waffle && flavours.Count == 0;
     }
 
@@ -87,6 +89,7 @@ public class IceCreamStation : MonoBehaviour
     private Coroutine shake;
     private Sprite[] activeLevels;                                  // the section pictures of the box in use (small or long)
     private SpriteRenderer waffleRenderer; private Sprite waffleClosed, waffleOpen; private Coroutine waffleBake;
+    private float wellsBottom = float.MaxValue;                     // the wells' tap areas' lowest edge, station units: a lifted glass's tap area stops under it
     private Sprite dishBack, dishFront, bowlSprite, bowlFrontSprite, trashSprite; private readonly Sprite[] smallScoops = new Sprite[Flavours];
     private string layer; private int order;
 
@@ -139,7 +142,7 @@ public class IceCreamStation : MonoBehaviour
         if (waffleClosed != null)
         {
             var wh = waffleHeight; var ww = wh * waffleClosed.rect.width / waffleClosed.rect.height * b.size.y / b.size.x;
-            wRect = new Rect(rowRight + waffleGap, rects[0].center.y - wh * 0.5f, ww, wh);
+            wRect = new Rect(rowRight + waffleGap, rects[0].center.y - wh * 0.5f + waffleRise, ww, wh);
             var wf = new GameObject("Waffle", typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); wf.transform.SetParent(transform, false);
             wf.transform.localPosition = At(wRect.center) + Vector3.back * 0.02f;
             var k = wRect.height * b.size.y / waffleClosed.bounds.size.y; wf.transform.localScale = new Vector3(k, k, 1f);
@@ -167,6 +170,7 @@ public class IceCreamStation : MonoBehaviour
                 go.transform.localPosition = d.rest; go.transform.localScale = new Vector3(ks, ks, 1f); d.root = go.transform;
                 d.back = go.GetComponent<SpriteRenderer>(); d.back.sortingLayerName = layer; d.back.sortingOrder = d.order; d.back.sprite = dishBack;
                 var dcol = go.GetComponent<BoxCollider>(); dcol.size = new Vector3(dishBack.bounds.size.x, dishBack.bounds.size.y * dishHitHeight, 0.2f); dcol.center = new Vector3(0f, dishBack.bounds.size.y * (dishHitHeight - 1f) * 0.5f, 0f);   // taller, the extra above
+                d.hit = dcol; d.hitSize = dcol.size; d.hitCentre = dcol.center;
                 var tap = go.GetComponent<IceCreamTap>(); tap.station = this; tap.kind = IceCreamTap.Kind.Dish; tap.index = i;
                 d.bowl = Child(go.transform, "Bowl", d.order + 1); d.bowl.sprite = bowlSprite;
                 for (var s = 0; s < MaxScoops; s++) d.scoops[s] = Child(go.transform, "Scoop" + s, d.order + 2 + s);
@@ -184,14 +188,23 @@ public class IceCreamStation : MonoBehaviour
                 dishes.Add(d); RefreshDish(d);
             }
         }
-        // the drag collider covers the box, the dish row and the machine, so the group moves as one in the arrangement
+        // the drag area covers the box, the glass row and the machine, so the group moves as one in the arrangement
         var drag = GetComponent<BoxCollider>();
+        var xMin = spanL; var xMax = spanR;
+        var wellTop = 0f; for (var i = 0; i < count; i++) wellTop = Mathf.Max(wellTop, rects[i].center.y + rects[i].height * wellHit * 0.5f);
+        var yMin = Mathf.Min(0f, rowBottom - trashFrac * 0.5f);                   // half a trash can of room under the glasses
+        var yMax = Mathf.Max(wellTop, waffleTop) + 0.02f;                           // the top: the wells' and the machine's tap areas
+        // the wells' tap areas reach the drag area's top and reach down by the same amount (owner, 26 October 2026)
+        wellsBottom = float.MaxValue;
+        for (var i = 0; i < count; i++)
+        {
+            var r = rects[i]; var col = sections[i] != null ? sections[i].GetComponent<BoxCollider>() : null; if (col == null) continue;
+            var ext = yMax - (r.center.y + r.height * wellHit * 0.5f); var hh = r.height * wellHit + 2f * ext;
+            col.size = new Vector3(col.size.x, hh * b.size.y, col.size.z);
+            wellsBottom = Mathf.Min(wellsBottom, b.min.y + (r.center.y - hh * 0.5f) * b.size.y);
+        }
         if (drag != null)
         {
-            var xMin = spanL; var xMax = spanR;
-            var wellTop = 0f; for (var i = 0; i < count; i++) wellTop = Mathf.Max(wellTop, rects[i].center.y + rects[i].height * wellHit * 0.5f);
-            var yMin = Mathf.Min(0f, rowBottom - trashFrac * 0.5f);                   // half a trash can of room under the glasses
-            var yMax = Mathf.Max(wellTop, waffleTop) + 0.02f;                           // shorter from the top: the wells' and the machine's tap areas
             drag.size = new Vector3(b.size.x * (xMax - xMin), b.size.y * (yMax - yMin), drag.size.z);
             drag.center = new Vector3(b.min.x + (xMin + xMax) * 0.5f * b.size.x, b.min.y + (yMin + yMax) * 0.5f * b.size.y, drag.center.z);
         }
@@ -249,6 +262,13 @@ public class IceCreamStation : MonoBehaviour
         d.root.localScale = new Vector3(d.scale * liftScale, d.scale * liftScale, 1f);
         d.root.localPosition = d.rest + Vector3.up * (dishBack != null ? dishBack.bounds.size.y * d.scale * liftRise : 0.3f) + Vector3.back * 0.05f;
         SetOrder(d, d.order + 20); d.trash.SetActive(true); StartCoroutine(Pop(d.root));
+        // the lifted glass's tap area: its own picture only, its top kept under the wells' tap areas (owner, 26 October 2026)
+        if (d.hit != null && dishBack != null && wellsBottom < float.MaxValue)
+        {
+            var k = d.scale * liftScale; var bottom = -dishBack.bounds.extents.y;
+            var top = Mathf.Min(dishBack.bounds.extents.y, (wellsBottom - 0.02f - d.root.localPosition.y) / k);
+            if (top > bottom) { d.hit.size = new Vector3(d.hitSize.x, top - bottom, d.hitSize.z); d.hit.center = new Vector3(0f, (top + bottom) * 0.5f, 0f); }
+        }
     }
 
     private void Deselect()
@@ -256,6 +276,7 @@ public class IceCreamStation : MonoBehaviour
         if (selected < 0) return;
         var d = dishes[selected]; selected = -1;
         d.root.localScale = new Vector3(d.scale, d.scale, 1f); d.root.localPosition = d.rest; SetOrder(d, d.order); d.trash.SetActive(false);
+        if (d.hit != null) { d.hit.size = d.hitSize; d.hit.center = d.hitCentre; }
     }
 
     private void SetOrder(Dish d, int baseOrder)
