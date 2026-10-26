@@ -116,6 +116,15 @@ public class InterstitialAdService : MonoBehaviour, IUnityAdsLoadListener, IUnit
     /// </summary>
     public void ShowAfterLevelThen(Action continuation)
     {
+        // TestFlight builds show only test ads, which never count (sandbox receipt), so the between-level ad is
+        // skipped there altogether (owner, 25 October 2026: "bypass the intermediate every level ads in TestFlight").
+        // The rewarded coin ad is untouched. Store builds are unchanged.
+        if (AdsInitializer.IsTestFlightBuild())
+        {
+            Debug.Log("[Interstitial] TestFlight build: between-level ad skipped.");
+            continuation?.Invoke();
+            return;
+        }
         levelsSinceLastAd++;
 
         var due = levelsSinceLastAd >= Mathf.Max(1, ShowEveryNLevels);
