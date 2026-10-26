@@ -5,7 +5,7 @@ public class Apple : MonoBehaviour
 {
     // Sprites in ascending order: index 0 = empty, last index = full
     [SerializeField] private Sprite[] appleSprites;
-    [SerializeField] [Min(1)] private int countPerSpriteChange = 1;
+    [SerializeField] [Min(1)] private int countPerSpriteChange = 1;   // one picture per serve since 25 October 2026 (owner: the actual counts)
 
     private RefillableItem refillableItem;
     private SpriteRenderer spriteRenderer;

@@ -5,7 +5,7 @@ public class Bread : MonoBehaviour
 {
     // Sprites in ascending order: index 0 = empty, last index = full
     [SerializeField] private Sprite[] breadSprites;
-    [SerializeField] [Min(1)] private int countPerSpriteChange = 2;
+    [SerializeField] [Min(1)] private int countPerSpriteChange = 1;   // one picture per serve since 25 October 2026 (owner: the actual counts)
 
     private RefillableItem refillableItem;
     private SpriteRenderer spriteRenderer;

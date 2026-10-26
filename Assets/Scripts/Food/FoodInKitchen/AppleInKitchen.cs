@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 /// <summary>
 /// The apples on the kitchen tree (owner, 25 October 2026: "apples like coconuts, several on the tree, one per tap").
-/// Three apples; every tap takes one and puts a share of the basket's stock on the table (a third of the basket per
-/// apple, so three taps fill it); when the last one is taken the tree is bare and grows all three back after
+/// Four apples; every tap takes one and puts a share of the basket's stock on the table (a quarter of the basket per
+/// apple, one serve since the basket holds four, so four taps fill it); when the last one is taken the tree is bare and grows all four back after
 /// respawnDelay seconds (the timer and the pick time live on the persistent helpers, so leaving the kitchen does not
 /// reset them). Pictures Resources/Kitchen/apples_3 .. apples_1 (Store/artkit/apples_states.py); when they are missing the
 /// scene's own picture stays and a tap still takes one apple.
@@ -15,7 +15,7 @@ using UnityEngine.UI;
 /// </summary>
 public class AppleInKitchen : MonoBehaviour, IPointerClickHandler
 {
-    public const int Full = 3;
+    public const int Full = 4;                           // four apples, one serve each: the basket holds four (owner, 25 October 17:30)
     public static int Count = Full;                      // apples left on the tree, kept while the game runs
     [Header("Audio")] public AudioClip interactSound;
     [Header("Respawn")] public float respawnDelay = 8f;

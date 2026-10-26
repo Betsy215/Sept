@@ -5112,7 +5112,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   enableHoldToRefill: 0
-  customMaxCount: 8
+  customMaxCount: 4
   customStartingCount: -1
   customRefillTime: 1
   refillBar: {fileID: 0}
@@ -5138,7 +5138,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e9901fb804b304868a56d002180a09a9, type: 3}
   - {fileID: 21300000, guid: eb6e412f1297a4359b4d4d16006768fd, type: 3}
   - {fileID: 21300000, guid: 6a6b256d7fe954f9481692422c12c44a, type: 3}
-  countPerSpriteChange: 2
+  countPerSpriteChange: 1
 --- !u!1 &1573855374
 GameObject:
   m_ObjectHideFlags: 0
@@ -6493,7 +6493,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: c1e1b756517154b15bdba066c6fb84f6, type: 3}
   - {fileID: 21300000, guid: 6ef5f4580c3334b5a9c4585354ffef62, type: 3}
   - {fileID: 21300000, guid: b27d5ae4eb4754fdb9d8db9c5e14cdaf, type: 3}
-  countPerSpriteChange: 3
+  countPerSpriteChange: 1
 --- !u!114 &1820549561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6508,7 +6508,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   enableHoldToRefill: 0
-  customMaxCount: 9
+  customMaxCount: 4
   customStartingCount: -1
   customRefillTime: 0
   refillBar: {fileID: 0}
