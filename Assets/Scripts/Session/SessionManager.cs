@@ -723,12 +723,12 @@ public class SessionManager : MonoBehaviour
 
     public void MarkTutorial2Seen() { if (currentSession == null) return; currentSession.tutorial2Seen = true; SaveSession(); }
 
-    /// The candy jar (owner, 26 October 2026): a shop purchase fills it to three; a tap on the jar uses one
+    /// The candy jar (owner, 26 October 2026): a shop purchase adds three (the jar holds six); a tap on the jar uses one
     public int Candies => currentSession != null ? currentSession.candies : 0;
     public bool BuyCandies()
     {
         if (currentSession == null || currentSession.candies >= CandyJar.Full) return false;
-        currentSession.candies = CandyJar.Full; SaveSession(); return true;
+        currentSession.candies = Mathf.Min(CandyJar.Full, currentSession.candies + CandyJar.PerPurchase); SaveSession(); return true;
     }
     public void UseCandy() { if (currentSession == null || currentSession.candies <= 0) return; currentSession.candies--; SaveSession(); }
 

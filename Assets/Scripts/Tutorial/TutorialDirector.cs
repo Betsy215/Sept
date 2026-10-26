@@ -87,9 +87,10 @@ public class TutorialDirector : MonoBehaviour
             var blender = FindInScene("KitchenScene", "Blender");
             Say("The blender refills the ice cream flavours when they run low");
             if (blender != null) yield return PointAtRect(blender.GetComponent<RectTransform>());
-            yield return new WaitForSeconds(3.5f);
+            yield return new WaitForSeconds(4.5f);                                // about half the bake
             HideHand();
             KitchenSceneManager.Instance.CloseKitchen();
+            Say("Back to the table, the waffles are nearly done");
             yield return new WaitForSeconds(0.6f);
         }
 

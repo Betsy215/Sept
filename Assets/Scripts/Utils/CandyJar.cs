@@ -8,9 +8,9 @@ using UnityEngine.EventSystems;
 /// pictures Resources/Decor/candy_jar_0..3 (Store/redesign/candy_jar/jar.py). Candies live in the session (SessionManager.Candies).
 public class CandyJar : MonoBehaviour, IPointerClickHandler
 {
-    public const int Full = 3;
-    public static readonly Vector3 LocalPosition = new Vector3(0.62f, -0.016f, 0f); // on the back band between the hen and the pots, its bottom on the hen's line (owner, 26 October: all fixed items' bottoms align)
-    public const float Scale = 0.49f;                                 // Gemini's jar fills 0.63 of its canvas; its base lands on the pots' bottom line: centre = -0.357 + 0.696 x scale
+    public const int Full = 6; public const int PerPurchase = 3;        // the jar holds six; the shop sells three at a time (owner, 26 October 2026)
+    public static readonly Vector3 LocalPosition = new Vector3(0.62f, -0.065f, 0f); // on the back band between the hen and the pots, its bottom on the hen's line (owner, 26 October: all fixed items' bottoms align)
+    public const float Scale = 0.42f;                                 // smaller (owner); Gemini's jar fills 0.6 of its canvas; its base lands on the pots' bottom line: centre = -0.357 + 0.696 x scale
 
     private SpriteRenderer sr; private OrderSystem orderSystem; private Coroutine shake; private Vector3 rest;
 

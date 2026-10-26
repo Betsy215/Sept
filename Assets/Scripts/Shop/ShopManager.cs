@@ -292,7 +292,7 @@ public class ShopManager : MonoBehaviour
             }
             else if (shopItem.itemType == ItemType.Decor && shopItem.itemName == "Candies")
             {
-                if (SessionManager.Instance.Candies >= CandyJar.Full) shopItem.MarkAsPurchased();   // a full jar: nothing to buy until a candy is used
+                // always on sale (owner, 26 October 2026); a full jar refuses the buy and the coins come back
             }
             else if (shopItem.itemType == ItemType.Decor && SessionManager.Instance.IsDecorPurchased(shopItem.itemName))
             {
