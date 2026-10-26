@@ -377,6 +377,7 @@ public class OrderSystem : MonoBehaviour
     /// When set, the next generated order uses exactly these food types (in this order) instead of a
     /// random pick, then clears itself. Used by the Level 0 tutorial to show a coffee and a bread.
     [System.NonSerialized] public List<string> forcedNextOrder;
+    [System.NonSerialized] public string forcedIceCreamVariant;   // the chapter 2 tutorial's order: its ice cream's scoops and waffle (26 October 2026)
 
     /// While true the order countdown does not run (the tutorial holds the order open while it
     /// explains). The tip is still computed from the remaining time, so it stays realistic.
@@ -451,7 +452,7 @@ public class OrderSystem : MonoBehaviour
 
             // ice cream: a random cone (one to three scoops, any flavours) shown as its parts
             string variant = null;
-            if (foodType == "IceCream") { variant = IceCreamStation.RandomVariant(); var icon = displayItem.GetComponent<IceCreamOrderIcon>(); if (icon != null) icon.Show(variant); }
+            if (foodType == "IceCream") { variant = string.IsNullOrEmpty(forcedIceCreamVariant) ? IceCreamStation.RandomVariant() : forcedIceCreamVariant; forcedIceCreamVariant = null; var icon = displayItem.GetComponent<IceCreamOrderIcon>(); if (icon != null) icon.Show(variant); }
 
             // Add served item visual component for pop effect
             var servedVisual = displayItem.GetComponent<ServedItemVisual>();

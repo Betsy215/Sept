@@ -22,6 +22,7 @@ public class SessionData
 
     // True once the player has watched (or skipped past) the Level 0 tutorial for this game
     public bool tutorialSeen;
+    public bool tutorial2Seen;                 // the chapter 2 first-day tutorial (26 October 2026; old saves: false)
     // JsonUtility cannot serialize a Dictionary, so upgrade levels are mirrored
     // into two parallel lists around every save and load (see Sync methods).
     [NonSerialized] public Dictionary<string, int> foodUpgradeLevels;
@@ -719,6 +720,8 @@ public class SessionManager : MonoBehaviour
     {
         var s = GetCurrentSession(); return s != null && s.purchasedDecor != null && s.purchasedDecor.Contains(decorName);
     }
+
+    public void MarkTutorial2Seen() { if (currentSession == null) return; currentSession.tutorial2Seen = true; SaveSession(); }
 
     /// The candy jar (owner, 26 October 2026): a shop purchase fills it to three; a tap on the jar uses one
     public int Candies => currentSession != null ? currentSession.candies : 0;

@@ -32,6 +32,111 @@ public class TutorialDirector : MonoBehaviour
         return s != null && s.isActive && !s.tutorialSeen && s.levelsCompleted == 0;
     }
 
+    /// Chapter 2's first day (owner, 26 October 2026): once, when the session reaches chapter 2's day 1
+    public static bool IsDue2(SessionManager sm)
+    {
+        var s = sm != null ? sm.GetCurrentSession() : null;
+        return s != null && s.isActive && !s.tutorial2Seen && SessionManager.CurrentChapter == 2 && s.levelsCompleted == Chapter.DaysPerChapter[0];
+    }
+
+    public void Begin2(LevelManager lm, GamePhaseManager gpm, OrderSystem os, CustomerManager cm)
+    {
+        levelManager = lm; phaseManager = gpm; orderSystem = os; customerManager = cm;
+        BuildUi();
+        StartCoroutine(Run2());
+    }
+
+    /// The chapter 2 tutorial (owner, 26 October 2026): a real customer orders a waffle bowl with two flavours; the
+    /// player taps the waffle machine; while it bakes a look at the kitchen blender (no tap needed); then a glass, the two
+    /// flavours, and the glass again to serve. The day goes on afterwards.
+    private IEnumerator Run2()
+    {
+        yield return null;
+        blocker.raycastTarget = false;                                            // the player arranges the table first
+        yield return new WaitUntil(() => phaseManager.GetCurrentPhase() != GamePhase.ARRANGEMENT);
+        blocker.raycastTarget = true;
+        var station = FindObjectOfType<IceCreamStation>();
+        if (station == null) { Finish2(); yield break; }
+        var want = IceCreamStation.Letters.Substring(0, 2) + IceCreamStation.WaffleLetter;   // the two open flavours and a waffle bowl
+        orderSystem.freezeTimer = true;
+        orderSystem.forcedNextOrder = new List<string> { "IceCream" }; orderSystem.forcedIceCreamVariant = want;
+
+        Say("A customer walks up");
+        yield return new WaitUntil(() => customerManager.HasCustomerAtService());
+        yield return new WaitUntil(() => orderSystem.IsOrderActive());
+        Say("An ice cream: a waffle bowl with two flavours");
+        yield return new WaitForSeconds(2.5f);
+
+        var machine = station.transform.Find("Waffle");
+        if (machine != null)
+        {
+            Say("Tap the waffle machine to bake waffle bowls");
+            yield return PointAtWorld(machine.position);
+            yield return WaitForTapOnWorld(machine);
+            station.OnTap(IceCreamTap.Kind.Waffle, 0);
+            HideHand();
+            Say("Baking. Meanwhile, the kitchen");
+            yield return new WaitForSeconds(1.2f);
+        }
+
+        if (KitchenSceneManager.Instance != null)
+        {
+            KitchenSceneManager.Instance.OpenKitchen();
+            yield return new WaitUntil(() => SceneManager.GetSceneByName("KitchenScene").isLoaded);
+            yield return new WaitForSeconds(0.8f);
+            var blender = FindInScene("KitchenScene", "Blender");
+            Say("The blender refills the ice cream flavours when they run low");
+            if (blender != null) yield return PointAtRect(blender.GetComponent<RectTransform>());
+            yield return new WaitForSeconds(3.5f);
+            HideHand();
+            KitchenSceneManager.Instance.CloseKitchen();
+            yield return new WaitForSeconds(0.6f);
+        }
+
+        while (station.IsBakingWaffles) yield return null;
+        Say("Ding! A waffle bowl in each glass");
+        yield return new WaitForSeconds(1.5f);
+
+        var dish = station.transform.Find("Dish0");
+        if (dish != null)
+        {
+            Say("Tap a glass with a waffle bowl");
+            yield return PointAtWorld(dish.position);
+            yield return WaitForTapOnWorld(dish);
+            station.OnTap(IceCreamTap.Kind.Dish, 0);
+            HideHand();
+            yield return new WaitForSeconds(0.6f);
+            foreach (var ch in want)
+            {
+                if (ch == IceCreamStation.WaffleLetter) continue;
+                var f = IceCreamStation.Letters.IndexOf(ch); var sec = station.transform.Find("Sec" + f); if (sec == null) continue;
+                Say("Tap the " + IceCreamStation.Names[f] + " ice cream");
+                yield return PointAtWorld(sec.position);
+                yield return WaitForTapOnWorld(sec);
+                station.OnTap(IceCreamTap.Kind.Section, f);
+                HideHand();
+                yield return new WaitForSeconds(0.6f);
+            }
+            Say("Tap the glass again to serve");
+            yield return PointAtWorld(dish.position);
+            yield return WaitForTapOnWorld(dish);
+            station.OnTap(IceCreamTap.Kind.Dish, 0);
+            HideHand();
+        }
+        orderSystem.freezeTimer = false;
+        Say("Served! Enjoy the beach");
+        yield return new WaitForSeconds(2.5f);
+        Finish2();
+    }
+
+    private void Finish2()
+    {
+        if (SessionManager.Instance != null) SessionManager.Instance.MarkTutorial2Seen();
+        if (orderSystem != null) orderSystem.freezeTimer = false;
+        if (canvas != null) Destroy(canvas.gameObject);
+        Destroy(this);
+    }
+
     private LevelManager levelManager;
     private GamePhaseManager phaseManager;
     private OrderSystem orderSystem;

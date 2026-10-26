@@ -128,6 +128,8 @@ public class LevelManager : MonoBehaviour
         CandyJar.Ensure();                                                              // the candy jar on the table's back band (owner, 26 October 2026)
         if (currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance))
             gameObject.AddComponent<TutorialDirector>().Begin(this, gamePhaseManager, orderSystem, customerManager);
+        else if (TutorialDirector.IsDue2(SessionManager.Instance))   // chapter 2, first day: the waffle machine, the blender, serving an ice cream (owner, 26 October 2026)
+            gameObject.AddComponent<TutorialDirector>().Begin2(this, gamePhaseManager, orderSystem, customerManager);
 
         // The menu book during the arrangement phase, on every normal day (owner, 14 October)
         if (!(currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance)) && gamePhaseManager != null)
