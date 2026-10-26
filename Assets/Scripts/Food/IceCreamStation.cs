@@ -18,7 +18,7 @@ using UnityEngine.EventSystems;
 /// dish_front_empty, dish_front_bowl, bowl, scoop_small_<f>, trash, waffle_closed/open; cones_holder/game_parts.py).
 public class IceCreamStation : MonoBehaviour
 {
-    public const int Flavours = 4, PerSection = 3, MaxScoops = 3, ConesFull = 6;
+    public const int Flavours = 4, PerSection = 4, MaxScoops = 3, ConesFull = 6;   // four scoops per well since 26 October 2026 (owner)
     public const int DishesBase = 4, DishesFull = 6;                // dishes under the box: four with two flavours, six with four (owner, 26 October 2026)
     public const char WaffleLetter = 'w';                           // the variant's last letter when the order wants a waffle bowl
     public static readonly string Letters = "vscm";                 // vanilla, strawberry, chocolate, mint: the order letters
@@ -296,7 +296,7 @@ public class IceCreamStation : MonoBehaviour
     }
 
     /// The bake (owner, 26 October 2026: "waffle machine sound + animation"): the machine squashes as the lid is pressed,
-    /// sizzles (IceCream/waffle_sizzle) and puffs steam (Kitchen/waffle_steam) while it glows warm, hops as the lid opens
+    /// sizzles once for 3 s (IceCream/waffle_sizzle) and puffs steam (Kitchen/waffle_steam) while it glows warm, hops as the lid opens
     /// with a ding (IceCream/waffle_ding), and the bowls fly out into the empty glasses
     private IEnumerator WaffleBake()
     {
@@ -306,14 +306,13 @@ public class IceCreamStation : MonoBehaviour
         var wt = waffleRenderer != null ? waffleRenderer.transform : null; var rest = wt != null ? wt.localScale : Vector3.one;
         if (wt != null) yield return Squash(wt, rest, 0.86f, 0.12f);
         if (sizzle != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(sizzle);
-        var t = 0f; var nextPuff = 0.2f; var resizzle = 2.2f;
+        var t = 0f; var nextPuff = 0.2f;
         while (t < WaffleSeconds)
         {
             t += Time.deltaTime;
             if (waffleRenderer != null) waffleRenderer.color = Color.Lerp(Color.white, new Color(1f, 0.9f, 0.78f), 0.5f + 0.5f * Mathf.Sin(t * 5f));   // a warm glow
             if (wt != null) wt.localScale = new Vector3(rest.x * (1f + 0.012f * Mathf.Sin(t * 22f)), rest.y * (1f - 0.012f * Mathf.Sin(t * 22f)), rest.z);   // a small busy wobble
             if (t >= nextPuff && steam != null && wt != null) { StartCoroutine(Puff(steam, wt)); nextPuff += 0.55f; }
-            if (t >= resizzle && t < WaffleSeconds - 1.5f && sizzle != null && AudioManager.Instance != null) { AudioManager.Instance.PlaySFX(sizzle); resizzle += 2.2f; }
             yield return null;
         }
         if (waffleRenderer != null) waffleRenderer.color = Color.white;
@@ -437,7 +436,8 @@ public class IceCreamStation : MonoBehaviour
         if (orderSystem == null) { Reject(); return; }
         if (orderSystem.TryServeItem("IceCream", Variant(d)))
         {
-            if (serveSound != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(serveSound);
+            var clip = serveSound != null ? serveSound : Resources.Load<AudioClip>("IceCream/serve_clink");   // the glass clink until the owner picks one (26 October 2026)
+            if (clip != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(clip);
             EmptyDish(d); Deselect();
         }
         else Reject();

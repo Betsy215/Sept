@@ -5382,15 +5382,19 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 0fec5c4a3828e4b0ba1e18029bde1e78, type: 3}
   - {fileID: 21300000, guid: 8f0e2fa752ed946dfbbf851be0c30058, type: 3}
   - {fileID: 21300000, guid: 078edc4435b5d45d7af6ec58dcb16886, type: 3}
+  - {fileID: 21300000, guid: 74e5e6f3c3144d37911055622fd2fbb8, type: 3}
   - {fileID: 21300000, guid: c1f1497fc334b489e86aa7fe1edcc266, type: 3}
   - {fileID: 21300000, guid: 61abcac78027e43e5876131444571780, type: 3}
   - {fileID: 21300000, guid: f605d4ef3fde84e05b403c579bf78f7d, type: 3}
+  - {fileID: 21300000, guid: 68fdfa451cd7412ebd3979c343f5aab8, type: 3}
   - {fileID: 21300000, guid: 995bd7d85b2424395944b55923881f21, type: 3}
   - {fileID: 21300000, guid: 614fa26f72a3646e0bbdb96a8f233a87, type: 3}
   - {fileID: 21300000, guid: 2b964457e34b44f0b9b78e4a6a66d725, type: 3}
+  - {fileID: 21300000, guid: 2c536bbdbbfd42c88e32130edf25b02d, type: 3}
   - {fileID: 21300000, guid: 5bf728dccce2e48c4a0643dbe4d3ca7c, type: 3}
   - {fileID: 21300000, guid: 8baffc001c0c6476d95a711d51e0262a, type: 3}
   - {fileID: 21300000, guid: a681de255af34455588a8fc8ca4ab8f7, type: 3}
+  - {fileID: 21300000, guid: b9b14d0d28de4d6e8a5910e10f759615, type: 3}
   coneSprite: {fileID: 21300000, guid: cb580bdeed28b436dad100b98dd5773c, type: 3}
   scoopSprites:
   - {fileID: 21300000, guid: a43d929f5c85c4dca929b236c14a388c, type: 3}
@@ -5432,9 +5436,11 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 563a5be097ff41e4b5784850bcd2bc43, type: 3}
   - {fileID: 21300000, guid: 6748866d6f1841a9922988658074ad9c, type: 3}
   - {fileID: 21300000, guid: 13c7aa8063aa4497a7d299c22bfa0c71, type: 3}
+  - {fileID: 21300000, guid: 0a29a683aa0c4259b27d72eadb2b59ea, type: 3}
   - {fileID: 21300000, guid: 2de88789aa8146db8cd691940c684632, type: 3}
   - {fileID: 21300000, guid: b53c21dea1d043508d9c46d5fadb627d, type: 3}
   - {fileID: 21300000, guid: c95676b491284507aa3d387b0343fb88, type: 3}
+  - {fileID: 21300000, guid: d1f902ed6f4f46eea6de38cacaef733c, type: 3}
   smallSectionRects:
   - serializedVersion: 2
     x: 0.0675
