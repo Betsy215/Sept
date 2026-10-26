@@ -64,7 +64,7 @@ public class SessionData
         isActive = true;
 
         purchasedFoodItems = new List<string> { "Bread", "Coffee", "Apple" };   // three foods from the start (owner, 25 October 2026: apple, bread, coffee; no Apple card in the shop)
-        enabledFoodItems = new List<string> { "Bread", "Coffee" };
+        enabledFoodItems = new List<string> { "Bread", "Coffee", "Apple" };   // all three on the menu from the start (owner, 25 October night: no apple on the table in build 12)
         foodUpgradeLevels = new Dictionary<string, int>()
         {
             { "Coffee", 1 },
@@ -660,6 +660,14 @@ public class SessionManager : MonoBehaviour
                 if (currentSession.starBonusPaidDays == null) currentSession.starBonusPaidDays = new List<int>();
                 if (currentSession.enabledFoodItems == null)   // a save from before the menu book: everything bought is on
                     currentSession.enabledFoodItems = new List<string>(currentSession.purchasedFoodItems ?? new List<string>());
+                // Apple is a starting food since 25 October 2026 and its shop card is gone: a save from before gets it,
+                // bought and on, or it could never be had again (owner, 25 October night: no apple in build 12 on an old save)
+                if (currentSession.purchasedFoodItems != null && !currentSession.purchasedFoodItems.Contains("Apple"))
+                {
+                    currentSession.purchasedFoodItems.Add("Apple");
+                    if (!currentSession.enabledFoodItems.Contains("Apple")) currentSession.enabledFoodItems.Add("Apple");
+                    Debug.Log("Apple added to an older save (starting food since 25 October)");
+                }
                 // NEW: Handle legacy sessions without saved positions
                 if (currentSession.savedFoodPositions == null)
                 {
