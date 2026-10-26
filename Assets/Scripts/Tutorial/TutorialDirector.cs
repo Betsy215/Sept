@@ -21,6 +21,8 @@ public class TutorialDirector : MonoBehaviour
 {
     /// Set by the Replay button before the scene reloads.
     public static bool ReplayRequested;
+    public static bool ReplayRequested2;   // the chapter 2 tutorial's Replay button (26 October 2026)
+    private bool chapter2;                 // this run is the chapter 2 tutorial: its end card restarts chapter 2's first day
 
     public const string GameScene = "GameSceneOne";
     public const string MapScene = "Map";
@@ -35,13 +37,17 @@ public class TutorialDirector : MonoBehaviour
     /// Chapter 2's first day (owner, 26 October 2026): once, when the session reaches chapter 2's day 1
     public static bool IsDue2(SessionManager sm)
     {
+        if (ReplayRequested2) return true;
         var s = sm != null ? sm.GetCurrentSession() : null;
         return s != null && s.isActive && !s.tutorial2Seen && SessionManager.CurrentChapter == 2 && s.levelsCompleted == Chapter.DaysPerChapter[0];
     }
 
     public void Begin2(LevelManager lm, GamePhaseManager gpm, OrderSystem os, CustomerManager cm)
     {
-        levelManager = lm; phaseManager = gpm; orderSystem = os; customerManager = cm;
+        levelManager = lm; phaseManager = gpm; orderSystem = os; customerManager = cm; chapter2 = true;
+        if (os != null) os.maxConcurrentOrders = 1;   // a demo like chapter 1's: one customer, no clock, coins given back at the end (owner, 26 October 2026)
+        ReplayRequested2 = false;
+        if (lm != null && lm.levelInfoText != null) lm.levelInfoText.text = "Tutorial";
         BuildUi();
         StartCoroutine(Run2());
     }
@@ -52,9 +58,7 @@ public class TutorialDirector : MonoBehaviour
     private IEnumerator Run2()
     {
         yield return null;
-        blocker.raycastTarget = false;                                            // the player arranges the table first
-        yield return new WaitUntil(() => phaseManager.GetCurrentPhase() != GamePhase.ARRANGEMENT);
-        blocker.raycastTarget = true;
+        if (phaseManager.GetCurrentPhase() == GamePhase.ARRANGEMENT) phaseManager.OnDoneButtonClicked();   // like chapter 1's demo: straight into play
         var station = FindObjectOfType<IceCreamStation>();
         if (station == null) { Finish2(); yield break; }
         var want = IceCreamStation.Letters.Substring(0, 2) + IceCreamStation.WaffleLetter;   // the two open flavours and a waffle bowl
@@ -124,10 +128,12 @@ public class TutorialDirector : MonoBehaviour
             station.OnTap(IceCreamTap.Kind.Dish, 0);
             HideHand();
         }
+        customerManager.enabled = false;                                           // no more customers; this one finishes its walk-out
         orderSystem.freezeTimer = false;
-        Say("Served! Enjoy the beach");
-        yield return new WaitForSeconds(2.5f);
-        Finish2();
+        HideHand();
+        Say("Served! Coins and a tip for speed");
+        yield return new WaitForSeconds(3f);
+        ShowEndCard();
     }
 
     private void Finish2()
@@ -406,6 +412,12 @@ public class TutorialDirector : MonoBehaviour
 
     private void OnLetsGo()
     {
+        if (chapter2)
+        {
+            // the demo's coins go back; chapter 2's first day starts for real (the tutorial is no longer due)
+            if (SessionManager.Instance != null) { SessionManager.Instance.RestoreScoreToSnapshot(); SessionManager.Instance.MarkTutorial2Seen(); }
+            Reload(); return;
+        }
         // The demo earned coins through the real systems; give them back so Day 1 starts clean
         if (SessionManager.Instance != null)
         {
@@ -425,6 +437,11 @@ public class TutorialDirector : MonoBehaviour
 
     private void OnReplay()
     {
+        if (chapter2)
+        {
+            if (SessionManager.Instance != null) SessionManager.Instance.RestoreScoreToSnapshot();
+            ReplayRequested2 = true; Reload(); return;
+        }
         if (SessionManager.Instance != null) SessionManager.Instance.RestoreScoreToSnapshot();
         ReplayRequested = true;
         Reload();

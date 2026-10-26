@@ -132,7 +132,7 @@ public class LevelManager : MonoBehaviour
             gameObject.AddComponent<TutorialDirector>().Begin2(this, gamePhaseManager, orderSystem, customerManager);
 
         // The menu book during the arrangement phase, on every normal day (owner, 14 October)
-        if (!(currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance)) && gamePhaseManager != null)
+        if (!(currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance)) && !TutorialDirector.IsDue2(SessionManager.Instance) && gamePhaseManager != null)
             gameObject.AddComponent<MenuBook>().Begin(this, gamePhaseManager);
 
         // Evening and night over the last two customers; draws only on the background image
@@ -618,7 +618,7 @@ public class LevelManager : MonoBehaviour
         StartGameplayMusic();
         dayStarted = true;
         dayTimeLeft = DayDuration;
-        dayClockDisabled = currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance);   // the demo has no end of day
+        dayClockDisabled = (currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance)) || TutorialDirector.IsDue2(SessionManager.Instance);   // the demos have no end of day
 
         if (orderSystem != null)
         {
