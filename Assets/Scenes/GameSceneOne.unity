@@ -5133,11 +5133,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   appleSprites:
-  - {fileID: 21300000, guid: e56be6557b01f46288518b1fc8c4043f, type: 3}
-  - {fileID: 21300000, guid: 9da668972c76d4a409d2719bd6062200, type: 3}
-  - {fileID: 21300000, guid: e9901fb804b304868a56d002180a09a9, type: 3}
-  - {fileID: 21300000, guid: eb6e412f1297a4359b4d4d16006768fd, type: 3}
-  - {fileID: 21300000, guid: 6a6b256d7fe954f9481692422c12c44a, type: 3}
+  - {fileID: 21300000, guid: 3f14c1617ca74c6b802ad9fa65813518, type: 3}
+  - {fileID: 21300000, guid: 1d5a83e0c833489a9af4f031eed5cd02, type: 3}
+  - {fileID: 21300000, guid: 57ef68fba67546ffa25476fbf6d80fc2, type: 3}
+  - {fileID: 21300000, guid: d2a59e7fd04a4a21bf88212145e0c8d8, type: 3}
+  - {fileID: 21300000, guid: ea935a7f983c4a1eb12e0b063f116e72, type: 3}
   countPerSpriteChange: 1
 --- !u!1 &1573855374
 GameObject:
@@ -6489,10 +6489,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   breadSprites:
-  - {fileID: 21300000, guid: d4c568846ee844841b0044c782620102, type: 3}
-  - {fileID: 21300000, guid: c1e1b756517154b15bdba066c6fb84f6, type: 3}
-  - {fileID: 21300000, guid: 6ef5f4580c3334b5a9c4585354ffef62, type: 3}
-  - {fileID: 21300000, guid: b27d5ae4eb4754fdb9d8db9c5e14cdaf, type: 3}
+  - {fileID: 21300000, guid: 2392756d5774481eadcf0ae750eeed77, type: 3}
+  - {fileID: 21300000, guid: 75177d3d113b4bdf98658b6d41eea390, type: 3}
+  - {fileID: 21300000, guid: 104486e460dc4821b363851865b09334, type: 3}
+  - {fileID: 21300000, guid: ce9cec0d851f4e3f98f527ec023d8652, type: 3}
+  - {fileID: 21300000, guid: 23868ab0020b4488b01d3e881f778565, type: 3}
   countPerSpriteChange: 1
 --- !u!114 &1820549561
 MonoBehaviour:
