@@ -1517,7 +1517,7 @@ PrefabInstance:
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: orderCompleteSFX
       value: 
-      objectReference: {fileID: 8300000, guid: 8f9fcbccc551b456db1dbe5c7520d2b3, type: 3}
+      objectReference: {fileID: 8300000, guid: d40a812ce0844b1092b0bb04c9b61573, type: 3}
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: customerWalkInSFX
       value: 
@@ -1545,7 +1545,7 @@ PrefabInstance:
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: defaultPerfectOrderSound
       value: 
-      objectReference: {fileID: 8300000, guid: 8f9fcbccc551b456db1dbe5c7520d2b3, type: 3}
+      objectReference: {fileID: 8300000, guid: d40a812ce0844b1092b0bb04c9b61573, type: 3}
     - target: {fileID: 6021569865588919292, guid: 987df3147437f4db9a77cd617a72ea0a, type: 3}
       propertyPath: gameplayPlaylist.Array.size
       value: 3
