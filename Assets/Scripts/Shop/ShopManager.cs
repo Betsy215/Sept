@@ -505,9 +505,14 @@ public class ShopManager : MonoBehaviour
         {
             var rt = (RectTransform)cards[i].transform;
             var slot = new Vector2(ColumnsCentre + (i % Columns - 1) * colPitch, top - (i / Columns) * rowPitch);
-            var offset = bounds[i].center - (Vector2)rt.localPosition;   // the visual centre, relative to the card's own point
+            // sideways the visual centre goes on the slot; vertically the card's BOTTOM (its price line) goes on the row's
+            // baseline, so every card in a row stands on the same line whatever its picture's height (owner, 26 October
+            // 2026: the small plant floated above the plates and the oven once the price sort moved it into their row)
+            var offset = bounds[i].center - (Vector2)rt.localPosition;
+            var bottomOffset = bounds[i].yMin - rt.localPosition.y;
+            var baseline = slot.y - rowPitch / 2f + 14f;
             rt.localScale = Vector3.one * cardScale;
-            rt.localPosition = new Vector3(slot.x - offset.x * cardScale, slot.y - offset.y * cardScale, rt.localPosition.z);
+            rt.localPosition = new Vector3(slot.x - offset.x * cardScale, baseline - bottomOffset * cardScale, rt.localPosition.z);
         }
         var span = Mathf.Max(0f, (contentH - viewH) / 2f);
         topBoundary = -span; bottomBoundary = span;
