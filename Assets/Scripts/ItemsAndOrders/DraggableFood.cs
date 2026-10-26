@@ -74,6 +74,12 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private float itemRadius;
     /// The drag system's own collision radius for this item (read by FixedStation to keep things off the station)
     public float ItemRadius => itemRadius;
+    // The overlap test uses the item's own rectangle (owner, 26 October 2026: bread turned red near the ice cream station
+    // although they did not touch: a circle of half the longest side gave the wide station a large phantom margin above
+    // and below). halfSize = half the collider's width and height, centreOffset = the collider's centre from the pivot.
+    private Vector2 halfSize = new Vector2(0.25f, 0.25f), centreOffset;
+    public Vector2 HalfSize => halfSize;
+    public Vector2 CentreOffset => centreOffset;
     private Coroutine overlapCheckCoroutine;
     private static readonly WaitForSeconds OverlapCheckInterval = new(0.1f); // no per-tick allocation
 
@@ -158,11 +164,14 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             // Use the larger of width/height and divide by 2 for radius
             itemRadius = Mathf.Max(bounds.size.x, bounds.size.y) / 2f;
+            halfSize = new Vector2(bounds.extents.x, bounds.extents.y);
+            centreOffset = new Vector2(bounds.center.x - transform.position.x, bounds.center.y - transform.position.y);
         }
         else
         {
             // Simple approximation based on transform scale
             itemRadius = Mathf.Max(transform.localScale.x, transform.localScale.y) * 0.5f;
+            halfSize = new Vector2(itemRadius, itemRadius); centreOffset = Vector2.zero;
         }
 
         DebugLog($"Calculated radius for {gameObject.name}: {itemRadius}");
@@ -338,25 +347,18 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             var otherPosition = otherItem.transform.position;
 
-            // Calculate 2D distance (ignore Z)
-            var distance = Vector2.Distance(
-                new Vector2(testPosition.x, testPosition.y),
-                new Vector2(otherPosition.x, otherPosition.y)
-            );
-
-            // Get other item's radius
-            var otherRadius = GetItemRadius(otherItem);
-
-            // Calculate minimum allowed distance
-            var minDistance = itemRadius + otherRadius + minDistanceBetweenItems;
-
-            // Check if overlap would occur
-            if (distance < minDistance)
+            // the two rectangles (ignore Z): overlap when they are closer than their half sizes on BOTH axes
+            Vector2 otherHalf, otherOffset;
+            var od = otherItem.GetComponent<DraggableFood>();
+            if (od != null) { otherHalf = od.halfSize; otherOffset = od.centreOffset; }
+            else { var r = GetItemRadius(otherItem); otherHalf = new Vector2(r, r); otherOffset = Vector2.zero; }
+            var dx = Mathf.Abs(testPosition.x + centreOffset.x - (otherPosition.x + otherOffset.x));
+            var dy = Mathf.Abs(testPosition.y + centreOffset.y - (otherPosition.y + otherOffset.y));
+            if (dx < halfSize.x + otherHalf.x + minDistanceBetweenItems && dy < halfSize.y + otherHalf.y + minDistanceBetweenItems)
             {
                 // Runs every drag frame: only build the string when it will be logged
                 if (enableDebugLogs)
-                    DebugLog(
-                        $"Overlap detected with {otherItem.GetFoodType()} - Distance: {distance:F2}, MinDistance: {minDistance:F2}");
+                    DebugLog($"Overlap detected with {otherItem.GetFoodType()} - dx {dx:F2}, dy {dy:F2}");
                 return true;
             }
         }

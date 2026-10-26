@@ -155,8 +155,18 @@ public static class FixedStation
             else if (Vector2.Distance(p.transform.position, t.position) < r + 0.5f) return true;
         }
         foreach (var o in live)
-            if (o != self && o.GetFoodType() != null && Vector2.Distance(o.transform.position, t.position) < r + Radius(o) + 0.05f) return true;
+            if (o != self && o.GetFoodType() != null && Overlaps(t, self, o)) return true;
         return false;
+    }
+
+    /// Two items' rectangles overlap (with 0.05 of room), the same test the arrangement's drag uses since 26 October 2026
+    static bool Overlaps(Transform t, Component self, Component other)
+    {
+        Vector2 Half(Component c) { var d = c.GetComponent<DraggableFood>(); if (d != null) return d.HalfSize; var r = Radius(c); return new Vector2(r, r); }
+        Vector2 Off(Component c) { var d = c.GetComponent<DraggableFood>(); return d != null ? d.CentreOffset : Vector2.zero; }
+        var ha = Half(self); var hb = Half(other); var oa = Off(self); var ob = Off(other);
+        var dx = Mathf.Abs(t.position.x + oa.x - (other.transform.position.x + ob.x)); var dy = Mathf.Abs(t.position.y + oa.y - (other.transform.position.y + ob.y));
+        return dx < ha.x + hb.x + 0.05f && dy < ha.y + hb.y + 0.05f;
     }
 
     static bool Circle(Bounds b, Vector3 c, float r)
