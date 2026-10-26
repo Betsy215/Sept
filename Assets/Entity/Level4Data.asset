@@ -21,7 +21,7 @@ MonoBehaviour:
   minOrderItems: 2
   maxOrderItems: 4
   starThreshold1: 140
-  starThreshold2: 250
+  starThreshold2: 260
   starThreshold3: 370
   maxPossibleScore: 50
   backgroundSprite: {fileID: 0}

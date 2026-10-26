@@ -21,8 +21,8 @@ MonoBehaviour:
   minOrderItems: 2
   maxOrderItems: 4
   starThreshold1: 260
-  starThreshold2: 480
-  starThreshold3: 700
+  starThreshold2: 470
+  starThreshold3: 690
   maxPossibleScore: 50
   backgroundSprite: {fileID: 0}
   useSpecificFoodTypes: 0
