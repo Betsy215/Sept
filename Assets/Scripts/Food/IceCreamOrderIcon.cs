@@ -10,7 +10,7 @@ public class IceCreamOrderIcon : MonoBehaviour
     public Sprite[] scoopSprites = new Sprite[IceCreamStation.Flavours];      // vanilla, strawberry, chocolate, mint
     public float scoopStep = 0.62f, firstScoopDrop = 0.22f;
     public float dishScale = 0.85f;                                             // the dish against the cone's size in the bubble
-    public float scoopSpread = 0.72f, scoopTop = 0.669f, scoopZig = 0.014f;    // as on the station
+    public float scoopSpread = 0.72f, scoopTop = 0.709f, scoopZig = 0.014f;    // as on the station
     private SpriteRenderer bowl, front;
 
     /// variant: the order letters (v s c m), one per scoop, then 'w' for a waffle bowl

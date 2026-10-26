@@ -55,7 +55,7 @@ public class IceCreamStation : MonoBehaviour
     public float rowGap = 0.0f;                              // between the box's bottom and the dishes' tops, a fraction of the canvas height
     public float liftScale = 1.5f;                            // a lifted dish grows this much
     public float liftRise = 0.1f;                            // and rises this share of its height
-    public float scoopSpread = 0.72f, scoopTop = 0.669f, scoopZig = 0.014f;   // scoops side by side: step as a share of a scoop's width, the row's height in the dish, the odd scoops a little lower
+    public float scoopSpread = 0.72f, scoopTop = 0.709f, scoopZig = 0.014f;   // scoops side by side: step as a share of a scoop's width, the row's height in the dish, the odd scoops a little lower
     [Header("Build")] public float scoopStep = 0.62f;        // the cone flow's values, kept for the scene
     public float firstScoopDrop = 0.22f;
     public AudioClip scoopSound, serveSound;
