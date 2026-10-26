@@ -53,7 +53,10 @@ public class IceCreamStation : MonoBehaviour
     public float dishWidth = 0.165f;                           // one dish's width as a share of the box picture's width
     public float boxBottom = 0.16f;                           // where the painted box ends, a fraction of the canvas height
     public float rowGap = 0.0f;                              // between the box's bottom and the dishes' tops, a fraction of the canvas height
-    public float trashScale = 0.72f;                          // the trash can's size against its picture (owner, 26 October 2026: slightly smaller)
+    public float wellHit = 1.2f;                              // a well's tap area against its picture (owner, 26 October 2026: bigger in all directions)
+    public float dishHitHeight = 1.3f;                        // a glass's tap area height against its picture, the extra above it (the scoop heap)
+    public float waffleHitHeight = 0.82f;                     // the machine's tap area height, trimmed from the top (owner: slightly shorter)
+    public float trashScale = 0.5f;                          // the trash can's size against its picture (owner, 26 October 2026: slightly smaller)
     public float liftScale = 1.5f;                            // a lifted dish grows this much
     public float liftRise = 0.1f;                            // and rises this share of its height
     public float scoopSpread = 0.72f, scoopTop = 0.709f, scoopZig = 0.014f;   // the side-by-side layout before 26 October (kept for the scene)
@@ -125,14 +128,14 @@ public class IceCreamStation : MonoBehaviour
             var go = new GameObject("Sec" + i, typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); go.transform.SetParent(transform, false);
             go.transform.localPosition = At(r.center) + Vector3.back * 0.02f;
             var sr = go.GetComponent<SpriteRenderer>(); sr.sortingLayerName = layer; sr.sortingOrder = order + 1; sr.sprite = activeLevels[i * PerSection + PerSection - 1];
-            var col = go.GetComponent<BoxCollider>(); col.size = new Vector3(r.width * b.size.x * 0.9f, r.height * b.size.y * 0.9f, 0.2f);
+            var col = go.GetComponent<BoxCollider>(); col.size = new Vector3(r.width * b.size.x * wellHit, r.height * b.size.y * wellHit, 0.2f);
             var tap = go.GetComponent<IceCreamTap>(); tap.station = this; tap.kind = IceCreamTap.Kind.Section; tap.index = i;
             sections[i] = sr;
         }
         // the painted box: from the first well's left margin to the same margin past the last well
         var rowLeft = rects[0].x; var rowRight = rects[count - 1].xMax + rects[0].x; var rowCentre = (rowLeft + rowRight) * 0.5f;
         // the waffle machine to the right of the box, level with the wells
-        var wRect = new Rect(0f, 0f, 0f, 0f);
+        var wRect = new Rect(0f, 0f, 0f, 0f); var waffleTop = 0f;
         if (waffleClosed != null)
         {
             var wh = waffleHeight; var ww = wh * waffleClosed.rect.width / waffleClosed.rect.height * b.size.y / b.size.x;
@@ -141,11 +144,16 @@ public class IceCreamStation : MonoBehaviour
             wf.transform.localPosition = At(wRect.center) + Vector3.back * 0.02f;
             var k = wRect.height * b.size.y / waffleClosed.bounds.size.y; wf.transform.localScale = new Vector3(k, k, 1f);
             waffleRenderer = wf.GetComponent<SpriteRenderer>(); waffleRenderer.sortingLayerName = layer; waffleRenderer.sortingOrder = order + 2; waffleRenderer.sprite = waffleClosed;
-            wf.GetComponent<BoxCollider>().size = new Vector3(waffleClosed.bounds.size.x, waffleClosed.bounds.size.y, 0.2f);
+            // shorter from the top; wider to the right so its edge is the drag area's right edge (0.02 of the box past the picture)
+            var extra = 0.02f * b.size.x / k; var wcol = wf.GetComponent<BoxCollider>();
+            wcol.size = new Vector3(waffleClosed.bounds.size.x + extra, waffleClosed.bounds.size.y * waffleHitHeight, 0.2f);
+            wcol.center = new Vector3(extra * 0.5f, -waffleClosed.bounds.size.y * (1f - waffleHitHeight) * 0.5f, 0f);
+            waffleTop = wRect.y + wRect.height * waffleHitHeight;
             var wt = wf.GetComponent<IceCreamTap>(); wt.station = this; wt.kind = IceCreamTap.Kind.Waffle;
         }
         // the dish row under the box
-        var n = Dishes; var rowBottom = 0f;
+        var n = Dishes; var rowBottom = 0f; var trashFrac = 0f;
+        var spanL = 0f; var spanR = Mathf.Max(small ? rowRight : 1f, wRect.xMax) + 0.02f;   // the drag area's left and right edges: the glasses spread across them (owner, 26 October 2026)
         if (dishBack != null)
         {
             var dw = dishWidth * b.size.x; var ks = dw / dishBack.bounds.size.x; var dh = dishBack.bounds.size.y * ks;
@@ -154,10 +162,11 @@ public class IceCreamStation : MonoBehaviour
             {
                 var d = new Dish(); d.scale = ks; d.order = order + 3;
                 var go = new GameObject("Dish" + i, typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); go.transform.SetParent(transform, false);
-                d.rest = new Vector3(b.min.x + (rowCentre + (i - (n - 1) * 0.5f) * dishWidth) * b.size.x, cy, -0.03f - 0.001f * i);
+                var fx = spanL + dishWidth * 0.5f + (n > 1 ? i * (spanR - spanL - dishWidth) / (n - 1) : (spanR - spanL - dishWidth) * 0.5f);
+                d.rest = new Vector3(b.min.x + fx * b.size.x, cy, -0.03f - 0.001f * i);
                 go.transform.localPosition = d.rest; go.transform.localScale = new Vector3(ks, ks, 1f); d.root = go.transform;
                 d.back = go.GetComponent<SpriteRenderer>(); d.back.sortingLayerName = layer; d.back.sortingOrder = d.order; d.back.sprite = dishBack;
-                go.GetComponent<BoxCollider>().size = new Vector3(dishBack.bounds.size.x, dishBack.bounds.size.y, 0.2f);
+                var dcol = go.GetComponent<BoxCollider>(); dcol.size = new Vector3(dishBack.bounds.size.x, dishBack.bounds.size.y * dishHitHeight, 0.2f); dcol.center = new Vector3(0f, dishBack.bounds.size.y * (dishHitHeight - 1f) * 0.5f, 0f);   // taller, the extra above
                 var tap = go.GetComponent<IceCreamTap>(); tap.station = this; tap.kind = IceCreamTap.Kind.Dish; tap.index = i;
                 d.bowl = Child(go.transform, "Bowl", d.order + 1); d.bowl.sprite = bowlSprite;
                 for (var s = 0; s < MaxScoops; s++) d.scoops[s] = Child(go.transform, "Scoop" + s, d.order + 2 + s);
@@ -165,9 +174,10 @@ public class IceCreamStation : MonoBehaviour
                 d.front = Child(go.transform, "Front", d.order + 6);
                 var t = new GameObject("Trash", typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); t.transform.SetParent(go.transform, false);
                 var tr = t.GetComponent<SpriteRenderer>(); tr.sortingLayerName = layer; tr.sortingOrder = d.order + 7; tr.sprite = trashSprite;
-                t.transform.localScale = new Vector3(trashScale, trashScale, 1f);   // smaller and closer to the cup (owner, 26 October 2026)
+                t.transform.localScale = new Vector3(trashScale, trashScale, 1f);   // smaller, at the glass's bottom right (owner, 26 October 2026)
                 var tw = (trashSprite != null ? trashSprite.bounds.size.x : 0.5f) * trashScale; var th = (trashSprite != null ? trashSprite.bounds.size.y : 0.6f) * trashScale;
-                t.transform.localPosition = new Vector3(dishBack.bounds.extents.x * 0.82f + tw * 0.5f, dishBack.bounds.size.y * 0.1f, -0.01f);
+                t.transform.localPosition = new Vector3(dishBack.bounds.extents.x * 0.78f, -dishBack.bounds.extents.y * 0.62f, -0.01f);
+                trashFrac = th * ks / b.size.y;
                 t.GetComponent<BoxCollider>().size = new Vector3(trashSprite != null ? trashSprite.bounds.size.x * 1.4f : 0.7f, trashSprite != null ? trashSprite.bounds.size.y * 1.25f : 0.8f, 0.2f);   // local to the scaled icon
                 var tt = t.GetComponent<IceCreamTap>(); tt.station = this; tt.kind = IceCreamTap.Kind.Trash; tt.index = i;
                 t.SetActive(false); d.trash = t;
@@ -178,8 +188,10 @@ public class IceCreamStation : MonoBehaviour
         var drag = GetComponent<BoxCollider>();
         if (drag != null)
         {
-            var xMin = Mathf.Min(0f, rowCentre - n * 0.5f * dishWidth); var xMax = Mathf.Max(small ? rowRight : 1f, wRect.xMax) + 0.02f;
-            var yMin = Mathf.Min(0f, rowBottom - 0.02f); var yMax = Mathf.Max(0.85f, wRect.yMax + 0.02f);
+            var xMin = spanL; var xMax = spanR;
+            var wellTop = 0f; for (var i = 0; i < count; i++) wellTop = Mathf.Max(wellTop, rects[i].center.y + rects[i].height * wellHit * 0.5f);
+            var yMin = Mathf.Min(0f, rowBottom - trashFrac * 0.5f);                   // half a trash can of room under the glasses
+            var yMax = Mathf.Max(wellTop, waffleTop) + 0.02f;                           // shorter from the top: the wells' and the machine's tap areas
             drag.size = new Vector3(b.size.x * (xMax - xMin), b.size.y * (yMax - yMin), drag.size.z);
             drag.center = new Vector3(b.min.x + (xMin + xMax) * 0.5f * b.size.x, b.min.y + (yMin + yMax) * 0.5f * b.size.y, drag.center.z);
         }
@@ -259,23 +271,37 @@ public class IceCreamStation : MonoBehaviour
     private void BakeCones()
     {
         if (EmptyDishes == 0 || waffleBake != null) { Reject(); return; }
-        var bake = Resources.Load<AudioClip>("Kitchen/waffle_bake"); if (bake != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(bake);
         waffleBake = StartCoroutine(WaffleBake());
     }
 
+    /// The bake (owner, 26 October 2026: "waffle machine sound + animation"): the machine squashes as the lid is pressed,
+    /// sizzles (IceCream/waffle_sizzle) and puffs steam (Kitchen/waffle_steam) while it glows warm, hops as the lid opens
+    /// with a ding (IceCream/waffle_ding), and the bowls fly out into the empty glasses
     private IEnumerator WaffleBake()
     {
+        var sizzle = Resources.Load<AudioClip>("IceCream/waffle_sizzle"); var ding = Resources.Load<AudioClip>("IceCream/waffle_ding");
+        var steam = Resources.Load<Sprite>("Kitchen/waffle_steam");
         if (waffleRenderer != null && waffleClosed != null) waffleRenderer.sprite = waffleClosed;
-        if (waffleRenderer != null) StartCoroutine(Pop(waffleRenderer.transform));
-        var t = 0f;
+        var wt = waffleRenderer != null ? waffleRenderer.transform : null; var rest = wt != null ? wt.localScale : Vector3.one;
+        if (wt != null) yield return Squash(wt, rest, 0.86f, 0.12f);
+        if (sizzle != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(sizzle);
+        var t = 0f; var nextPuff = 0.2f; var resizzle = 2.2f;
         while (t < WaffleSeconds)
         {
             t += Time.deltaTime;
-            if (waffleRenderer != null) waffleRenderer.color = Color.Lerp(Color.white, new Color(1f, 0.92f, 0.82f), 0.5f + 0.5f * Mathf.Sin(t * 5f));   // a warm pulse while it bakes
+            if (waffleRenderer != null) waffleRenderer.color = Color.Lerp(Color.white, new Color(1f, 0.9f, 0.78f), 0.5f + 0.5f * Mathf.Sin(t * 5f));   // a warm glow
+            if (wt != null) wt.localScale = new Vector3(rest.x * (1f + 0.012f * Mathf.Sin(t * 22f)), rest.y * (1f - 0.012f * Mathf.Sin(t * 22f)), rest.z);   // a small busy wobble
+            if (t >= nextPuff && steam != null && wt != null) { StartCoroutine(Puff(steam, wt)); nextPuff += 0.55f; }
+            if (t >= resizzle && t < WaffleSeconds - 1.5f && sizzle != null && AudioManager.Instance != null) { AudioManager.Instance.PlaySFX(sizzle); resizzle += 2.2f; }
             yield return null;
         }
         if (waffleRenderer != null) waffleRenderer.color = Color.white;
+        if (wt != null) wt.localScale = rest;
         if (waffleRenderer != null && waffleOpen != null) waffleRenderer.sprite = waffleOpen;
+        if (ding != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(ding);
+        if (wt != null) StartCoroutine(Hop(wt));
+        if (steam != null && wt != null) for (var i = 0; i < 3; i++) StartCoroutine(Puff(steam, wt));
+        yield return new WaitForSeconds(0.25f);
         var given = 0;
         foreach (var d in dishes)
         {
@@ -283,10 +309,48 @@ public class IceCreamStation : MonoBehaviour
             if (!d.Empty) continue;
             d.waffle = true; given++; RefreshDish(d);
             if (waffleRenderer != null) StartCoroutine(Fly(d.bowl.transform, waffleRenderer.transform.position)); else StartCoroutine(Pop(d.root));
+            if (d.bowlFront != null && waffleRenderer != null) StartCoroutine(Fly(d.bowlFront.transform, waffleRenderer.transform.position));
+            yield return new WaitForSeconds(0.18f);
         }
-        yield return new WaitForSeconds(1.2f);
+        yield return new WaitForSeconds(1.0f);
         if (waffleRenderer != null && waffleClosed != null) waffleRenderer.sprite = waffleClosed;
+        if (wt != null) yield return Squash(wt, rest, 0.92f, 0.1f);
         waffleBake = null;
+    }
+
+    private IEnumerator Squash(Transform t, Vector3 rest, float k, float dur)
+    {
+        var e = 0f;
+        while (e < dur) { e += Time.deltaTime; var s = Mathf.Sin(Mathf.Clamp01(e / dur) * Mathf.PI); t.localScale = new Vector3(rest.x * (1f + (1f - k) * 0.5f * s), rest.y * (1f - (1f - k) * s), rest.z); yield return null; }
+        t.localScale = rest;
+    }
+
+    private IEnumerator Hop(Transform t)
+    {
+        var p0 = t.localPosition; var e = 0f; const float dur = 0.3f;
+        var h = waffleClosed != null ? waffleClosed.bounds.size.y * t.localScale.y * 0.12f : 0.1f;
+        while (e < dur) { e += Time.deltaTime; t.localPosition = p0 + Vector3.up * (h * Mathf.Sin(Mathf.Clamp01(e / dur) * Mathf.PI)); yield return null; }
+        t.localPosition = p0;
+    }
+
+    /// One steam puff from the top of the machine: rises, drifts, grows and fades in 1.1 s
+    private IEnumerator Puff(Sprite steam, Transform machine)
+    {
+        var go = new GameObject("Steam", typeof(SpriteRenderer)); go.transform.SetParent(transform, false);
+        var sr = go.GetComponent<SpriteRenderer>(); sr.sprite = steam; sr.sortingLayerName = layer; sr.sortingOrder = order + 30;
+        var top = machine.localPosition + Vector3.up * (waffleClosed != null ? waffleClosed.bounds.extents.y * machine.localScale.y * 0.7f : 0.5f);
+        var start = top + Vector3.right * Random.Range(-0.35f, 0.35f) * (waffleClosed != null ? waffleClosed.bounds.extents.x * machine.localScale.x : 0.5f) + Vector3.back * 0.05f;
+        var size = (waffleClosed != null ? waffleClosed.bounds.size.x * machine.localScale.x * 0.35f : 0.6f) / Mathf.Max(0.01f, steam.bounds.size.x);
+        var drift = Random.Range(-0.3f, 0.3f); var e = 0f; const float dur = 1.1f;
+        while (e < dur && go != null)
+        {
+            e += Time.deltaTime; var k = Mathf.Clamp01(e / dur);
+            go.transform.localPosition = start + new Vector3(drift * k, size * steam.bounds.size.y * 1.6f * k, 0f);
+            go.transform.localScale = Vector3.one * size * (0.6f + 0.6f * k);
+            sr.color = new Color(1f, 1f, 1f, 0.75f * Mathf.Sin(k * Mathf.PI));
+            yield return null;
+        }
+        if (go != null) Destroy(go);
     }
 
     public bool TakeCone() => false;
