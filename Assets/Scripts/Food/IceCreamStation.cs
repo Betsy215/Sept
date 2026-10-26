@@ -71,7 +71,7 @@ public class IceCreamStation : MonoBehaviour
 
     private class Dish
     {
-        public Transform root; public SpriteRenderer back, bowl, front; public SpriteRenderer[] scoops = new SpriteRenderer[MaxScoops]; public GameObject trash;
+        public Transform root; public SpriteRenderer back, bowl, bowlFront, front; public SpriteRenderer[] scoops = new SpriteRenderer[MaxScoops]; public GameObject trash;
         public bool waffle; public readonly List<int> flavours = new List<int>(); public Vector3 rest; public float scale; public int order;
         public bool Empty => !waffle && flavours.Count == 0;
     }
@@ -83,7 +83,7 @@ public class IceCreamStation : MonoBehaviour
     private Coroutine shake;
     private Sprite[] activeLevels;                                  // the section pictures of the box in use (small or long)
     private SpriteRenderer waffleRenderer; private Sprite waffleClosed, waffleOpen; private Coroutine waffleBake;
-    private Sprite dishBack, dishFrontEmpty, dishFrontBowl, bowlSprite, trashSprite; private readonly Sprite[] smallScoops = new Sprite[Flavours];
+    private Sprite dishBack, dishFront, bowlSprite, bowlFrontSprite, trashSprite; private readonly Sprite[] smallScoops = new Sprite[Flavours];
     private string layer; private int order;
 
     public bool IsBuilding => selected >= 0;
@@ -113,7 +113,7 @@ public class IceCreamStation : MonoBehaviour
         var count = small ? BaseFlavours : Flavours;
         var b = box != null && box.sprite != null ? box.sprite.bounds : new Bounds(Vector3.zero, Vector3.one);   // local units of this object
         Vector3 At(Vector2 frac) => new Vector3(b.min.x + frac.x * b.size.x, b.min.y + frac.y * b.size.y, 0f);
-        dishBack = Resources.Load<Sprite>("IceCream/dish_back"); dishFrontEmpty = Resources.Load<Sprite>("IceCream/dish_front_empty"); dishFrontBowl = Resources.Load<Sprite>("IceCream/dish_front_bowl");
+        dishBack = Resources.Load<Sprite>("IceCream/dish_back"); dishFront = Resources.Load<Sprite>("IceCream/dish_front"); bowlFrontSprite = Resources.Load<Sprite>("IceCream/bowl_front");   // glass and waffle each in a back and a front layer, scoops between (owner, 26 October 2026)
         bowlSprite = Resources.Load<Sprite>("IceCream/bowl"); trashSprite = Resources.Load<Sprite>("IceCream/trash");
         for (var i = 0; i < Flavours; i++) { smallScoops[i] = Resources.Load<Sprite>("IceCream/scoop_small_" + Letters[i]); if (smallScoops[i] == null) smallScoops[i] = scoopSprites[i]; }
         waffleClosed = Resources.Load<Sprite>("IceCream/waffle_closed"); waffleOpen = Resources.Load<Sprite>("IceCream/waffle_open");
@@ -160,6 +160,7 @@ public class IceCreamStation : MonoBehaviour
                 var tap = go.GetComponent<IceCreamTap>(); tap.station = this; tap.kind = IceCreamTap.Kind.Dish; tap.index = i;
                 d.bowl = Child(go.transform, "Bowl", d.order + 1); d.bowl.sprite = bowlSprite;
                 for (var s = 0; s < MaxScoops; s++) d.scoops[s] = Child(go.transform, "Scoop" + s, d.order + 2 + s);
+                d.bowlFront = Child(go.transform, "BowlFront", d.order + 5); d.bowlFront.sprite = bowlFrontSprite;
                 d.front = Child(go.transform, "Front", d.order + 6);
                 var t = new GameObject("Trash", typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); t.transform.SetParent(go.transform, false);
                 var tr = t.GetComponent<SpriteRenderer>(); tr.sortingLayerName = layer; tr.sortingOrder = d.order + 7; tr.sprite = trashSprite;
@@ -247,7 +248,7 @@ public class IceCreamStation : MonoBehaviour
     {
         d.back.sortingOrder = baseOrder; d.bowl.sortingOrder = baseOrder + 1;
         for (var s = 0; s < MaxScoops; s++) d.scoops[s].sortingOrder = baseOrder + 2 + s;
-        d.front.sortingOrder = baseOrder + 6; var tr = d.trash.GetComponent<SpriteRenderer>(); if (tr != null) tr.sortingOrder = baseOrder + 7;
+        d.bowlFront.sortingOrder = baseOrder + 5; d.front.sortingOrder = baseOrder + 6; var tr = d.trash.GetComponent<SpriteRenderer>(); if (tr != null) tr.sortingOrder = baseOrder + 7;
     }
 
     /// The waffle machine (owner, 25 and 26 October): a tap starts a session, 8 s closed, then the lid opens and up to two
@@ -315,7 +316,8 @@ public class IceCreamStation : MonoBehaviour
     private void RefreshDish(Dish d)
     {
         if (d.bowl != null) d.bowl.enabled = d.waffle;
-        if (d.front != null) { d.front.sprite = d.waffle ? dishFrontBowl : dishFrontEmpty; d.front.enabled = d.front.sprite != null; }
+        if (d.bowlFront != null) d.bowlFront.enabled = d.waffle && bowlFrontSprite != null;
+        if (d.front != null) { d.front.sprite = dishFront; d.front.enabled = dishFront != null; }
         var n = d.flavours.Count; var dh = dishBack != null ? dishBack.bounds.size.y : 2f; var dmin = dishBack != null ? dishBack.bounds.min.y : -1f;
         for (var s = 0; s < MaxScoops; s++)
         {

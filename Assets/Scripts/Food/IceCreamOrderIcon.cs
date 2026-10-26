@@ -3,7 +3,7 @@ using UnityEngine;
 /// The ice cream in a customer's order bubble, built from the parts (owner, 17 October: the order says how many
 /// scoops and which flavours; their order does not matter). Since the glass-dish flow (owner, 26 October 2026) it is
 /// the dish with the scoops side by side, the waffle bowl under them when the order's variant ends in 'w'; the parts
-/// come from Resources/IceCream (dish_back, bowl, dish_front_*, scoop_small_*). Without them the old cone stack shows.
+/// come from Resources/IceCream (dish_back, bowl, scoops, bowl_front, dish_front, back to front). Without them the old cone stack shows.
 public class IceCreamOrderIcon : MonoBehaviour
 {
     public SpriteRenderer cone; public SpriteRenderer[] scoops = new SpriteRenderer[IceCreamStation.MaxScoops];
@@ -11,7 +11,7 @@ public class IceCreamOrderIcon : MonoBehaviour
     public float scoopStep = 0.62f, firstScoopDrop = 0.22f;
     public float dishScale = 0.85f;                                             // the dish against the cone's size in the bubble
     public float scoopSpread = 0.72f, scoopTop = 0.709f, scoopZig = 0.014f;    // as on the station
-    private SpriteRenderer bowl, front;
+    private SpriteRenderer bowl, bowlFront, front;
 
     /// variant: the order letters (v s c m), one per scoop, then 'w' for a waffle bowl
     public void Show(string variant)
@@ -23,9 +23,11 @@ public class IceCreamOrderIcon : MonoBehaviour
         var parts = cone.transform.parent; if (parts != null) { parts.localScale = new Vector3(dishScale, dishScale, 1f); parts.localPosition = Vector3.zero; }
         cone.sprite = dishBack; cone.transform.localPosition = Vector3.zero;
         if (bowl == null) bowl = Part("Bowl", cone.sortingOrder + 1);
+        if (bowlFront == null) bowlFront = Part("BowlFront", cone.sortingOrder + 5);
         if (front == null) front = Part("Front", cone.sortingOrder + 6);
         bowl.sprite = Resources.Load<Sprite>("IceCream/bowl"); bowl.enabled = waffle && bowl.sprite != null;
-        front.sprite = Resources.Load<Sprite>("IceCream/dish_front_" + (waffle ? "bowl" : "empty")); front.enabled = front.sprite != null;
+        bowlFront.sprite = Resources.Load<Sprite>("IceCream/bowl_front"); bowlFront.enabled = waffle && bowlFront.sprite != null;
+        front.sprite = Resources.Load<Sprite>("IceCream/dish_front"); front.enabled = front.sprite != null;
         var n = letters.Length; var dh = dishBack.bounds.size.y; var dmin = dishBack.bounds.min.y;
         for (var i = 0; i < scoops.Length; i++)
         {
