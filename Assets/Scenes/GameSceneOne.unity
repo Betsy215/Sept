@@ -5402,31 +5402,31 @@ MonoBehaviour:
   sectionRects:
   - serializedVersion: 2
     x: 0.0675
-    y: 0.4381
+    y: 0.4562
     width: 0.1600
-    height: 0.3071
+    height: 0.2972
   - serializedVersion: 2
     x: 0.2517
-    y: 0.4357
+    y: 0.4539
     width: 0.1592
-    height: 0.3119
+    height: 0.3018
   - serializedVersion: 2
     x: 0.4375
-    y: 0.4429
+    y: 0.4609
     width: 0.1608
-    height: 0.3000
+    height: 0.2903
   - serializedVersion: 2
     x: 0.6183
-    y: 0.4381
+    y: 0.4562
     width: 0.1600
-    height: 0.3119
+    height: 0.3018
   holderRect:
     serializedVersion: 2
     x: 0.8333
-    y: 0.0095
+    y: 0.0415
     width: 0.3250
-    height: 0.2952
-  buildPoint: {x: 0.42, y: 1.22}
+    height: 0.2857
+  buildPoint: {x: 0.42, y: 1.2129}
   smallBoxSprite: {fileID: 21300000, guid: cb7076279b044499a952da3fe2c7ef8b, type: 3}
   smallSectionLevels:
   - {fileID: 21300000, guid: 563a5be097ff41e4b5784850bcd2bc43, type: 3}
@@ -5438,21 +5438,21 @@ MonoBehaviour:
   smallSectionRects:
   - serializedVersion: 2
     x: 0.0675
-    y: 0.4381
+    y: 0.4562
     width: 0.1600
-    height: 0.3071
+    height: 0.2972
   - serializedVersion: 2
     x: 0.2517
-    y: 0.4357
+    y: 0.4539
     width: 0.1592
-    height: 0.3119
+    height: 0.3018
   smallHolderRect:
     serializedVersion: 2
     x: 0.4733
-    y: 0.0095
+    y: 0.0415
     width: 0.3250
-    height: 0.2952
-  smallBuildPoint: {x: 0.239, y: 1.22}
+    height: 0.2857
+  smallBuildPoint: {x: 0.239, y: 1.2129}
   scoopStep: 0.62
   firstScoopDrop: 0.22
   scoopSound: {fileID: 0}
