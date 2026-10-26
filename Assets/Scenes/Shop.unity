@@ -4651,7 +4651,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_text
-      value: $ 450
+      value: $ 900
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_margin.w
@@ -4747,13 +4747,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
-      value: '$ 450
+      value: '$ 900
 
         Customers are slightly more patient'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
-      value: $ 450
+      value: $ 900
       objectReference: {fileID: 0}
     - target: {fileID: 9095678449651516868, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Sprite
@@ -4895,7 +4895,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_text
-      value: $ 900
+      value: $ 450
       objectReference: {fileID: 0}
     - target: {fileID: 6774715393545137108, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_margin.w
@@ -4991,13 +4991,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: popupInfoText
-      value: '$ 900
+      value: '$ 450
 
         Customers are slightly more patient'
       objectReference: {fileID: 0}
     - target: {fileID: 8818029639339444698, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: purchaseButtonText
-      value: $ 900
+      value: $ 450
       objectReference: {fileID: 0}
     - target: {fileID: 9095678449651516868, guid: a814ad0453cde486ab048750af0f212e, type: 3}
       propertyPath: m_Sprite
