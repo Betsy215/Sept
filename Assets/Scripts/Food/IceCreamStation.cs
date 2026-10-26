@@ -46,13 +46,14 @@ public class IceCreamStation : MonoBehaviour
     public Vector2 smallBuildPoint = new Vector2(0.27f, 1.22f);
     [Header("Waffle machine on the table (owner, 26 October 2026: to the right of the box)")]
     public float waffleHeight = 0.66f;                       // its height as a share of the box picture's height
-    public float waffleGap = 0.02f;                           // between the box's right edge and the machine, a fraction of the box width
+    public float waffleGap = -0.03f;                           // between the box's right edge and the machine, a fraction of the box width
     public float waffleShift = -0.01f;                      // unused since 26 October; kept for the scene's value
     public const int WafflesPerSession = 2; public const float WaffleSeconds = 8f;   // one session bakes two bowls in 8 s (owner, 25 October)
     [Header("Dish row (owner, 26 October 2026)")]
-    public float dishWidth = 0.15f;                           // one dish's width as a share of the box picture's width
-    public float boxBottom = 0.12f;                           // where the painted box ends, a fraction of the canvas height
+    public float dishWidth = 0.165f;                           // one dish's width as a share of the box picture's width
+    public float boxBottom = 0.16f;                           // where the painted box ends, a fraction of the canvas height
     public float rowGap = 0.0f;                              // between the box's bottom and the dishes' tops, a fraction of the canvas height
+    public float trashScale = 0.72f;                          // the trash can's size against its picture (owner, 26 October 2026: slightly smaller)
     public float liftScale = 1.5f;                            // a lifted dish grows this much
     public float liftRise = 0.1f;                            // and rises this share of its height
     public float scoopSpread = 0.72f, scoopTop = 0.709f, scoopZig = 0.014f;   // the side-by-side layout before 26 October (kept for the scene)
@@ -164,9 +165,10 @@ public class IceCreamStation : MonoBehaviour
                 d.front = Child(go.transform, "Front", d.order + 6);
                 var t = new GameObject("Trash", typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); t.transform.SetParent(go.transform, false);
                 var tr = t.GetComponent<SpriteRenderer>(); tr.sortingLayerName = layer; tr.sortingOrder = d.order + 7; tr.sprite = trashSprite;
-                var tw = trashSprite != null ? trashSprite.bounds.size.x : 0.5f; var th = trashSprite != null ? trashSprite.bounds.size.y : 0.6f;
-                t.transform.localPosition = new Vector3(dishBack.bounds.extents.x + tw * 0.7f, dishBack.bounds.size.y * 0.1f, -0.01f);
-                t.GetComponent<BoxCollider>().size = new Vector3(tw * 1.5f, th * 1.3f, 0.2f);
+                t.transform.localScale = new Vector3(trashScale, trashScale, 1f);   // smaller and closer to the cup (owner, 26 October 2026)
+                var tw = (trashSprite != null ? trashSprite.bounds.size.x : 0.5f) * trashScale; var th = (trashSprite != null ? trashSprite.bounds.size.y : 0.6f) * trashScale;
+                t.transform.localPosition = new Vector3(dishBack.bounds.extents.x * 0.82f + tw * 0.5f, dishBack.bounds.size.y * 0.1f, -0.01f);
+                t.GetComponent<BoxCollider>().size = new Vector3(trashSprite != null ? trashSprite.bounds.size.x * 1.4f : 0.7f, trashSprite != null ? trashSprite.bounds.size.y * 1.25f : 0.8f, 0.2f);   // local to the scaled icon
                 var tt = t.GetComponent<IceCreamTap>(); tt.station = this; tt.kind = IceCreamTap.Kind.Trash; tt.index = i;
                 t.SetActive(false); d.trash = t;
                 dishes.Add(d); RefreshDish(d);
