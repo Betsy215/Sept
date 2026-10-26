@@ -518,7 +518,7 @@ public class OrderSystem : MonoBehaviour
         if (effectHandle != null) target.serveEffects.Add(effectHandle);
 
         // Award points for this item (kept on the order for its tip)
-        if (scoreManager != null) target.basePoints += itemToServe.variant != null ? scoreManager.AwardItemPointsValue(foodType, itemToServe.variant.Length) : scoreManager.AwardItemPointsValue(foodType);   // ice cream: per scoop (owner, 18 October)
+        if (scoreManager != null) target.basePoints += itemToServe.variant != null ? scoreManager.AwardItemPointsValue(foodType, IceCreamStation.ScoopCount(itemToServe.variant)) : scoreManager.AwardItemPointsValue(foodType);   // ice cream: per scoop (owner, 18 October)
 
         // Patience: the flower that was draining fills up again (owner, 13 October: the hearts mechanic)
         RefillPatience(target);
