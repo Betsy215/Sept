@@ -185,6 +185,8 @@ public class ShopManager : MonoBehaviour
             purchaseSuccess = session.PurchaseCharacter(item.itemName);
         else if (item.itemType == ItemType.Upgrade)
             purchaseSuccess = session.UpgradeFood(item.upgradeFoodType);
+        else if (item.itemType == ItemType.Decor && item.itemName == "Candies")
+            purchaseSuccess = session.BuyCandies();                  // the jar's refill, bought again whenever it is not full (owner, 26 October 2026)
         else if (item.itemType == ItemType.Decor)
             purchaseSuccess = session.PurchaseDecor(item.itemName);
 
@@ -287,6 +289,10 @@ public class ShopManager : MonoBehaviour
             else if (shopItem.itemType == ItemType.Character && purchasedCharacters.Contains(shopItem.itemName))
             {
                 shopItem.MarkAsPurchased();
+            }
+            else if (shopItem.itemType == ItemType.Decor && shopItem.itemName == "Candies")
+            {
+                if (SessionManager.Instance.Candies >= CandyJar.Full) shopItem.MarkAsPurchased();   // a full jar: nothing to buy until a candy is used
             }
             else if (shopItem.itemType == ItemType.Decor && SessionManager.Instance.IsDecorPurchased(shopItem.itemName))
             {
@@ -687,7 +693,7 @@ public class ShopManager : MonoBehaviour
 
     /// The name shown on the popup's first line (the card keys stay as they are; the two Upgrade cards differ by object name)
     private static readonly Dictionary<string, string> popupNames = new Dictionary<string, string> {
-        { "Yoga", "Yoga coach" }, { "PotFlowers", "Flower pot" }, { "PotGreen", "Small plant" }, { "Cake", "Strawberry cake" }, { "IceCream", "Ice cream" },
+        { "Yoga", "Yoga coach" }, { "PotFlowers", "Flower pot" }, { "PotGreen", "Small plant" }, { "Candies", "Candies" }, { "Cake", "Strawberry cake" }, { "IceCream", "Ice cream" },
         { "CoffeeMachineUpgrade", "Coffee machine" }, { "CoffeeUpgrade", "Extra cup" }, { "IceCreamUpgrade", "Two more flavours" } };
     private static string DisplayName(ShopItemController item)
     {

@@ -125,6 +125,7 @@ public class LevelManager : MonoBehaviour
         SetupSessionEvents();
 
         // Level 0: a self-playing tutorial before the first real day (or a requested replay)
+        CandyJar.Ensure();                                                              // the candy jar on the table's back band (owner, 26 October 2026)
         if (currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance))
             gameObject.AddComponent<TutorialDirector>().Begin(this, gamePhaseManager, orderSystem, customerManager);
 

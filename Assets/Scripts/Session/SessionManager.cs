@@ -15,6 +15,7 @@ public class SessionData
     public List<string> purchasedFoodItems;
     public List<string> purchasedCharacters;
     public List<string> purchasedDecor;        // table decorations (new field, 16 October; old saves get an empty list)
+    public int candies;                        // candies in the table's jar (owner, 26 October 2026; old saves start at 0)
     // Menu book (owner, 14 October 2026): bought foods the player has switched on. A food is in play only when it is
     // bought AND on. Null in saves from before the book: LoadSession fills it with every bought food.
     public List<string> enabledFoodItems;
@@ -718,6 +719,15 @@ public class SessionManager : MonoBehaviour
     {
         var s = GetCurrentSession(); return s != null && s.purchasedDecor != null && s.purchasedDecor.Contains(decorName);
     }
+
+    /// The candy jar (owner, 26 October 2026): a shop purchase fills it to three; a tap on the jar uses one
+    public int Candies => currentSession != null ? currentSession.candies : 0;
+    public bool BuyCandies()
+    {
+        if (currentSession == null || currentSession.candies >= CandyJar.Full) return false;
+        currentSession.candies = CandyJar.Full; SaveSession(); return true;
+    }
+    public void UseCandy() { if (currentSession == null || currentSession.candies <= 0) return; currentSession.candies--; SaveSession(); }
 
     public bool PurchaseDecor(string decorName)
     {

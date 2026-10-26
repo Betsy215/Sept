@@ -77,7 +77,8 @@ public class TableLayer : MonoBehaviour
             var oldBounds = tableClothSprite.sprite.bounds;
             tableClothSprite.sprite = cloth;
             var edge = tableClothSprite.transform.Find("TableOuterShadow");
-            if (edge != null)
+            if (edge != null) edge.gameObject.SetActive(false);   // the beach cloth carries its own edge shadow in the picture (owner, 26 October 2026: the stretched object read as another cloth's edge)
+            if (false && edge != null)
             {
                 edge.localPosition += new Vector3(0f, cloth.bounds.max.y - oldBounds.max.y, 0f);
                 // the cloth transform is scaled to the screen from the sprite's size, so a bigger sprite shrinks the

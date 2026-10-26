@@ -533,6 +533,19 @@ public class OrderSystem : MonoBehaviour
 
     /// Gives the order back the time of the flower that was draining: its timer moves up to the next flower
     /// boundary (never above the full time), and the meter pops that flower back to full
+    /// The candy jar's gift (owner, 26 October 2026): the open order with the least time left gets one whole flower of
+    /// time back (never above full) and its meter pops; false when no order is open
+    public bool GiveFlowerToLowest()
+    {
+        ActiveOrder low = null; var lowest = float.MaxValue;
+        foreach (var o in orders) { if (!o.active || o.displayTime <= 0f) continue; var k = o.timer / o.displayTime; if (k < lowest) { lowest = k; low = o; } }
+        if (low == null) return false;
+        var per = low.displayTime / PatienceMeter.Flowers;
+        low.timer = Mathf.Min(low.displayTime, low.timer + per);
+        PatienceMeter.OnItemServed(low);
+        return true;
+    }
+
     private void RefillPatience(ActiveOrder order)
     {
         if (!order.active || order.displayTime <= 0f) return;
