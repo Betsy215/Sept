@@ -200,7 +200,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
             case "Bread": { var f = FindObjectOfType<Bread>(); if (f != null) f.RefillToFull(); break; }
             case "Choux": { var f = FindObjectOfType<Choux>(); if (f != null) f.RefillToFull(); break; }
             case "Cake": { var f = FindObjectOfType<Cake>(); if (f != null) f.RefillToFull(); break; }
-            case "Cookies": { var f = FindObjectOfType<Cookies>(); if (f != null) f.RefillToFull(); break; }
+            case "Cookies": { var f = FindObjectOfType<Cookies>(); if (f != null) f.AddBake(); break; }   // three per bake, six at most (owner, 25 October)
             default: DebugLog("no food to refill"); return;
         }
         DebugLog(food + " refilled to full!");

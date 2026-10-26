@@ -6935,7 +6935,7 @@ MonoBehaviour:
   enableRefill: 1
   enableHoldToRefill: 0
   customMaxCount: 6
-  customStartingCount: -1
+  customStartingCount: 3
   customRefillTime: 0
   refillBar: {fileID: 0}
   fill: {fileID: 0}

@@ -43,8 +43,8 @@ public class CookiesInKitchen : KitchenItemWithTimer
         var cookies = FindObjectOfType<Cookies>();
         if (cookies != null)
         {
-            cookies.RefillToFull();
-            DebugLog("Cookies refilled to full!");
+            cookies.AddBake();
+            DebugLog("Cookies: one bake added (three, six at most)");
         }
         else
         {

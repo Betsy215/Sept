@@ -42,6 +42,19 @@ public class Cookies : MonoBehaviour
         refillableItem?.RefillToFull();
     }
 
+    /// One bake adds three cookies, up to the plate's six (owner, 25 October 2026: "each bake is 3, the plate holds 6
+    /// at most, default is 3"; the day starts with three through customStartingCount on the Cookies object).
+    public const int PerBake = 3;
+    public void AddBake()
+    {
+        if (refillableItem == null) refillableItem = GetComponent<RefillableItem>();
+        if (refillableItem == null) return;
+        var room = refillableItem.GetMaxCount() - refillableItem.GetCurrentCount();
+        var add = Mathf.Clamp(room, 0, PerBake);
+        if (add > 0) refillableItem.IncreaseCount(add);
+        Debug.Log($"[Cookies] bake added {add}: {refillableItem.GetCurrentCount()}/{refillableItem.GetMaxCount()}");
+    }
+
     private void OnCountChanged(int currentCount, int maxCount)
     {
         Debug.Log($"[Cookies] OnCountChanged received: {currentCount}/{maxCount}");
