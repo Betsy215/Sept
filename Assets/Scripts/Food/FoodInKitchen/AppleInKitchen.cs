@@ -67,7 +67,7 @@ public class AppleInKitchen : MonoBehaviour, IPointerClickHandler
         Count--;
         if (refill != null)
         {
-            var share = Mathf.Max(1, Mathf.CeilToInt(refill.GetMaxCount() / (float)Full));
+            var share = 1;                                                       // one apple, one serve (owner, 25 October); the basket may hold more than the tree gives at once
             var room = refill.GetMaxCount() - refill.GetCurrentCount();
             refill.IncreaseCount(Mathf.Min(share, room));
         }

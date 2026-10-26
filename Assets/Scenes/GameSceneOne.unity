@@ -5112,8 +5112,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   enableHoldToRefill: 0
-  customMaxCount: 4
-  customStartingCount: -1
+  customMaxCount: 7
+  customStartingCount: 4
   customRefillTime: 1
   refillBar: {fileID: 0}
   fill: {fileID: 0}
@@ -6509,8 +6509,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableRefill: 1
   enableHoldToRefill: 0
-  customMaxCount: 4
-  customStartingCount: -1
+  customMaxCount: 6
+  customStartingCount: 4
   customRefillTime: 0
   refillBar: {fileID: 0}
   fill: {fileID: 0}
