@@ -35,7 +35,8 @@ public class IceCreamOrderIcon : MonoBehaviour
             var s = Resources.Load<Sprite>("IceCream/scoop_small_" + IceCreamStation.Letters[f]); scoops[i].sprite = s != null ? s : scoopSprites[f];
             scoops[i].sortingOrder = cone.sortingOrder + 2 + i;
             var sw = scoops[i].sprite != null ? scoops[i].sprite.bounds.size.x : 0.4f;
-            scoops[i].transform.localPosition = new Vector3((i - (n - 1) * 0.5f) * sw * scoopSpread, dmin + scoopTop * dh - (i % 2 == 1 ? scoopZig * dh : 0f), -0.001f * (i + 2));
+            var spot = IceCreamStation.ScoopSpot(i, n);
+            scoops[i].transform.localPosition = new Vector3(spot.x * dishBack.bounds.size.x, dmin + spot.y * dh, -0.001f * (i + 2));
         }
     }
 

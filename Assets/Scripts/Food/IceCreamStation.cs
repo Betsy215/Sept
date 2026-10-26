@@ -55,7 +55,16 @@ public class IceCreamStation : MonoBehaviour
     public float rowGap = 0.0f;                              // between the box's bottom and the dishes' tops, a fraction of the canvas height
     public float liftScale = 1.5f;                            // a lifted dish grows this much
     public float liftRise = 0.1f;                            // and rises this share of its height
-    public float scoopSpread = 0.72f, scoopTop = 0.709f, scoopZig = 0.014f;   // scoops side by side: step as a share of a scoop's width, the row's height in the dish, the odd scoops a little lower
+    public float scoopSpread = 0.72f, scoopTop = 0.709f, scoopZig = 0.014f;   // the side-by-side layout before 26 October (kept for the scene)
+    /// Where scoop i of n sits in a dish, as fractions of the dish picture (x from its centre, y from its bottom): heaped
+    /// Cold Stone style (owner, 26 October 2026: "way too small, they should be crowded together"): one in the middle,
+    /// two overlapping side by side, three as two below and one on top
+    public static Vector2 ScoopSpot(int i, int n)
+    {
+        if (n <= 1) return new Vector2(0f, 0.66f);
+        if (n == 2) return i == 0 ? new Vector2(-0.15f, 0.64f) : new Vector2(0.15f, 0.65f);
+        return i == 0 ? new Vector2(-0.17f, 0.62f) : i == 1 ? new Vector2(0.17f, 0.63f) : new Vector2(0f, 0.80f);
+    }
     [Header("Build")] public float scoopStep = 0.62f;        // the cone flow's values, kept for the scene
     public float firstScoopDrop = 0.22f;
     public AudioClip scoopSound, serveSound;
@@ -315,7 +324,8 @@ public class IceCreamStation : MonoBehaviour
             if (s >= n) continue;
             r.sprite = smallScoops[d.flavours[s]];
             var sw = r.sprite != null ? r.sprite.bounds.size.x : 0.4f;
-            r.transform.localPosition = new Vector3((s - (n - 1) * 0.5f) * sw * scoopSpread, dmin + scoopTop * dh - (s % 2 == 1 ? scoopZig * dh : 0f), -0.001f * (3 + s));
+            var spot = ScoopSpot(s, n); var dw = dishBack != null ? dishBack.bounds.size.x : 2f;
+            r.transform.localPosition = new Vector3(spot.x * dw, dmin + spot.y * dh, -0.001f * (3 + s));
         }
     }
 
