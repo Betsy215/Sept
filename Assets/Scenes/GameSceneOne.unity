@@ -5138,6 +5138,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 57ef68fba67546ffa25476fbf6d80fc2, type: 3}
   - {fileID: 21300000, guid: d2a59e7fd04a4a21bf88212145e0c8d8, type: 3}
   - {fileID: 21300000, guid: ea935a7f983c4a1eb12e0b063f116e72, type: 3}
+  - {fileID: 21300000, guid: 997a76f5e18745bd8107b6d895caf3c8, type: 3}
+  - {fileID: 21300000, guid: ce17f961760441b193733a5c78c52846, type: 3}
+  - {fileID: 21300000, guid: e35ff33f773d4e6190414ff019f469b2, type: 3}
   countPerSpriteChange: 1
 --- !u!1 &1573855374
 GameObject:
@@ -6494,6 +6497,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 104486e460dc4821b363851865b09334, type: 3}
   - {fileID: 21300000, guid: ce9cec0d851f4e3f98f527ec023d8652, type: 3}
   - {fileID: 21300000, guid: 23868ab0020b4488b01d3e881f778565, type: 3}
+  - {fileID: 21300000, guid: 3a21148ca6ed49f4be455e59b7313468, type: 3}
+  - {fileID: 21300000, guid: 295957c634f34baf8303e97c2143d7c7, type: 3}
   countPerSpriteChange: 1
 --- !u!114 &1820549561
 MonoBehaviour:
