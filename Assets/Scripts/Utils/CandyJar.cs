@@ -9,8 +9,8 @@ using UnityEngine.EventSystems;
 public class CandyJar : MonoBehaviour, IPointerClickHandler
 {
     public const int Full = 3;
-    public static readonly Vector3 LocalPosition = new Vector3(0.62f, 0.22f, 0f);   // on the back band between the hen and the pots
-    public const float Scale = 0.30f;
+    public static readonly Vector3 LocalPosition = new Vector3(0.62f, -0.106f, 0f); // on the back band between the hen and the pots, its bottom on the hen's line (owner, 26 October: all fixed items' bottoms align)
+    public const float Scale = 0.36f;                                 // the jar base lands on the pots' bottom line: centre = -0.357 + 0.696 x scale
 
     private SpriteRenderer sr; private OrderSystem orderSystem; private Coroutine shake; private Vector3 rest;
 
