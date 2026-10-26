@@ -235,7 +235,16 @@ public class IceCreamStation : MonoBehaviour
         if (!building || cone.Count >= MaxScoops) { Reject(); return; }
         if (!IsOpen(flavour) || left[flavour] <= 0) { Reject(); return; }
         left[flavour]--; cone.Add(flavour);
-        var r = scoopRenderers[cone.Count - 1]; if (r != null) { r.sprite = scoopSprites[flavour]; r.enabled = true; StartCoroutine(Pop(r.transform)); }
+        // the feel of a tap (owner, 25 October 2026: the slot is small, not enough feedback): the well pops and
+        // flashes, and the scoop flies from the well onto the cone instead of appearing there
+        var sec = sections[flavour];
+        if (sec != null) { StartCoroutine(Pop(sec.transform)); StartCoroutine(Flash(sec)); }
+        var r = scoopRenderers[cone.Count - 1];
+        if (r != null)
+        {
+            r.sprite = scoopSprites[flavour]; r.enabled = true;
+            if (sec != null) StartCoroutine(Fly(r.transform, sec.transform.position)); else StartCoroutine(Pop(r.transform));
+        }
         if (scoopSound != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(scoopSound);
         RefreshSections();
     }
@@ -301,6 +310,29 @@ public class IceCreamStation : MonoBehaviour
         var s = t.localScale; var e = 0f;
         while (e < 0.16f) { e += Time.deltaTime; var k = Mathf.Sin(Mathf.Clamp01(e / 0.16f) * Mathf.PI); t.localScale = s * (1f + 0.25f * k); yield return null; }
         t.localScale = s;
+    }
+
+    /// A short white flash over a well: a copy of its picture, white, fading out in 0.2 s (owner, 25 October 2026)
+    private IEnumerator Flash(SpriteRenderer over)
+    {
+        if (over == null || over.sprite == null) yield break;
+        var go = new GameObject("Flash", typeof(SpriteRenderer)); go.transform.SetParent(over.transform, false);
+        var sr = go.GetComponent<SpriteRenderer>(); sr.sprite = over.sprite; sr.sortingLayerName = over.sortingLayerName; sr.sortingOrder = over.sortingOrder + 1;
+        var white = Shader.Find("GUI/Text Shader"); if (white != null) sr.material = new Material(white);   // draws the picture's shape in plain white
+        var e = 0f;
+        while (e < 0.2f && sr != null) { e += Time.deltaTime; sr.color = new Color(1f, 1f, 1f, 0.7f * (1f - e / 0.2f)); yield return null; }
+        if (go != null) Destroy(go);
+    }
+
+    /// The scoop flies from the well it was taken from onto the cone, in a small arc, 0.22 s
+    private IEnumerator Fly(Transform t, Vector3 fromWorld)
+    {
+        var to = t.localPosition; var parent = t.parent;
+        var from = parent != null ? parent.InverseTransformPoint(fromWorld) : fromWorld; from.z = to.z;
+        var e = 0f; const float dur = 0.22f;
+        while (e < dur) { e += Time.deltaTime; var k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(e / dur)); t.localPosition = Vector3.Lerp(from, to, k) + Vector3.up * (0.35f * Mathf.Sin(k * Mathf.PI)); yield return null; }
+        t.localPosition = to;
+        StartCoroutine(Pop(t));
     }
 
     private IEnumerator Shake(Transform t)

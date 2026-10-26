@@ -98,6 +98,23 @@ public class MenuBook : MonoBehaviour
         }
         PlaceMini();                                                         // follows the screen size (iPad)
         if (!button.activeSelf) button.SetActive(true);
+        // the small menu wiggles now and then so it reads as tappable (owner, 25 October 2026)
+        if (!wiggling && Time.unscaledTime >= nextWiggle) { nextWiggle = Time.unscaledTime + 3f; StartCoroutine(RockMini()); }
+    }
+
+    private bool wiggling; private float nextWiggle = 1.5f;
+
+    /// A short rock about the small menu's centre: six degrees each way, dying out over half a second
+    private IEnumerator RockMini()
+    {
+        wiggling = true; var t = 0f; var rt = panel != null ? (RectTransform)panel.transform : null;
+        while (t < 0.5f && rt != null && !open && !animating)
+        {
+            t += Dt; rt.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t * Mathf.PI * 6f) * 6f * (1f - t / 0.5f));
+            yield return null;
+        }
+        if (rt != null) rt.localRotation = Quaternion.identity;
+        wiggling = false;
     }
 
     #region Open, close, switch
@@ -209,7 +226,7 @@ public class MenuBook : MonoBehaviour
     private void PlaceMini()
     {
         var crt = (RectTransform)panel.transform;
-        crt.anchoredPosition = MiniCenter(); crt.localScale = Vector3.one * MiniScale; crt.localRotation = Quaternion.identity;
+        crt.anchoredPosition = MiniCenter(); crt.localScale = Vector3.one * MiniScale; if (!wiggling) crt.localRotation = Quaternion.identity;
     }
 
     /// Small: nothing on the paper answers taps or drags, Done is hidden, and the clear tap catcher sits on top.
