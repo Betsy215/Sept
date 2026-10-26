@@ -164,8 +164,21 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             // Use the larger of width/height and divide by 2 for radius
             itemRadius = Mathf.Max(bounds.size.x, bounds.size.y) / 2f;
-            halfSize = new Vector2(bounds.extents.x, bounds.extents.y);
-            centreOffset = new Vector2(bounds.center.x - transform.position.x, bounds.center.y - transform.position.y);
+            // the rectangle from the collider's LOCAL centre and size: world bounds lag a frame behind a move, so measuring
+            // the offset from them right after the layout placed the items gave stale numbers (26 October 2026)
+            var bc = GetComponent<BoxCollider>(); var ls = transform.lossyScale;
+            if (bc != null)
+            {
+                halfSize = new Vector2(Mathf.Abs(bc.size.x * ls.x), Mathf.Abs(bc.size.y * ls.y)) * 0.5f;
+                centreOffset = new Vector2(bc.center.x * ls.x, bc.center.y * ls.y);
+            }
+            else if (spriteRenderer != null && spriteRenderer.sprite != null)
+            {
+                var sbb = spriteRenderer.sprite.bounds;
+                halfSize = new Vector2(Mathf.Abs(sbb.extents.x * ls.x), Mathf.Abs(sbb.extents.y * ls.y));
+                centreOffset = new Vector2(sbb.center.x * ls.x, sbb.center.y * ls.y);
+            }
+            else { halfSize = new Vector2(bounds.extents.x, bounds.extents.y); centreOffset = Vector2.zero; }
         }
         else
         {
@@ -334,6 +347,19 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
     }
 
+    /// Moves a target position so the item's rectangle (centreOffset, halfSize) lies inside the table's interactive
+    /// bounds; a rectangle wider or taller than the table is centred on it
+    private Vector3 ClampRectToTable(Vector3 p)
+    {
+        if (tableLayer == null) return p;
+        var tb = tableLayer.InteractiveBounds; if (tb.size.x <= 0f || tb.size.y <= 0f) return p;
+        var minX = p.x + centreOffset.x - halfSize.x; var maxX = p.x + centreOffset.x + halfSize.x;
+        var minY = p.y + centreOffset.y - halfSize.y; var maxY = p.y + centreOffset.y + halfSize.y;
+        if (maxX - minX >= tb.size.x) p.x = tb.center.x - centreOffset.x; else if (minX < tb.min.x) p.x += tb.min.x - minX; else if (maxX > tb.max.x) p.x -= maxX - tb.max.x;
+        if (maxY - minY >= tb.size.y) p.y = tb.center.y - centreOffset.y; else if (minY < tb.min.y) p.y += tb.min.y - minY; else if (maxY > tb.max.y) p.y -= maxY - tb.max.y;
+        return p;
+    }
+
     // === COLLISION DETECTION ===
 
     private bool CheckOverlapAtPosition(Vector3 testPosition)
@@ -466,9 +492,10 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         worldPos.z = originalZ;
         var targetPosition = worldPos + offset;
 
-        // Clamp to table bounds
+        // Clamp to table bounds: the item's whole drag rectangle stays on the table, not only its pivot (owner,
+        // 26 October 2026: the ice cream station could be dragged off the bottom of the screen; its glasses hang under its pivot)
         if (tableLayer != null)
-            targetPosition = tableLayer.ClampToTableBounds(targetPosition);
+            targetPosition = ClampRectToTable(tableLayer.ClampToTableBounds(targetPosition));
 
         // Check for overlap at target position
         var wouldOverlap = CheckOverlapAtPosition(targetPosition);
