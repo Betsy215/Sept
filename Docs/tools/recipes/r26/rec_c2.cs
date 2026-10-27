@@ -5,7 +5,7 @@
 var lm = UnityEngine.Object.FindObjectOfType<LevelManager>(); if (lm == null) return "no LevelManager";
 var os = UnityEngine.Object.FindObjectOfType<OrderSystem>(); var st = UnityEngine.Object.FindObjectOfType<IceCreamStation>(); var jar = UnityEngine.Object.FindObjectOfType<CandyJar>();
 var FL = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public;
-var ROOT = System.IO.Path.Combine(Application.dataPath, "../Captures/rec_c2"); if (System.IO.Directory.Exists(ROOT)) System.IO.Directory.Delete(ROOT, true);
+var ROOT = System.IO.Path.Combine(Application.dataPath, "../Captures/rec_c2");   // the run script clears the folder (the bridge blocks deletes)
 var dishes = (System.Collections.IList)typeof(IceCreamStation).GetField("dishes", FL).GetValue(st);
 System.Func<object, bool> bw = d => (bool)d.GetType().GetField("waffle").GetValue(d);
 System.Func<object, int> sc = d => ((System.Collections.ICollection)d.GetType().GetField("flavours").GetValue(d)).Count;

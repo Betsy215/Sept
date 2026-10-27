@@ -723,7 +723,7 @@ public class SessionManager : MonoBehaviour
 
     public void MarkTutorial2Seen() { if (currentSession == null) return; currentSession.tutorial2Seen = true; SaveSession(); }
 
-    /// The candy jar (owner, 26 October 2026): a shop purchase adds three (the jar holds six); a tap on the jar uses one
+    /// The candy jar (owner, 26 October 2026): a shop purchase adds three (the jar holds nine, CandyJar.Full); a tap on the jar uses one
     public int Candies => currentSession != null ? currentSession.candies : 0;
     public bool BuyCandies()
     {

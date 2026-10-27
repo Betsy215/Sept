@@ -61,7 +61,9 @@ public class TutorialDirector : MonoBehaviour
         if (phaseManager.GetCurrentPhase() == GamePhase.ARRANGEMENT) phaseManager.OnDoneButtonClicked();   // like chapter 1's demo: straight into play
         var station = FindObjectOfType<IceCreamStation>();
         if (station == null) { Finish2(); yield break; }
-        var want = IceCreamStation.Letters.Substring(0, 2) + IceCreamStation.WaffleLetter;   // the two open flavours and a waffle bowl
+        var taps = IceCreamStation.Letters.Substring(0, 2);                                   // the two open flavours, tapped vanilla first
+        var sorted = taps.ToCharArray(); System.Array.Sort(sorted);
+        var want = new string(sorted) + IceCreamStation.WaffleLetter;   // the order as the station spells a glass (sorted scoops, then the waffle), so the serve matches (owner, 26 October: "the ice cream should get served, not it shakes")
         orderSystem.freezeTimer = true;
         orderSystem.forcedNextOrder = new List<string> { "IceCream" }; orderSystem.forcedIceCreamVariant = want;
 
@@ -94,7 +96,7 @@ public class TutorialDirector : MonoBehaviour
             yield return new WaitForSeconds(4.5f);                                // about half the bake
             HideHand();
             KitchenSceneManager.Instance.CloseKitchen();
-            Say("Back to the table, the waffles are nearly done");
+            captionBox.gameObject.SetActive(false);                                 // no banner back at the table (owner, 26 October: "remove back to the table banner")
             yield return new WaitForSeconds(0.6f);
         }
 
@@ -111,9 +113,8 @@ public class TutorialDirector : MonoBehaviour
             station.OnTap(IceCreamTap.Kind.Dish, 0);
             HideHand();
             yield return new WaitForSeconds(0.6f);
-            foreach (var ch in want)
+            foreach (var ch in taps)
             {
-                if (ch == IceCreamStation.WaffleLetter) continue;
                 var f = IceCreamStation.Letters.IndexOf(ch); var sec = station.transform.Find("Sec" + f); if (sec == null) continue;
                 Say("Tap the " + IceCreamStation.Names[f] + " ice cream");
                 yield return PointAtWorld(sec.position);
@@ -467,6 +468,7 @@ public class TutorialDirector : MonoBehaviour
     {
         AnalyticsLog.TutorialStep(++saidCount, text);
         caption.text = text;
+        captionBox.gameObject.SetActive(true);                                       // shown again after the chapter 2 demo hides it at the table
         caption.gameObject.SetActive(true);
         // The card grows for a second line (owner, 12 October: two lines did not sit well on the one-line card)
         caption.ForceMeshUpdate();

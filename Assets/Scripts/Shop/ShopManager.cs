@@ -113,6 +113,8 @@ public class ShopManager : MonoBehaviour
                 if (IsHeldBackCard(shopItem)) { shopItem.gameObject.SetActive(false); continue; }   // Cookies wait for the next release
                 shopItem.gameObject.SetActive(true);
                 var canAfford = session != null && session.CanAfford(shopItem.price);
+                if (shopItem.itemType == ItemType.Decor && shopItem.itemName == "Candies" && session != null && session.Candies >= CandyJar.Full)
+                    canAfford = false;   // a full jar greys the card out and stops taps (owner, 26 October 2026: "when candy jar is full, disable the candy purchasing")
                 shopItem.UpdateAffordability(canAfford);
                 ShowCardLock(shopItem, IsLockedCard(shopItem));
             }
