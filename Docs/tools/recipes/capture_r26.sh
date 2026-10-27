@@ -11,7 +11,7 @@ LOG=Captures/r26_log.txt; mkdir -p Captures; : > $LOG
 S() { $M shot "$1" > /dev/null; sleep 1.5; echo "shot $1" >> $LOG; }
 X() { local r; r=$($M exec "$1" | grep -o '"result":"[^"]*"' | head -c 200); echo "$(basename $1): $r" >> $LOG; }
 STEP() { for i in $(seq 1 $1); do $M exec $R/step_dish.cs > /dev/null; sleep 0.8; done; }
-rm -f Docs/tools/.mcp_session; rm -f Captures/r26_*.png
+rm -f Docs/tools/.mcp_session; rm -f Captures/r26_*.png Assets/Screenshots/r26_*   # Unity saves a repeat as name-1; clear first
 X $AP/stop.cs; sleep 3
 X $RC/gv_Store1320.cs; sleep 1
 X $AP/play.cs; sleep 12
