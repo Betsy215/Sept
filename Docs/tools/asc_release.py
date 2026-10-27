@@ -81,7 +81,7 @@ if __name__ == "__main__":
     ver = find_version(v)
 
     if what == "status":
-        print("version", v, ":", "none" if not ver else f"{ver['id']} {ver['attributes']['appVersionState']} build {(ver['relationships']['build']['data'] or {}).get('id', 'none')}")
+        print("version", v, ":", "none" if not ver else f"{ver['id']} {ver['attributes']['appVersionState']} build {((ver.get('relationships') or {}).get('build', {}).get('data') or {}).get('id', 'none')}")
         for b in builds_of(v):
             print("  build", *b)
         if ver:
