@@ -161,6 +161,12 @@ public class ShopManager : MonoBehaviour
             return false;
         }
 
+        if (item.itemType == ItemType.Decor && item.itemName == "Candies" && session.Candies >= CandyJar.Full)
+        {
+            ShowPurchaseFailedFeedback("The candy jar is full");   // nothing charged (26 October 2026)
+            return false;
+        }
+
         if (!session.CanAfford(item.price))
         {
             var currentScore = session.GetTotalScore();
@@ -205,8 +211,8 @@ public class ShopManager : MonoBehaviour
         // Update score display
         UpdateScoreDisplay();
 
-        // Mark as purchased in UI
-        item.MarkAsPurchased();
+        // Mark as purchased in UI; the candies stay on sale (owner, 26 October 2026)
+        if (!(item.itemType == ItemType.Decor && item.itemName == "Candies")) item.MarkAsPurchased();
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayPurchaseSound();
 
