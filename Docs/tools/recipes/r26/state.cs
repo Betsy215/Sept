@@ -1,0 +1,2 @@
+var s = SessionManager.Instance.GetCurrentSession(); var lm = UnityEngine.Object.FindObjectOfType<LevelManager>();
+return "scene " + UnityEngine.SceneManagement.SceneManager.GetActiveScene().name + " levels " + s.levelsCompleted + " chapter " + SessionManager.CurrentChapter + " label '" + (lm != null && lm.levelInfoText != null ? lm.levelInfoText.text : "") + "' tutorial2 due " + TutorialDirector.IsDue2(SessionManager.Instance) + " director " + (UnityEngine.Object.FindObjectOfType<TutorialDirector>() != null);

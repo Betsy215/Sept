@@ -78,7 +78,8 @@ public class IceCreamStation : MonoBehaviour
     {
         public Transform root; public SpriteRenderer back, bowl, bowlFront, front; public SpriteRenderer[] scoops = new SpriteRenderer[MaxScoops]; public GameObject trash;
         public bool waffle; public readonly List<int> flavours = new List<int>(); public Vector3 rest; public float scale; public int order;
-        public BoxCollider hit; public Vector3 hitSize, hitCentre;   // the resting tap area, restored when the glass is put down
+        public BoxCollider hit; public Vector3 hitSize, hitCentre;
+        public int index; public Coroutine anim;   // its pop or shake: stopped whenever the glass is lifted or put down (26 October 2026: glasses stayed enlarged)   // the resting tap area, restored when the glass is put down
         public bool Empty => !waffle && flavours.Count == 0;
     }
 
@@ -163,7 +164,7 @@ public class IceCreamStation : MonoBehaviour
             var top = b.min.y + (boxBottom - rowGap) * b.size.y; var cy = top - dh * 0.5f; rowBottom = (top - dh - b.min.y) / b.size.y;
             for (var i = 0; i < n; i++)
             {
-                var d = new Dish(); d.scale = ks; d.order = order + 3;
+                var d = new Dish(); d.scale = ks; d.order = order + 3; d.index = i;
                 var go = new GameObject("Dish" + i, typeof(SpriteRenderer), typeof(BoxCollider), typeof(IceCreamTap)); go.transform.SetParent(transform, false);
                 var fx = spanL + dishWidth * 0.5f + (n > 1 ? i * (spanR - spanL - dishWidth) / (n - 1) : (spanR - spanL - dishWidth) * 0.5f);
                 d.rest = new Vector3(b.min.x + fx * b.size.x, cy, -0.03f - 0.001f * i);
@@ -259,9 +260,8 @@ public class IceCreamStation : MonoBehaviour
         if (index < 0 || index >= dishes.Count) return;
         if (selected >= 0) Deselect();
         selected = index; var d = dishes[index];
-        d.root.localScale = new Vector3(d.scale * liftScale, d.scale * liftScale, 1f);
-        d.root.localPosition = d.rest + Vector3.up * (dishBack != null ? dishBack.bounds.size.y * d.scale * liftRise : 0.3f) + Vector3.back * 0.05f;
-        SetOrder(d, d.order + 20); d.trash.SetActive(true); StartCoroutine(Pop(d.root));
+        StopAnim(d); d.root.localScale = DishScale(d); d.root.localPosition = DishPos(d);
+        SetOrder(d, d.order + 20); d.trash.SetActive(true); d.anim = StartCoroutine(PopDish(d));
         // the lifted glass's tap area: its own picture only, its top kept under the wells' tap areas (owner, 26 October 2026)
         if (d.hit != null && dishBack != null && wellsBottom < float.MaxValue)
         {
@@ -275,7 +275,7 @@ public class IceCreamStation : MonoBehaviour
     {
         if (selected < 0) return;
         var d = dishes[selected]; selected = -1;
-        d.root.localScale = new Vector3(d.scale, d.scale, 1f); d.root.localPosition = d.rest; SetOrder(d, d.order); d.trash.SetActive(false);
+        StopAnim(d); d.root.localScale = DishScale(d); d.root.localPosition = DishPos(d); SetOrder(d, d.order); d.trash.SetActive(false);
         if (d.hit != null) { d.hit.size = d.hitSize; d.hit.center = d.hitCentre; }
     }
 
@@ -328,7 +328,7 @@ public class IceCreamStation : MonoBehaviour
             if (given >= WafflesPerSession) break;
             if (!d.Empty) continue;
             d.waffle = true; given++; RefreshDish(d);
-            if (waffleRenderer != null) StartCoroutine(Fly(d.bowl.transform, waffleRenderer.transform.position)); else StartCoroutine(Pop(d.root));
+            if (waffleRenderer != null) StartCoroutine(Fly(d.bowl.transform, waffleRenderer.transform.position)); else { StopAnim(d); d.anim = StartCoroutine(PopDish(d)); }
             if (d.bowlFront != null && waffleRenderer != null) StartCoroutine(Fly(d.bowlFront.transform, waffleRenderer.transform.position));
             yield return new WaitForSeconds(0.18f);
         }
@@ -446,8 +446,9 @@ public class IceCreamStation : MonoBehaviour
     private void Reject()
     {
         if (AudioManager.Instance != null) AudioManager.Instance.PlayWrongItemSFX();
+        if (selected >= 0) { var d = dishes[selected]; StopAnim(d); d.anim = StartCoroutine(ShakeDish(d)); return; }
         if (shake != null) StopCoroutine(shake);
-        shake = StartCoroutine(Shake(selected >= 0 ? dishes[selected].root : transform, selected >= 0 ? dishes[selected].root.localPosition : transform.localPosition));
+        shake = StartCoroutine(Shake(transform, transform.localPosition));
     }
 
     /// Every section back to three scoops: the kitchen blender's job
@@ -463,6 +464,29 @@ public class IceCreamStation : MonoBehaviour
             sections[i].enabled = open && lv > 0;
             if (lv > 0) sections[i].sprite = (activeLevels ?? sectionLevels)[i * PerSection + lv - 1];
         }
+    }
+
+    /// A glass's size and place for its state: lifted (bigger, raised, in front) or resting in the row
+    private Vector3 DishScale(Dish d) { var k = d.index == selected ? d.scale * liftScale : d.scale; return new Vector3(k, k, 1f); }
+    private Vector3 DishPos(Dish d) => d.index == selected ? d.rest + Vector3.up * (dishBack != null ? dishBack.bounds.size.y * d.scale * liftRise : 0.3f) + Vector3.back * 0.05f : d.rest;
+    private void StopAnim(Dish d) { if (d.anim != null) { StopCoroutine(d.anim); d.anim = null; } }
+
+    /// The glass's pop, always around its current state's size, ending exactly on it
+    private IEnumerator PopDish(Dish d)
+    {
+        var e = 0f;
+        while (e < 0.16f) { e += Time.deltaTime; var k = Mathf.Sin(Mathf.Clamp01(e / 0.16f) * Mathf.PI); d.root.localScale = DishScale(d) * (1f + 0.25f * k); yield return null; }
+        d.root.localScale = DishScale(d); d.anim = null;
+    }
+
+    private IEnumerator ShakeDish(Dish d)
+    {
+        for (var i = 0; i < 3; i++)
+        {
+            d.root.localPosition = DishPos(d) + Vector3.right * 0.08f; yield return new WaitForSeconds(0.06f);
+            d.root.localPosition = DishPos(d) + Vector3.left * 0.08f; yield return new WaitForSeconds(0.06f);
+        }
+        d.root.localPosition = DishPos(d); d.anim = null;
     }
 
     private IEnumerator Pop(Transform t)

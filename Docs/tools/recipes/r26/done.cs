@@ -1,0 +1,1 @@
+var g = UnityEngine.Object.FindObjectOfType<GamePhaseManager>(); if (g == null) return "no GamePhaseManager"; if (g.GetCurrentPhase() == GamePhase.ARRANGEMENT) g.OnDoneButtonClicked(); return "phase " + g.GetCurrentPhase();

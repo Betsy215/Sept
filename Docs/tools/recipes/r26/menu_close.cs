@@ -1,0 +1,1 @@
+var mb = UnityEngine.Object.FindObjectOfType<MenuBook>(); if (mb == null) return "no MenuBook"; var m = typeof(MenuBook).GetMethod("Close", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance); if (m != null && m.GetParameters().Length == 0) { m.Invoke(mb, null); return "closed"; } return "no Close";

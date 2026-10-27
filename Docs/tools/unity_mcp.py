@@ -23,6 +23,7 @@ def session():
     return sid
 def call(tool,args):
     sid=session()
+    if os.environ.get("UNITY_INSTANCE"): args=dict(args, unity_instance=os.environ["UNITY_INSTANCE"])   # two editors open: route to one (26 October 2026)
     res,_=post({"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":tool,"arguments":args}},sid)
     if res is None: return "(no response)"
     if "error" in res: return "ERROR "+json.dumps(res["error"])
