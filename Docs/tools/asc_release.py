@@ -16,11 +16,7 @@ APP = "6755611355"
 TOKEN = subprocess.run(["python3", "-I", os.path.join(os.path.dirname(os.path.abspath(__file__)), "asc_token.py")],
                        capture_output=True, text=True).stdout.strip().splitlines()[-1]
 
-WHATS_NEW = """Chapter 2: a beach stop with 16 new days
-Ice cream cones and coconuts
-A menu board: pick what you serve each day
-Buy more ovens, bake any recipe in any oven
-Fixes"""
+WHATS_NEW = ""   # empty until the owner says yes to the wording (26 October 2026: the draft is in the report's MVP); set it then, or type it in App Store Connect
 DESCRIPTION_EDITS = {}  # {"old words": "new words"}; filled only on the owner's tick, e.g. the "two customers" line
 
 
@@ -107,7 +103,7 @@ if __name__ == "__main__":
                  "supportUrl": src.get("supportUrl"), "marketingUrl": src.get("marketingUrl")}
         attrs = {k: val for k, val in attrs.items() if val}
         api("PATCH", f"/appStoreVersionLocalizations/{loc['id']}", {"data": {"type": "appStoreVersionLocalizations", "id": loc["id"], "attributes": attrs}})
-        print("texts copied from", live["attributes"]["versionString"], "; whatsNew set; description edits:", len(DESCRIPTION_EDITS))
+        print("texts copied from", live["attributes"]["versionString"], "; whatsNew:", repr(WHATS_NEW) or "left empty", "; description edits:", len(DESCRIPTION_EDITS))
         sets = api("GET", f"/appStoreVersionLocalizations/{loc['id']}/appScreenshotSets")["data"]
         print("screenshot sets on the new version:", [s["attributes"]["screenshotDisplayType"] for s in sets])
 
