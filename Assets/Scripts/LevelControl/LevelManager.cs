@@ -590,7 +590,7 @@ public class LevelManager : MonoBehaviour
     private void UpdateLevelInfoDisplay()
     {
         if (levelInfoText != null && currentLevelData != null)
-            levelInfoText.text = $"{currentLevelData.levelName}";
+            levelInfoText.text = $"Day {currentLevelIndex + 1}";   // the day by its place, like the map (26 October 2026: chapter 2's first day is Day 13; its asset is still named Day 17)
     }
 
     private void StartLevel()
