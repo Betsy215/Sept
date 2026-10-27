@@ -1,7 +1,7 @@
 """Media for App Store version 26.10.18 (26 October 2026, owner: "start to draft the release in app connect website once
 ready"). Replaces only the iPhone 6.9-inch screenshot set and the iPhone preview; the iPad set copied from the previous
 version stays. Never submits.
-python3 -I asc_media_r26.py status|screenshots|preview"""
+python3 -I asc_media_r26.py status|screenshots|ipad|preview"""
 import sys, json, hashlib, os, urllib.request, urllib.error, subprocess
 
 TOKEN = subprocess.run(["python3", "-I", os.path.join(os.path.dirname(os.path.abspath(__file__)), "asc_token.py")], capture_output=True, text=True).stdout.strip().splitlines()[-1]
@@ -48,6 +48,13 @@ if what == "screenshots":
     sid = api("POST", "/appScreenshotSets", {"data": {"type": "appScreenshotSets", "attributes": {"screenshotDisplayType": "APP_IPHONE_67"},
               "relationships": {"appStoreVersionLocalization": {"data": {"type": "appStoreVersionLocalizations", "id": LOC}}}}})["data"]["id"]
     for i in range(1, 7): upload_asset("appScreenshots", "appScreenshotSet", sid, f"{SHOTS}/iphone-0{i}.png")
+elif what == "ipad":
+    IPAD = "/Users/betzthebest/Desktop/Sept/Store/screenshots/draft_ipad26"      # ipad-01..06, 2064 x 2752 (draft_ipad26.py)
+    for s in api("GET", f"/appStoreVersionLocalizations/{LOC}/appScreenshotSets")["data"]:
+        if s["attributes"]["screenshotDisplayType"] == "APP_IPAD_PRO_3GEN_129": api("DELETE", f"/appScreenshotSets/{s['id']}"); print("deleted the old iPad set")
+    sid = api("POST", "/appScreenshotSets", {"data": {"type": "appScreenshotSets", "attributes": {"screenshotDisplayType": "APP_IPAD_PRO_3GEN_129"},
+              "relationships": {"appStoreVersionLocalization": {"data": {"type": "appStoreVersionLocalizations", "id": LOC}}}}})["data"]["id"]
+    for i in range(1, 7): upload_asset("appScreenshots", "appScreenshotSet", sid, f"{IPAD}/ipad-0{i}.png")
 elif what == "preview":
     for ptype in ("IPHONE_67", "IPHONE_DUO"):                                       # both iPhone preview slots carried the old video
         for s in api("GET", f"/appStoreVersionLocalizations/{LOC}/appPreviewSets")["data"]:
