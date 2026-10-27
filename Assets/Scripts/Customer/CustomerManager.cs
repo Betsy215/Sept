@@ -257,6 +257,8 @@ public class CustomerManager : MonoBehaviour
         DebugLog($"CustomerManager ready for level {levelIndex + 1}");
     }
 
+    public const float Chapter2Patience = 1.2f;   // chapter 2 customers wait 20 percent longer: the flowers wilt about a sixth slower
+
     public void OnCustomerReachedService(CustomerController customer)
     {
         if (customer == null || System.Array.IndexOf(slots, customer) < 0) return;
@@ -271,7 +273,9 @@ public class CustomerManager : MonoBehaviour
         var patience = levelOrderDisplayTime;
         // The flower pots (decor, owner 16 October): each one bought gives every customer 15 percent more time
         var decorBonus = SessionManager.Instance != null ? SessionManager.Instance.PatienceMultiplier : 1f;
-        var displayTime = patience * customer.OrderTimeMultiplier * decorBonus;
+        // Chapter 2 (owner, 26 October 2026: "make chapter 2 patience go down slightly slower because ice cream is hard to serve")
+        var chapterBonus = SessionManager.Instance != null && Chapter.Of(SessionManager.Instance.GetCurrentLevelIndex()) >= 2 ? Chapter2Patience : 1f;
+        var displayTime = patience * customer.OrderTimeMultiplier * decorBonus * chapterBonus;
         var petals = Mathf.Max(1, Mathf.RoundToInt(patience));
         DebugLog($"{customer.name}: min items {minItems}, time {displayTime:F1}s, tip x{customer.TipMultiplier}");
 
