@@ -117,10 +117,15 @@ if __name__ == "__main__":
 
     elif what == "submit":
         if not ver: raise SystemExit(f"{v} does not exist")
-        res = api("POST", "/reviewSubmissions", {"data": {"type": "reviewSubmissions", "attributes": {"platform": "IOS"},
-                 "relationships": {"app": {"data": {"type": "apps", "id": APP}}}}})
-        sid = res["data"]["id"]; print("review submission", sid)
-        api("POST", "/reviewSubmissionItems", {"data": {"type": "reviewSubmissionItems",
+        # reuse an open, not yet submitted submission (a failed try leaves one; 26 October 2026)
+        open_ = api("GET", q(f"/apps/{APP}/reviewSubmissions?filter[platform]=IOS&filter[state]=READY_FOR_REVIEW"))["data"]
+        if open_: sid = open_[0]["id"]; print("reusing review submission", sid)
+        else:
+            res = api("POST", "/reviewSubmissions", {"data": {"type": "reviewSubmissions", "attributes": {"platform": "IOS"},
+                     "relationships": {"app": {"data": {"type": "apps", "id": APP}}}}})
+            sid = res["data"]["id"]; print("review submission", sid)
+        items = api("GET", f"/reviewSubmissions/{sid}/items")["data"]
+        if not items: api("POST", "/reviewSubmissionItems", {"data": {"type": "reviewSubmissionItems",
             "relationships": {"reviewSubmission": {"data": {"type": "reviewSubmissions", "id": sid}},
                               "appStoreVersion": {"data": {"type": "appStoreVersions", "id": ver["id"]}}}}})
         api("PATCH", f"/reviewSubmissions/{sid}", {"data": {"type": "reviewSubmissions", "id": sid, "attributes": {"submitted": True}}})
