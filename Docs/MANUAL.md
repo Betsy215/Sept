@@ -123,6 +123,9 @@ plain `python3` has no numpy.
 
 - **Flow:** MainMenu → (new game: tutorial "Day 0" in GameSceneOne, Let's go → Map) → Map → day board → GameSceneOne
   (arrangement, then the day) → finish card → Next → Map → Play → interstitial → Shop → Next → the day.
+  **Day 1 has no arrangement (owner, 31 October 2026):** `GamePhaseManager.SkipsArrangement` (level index 0, tutorial not due)
+  taps Ready itself one frame after the load, the table as saved or as the scene lays it out; the hint rotation starts on
+  day 2 with "Drag to arrange your table"; no arrangement music that day.
   Continue opens the map (enabled once a day is done). Pause home → Map.
 - **Days:** 16 per chapter (`MapScreen.ChapterDays`), `Level1..16Data.asset`. A day is `dayDurationSeconds` long
   (35 s on day 1 to 70 s on day 16). Customers set off every `timeBetweenOrders` (5 s) while the clock runs, at most

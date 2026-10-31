@@ -598,7 +598,7 @@ public class LevelManager : MonoBehaviour
         SessionManager.Instance.SnapshotScoreBeforeLevel();
         gamePhaseManager.StartArrangementPhase();
         scoreManager.ResetScore();
-        StartArrangementMusic();
+        if (!gamePhaseManager.SkipsArrangement) StartArrangementMusic();   // day 1 goes straight to play and its music (owner, 31 October 2026)
     }
 
     private void StartArrangementMusic()

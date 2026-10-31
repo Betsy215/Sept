@@ -39,6 +39,12 @@ public class GamePhaseManager : MonoBehaviour
 
     // Private variables
     private GamePhase currentPhase = GamePhase.ARRANGEMENT;
+    private bool firstDaySkipped;   // day 1 goes straight into play once per scene load (owner, 31 October 2026)
+
+    /// Day 1 comes pre-arranged: no drag, no Ready; the arrangement is taught on day 2 (owner, 31 October 2026).
+    /// The tutorial day (level 0 while the tutorial is due) keeps its own flow.
+    public bool SkipsArrangement => SessionManager.Instance != null && SessionManager.Instance.GetCurrentLevelIndex() == 0
+                                    && !TutorialDirector.IsDue(SessionManager.Instance);
     private ServeableItem[] allFoodItems;
 
     // Draggable objects in the scene (ServeableItem + CoffeeMachine). Rebuilt on each phase change
@@ -87,6 +93,8 @@ public class GamePhaseManager : MonoBehaviour
 
     public void StartArrangementPhase()
     {
+        // LevelManager.Start and our own Start both call this on a load; the second call must not undo the day 1 skip
+        if (firstDaySkipped) return;
         currentPhase = GamePhase.ARRANGEMENT;
         DebugLog("=== ARRANGEMENT PHASE STARTED ===");
 
@@ -109,6 +117,17 @@ public class GamePhaseManager : MonoBehaviour
 
         if (refillSystem != null)
             refillSystem.NotifyPhaseChange(currentPhase);
+
+        if (SkipsArrangement) { firstDaySkipped = true; StartCoroutine(SkipArrangement()); }
+    }
+
+    /// Day 1: the table as laid out (saved positions or the scene's), then play, as if Ready were tapped.
+    /// One frame later, so every Start of the load has run (LevelManager adds the menu book and the tint in its Start).
+    private IEnumerator SkipArrangement()
+    {
+        yield return null;
+        if (currentPhase != GamePhase.ARRANGEMENT) yield break;
+        OnDoneButtonClicked();
     }
 
     /// <summary>
@@ -126,7 +145,8 @@ public class GamePhaseManager : MonoBehaviour
 
         // Calculate message index with rotation based on array length (non-negative modulo)
         var count = levelTutorialMessages.Length;
-        var messageIndex = ((currentLevel - 1) % count + count) % count;
+        // Day 1 has no arrangement (owner, 31 October 2026), so the rotation starts on day 2 with "Drag to arrange table"
+        var messageIndex = ((currentLevel - 2) % count + count) % count;
 
         // Get the message and format it with the current level number
         var tutorialMessage = string.Format(levelTutorialMessages[messageIndex], currentLevel);
