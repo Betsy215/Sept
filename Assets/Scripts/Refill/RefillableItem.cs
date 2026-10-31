@@ -267,7 +267,34 @@ public class RefillableItem : MonoBehaviour
             isOutOfStock = false;
             OnCountChanged?.Invoke(currentCount, maxCount);
             DebugLog($"Count increased by {amount}. New count: {currentCount}/{maxCount}");
+            Hop();
         }
+    }
+
+    // --- The refill lands with a hop and a pop (owner, 31 October 2026) -------------------------------------------
+    // The item's picture swells a little and settles, and a soft pop plays. Not the ice cream: its scoops fly in on
+    // their own. Only while the day runs (a day's start fills the table without a hop).
+    private const float HopScale = 1.12f, HopUp = 0.08f, HopDown = 0.22f;
+    private static AudioClip popClip; private static bool popLooked;
+    private Coroutine hopCoroutine; private Vector3 hopBaseScale; private bool hopping;
+
+    private void Hop()
+    {
+        if (!isGameplayMode || GetFoodType() == "IceCream") return;
+        if (hopping && hopCoroutine != null) { StopCoroutine(hopCoroutine); transform.localScale = hopBaseScale; }
+        hopBaseScale = transform.localScale; hopping = true;
+        hopCoroutine = StartCoroutine(HopRoutine());
+        if (!popLooked) { popLooked = true; popClip = Resources.Load<AudioClip>("Audio/pop"); }
+        if (popClip != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(popClip);
+    }
+
+    private IEnumerator HopRoutine()
+    {
+        var t = 0f;
+        while (t < HopUp) { t += Time.deltaTime; transform.localScale = hopBaseScale * Mathf.Lerp(1f, HopScale, Mathf.Sin(Mathf.Clamp01(t / HopUp) * Mathf.PI * 0.5f)); yield return null; }
+        t = 0f;
+        while (t < HopDown) { t += Time.deltaTime; var k = Mathf.Clamp01(t / HopDown); transform.localScale = hopBaseScale * (1f + (HopScale - 1f) * (1f - k) * Mathf.Cos(k * Mathf.PI * 1.5f)); yield return null; }
+        transform.localScale = hopBaseScale; hopping = false;
     }
 
     public bool HasSpace(int amount)

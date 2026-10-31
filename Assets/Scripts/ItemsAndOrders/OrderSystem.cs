@@ -526,6 +526,7 @@ public class OrderSystem : MonoBehaviour
 
         // Play item served sound
         PlayItemServedSound();
+        if (!target.AllServed) Haptics.Tap();   // the last item's tap comes with the order's completion (owner, 31 October 2026)
 
         if (target.AllServed) CompleteOrder(target);
         Debug.Log($"Served {foodType} to slot {target.slot}. Remaining items: {target.items.Count(i => !i.isServed)}");
@@ -589,6 +590,7 @@ public class OrderSystem : MonoBehaviour
 
         // Perfect = finished with at least perfectTimeFraction of the display time still remaining
         var isPerfect = order.timer >= order.displayTime * perfectTimeFraction;
+        if (isPerfect) Haptics.DoubleTap(this); else Haptics.Tap();   // two taps for a fast order, one otherwise (owner, 31 October 2026)
 
         // Count as completed
         ordersCompleted++;
