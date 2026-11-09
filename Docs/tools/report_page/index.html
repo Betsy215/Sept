@@ -79,7 +79,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3><p>Say <span class="say">build</span> for the TestFlight test build.</p></div>
-<div class="who p2"><h3>Me</h3><p>The test build carries the live game plus everything done since; the shop tabs wait.</p></div>
+<div class="who p2"><h3>Me</h3><p>The test build carries the live game plus everything done since, the shop tabs included.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
@@ -108,7 +108,19 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
+<p style="margin-top:0"><b>Shop tabs, 10 November.</b> Your word: three tabs on the shop panel. Left Stars, middle Coins, right $; Coins is the page that opens and holds all the existing items; Remove Ads moved to the $ tab; the Stars tab says "The star shop opens soon" until it has items. Built as plain cream tabs for now, your art can replace them. On main, in the next build.</p>
+<div class="grid two" style="margin-top:10px">
+<figure><img src="shop_tabs_coins.jpg" alt="The shop with three tabs, Coins open" style="max-height:520px"><figcaption>Coins, the default page.</figcaption></figure>
+<figure><img src="shop_tabs_dollar.jpg" alt="The $ tab with the Remove Ads card" style="max-height:520px"><figcaption>The $ tab: Remove Ads.</figcaption></figure>
+</div>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.tabs.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.tabs.discard"> Discard the tabs</label></li>
+</ul>
+</div>
+<div class="card">
 <p style="margin-top:0"><b>Candies shop icon, 9 November.</b> Your word: the white gaps between the candies are transparent now; the candies' own white highlights stay. On main, in the next build.</p>
+<figure><img src="candies_icon_before_after.jpg" alt="Candies icon before and after on two backgrounds" style="max-height:240px"><figcaption>Left pair before, right pair after, on red and on green so the gaps show.</figcaption></figure>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.candiesicon.seen"> Seen, remove this</label></li>
 </ul>
@@ -127,8 +139,8 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 </div>
 <div class="card">
-<p style="margin-top:0"><b>Basket shadows, 9 November.</b> The bread keeps its drawn shadow. The apple basket now carries the bread basket's own shadow: lifted from the bread frame, scaled to the apple basket's width, set under it the same way, under the cloth, with a smooth outline, the same in all eight fill frames. In the game, in the next build.</p>
-<figure><img src="shadows_big.jpg" alt="Apple basket full and empty and the bread basket: before on the left, now on the right, close up" style="max-height:620px"><figcaption>Close up, left before and right now: apple basket full, apple basket empty, bread basket (unchanged).</figcaption></figure>
+<p style="margin-top:0"><b>Basket shadows, 9 November.</b> The bread keeps its drawn shadow. The apple basket now has a true oval: drawn as a curve at four times the size and scaled down, so its outline is smooth at any zoom; it spans the old shadow's left edge to just short of the basket's right side and sits under the cloth and the basket, so a crescent shows at the lower left like the bread's; the bread shadow's navy and 82 % opacity. The old shadow and its stray edge pixels are cleaned out of all eight frames; the napkin, basket and apples are untouched. In the game, in the next build.</p>
+<figure><img src="shadows_big.jpg" alt="Apple basket full and empty and the bread basket: before on the left, now on the right, close up" style="max-height:620px"><figcaption>At table scale: apple basket full, apple basket empty, bread basket for reference.</figcaption></figure>
 
 
 <ul class="checks">
@@ -141,7 +153,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p class="sub" style="margin:0 0 8px">Your words, 9 November. Release goal: Thursday 13 November.</p>
 <ol class="plan">
 <li>A couple of things to improve gameplay. Your picks (Q2): <b>d</b> night lights (lit truck windows and fireflies in chapter 1, a lantern glow in chapter 2) and <b>e</b> the shop NEW tag and the bought item flying to the table.</li>
-<li>Stars as a currency, and a star shop panel in the shop. Tabs on the shop panel, each a page: the existing items on one tab, bought with coins; a second tab bought with stars; a third tab bought with real money.</li>
+<li>Stars as a currency, and a star shop panel in the shop. Tabs on the shop panel: left Stars, middle Coins (default, the existing items), right $ (real money, Remove Ads).</li>
 <li>Remove Ads purchase, $1.99 (the Paid Apps Agreement first).</li>
 <li>At least five rounds of your own play test on TestFlight, feedback after each.</li>
 </ol>
