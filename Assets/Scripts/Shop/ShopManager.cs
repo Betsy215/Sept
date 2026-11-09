@@ -52,6 +52,7 @@ public class ShopManager : MonoBehaviour
             if (IsHeldBackCard(card)) card.gameObject.SetActive(false);
         EnsureRemoveAdsCard();   // the one-time Remove Ads card (owner, 9 November 2026)
         EvenOutCharacterIcons();
+        EnsureTabs();            // Stars | Coins | $ (owner, 10 November 2026); Coins is the default
         LayoutCards();
         EnsureRestoreButton();
         if (itemScrollRect != null) itemScrollRect.onValueChanged.AddListener(_ => UpdateScrollButtons());   // a finger drag updates the lock too
@@ -517,7 +518,13 @@ public class ShopManager : MonoBehaviour
         if (itemContainer == null) return;
         var cont = itemContainer.GetComponent<RectTransform>(); if (cont == null) return;
         var cards = new List<ShopItemController>();
-        foreach (var c in GetAllShopItems()) if (c != null && c.gameObject.activeSelf && !IsHeldBackCard(c)) cards.Add(c);
+        foreach (var c in GetAllShopItems())
+        {
+            if (c == null || IsHeldBackCard(c)) continue;
+            var onTab = TabOf(c) == currentTab;
+            c.gameObject.SetActive(onTab);                                      // only the current tab's cards show
+            if (onTab) cards.Add(c);
+        }
         cards.Sort((a, b) =>
         {
             var ra = a.itemName == RemoveAdsCardName; var rb = b.itemName == RemoveAdsCardName;
@@ -824,5 +831,86 @@ public class ShopManager : MonoBehaviour
             ShowPurchaseSuccessFeedback("Checking with the App Store...");
             RemoveAds.Restore((ok, msg) => { RefreshShopDisplay(); if (ok) ShowPurchaseSuccessFeedback(msg); else ShowPurchaseFailedFeedback(msg); });
         });
+    }
+
+    // --- Shop tabs (owner, 10 November 2026): left Stars, middle Coins (default, the existing items), right $ -------
+    public enum ShopTab { Stars = 0, Coins = 1, Dollars = 2 }
+    private ShopTab currentTab = ShopTab.Coins;
+    private readonly List<Button> tabButtons = new List<Button>();
+    private TextMeshProUGUI tabNote;
+
+    private static ShopTab TabOf(ShopItemController c)
+    {
+        if (c == null) return ShopTab.Coins;
+        if (c.itemName == RemoveAdsCardName) return ShopTab.Dollars;
+        if (c.gameObject.name.StartsWith("Star") || (c.itemName != null && c.itemName.StartsWith("Star"))) return ShopTab.Stars;
+        return ShopTab.Coins;
+    }
+
+    private void EnsureTabs()
+    {
+        if (itemContainer == null || tabButtons.Count > 0) return;
+        var viewport = itemContainer.transform.parent as RectTransform;              // the masked ShopPanel
+        if (viewport == null) return;
+        var font = playerScoreText != null ? playerScoreText.font : null;
+        string[] labels = { "Stars", "Coins", "$" };
+        for (var i = 0; i < 3; i++)
+        {
+            var go = new GameObject("Tab" + labels[i], typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            go.transform.SetParent(viewport.parent, false);
+            var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0f);
+            // a row of three on the panel's top edge
+            var x = viewport.anchoredPosition.x + (i - 1) * 300f;
+            var y = viewport.anchoredPosition.y + viewport.rect.height * (1f - viewport.pivot.y) + 6f;
+            rt.anchoredPosition = new Vector2(x, y); rt.sizeDelta = new Vector2(280f, 86f);
+            var img = go.GetComponent<Image>(); img.color = new Color(1f, 0.96f, 0.86f, 0.92f);
+            var lgo = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+            lgo.transform.SetParent(go.transform, false);
+            var lrt = lgo.GetComponent<RectTransform>(); lrt.anchorMin = Vector2.zero; lrt.anchorMax = Vector2.one; lrt.offsetMin = lrt.offsetMax = Vector2.zero;
+            var t = lgo.GetComponent<TextMeshProUGUI>(); t.text = labels[i]; t.fontSize = 44f; t.alignment = TextAlignmentOptions.Center;
+            t.color = new Color(0.30f, 0.22f, 0.18f); t.fontStyle = FontStyles.Bold; if (font != null) t.font = font;
+            var tab = (ShopTab)i;
+            go.GetComponent<Button>().onClick.AddListener(() => SetTab(tab));
+            tabButtons.Add(go.GetComponent<Button>());
+        }
+        // a line for a tab with nothing on it yet
+        var ngo = new GameObject("TabNote", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+        ngo.transform.SetParent(viewport.parent, false);
+        var nrt = ngo.GetComponent<RectTransform>(); nrt.anchorMin = nrt.anchorMax = new Vector2(0.5f, 0.5f);
+        nrt.anchoredPosition = viewport.anchoredPosition; nrt.sizeDelta = new Vector2(800f, 120f);
+        tabNote = ngo.GetComponent<TextMeshProUGUI>(); tabNote.fontSize = 44f; tabNote.alignment = TextAlignmentOptions.Center;
+        tabNote.color = new Color(0.30f, 0.22f, 0.18f, 0.85f); if (font != null) tabNote.font = font; tabNote.text = ""; ngo.SetActive(false);
+        PaintTabs();
+    }
+
+    private void SetTab(ShopTab tab)
+    {
+        if (IsPurchasePopupOpen) return;
+        currentTab = tab;
+        PaintTabs();
+        LayoutCards();
+        if (itemScrollRect != null) itemScrollRect.verticalNormalizedPosition = 1f;
+        RefreshShopDisplay();
+        UpdateScrollButtons();
+    }
+
+    private void PaintTabs()
+    {
+        for (var i = 0; i < tabButtons.Count; i++)
+        {
+            var on = i == (int)currentTab;
+            var img = tabButtons[i].GetComponent<Image>();
+            if (img != null) img.color = on ? new Color(1f, 0.85f, 0.45f, 1f) : new Color(1f, 0.96f, 0.86f, 0.75f);
+            var lbl = tabButtons[i].GetComponentInChildren<TextMeshProUGUI>();
+            if (lbl != null) lbl.alpha = on ? 1f : 0.65f;
+        }
+        if (tabNote != null)
+        {
+            var any = false;
+            foreach (var c in GetAllShopItems()) if (c != null && !IsHeldBackCard(c) && TabOf(c) == currentTab) { any = true; break; }
+            tabNote.text = currentTab == ShopTab.Stars ? "The star shop opens soon" : "";
+            tabNote.gameObject.SetActive(!any && tabNote.text.Length > 0);
+        }
     }
 }
