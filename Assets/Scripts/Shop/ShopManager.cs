@@ -114,6 +114,7 @@ public class ShopManager : MonoBehaviour
             if (shopItem != null)
             {
                 if (IsHeldBackCard(shopItem)) { shopItem.gameObject.SetActive(false); continue; }   // Cookies wait for the next release
+                if (TabOf(shopItem) != currentTab) { shopItem.gameObject.SetActive(false); continue; }   // other tabs stay hidden (10 November)
                 shopItem.gameObject.SetActive(true);
                 if (shopItem.itemName == RemoveAdsCardName)
                 {
@@ -860,10 +861,14 @@ public class ShopManager : MonoBehaviour
             go.transform.SetParent(viewport.parent, false);
             var rt = go.GetComponent<RectTransform>();
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0f);
-            // a row of three on the panel's top edge
-            var x = viewport.anchoredPosition.x + (i - 1) * 300f;
-            var y = viewport.anchoredPosition.y + viewport.rect.height * (1f - viewport.pivot.y) + 6f;
-            rt.anchoredPosition = new Vector2(x, y); rt.sizeDelta = new Vector2(280f, 86f);
+            // a row of three just above the panel's real top edge (under the EARNED line), measured in the parent's space
+            var parent = viewport.parent as RectTransform;
+            var corners = new Vector3[4]; viewport.GetWorldCorners(corners);
+            var topLeft = parent.InverseTransformPoint(corners[1]);
+            var centre = parent.InverseTransformPoint((corners[0] + corners[2]) * 0.5f);
+            var pivotOff = new Vector2(parent.rect.width * (0.5f - parent.pivot.x), parent.rect.height * (0.5f - parent.pivot.y));
+            rt.anchoredPosition = new Vector2(centre.x + (i - 1) * 300f, topLeft.y + 10f) - pivotOff;
+            rt.sizeDelta = new Vector2(280f, 72f);
             var img = go.GetComponent<Image>(); img.color = new Color(1f, 0.96f, 0.86f, 0.92f);
             var lgo = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
             lgo.transform.SetParent(go.transform, false);
