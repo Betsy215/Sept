@@ -898,6 +898,15 @@ public class ShopManager : MonoBehaviour
         if (itemScrollRect != null) itemScrollRect.verticalNormalizedPosition = 1f;
         RefreshShopDisplay();
         UpdateScrollButtons();
+        StartCoroutine(RefreshAfterTabSwitch());
+    }
+
+    /// A card shown for the first time runs its Start() after this frame and paints itself unaffordable; refresh once more.
+    private IEnumerator RefreshAfterTabSwitch()
+    {
+        yield return new WaitForEndOfFrame();
+        RefreshShopDisplay();
+        UpdateScrollButtons();
     }
 
     private void PaintTabs()
