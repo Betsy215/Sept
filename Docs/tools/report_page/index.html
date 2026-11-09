@@ -88,7 +88,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 <div class="who p2"><h3>Me</h3>
 <p>Main merged and pushed, 9 November: 55 commits, main at 0a73a05. The store build and the four Current changes are all on main now.</p>
-<p>Soft shadows for the baskets and the second napkin are ready for your tick (Current, Q2). No build until you say so.</p>
+<p>Soft shadows for the baskets and the second napkin are ready for your tick (Current, Q2). Star shop: tick the MVP choices and I start the design. No build until you say so.</p>
 <p>Round 1 starts when you pick the two improvements: I build them and upload a TestFlight build.</p>
 <p>ChatGPT: the cake first, on your word <span class="say">chatgpt cake</span>.</p>
 </div>
@@ -186,15 +186,16 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Soft shadows, 9 November.</b> Your rule: shadows a little transparent, not a dark chunk, with a smooth outline. The bread basket and the apple basket redone first: the old hard navy stripped, a new navy shadow at half transparency with a blurred edge, same files and canvas so nothing moves in the game. Not in the game yet.</p>
-<figure><img src="shadows_before_after.jpg" alt="Bread and apple baskets, hard shadow above, soft shadow below" style="max-height:420px"><figcaption>Top: now. Bottom: the soft shadow. Bread full and empty, apples full and empty.</figcaption></figure>
+<p style="margin-top:0"><b>Shadows like the coffee saucers, 9 November.</b> Your rule: a little transparent, not a dark chunk, smooth outline, the saucers as the reference. Their shadow is the saucer's own shape shifted a little down and left, navy at about two thirds opacity. The bread and apple baskets now get the same: the old hard chunk stripped, the basket's own shape as the shadow, shifted 3 % down-left, edge softened, same files and canvas so nothing moves. Not in the game yet.</p>
+<figure><img src="shadows_before_after.jpg" alt="Bread and apple baskets, hard shadow above, soft shadow below" style="max-height:420px"><figcaption>Top: now. Bottom: the saucer-style shadow. Bread full and empty, apples full and empty; the saucers at the right for reference.</figcaption></figure>
 <p>The same script can do every table item (cake, cookies plate, coconuts, pots, candy jar, juice, machine tray, ice cream station) so all shadows match. Your own hand-drawn shadows (juice, choux) would change too; say if they should stay.</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.shadows.seen"> Seen, remove this</label></li>
 <li><label><input type="checkbox" data-id="cur.shadows.baskets"> Put the bread and apple baskets in</label></li>
 <li><label><input type="checkbox" data-id="cur.shadows.all"> Do every table item the same way</label></li>
 <li><label><input type="checkbox" data-id="cur.shadows.allbutowner"> Every item except your hand-drawn ones (juice, choux)</label></li>
-<li><label><input type="checkbox" data-id="cur.shadows.lighter"> Lighter still (more transparent)</label></li>
+<li><label><input type="checkbox" data-id="cur.shadows.lighter"> Lighter (more transparent)</label></li>
+<li><label><input type="checkbox" data-id="cur.shadows.bigger"> Shift it more, so more shadow shows</label></li>
 <li><label><input type="checkbox" data-id="cur.shadows.discard"> Discard, keep the hard shadows</label></li>
 </ul>
 </div>
@@ -221,10 +222,18 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Your plan of 9 November: a couple of gameplay improvements, then at least five rounds of your own play test, feedback after each. Feel and play only; no features, no new chapters.</p>
+<p class="sub" style="margin:0 0 8px">Your plan of 9 November: a couple of gameplay improvements, stars as a currency with a star shop, then at least five rounds of your own play test, feedback after each. No new chapters.</p>
 <ol class="plan">
 <li><b>You pick two gameplay improvements.</b> Tick them in Q5 (groups), Q6 (streak) and Q7 (small ideas). My pick if you want one: Let's go straight into day 1, and the fast-serve streak with a Perfect! stamp.</li>
-<li><b>I build the two</b> on main, play them in the editor, upload TestFlight build 22.</li>
+<li><b>Stars as a currency, with a star shop panel in the shop</b> (your word, 9 November). Stars earned per day become a balance; the shop gets a second panel where star items are bought. To settle before I build: what the star items are (my proposal: decor and cosmetics such as the clock, table cloths, a truck colour, customer hats), whether stars already earned count from the start, and how the panel looks.
+<ul class="checks">
+<li><label><input type="checkbox" data-id="mvp.stars.decor"> Star items = decor and cosmetics (clock, cloths, truck colour, hats)</label></li>
+<li><label><input type="checkbox" data-id="mvp.stars.boosts"> Star items = play boosts (patience, tips, an extra oven slot)</label></li>
+<li><label><input type="checkbox" data-id="mvp.stars.both"> Both kinds</label></li>
+<li><label><input type="checkbox" data-id="mvp.stars.retro"> Stars already earned count from the start</label></li>
+<li><label><input type="checkbox" data-id="mvp.stars.panel"> Panel: a tab next to the coin shop, same card look</label></li>
+</ul></li>
+<li><b>I build the two improvements and the star shop</b> on main, play them in the editor, upload TestFlight build 22.</li>
 <li><b>Round 1 to 5.</b> You play the TestFlight build on your phone (it stays out of the numbers and the ads) and tell me what felt wrong or good. Each round: I fix, upload the next build, and log the round here under Current.</li>
 <li><b>Store submission</b> on your yes after round 5, with your texts. The privacy label gets the analytics entry.</li>
 </ol>
@@ -236,7 +245,6 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="backlog.b"> <b>b</b> Menu stickers in your oven-sticker style.</label></li>
 <li><label><input type="checkbox" data-id="backlog.c"> <b>c</b> Serve sound for every food.</label></li>
 <li><label><input type="checkbox" data-id="backlog.d"> <b>d</b> Rating prompt after the first three-star day.</label></li>
-<li><label><input type="checkbox" data-id="backlog.e"> <b>e</b> Stars as a second currency.</label></li>
 <li><label><input type="checkbox" data-id="backlog.f"> <b>f</b> Customer voice sounds (you look for them).</label></li>
 <li><label><input type="checkbox" data-id="backlog.g"> <b>g</b> A cut scene when the game play starts.</label></li>
 <li><label><input type="checkbox" data-id="backlog.h"> <b>h</b> Double-tap Next replays the shop slide-in.</label></li>
