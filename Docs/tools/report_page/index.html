@@ -78,20 +78,8 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
-<div class="who p1"><h3>You</h3>
-<p>Pick the two gameplay improvements for the next release (MVP, step 1).</p>
-<p>Tick the shadows, beans and cup handles under Current. Say <span class="say">build</span> when the sprites are right and I upload TestFlight build 22 for your play test.</p>
-<p>Tick your choices under Q1 and Q2, under Current, and in the Backlog.</p>
-<p>App Store Connect: the Paid Apps Agreement and the Remove Ads product (steps under Current). While there, sign in in Chrome and say <span class="say">numbers</span>.</p>
-<p>Unity payout profile: finish step 3, the tax form. Your March W-9 failed the IRS name-and-number check (Unity's mail of 25 March), which is why payouts are on hold. Sole proprietor: your own legal name on line 1, the DBA on line 2, and the SSN as the number, or the EIN only with the exact name on its IRS letter.</p>
-<p>Bugs folder: IMG_9758 and IMG_9759 look fixed in 26.10.26; delete them if you agree. The PDF in there is not a game bug.</p>
-</div>
-<div class="who p2"><h3>Me</h3>
-<p>Main merged and pushed, 9 November: 55 commits, main at 0a73a05. The store build and the four Current changes are all on main now.</p>
-<p>Remove Ads is built. Next: night lights and the shop NEW tag with the fly-in, then the star shop. Release goal Thursday 13 November. No build until you say so.</p>
-<p>Round 1 starts when you pick the two improvements: I build them and upload a TestFlight build.</p>
-<p>ChatGPT: the cake first, on your word <span class="say">chatgpt cake</span>.</p>
-</div>
+<div class="who p1"><h3>You</h3><p>Say <span class="say">build</span> for the TestFlight test build.</p></div>
+<div class="who p2"><h3>Me</h3><p>The test build carries the live game plus everything done since; the shop tabs wait.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
@@ -120,8 +108,18 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
+<p style="margin-top:0"><b>Candies shop icon, 9 November.</b> Your word: the white gaps between the candies are transparent now; the candies' own white highlights stay. On main, in the next build.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.candiesicon.seen"> Seen, remove this</label></li>
+</ul>
+</div>
+<div class="card">
 <p style="margin-top:0"><b>Remove Ads, built, 9 November.</b> MVP 3. In the game on main: a Remove Ads card at the end of the shop grid, paid through the App Store at $1.99 (the store's own price text once it answers), never with coins; the between-day ad stops the moment it is owned, the daily treat and coin ads stay; a small "Restore purchases" line at the bottom of the shop, which Apple requires; ownership survives a reinstall through the receipt. Unity's purchasing package is added to the project, your editor imports it the next time it has focus. The card uses the red cross icon as a placeholder until you give it one.</p>
 <p>Your three steps in App Store Connect, before it can be tested: 1 sign the Paid Apps Agreement (Business, Agreements). 2 In the app, Monetization, In-App Purchases: a Non-Consumable, reference name Remove Ads, product ID <code>com.BetzzzGame.FoodTruckCafe.removeads</code>, price $1.99, display name Remove Ads, description "No more ads between days." 3 Add it to the next version's review page when we submit. TestFlight uses the sandbox, so your play test can buy it for free.</p>
+<div class="grid two" style="margin-top:10px">
+<figure><img src="shop_removeads.jpg" alt="The shop with the Restore purchases line at the bottom" style="max-height:520px"><figcaption>The shop in the editor: the "Restore purchases" line at the bottom.</figcaption></figure>
+<figure><img src="shop_removeads_2.jpg" alt="The shop scrolled to the end: the Remove Ads card" style="max-height:520px"><figcaption>Scrolled to the end: the Remove Ads card, $1.99, placeholder icon.</figcaption></figure>
+</div>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.removeads.seen"> Seen, remove this</label></li>
 <li><label><input type="checkbox" data-id="cur.removeads.ascdone"> The three App Store Connect steps are done</label></li>
@@ -143,7 +141,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p class="sub" style="margin:0 0 8px">Your words, 9 November. Release goal: Thursday 13 November.</p>
 <ol class="plan">
 <li>A couple of things to improve gameplay. Your picks (Q2): <b>d</b> night lights (lit truck windows and fireflies in chapter 1, a lantern glow in chapter 2) and <b>e</b> the shop NEW tag and the bought item flying to the table.</li>
-<li>Stars as a currency, and a star shop panel in the shop.</li>
+<li>Stars as a currency, and a star shop panel in the shop. Tabs on the shop panel, each a page: the existing items on one tab, bought with coins; a second tab bought with stars; a third tab bought with real money.</li>
 <li>Remove Ads purchase, $1.99 (the Paid Apps Agreement first).</li>
 <li>At least five rounds of your own play test on TestFlight, feedback after each.</li>
 </ol>
