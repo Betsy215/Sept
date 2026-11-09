@@ -81,7 +81,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="who p1"><h3>You</h3>
 <p>Pick the two gameplay improvements for the next release (MVP, step 1).</p>
 <p>Tick the shadows, beans and cup handles under Current. Say <span class="say">build</span> when the sprites are right and I upload TestFlight build 22 for your play test.</p>
-<p>Tick your choices under Q1 to Q4, under Current, and in the Backlog.</p>
+<p>Tick your choices under Q1 to Q5, under Current, and in the Backlog.</p>
 <p>Sign in to App Store Connect in Chrome, then say <span class="say">numbers</span>.</p>
 <p>Unity Ads: add a payout profile in the Unity dashboard.</p>
 <p>Bugs folder: IMG_9758 and IMG_9759 look fixed in 26.10.26; delete them if you agree. The PDF in there is not a game bug.</p>
@@ -96,14 +96,22 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
 
-<div class="q"><h3>Q1 · Any rewarded ads from real players in the past few days? <small>9 November</small></h3>
+<div class="q"><h3>Q1 · Why is the Unity income so low, and does it match our data? <small>9 November</small></h3>
+<p><b>It matches.</b> Unity Ads counts 26 impressions since the release (23 in the week of 26 October, 3 last week) for $0.13 in all. Our own events log 16 finished ads in the same time: 11 interstitials, 5 daily treats. The gap is counting: Unity counts an ad when it starts, our event fires when it ends or is skipped, so an ad closed by quitting the app, the reviewer's views on 27 October and anything still waiting to upload show only on Unity's side. Day by day the two move together: 31 October 12 against 9, 1 November 4 against 2, 3 and 7 November 1 and 2 against 1 and 1.</p>
+<p><b>Why so little.</b> Twenty-six views in two weeks. At the $1 to $5 per thousand views Unity pays a brand-new app with skipped interstitials and no tracking consent, that is cents. A dollar a day needs about two hundred views a day; we have about one new player a day and one or two ads each. The income is not broken, it tracks the player count.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.income.seen"> Seen, remove this</label></li>
+</ul></div>
+
+
+<div class="q"><h3>Q2 · Any rewarded ads from real players in the past few days? <small>9 November</small></h3>
 <p>Two, both daily-treat ads watched to the end: one on 3 November and one on 7 November, by two different players. Before that, three on 28 October by two players. The coin button's rewarded ad has never been used. All interstitials so far were skipped.</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.rewarded.seen"> Seen, remove this</label></li>
 </ul></div>
 
 
-<div class="q"><h3>Q2 · Remove Ads: does it remove the between-day ads? <small>9 November</small></h3>
+<div class="q"><h3>Q3 · Remove Ads: does it remove the between-day ads? <small>9 November</small></h3>
 <p>Yes. Remove Ads switches off the interstitial between days. The rewarded ads stay, because the player chooses them for a reward (the daily treat, the coin button).</p>
 <p>What it needs: you sign the Paid Apps Agreement in App Store Connect (Agreements, Tax and Banking) and create the in-app purchase there; I add Unity IAP, the Remove Ads card in the shop, a Restore Purchases button (Apple requires it) and the flag that skips the interstitial. It is in the MVP.</p>
 <ul class="checks">
@@ -113,14 +121,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="qa.removeads.price499"> Price $4.99</label></li>
 </ul></div>
 
-<div class="q"><h3>Q3 · Why is "missing SKAdNetwork ids" still in the Backlog? <small>9 November</small></h3>
+<div class="q"><h3>Q4 · Why is "missing SKAdNetwork ids" still in the Backlog? <small>9 November</small></h3>
 <p>Checked the shipped build: build 21's Info.plist carries 77 SKAdNetwork ids, written by the Unity Ads and Mediation post-build steps. Nothing is missing in the app. The Unity dashboard warning compares against its ever-growing list, so it can say "missing" after any list update; it does not affect ad delivery. Removed from the Backlog.</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.skad.seen"> Seen, remove this</label></li>
 </ul></div>
 
 
-<div class="q"><h3>Q4 · More ideas for the polish release <small>31 October</small></h3>
+<div class="q"><h3>Q5 · More ideas for the polish release <small>31 October</small></h3>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.ideas.seen"> Seen, remove this</label></li>
 <li><label><input type="checkbox" data-id="qa.ideas.a"> <b>a</b> Last call: the music picks up and the sign flips in the last ten seconds.</label></li>
