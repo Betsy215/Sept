@@ -50,8 +50,10 @@ public class ShopManager : MonoBehaviour
         // cards of foods held back from this release are not shown (Cookies, 13 October)
         foreach (var card in FindObjectsOfType<ShopItemController>(true))
             if (IsHeldBackCard(card)) card.gameObject.SetActive(false);
+        EnsureRemoveAdsCard();   // the one-time Remove Ads card (owner, 9 November 2026)
         EvenOutCharacterIcons();
         LayoutCards();
+        EnsureRestoreButton();
         if (itemScrollRect != null) itemScrollRect.onValueChanged.AddListener(_ => UpdateScrollButtons());   // a finger drag updates the lock too
 
         // FIX: Wait for all ShopItemController.Start() methods to complete
@@ -112,6 +114,11 @@ public class ShopManager : MonoBehaviour
             {
                 if (IsHeldBackCard(shopItem)) { shopItem.gameObject.SetActive(false); continue; }   // Cookies wait for the next release
                 shopItem.gameObject.SetActive(true);
+                if (shopItem.itemName == RemoveAdsCardName)
+                {
+                    if (RemoveAds.Owned) shopItem.MarkAsPurchased(); else shopItem.UpdateAffordability(true);
+                    continue;
+                }
                 var canAfford = session != null && session.CanAfford(shopItem.price);
                 if (shopItem.itemType == ItemType.Decor && shopItem.itemName == "Candies" && session != null && session.Candies >= CandyJar.Full)
                     canAfford = false;   // a full jar greys the card out and stops taps (owner, 26 October 2026: "when candy jar is full, disable the candy purchasing")
@@ -139,6 +146,18 @@ public class ShopManager : MonoBehaviour
         {
             ShowPurchaseFailedFeedback("No active session!");
             return false;
+        }
+
+        if (item.itemName == RemoveAdsCardName)
+        {
+            if (purchaseConfirmationPopup != null) purchaseConfirmationPopup.SetActive(false);
+            ShowPurchaseSuccessFeedback("Opening the App Store...");
+            RemoveAds.Buy((ok, msg) =>
+            {
+                if (ok) { item.MarkAsPurchased(); if (AudioManager.Instance != null) AudioManager.Instance.PlayPurchaseSound(); }
+                if (!string.IsNullOrEmpty(msg)) { if (ok) ShowPurchaseSuccessFeedback(msg); else ShowPurchaseFailedFeedback(msg); }
+            });
+            return false;   // no coins change hands
         }
 
         // Check if already purchased
@@ -499,7 +518,12 @@ public class ShopManager : MonoBehaviour
         var cont = itemContainer.GetComponent<RectTransform>(); if (cont == null) return;
         var cards = new List<ShopItemController>();
         foreach (var c in GetAllShopItems()) if (c != null && c.gameObject.activeSelf && !IsHeldBackCard(c)) cards.Add(c);
-        cards.Sort((a, b) => a.price != b.price ? a.price.CompareTo(b.price) : string.CompareOrdinal(a.itemName, b.itemName));
+        cards.Sort((a, b) =>
+        {
+            var ra = a.itemName == RemoveAdsCardName; var rb = b.itemName == RemoveAdsCardName;
+            if (ra != rb) return ra ? 1 : -1;                                   // Remove Ads at the very end
+            return a.price != b.price ? a.price.CompareTo(b.price) : string.CompareOrdinal(a.itemName, b.itemName);
+        });
         var bounds = new List<Rect>();
         foreach (var c in cards) { c.transform.localScale = Vector3.one; bounds.Add(VisualBounds((RectTransform)c.transform, cont)); }
         var maxW = 0f; var maxH = 0f;
@@ -753,5 +777,52 @@ public class ShopManager : MonoBehaviour
         if (purchaseConfirmationPopup != null)
             purchaseConfirmationPopup.SetActive(false);
         currentPurchaseItem = null;
+    }
+
+    // --- Remove Ads (owner, 9 November 2026): a card cloned from the Candies card, paid through the App Store ---------
+    public const string RemoveAdsCardName = "RemoveAds";
+
+    private void EnsureRemoveAdsCard()
+    {
+        if (itemContainer == null) return;
+        foreach (var c in GetAllShopItems()) if (c != null && c.itemName == RemoveAdsCardName) return;
+        ShopItemController template = null;
+        foreach (var c in GetAllShopItems()) if (c != null && c.itemName == "Candies") { template = c; break; }
+        if (template == null) return;
+        var go = Instantiate(template.gameObject, template.transform.parent);
+        go.name = RemoveAdsCardName; go.SetActive(true);
+        var card = go.GetComponent<ShopItemController>();
+        card.itemName = RemoveAdsCardName; card.itemType = ItemType.Decor; card.price = 0; card.isPurchased = false;
+        card.upgradeFoodType = ""; card.specialNote = "";
+        card.popupInfoText = RemoveAds.PriceText + "\nNo more ads between days.\nThe treat and coin ads stay.";
+        card.purchaseButtonText = "Buy";
+        var icon = Resources.Load<Sprite>("UI/remove_ads");
+        var iconT = go.transform.Find("ItemIcon"); var img = iconT != null ? iconT.GetComponent<Image>() : null;
+        if (img != null && icon != null) img.sprite = icon;
+        var priceT = go.transform.Find("PriceText"); var price = priceT != null ? priceT.GetComponent<TextMeshProUGUI>() : null;
+        if (price != null) price.text = RemoveAds.PriceText;
+        RemoveAds.Init();
+        if (!popupNames.ContainsKey(RemoveAdsCardName)) popupNames[RemoveAdsCardName] = "Remove ads";
+    }
+
+    /// Apple wants a way to restore a purchase: a small text button at the bottom of the shop.
+    private void EnsureRestoreButton()
+    {
+        if (nextLevelButton == null || GameObject.Find("RestorePurchases") != null) return;
+        var canvas = nextLevelButton.GetComponentInParent<Canvas>(); if (canvas == null) return;
+        var go = new GameObject("RestorePurchases", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI), typeof(Button));
+        go.transform.SetParent(canvas.transform, false);
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0f); rt.pivot = new Vector2(0.5f, 0f);
+        rt.anchoredPosition = new Vector2(0f, 18f); rt.sizeDelta = new Vector2(600f, 60f);
+        var t = go.GetComponent<TextMeshProUGUI>();
+        t.text = "Restore purchases"; t.fontSize = 30f; t.alignment = TextAlignmentOptions.Center; t.color = new Color(0.25f, 0.2f, 0.18f, 0.75f);
+        if (playerScoreText != null && playerScoreText.font != null) t.font = playerScoreText.font;
+        go.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            if (IsPurchasePopupOpen) return;
+            ShowPurchaseSuccessFeedback("Checking with the App Store...");
+            RemoveAds.Restore((ok, msg) => { RefreshShopDisplay(); if (ok) ShowPurchaseSuccessFeedback(msg); else ShowPurchaseFailedFeedback(msg); });
+        });
     }
 }

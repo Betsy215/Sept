@@ -125,6 +125,7 @@ public class InterstitialAdService : MonoBehaviour, IUnityAdsLoadListener, IUnit
             continuation?.Invoke();
             return;
         }
+        if (RemoveAds.Owned) { continuation?.Invoke(); return; }   // Remove Ads bought (9 November 2026)
         levelsSinceLastAd++;
 
         var due = levelsSinceLastAd >= Mathf.Max(1, ShowEveryNLevels);
