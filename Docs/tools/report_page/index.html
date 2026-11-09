@@ -88,7 +88,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 <div class="who p2"><h3>Me</h3>
 <p>Main merged and pushed, 9 November: 55 commits, main at 0a73a05. The store build and the four Current changes are all on main now.</p>
-<p>Napkin in. Basket shadows, beans and cup handles wait for your tick under Current. No build until you say so.</p>
+<p>Pick the napkin shape (A or B), and tick the shadows, beans and cup handles under Current. No build until you say so.</p>
 <p>Round 1 starts when you pick the two improvements: I build them and upload a TestFlight build.</p>
 <p>ChatGPT: the cake first, on your word <span class="say">chatgpt cake</span>.</p>
 </div>
@@ -142,11 +142,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Cake napkin cut in, 9 November.</b> Your tick: ChatGPT's second napkin under all seven cake frames, your cake and stand untouched, the shadow soft and half transparent. On main, commit below; in the next build.</p>
-<figure><img src="cake_napkin_before_after.jpg" alt="Cake frames before (top) and with the new napkin (bottom)" style="max-height:400px"><figcaption>Top: before. Bottom: the new napkin. Full cake, cut cake, empty stand.</figcaption></figure>
+<p style="margin-top:0"><b>Cake napkin from your kitchen painting, 9 November.</b> Your word: use the kitchen one, made square. The napkin under the kitchen cake (your painting) is taken clear of the stand, mirrored whole, and laid under the seven table frames with the old shadow shape, lighter and smooth-edged. Two shapes, pick one. The ChatGPT napkin is out of the game again.</p>
+<figure><img src="cake_kitchen_napkin.jpg" alt="Your kitchen napkin under the cake: top row a square seen from the camera, bottom row a literal square" style="max-height:420px"><figcaption>Top, A: a square seen from the table camera (0.77 as tall as wide). Bottom, B: a literal square. Full cake, cut cake, empty stand.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.napkin.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.napkin.discard"> Discard: back to the old napkin</label></li>
+<li><label><input type="checkbox" data-id="cur.knapkin.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.knapkin.a"> Use A</label></li>
+<li><label><input type="checkbox" data-id="cur.knapkin.b"> Use B</label></li>
+<li><label><input type="checkbox" data-id="cur.knapkin.smaller"> Smaller checks (scale the pattern down)</label></li>
+<li><label><input type="checkbox" data-id="cur.knapkin.old"> Keep the old napkin after all</label></li>
 </ul>
 </div>
 <div class="card">
@@ -170,7 +173,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 </div>
 <div class="card">
-<p style="margin-top:0"><b>Basket shadows, 9 November.</b> Your rule: a little transparent, not a dark chunk, smooth outline, the saucers as the reference, and the shape of each shadow kept as drawn. So the bread and apple baskets keep their shadow shape; it is now navy at two thirds opacity like the saucers' and its outline is softened. Same files and canvas, nothing moves. Not in the game yet.</p>
+<p style="margin-top:0"><b>Basket shadows, 9 November.</b> Your rule: a little transparent, not a dark chunk, smooth outline, the saucers as the reference, and the shape of each shadow kept as drawn. So the bread and apple baskets keep their shadow shape; it is now navy at two thirds opacity like the saucers', with a clean smooth edge like theirs, not a blur. Same files and canvas, nothing moves. Not in the game yet.</p>
 <figure><img src="shadows_before_after.jpg" alt="Bread and apple baskets, hard shadow above, soft shadow below" style="max-height:420px"><figcaption>Top: now. Bottom: the saucer-style shadow. Bread full and empty, apples full and empty; the saucers at the right for reference.</figcaption></figure>
 <p>The same script can do every table item (cake, cookies plate, coconuts, pots, candy jar, juice, machine tray, ice cream station) so all shadows match. Your own hand-drawn shadows (juice, choux) would change too; say if they should stay.</p>
 <ul class="checks">
