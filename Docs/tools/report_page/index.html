@@ -75,7 +75,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p>Tick your choices under Q1 to Q4, under Current, and in the Backlog.</p>
+<p>Tick your choices under Q1 to Q5, under Current, and in the Backlog.</p>
 <p>Was the 31 October player who reached day 16 in a day you? If yes, that player leaves the Analysis.</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="next.day16.yes"> yes</label></li>
@@ -87,14 +87,22 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 <div class="who p2"><h3>Me</h3>
 <p>Main merged and pushed, 9 November: 55 commits, main at 0a73a05. The store build and the four Current changes are all on main now.</p>
-<p>Nothing in progress. When Q2 is answered I build that group first and upload a TestFlight build when it plays clean.</p>
+<p>Nothing in progress. When Q3 is answered I build that group first and upload a TestFlight build when it plays clean.</p>
 <p>ChatGPT: the cake first, on your word <span class="say">chatgpt cake</span>.</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
 
-<div class="q"><h3>Q1 · What is on the list for ChatGPT to improve? <small>9 November</small></h3>
+<div class="q"><h3>Q1 · Is there a way to exclude my test play? <small>9 November</small></h3>
+<p>Yes, already built in. Install the game from TestFlight and play that copy: a TestFlight build sends its analytics to the development environment and shows test ads, so nothing you do counts. Build 21 on TestFlight is the same game as the store.</p>
+<p>The App Store copy always counts. If you play it anyway, tell me the day and the hour; I find that player and leave the id out of every read from then on.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.testplay.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="qa.testplay.switch"> Add a tester switch in the next release: tap the version label seven times, no analytics and no real ads on that phone</label></li>
+</ul></div>
+
+<div class="q"><h3>Q2 · What is on the list for ChatGPT to improve? <small>9 November</small></h3>
 <p>Table items at the 40-degree camera in the coffee machine's cute style, in this order: cake (flat napkin, no pink cut face), choux board, juice jug and glass (you said the juice stays on 21 October, so only if you want the set to match), candy jar, the two flower pots.</p>
 <p>Then the nine menu stickers on your oven-note paper, and the beach: the right palm's trunk, the stripe cloth texture, the kitchen palm's crown.</p>
 <p>Done already: coffee machine and cups, apple and bread baskets, apple counts, ice cream station fills, the candies icon (Gemini).</p>
@@ -106,7 +114,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="qa.chatgpt.beach"> Start with the beach</label></li>
 </ul></div>
 
-<div class="q"><h3>Q2 · The polish release: which groups? <small>31 October</small></h3>
+<div class="q"><h3>Q3 · The polish release: which groups? <small>31 October</small></h3>
 <p><b>A. Feel.</b> A serve sound per food, the wrong-tap shake on every food, coins fly to the hen board, a Perfect! stamp, the last daisy pulses, stars pop on the finish card, a rating prompt after the first three-star day.</p>
 <p><b>B. Play.</b> Let's go straight into day 1, a table clock, an Open! and Closed bell, analytics for the map and Ready taps. Day 1 pre-arranged is done.</p>
 <p><b>C. Look.</b> The 40-degree set in the machine's style (cake, choux, juice, candy jar, pots), menu stickers on your oven-note paper, the beach palm trunk, the cloth texture, the kitchen palm crown.</p>
@@ -121,7 +129,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="qa.plan.clockshop"> Clock as a shop item, not free</label></li>
 </ul></div>
 
-<div class="q"><h3>Q3 · Fast serve and the streak reward <small>31 October</small></h3>
+<div class="q"><h3>Q4 · Fast serve and the streak reward <small>31 October</small></h3>
 <p>Fast serve = the game's perfect rule: the whole order done with half the patience left. Streak = fast serves in a row, broken by a slow order or a walk-off. Nothing is built until you pick the reward.</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.streak.seen"> Seen, remove this</label></li>
@@ -131,7 +139,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="qa.streak.none"> None, only On a roll! and a sting</label></li>
 </ul></div>
 
-<div class="q"><h3>Q4 · More ideas for the polish release <small>31 October</small></h3>
+<div class="q"><h3>Q5 · More ideas for the polish release <small>31 October</small></h3>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.ideas.seen"> Seen, remove this</label></li>
 <li><label><input type="checkbox" data-id="qa.ideas.a"> <b>a</b> Last call: the music picks up and the sign flips in the last ten seconds.</label></li>
@@ -167,9 +175,9 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">The polish release. Feel, play and look only; no features, no new chapters. The 7 November date passed; the new date comes with your Q2 answer.</p>
+<p class="sub" style="margin:0 0 8px">The polish release. Feel, play and look only; no features, no new chapters. The 7 November date passed; the new date comes with your Q3 answer.</p>
 <ol class="plan">
-<li><b>Build the polish release</b> from Q2, Q3, Q4 and the Backlog letters. Done so far: day 1 pre-arranged, haptics, the refill hop, the coffee set.</li>
+<li><b>Build the polish release</b> from Q3, Q4, Q5 and the Backlog letters. Done so far: day 1 pre-arranged, haptics, the refill hop, the coffee set.</li>
 <li><b>TestFlight</b> when the first group plays clean in the editor. Haptics can only be felt there.</li>
 <li><b>Store submission</b> on your yes, with your texts. The privacy label gets the analytics entry.</li>
 </ol>
