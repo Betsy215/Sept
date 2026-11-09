@@ -51,14 +51,21 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--sk
 .letters p{margin:3px 0;font-size:15px}
 .letters b{display:inline-block;width:22px;color:var(--pink)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.checks{list-style:none;padding:0;margin:8px 0 0}
+.checks li{margin:3px 0;font-size:15px}
+.checks label{display:flex;gap:9px;align-items:flex-start;cursor:pointer}
+.checks input{accent-color:var(--pink);width:18px;height:18px;margin:2px 0 0;flex:none}
+.checks b{display:inline-block;width:22px;color:var(--pink)}
+#saved{margin-left:auto;align-self:center;font-size:13px;color:var(--soft)}
+h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </style>
 </head>
 <body><main>
 
 <h1>Food Truck Cafe</h1>
-<p class="sub">Your report for 9 November. Version 26.10.26 has been live on the App Store since 27 October. Answer the questions by number, like the bakery pages.</p>
+<p class="sub">Your report for 9 November. Version 26.10.26 has been live on the App Store since 27 October.</p>
 
-<nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#questions"><b>2</b>Questions</a><a href="#answers"><b>3</b>Answers</a><a href="#done"><b>4</b>Done since 31 Oct</a><a href="#release"><b>5</b>Next release</a><a href="#numbers"><b>6</b>Numbers</a><a href="#say"><b>7</b>Things to say</a><a href="#pages"><b>8</b>Your pages</a></nav>
+<nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#qa"><b>2</b>Q&amp;A</a><a href="#current"><b>3</b>Current</a><a href="#mvp"><b>4</b>MVP</a><a href="#backlog"><b>5</b>Backlog</a><a href="#analysis"><b>6</b>Analysis</a><a href="visuals.html" class="page">Visuals</a><span id="saved"></span></nav>
 
 <div class="grid shots">
 <figure><img src="table.jpg" alt="Chapter 1: the table in the park"><figcaption>Chapter 1, the park. The store picture of 26.10.26.</figcaption></figure>
@@ -68,95 +75,123 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--sk
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p>Answer Q1 to Q6 below.</p>
-<p>Merge the branch into main (51 commits). From the main checkout, with Unity's scene saved: <code>git merge --ff-only worktree-icecream-polish-25oct</code>, then <code>git push origin main</code>.</p>
+<p>Tick your choices under Q1 to Q4, under Current, and in the Backlog.</p>
+<p>Was the 31 October player who reached day 16 in a day you? If yes, that player leaves the Analysis.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="next.day16.yes"> yes</label></li>
+<li><label><input type="checkbox" data-id="next.day16.no"> no</label></li>
+</ul>
 <p>Sign in to App Store Connect in Chrome, then say <span class="say">numbers</span>.</p>
 <p>Unity Ads: add a payout profile in the Unity dashboard.</p>
 <p>Bugs folder: IMG_9758 and IMG_9759 look fixed in 26.10.26; delete them if you agree. The PDF in there is not a game bug.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>Nothing in progress. Everything since 31 October waits on your answers.</p>
-<p>When Q1 is answered, I build that group first, on the branch, and upload a TestFlight build when it plays clean.</p>
-<p>ChatGPT: the cake, choux and juice at the 40-degree angle, on your word.</p>
-<p>The old report page stays as history. This page is the report from now on.</p>
+<p>Main merged and pushed, 9 November: 55 commits, main at 0a73a05. The store build and the four Current changes are all on main now.</p>
+<p>Nothing in progress. When Q2 is answered I build that group first and upload a TestFlight build when it plays clean.</p>
+<p>ChatGPT: the cake first, on your word <span class="say">chatgpt cake</span>.</p>
 </div>
 </div>
 
-<h2 id="questions"><span class="n">2</span>Six questions waiting on you</h2>
-<p class="sub" style="margin:0 0 6px">Answer by number. A skipped question stays here until you answer it.</p>
+<h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
 
-<div class="q"><h3>Q1 · The polish release: which groups?</h3>
+<div class="q"><h3>Q1 · What is on the list for ChatGPT to improve? <small>9 November</small></h3>
+<p>Table items at the 40-degree camera in the coffee machine's cute style, in this order: cake (flat napkin, no pink cut face), choux board, juice jug and glass (you said the juice stays on 21 October, so only if you want the set to match), candy jar, the two flower pots.</p>
+<p>Then the nine menu stickers on your oven-note paper, and the beach: the right palm's trunk, the stripe cloth texture, the kitchen palm's crown.</p>
+<p>Done already: coffee machine and cups, apple and bread baskets, apple counts, ice cream station fills, the candies icon (Gemini).</p>
+<p>Three pictures a day on the free plan. Nothing is cut into the game until you pick.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.chatgpt.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="qa.chatgpt.cake"> Start with the cake</label></li>
+<li><label><input type="checkbox" data-id="qa.chatgpt.stickers"> Start with the stickers</label></li>
+<li><label><input type="checkbox" data-id="qa.chatgpt.beach"> Start with the beach</label></li>
+</ul></div>
+
+<div class="q"><h3>Q2 · The polish release: which groups? <small>31 October</small></h3>
 <p><b>A. Feel.</b> A serve sound per food, the wrong-tap shake on every food, coins fly to the hen board, a Perfect! stamp, the last daisy pulses, stars pop on the finish card, a rating prompt after the first three-star day.</p>
 <p><b>B. Play.</b> Let's go straight into day 1, a table clock, an Open! and Closed bell, analytics for the map and Ready taps. Day 1 pre-arranged is done.</p>
 <p><b>C. Look.</b> The 40-degree set in the machine's style (cake, choux, juice, candy jar, pots), menu stickers on your oven-note paper, the beach palm trunk, the cloth texture, the kitchen palm crown.</p>
 <p>Not in: stars as a currency, new foods, new chapters.</p>
-<div class="opts"><span class="chip">all three</span><span class="chip">A and C only</span><span class="chip">A</span><span class="chip">B</span><span class="chip">C</span><span class="chip">clock as a shop item, not free</span></div></div>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.plan.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="qa.plan.all"> Go: A, B and C</label></li>
+<li><label><input type="checkbox" data-id="qa.plan.ac"> A and C only</label></li>
+<li><label><input type="checkbox" data-id="qa.plan.a"> A</label></li>
+<li><label><input type="checkbox" data-id="qa.plan.b"> B</label></li>
+<li><label><input type="checkbox" data-id="qa.plan.c"> C</label></li>
+<li><label><input type="checkbox" data-id="qa.plan.clockshop"> Clock as a shop item, not free</label></li>
+</ul></div>
 
-<div class="q"><h3>Q2 · The streak reward</h3>
+<div class="q"><h3>Q3 · Fast serve and the streak reward <small>31 October</small></h3>
 <p>Fast serve = the game's perfect rule: the whole order done with half the patience left. Streak = fast serves in a row, broken by a slow order or a walk-off. Nothing is built until you pick the reward.</p>
-<div class="opts"><span class="chip">tips grow: x1.5 at 3 in a row, x2 at 5</span><span class="chip">a coin burst every 3, +$20</span><span class="chip">a candy into the jar every 5</span><span class="chip">none, only On a roll! and a sting</span></div></div>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.streak.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="qa.streak.tips"> Tips grow: x1.5 at 3 in a row, x2 at 5</label></li>
+<li><label><input type="checkbox" data-id="qa.streak.burst"> A coin burst every 3, +$20</label></li>
+<li><label><input type="checkbox" data-id="qa.streak.candy"> A candy into the jar every 5</label></li>
+<li><label><input type="checkbox" data-id="qa.streak.none"> None, only On a roll! and a sting</label></li>
+</ul></div>
 
-<div class="q letters"><h3>Q3 · More small ideas, pick any letters</h3>
-<p><b>a</b> Last call: the music picks up and the sign flips in the last ten seconds.</p>
-<p><b>b</b> A petal drops when a daisy wilts; a sweat drop on the last daisy.</p>
-<p><b>c</b> Table life: steam off the cups, a bird on the truck, drifting leaves.</p>
-<p><b>d</b> Night: lit truck windows and fireflies in chapter 1, a lantern glow in chapter 2.</p>
-<p><b>e</b> Shop: a NEW tag the day a card unlocks; the bought item flies to the table.</p>
-<p><b>f</b> Finish card captions: Good day, Great day, Perfect day.</p>
-<p><b>g</b> Map: the new star pops onto the day with a ding.</p></div>
+<div class="q"><h3>Q4 · More ideas for the polish release <small>31 October</small></h3>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.ideas.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="qa.ideas.a"> <b>a</b> Last call: the music picks up and the sign flips in the last ten seconds.</label></li>
+<li><label><input type="checkbox" data-id="qa.ideas.b"> <b>b</b> A petal drops when a daisy wilts; a sweat drop on the last daisy.</label></li>
+<li><label><input type="checkbox" data-id="qa.ideas.c"> <b>c</b> Table life: steam off the cups, a bird on the truck, drifting leaves.</label></li>
+<li><label><input type="checkbox" data-id="qa.ideas.d"> <b>d</b> Night: lit truck windows and fireflies in chapter 1, a lantern glow in chapter 2.</label></li>
+<li><label><input type="checkbox" data-id="qa.ideas.e"> <b>e</b> Shop: a NEW tag the day a card unlocks; the bought item flies to the table.</label></li>
+<li><label><input type="checkbox" data-id="qa.ideas.f"> <b>f</b> Finish card captions: Good day, Great day, Perfect day.</label></li>
+<li><label><input type="checkbox" data-id="qa.ideas.g"> <b>g</b> Map: the new star pops onto the day with a ding.</label></li>
+</ul></div>
 
-<div class="q letters"><h3>Q4 · Backlog: which go in the polish release? The rest I drop.</h3>
-<p><b>a</b> Clock on the table, free or a shop item.</p>
-<p><b>b</b> Menu stickers in your oven-sticker style.</p>
-<p><b>c</b> Serve sound for every food.</p>
-<p><b>d</b> Rating prompt after the first three-star day.</p>
-<p><b>e</b> Stars as a second currency.</p>
-<p><b>f</b> Customer voice sounds (you look for them).</p>
-<p><b>g</b> A cut scene when the game play starts.</p>
-<p><b>h</b> Double-tap Next replays the shop slide-in.</p>
-<p><b>i</b> Buttons under the notch and home indicator.</p>
-<p><b>j</b> Unity Ads payout profile (yours).</p>
-<p><b>k</b> Missing SKAdNetwork ids from Unity's list.</p>
-<p><b>l</b> Remove Ads purchase (needs the Paid Apps Agreement first).</p></div>
-
-<div class="q"><h3>Q5 · Was the 31 October player who reached day 16 in a day you?</h3>
-<p>Say yes and I leave that player out of the numbers.</p>
-<div class="opts"><span class="chip">yes</span><span class="chip">no</span></div></div>
-
-<div class="q"><h3>Q6 · The 31 October changes: keep or change?</h3>
-<p>They are in section 4. Default is keep all.</p>
-<div class="opts"><span class="chip">keep all</span><span class="chip">Let's go straight into day 1 too</span><span class="chip">drop the pop sound</span><span class="chip">discard the hop</span><span class="chip">discard the haptics</span><span class="chip">discard the cups</span><span class="chip">day 1 with the arrangement again</span></div></div>
-
-<h2 id="answers"><span class="n">3</span>Your questions, answered</h2>
+<h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>What is on the list for ChatGPT to improve?</b> (9 November)</p>
-<p>Table items at the 40-degree camera in the coffee machine's cute style, in this order: cake (flat napkin, no pink cut face), choux board, juice jug and glass (you said the juice stays on 21 October, so only if you want the set to match), candy jar, the two flower pots.</p>
-<p>Then the nine menu stickers on your oven-note paper, and the beach: the right palm's trunk, the stripe cloth texture, the kitchen palm's crown.</p>
-<p>Done already: coffee machine and cups, apple and bread baskets, apple counts, ice cream station fills, the candies icon (Gemini).</p>
-<p style="margin-bottom:0">Three pictures a day on the free plan. Nothing is cut into the game until you pick, so I start on your word: <span class="say">chatgpt cake</span>.</p>
-</div>
-
-<h2 id="done"><span class="n">4</span>Done since 31 October, not in a build</h2>
-<div class="card">
+<p style="margin-top:0"><b>Done since 31 October, on main, not in a build</b></p>
 <div class="ok"><span class="tick">✓</span><span><b>Day 1 goes straight into play.</b> The arrangement and the menu start on day 2. Let's go still opens the map first. Commit 3985869.</span></div>
 <div class="ok"><span class="tick">✓</span><span><b>Haptics.</b> A light tap on each served item, two taps on a fast order, no buzz on a wrong tap. It follows the phone's System Haptics switch, nothing for the privacy label. Felt only on the phone. Commit 1df58cd.</span></div>
 <div class="ok"><span class="tick">✓</span><span><b>Refill hop.</b> A refill swells a little and settles with a soft pop, on every refillable item but the ice cream.</span></div>
 <div class="ok"><span class="tick">✓</span><span><b>Coffee machine and cups</b> at the 40-degree angle in the cute style, same file names. Commits 7380c49 and 4227012.</span></div>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.oct31.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.oct31.keep"> Keep all</label></li>
+<li><label><input type="checkbox" data-id="cur.oct31.letsgo"> Let's go straight into day 1 too</label></li>
+<li><label><input type="checkbox" data-id="cur.oct31.nopop"> Drop the pop sound</label></li>
+<li><label><input type="checkbox" data-id="cur.oct31.nohop"> Discard the hop</label></li>
+<li><label><input type="checkbox" data-id="cur.oct31.nohaptics"> Discard the haptics</label></li>
+<li><label><input type="checkbox" data-id="cur.oct31.nocups"> Discard the cups</label></li>
+<li><label><input type="checkbox" data-id="cur.oct31.arrange"> Day 1 with the arrangement again</label></li>
+</ul>
 </div>
 <div class="grid two" style="margin-top:14px">
 <figure><img src="day1_prearranged_2026-10-31.jpg" alt="Day 1 straight into play, day 2 with the arrangement"><figcaption>Left, day 1 as a player sees it. Right, day 2 with the menu open.</figcaption></figure>
 <figure><img src="report_cups.jpg" alt="Coffee cups old and new on the table"><figcaption>Top left the old cups. Then the new: two cups, the empty tray, three cups with the upgrade.</figcaption></figure>
 </div>
 
-<h2 id="release"><span class="n">5</span>The next release</h2>
+<h2 id="mvp"><span class="n">4</span>MVP</h2>
+<p class="sub" style="margin:0 0 8px">The polish release. Feel, play and look only; no features, no new chapters. The 7 November date passed; the new date comes with your Q2 answer.</p>
 <ol class="plan">
-<li><b>Merge the branch into main</b>, so main matches the store. 51 commits, yours to run.</li>
-<li><b>Build the polish release</b> from your Q1 to Q4 answers. Done so far: day 1 pre-arranged, haptics, the refill hop, the coffee set. The 7 November date has passed; the new date comes with your answers.</li>
+<li><b>Build the polish release</b> from Q2, Q3, Q4 and the Backlog letters. Done so far: day 1 pre-arranged, haptics, the refill hop, the coffee set.</li>
 <li><b>TestFlight</b> when the first group plays clean in the editor. Haptics can only be felt there.</li>
-<li><b>Store submission</b> on your yes, with your texts.</li>
+<li><b>Store submission</b> on your yes, with your texts. The privacy label gets the analytics entry.</li>
 </ol>
 
-<h2 id="numbers"><span class="n">6</span>Numbers, 2 to 8 November</h2>
+<h2 id="backlog"><span class="n">5</span>Backlog</h2>
+<div class="q" style="background:var(--skybg)"><h3>Do in the polish release. Unticked items go when you say clean up.</h3>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="backlog.a"> <b>a</b> Clock on the table, free or a shop item.</label></li>
+<li><label><input type="checkbox" data-id="backlog.b"> <b>b</b> Menu stickers in your oven-sticker style.</label></li>
+<li><label><input type="checkbox" data-id="backlog.c"> <b>c</b> Serve sound for every food.</label></li>
+<li><label><input type="checkbox" data-id="backlog.d"> <b>d</b> Rating prompt after the first three-star day.</label></li>
+<li><label><input type="checkbox" data-id="backlog.e"> <b>e</b> Stars as a second currency.</label></li>
+<li><label><input type="checkbox" data-id="backlog.f"> <b>f</b> Customer voice sounds (you look for them).</label></li>
+<li><label><input type="checkbox" data-id="backlog.g"> <b>g</b> A cut scene when the game play starts.</label></li>
+<li><label><input type="checkbox" data-id="backlog.h"> <b>h</b> Double-tap Next replays the shop slide-in.</label></li>
+<li><label><input type="checkbox" data-id="backlog.i"> <b>i</b> Buttons under the notch and home indicator.</label></li>
+<li><label><input type="checkbox" data-id="backlog.j"> <b>j</b> Unity Ads payout profile (yours).</label></li>
+<li><label><input type="checkbox" data-id="backlog.k"> <b>k</b> Missing SKAdNetwork ids from Unity's list.</label></li>
+<li><label><input type="checkbox" data-id="backlog.l"> <b>l</b> Remove Ads purchase (needs the Paid Apps Agreement first).</label></li>
+</ul></div>
+
+<h2 id="analysis"><span class="n">6</span>Analysis, 2 to 8 November</h2>
 <p class="sub" style="margin:0 0 8px">Read 9 November, 10:00 PST. Days are UTC. Players and ads from Unity. App Store Connect is signed out, so Apple's downloads, impressions and page views wait for your sign-in.</p>
 <div class="card tw"><table>
 <tr><th>Day</th><th class="n">New players</th><th class="n">Finished the tutorial</th><th class="n">Days finished</th><th class="n">Ad requests</th><th class="n">Ads shown</th><th class="n">Ad revenue</th></tr>
@@ -178,20 +213,23 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--sk
 <div class="ok"><span class="dot">●</span><span>Ads: 3 shown this week, $0.05. The 31 October spike (50 requests, 12 shown) is the day-16 player. Still no payout profile.</span></div>
 </div>
 
-<h2 id="say"><span class="n">7</span>Things you can say to me</h2>
-<div class="card">
-<p style="margin-top:0"><span class="say">Q1 all, Q2 tips, Q3 a d g, Q4 a b c, Q5 yes, Q6 keep all</span><br>Answers the questions. I build what you picked and drop the rest.</p>
-<p><span class="say">numbers</span><br>After your App Store Connect sign-in: I fill Apple's rows in section 6.</p>
-<p><span class="say">chatgpt cake</span><br>I brief ChatGPT for that item in the machine's style and put its picture here for your pick.</p>
-<p><span class="say">update the report</span><br>I refresh this page: Next, the questions, what is done, the numbers.</p>
-<p style="margin-bottom:0"><span class="say">merge done</span><br>I check main, then export the next TestFlight build from it.</p>
-</div>
-
-<h2 id="pages"><span class="n">8</span>Your pages</h2>
-<div class="card"><table>
-<tr><td><a href="https://claude.ai/code/artifact/726347e1-dd8c-42fd-917b-be80474ff9ae">The old report</a></td><td>Everything up to 9 November, with the Visuals tab. History only from now on.</td></tr>
-<tr><td><a href="https://appstoreconnect.apple.com/analytics/app/d30/6755611355/metrics?measureKey=units&amp;frequency=day">App Store Connect</a></td><td>Sign in here, then say numbers.</td></tr>
-<tr><td><a href="https://cloud.unity.com/home/organizations/20067346892861/projects/568be95c-18ea-491e-b920-49acd5a18132/monetization/reporting">Unity Ads reporting</a></td><td>Ads and revenue; the payout profile banner is at the top.</td></tr>
-</table></div>
-
-</main></body></html>
+</main>
+<script>
+(async()=>{
+  const boxes=[...document.querySelectorAll('input[type=checkbox][data-id]')];
+  const saved=document.getElementById('saved');
+  const db=await claude.use("db");
+  if(!db){ saved.textContent='ticks not saved: signed out'; return; }
+  const ref=db.doc("ticks/state");
+  let state={};
+  try{ const snap=await ref.get(); const d=snap&&typeof snap.data==='function'?snap.data():snap; if(d&&typeof d==='object'&&d.exists!==false) state=Object.assign({},d); }catch(e){}
+  for(const b of boxes) b.checked=state[b.dataset.id]===true;
+  let busy=false, dirty=false;
+  async function flush(){ if(busy){ dirty=true; return; } busy=true; dirty=false;
+    try{ await ref.set(state); saved.textContent='ticks saved '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+    catch(e){ saved.textContent='tick not saved'; }
+    busy=false; if(dirty) flush(); }
+  for(const b of boxes) b.addEventListener('change',()=>{ state[b.dataset.id]=b.checked; state[b.dataset.id+'@']=new Date().toISOString(); flush(); });
+})();
+</script>
+</body></html>

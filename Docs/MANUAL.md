@@ -43,15 +43,17 @@ store page and marketing before more content. Re-read the numbers in November.
 3. **The owner reads the report, not the terminal.** Since 9 November 2026 the report is the HTML page
    "Food Truck Cafe", https://claude.ai/artifact/VeYt7HSLpyotQEW5sTMvPP (slug `e7fe0ca8-59d9-4f3f-b8c6-7ed7a3495e06`),
    in the style of the owner's bakery pages (they asked for it: "the style is cuter"; the Claude Doc stopped
-   scrolling on their MacBook). Source and update recipe: `Docs/tools/report_page/`. Sections in order:
-   **Next** (You / Me cards, rewritten first and last in every batch), **Questions** Q1..Qn (every question the
-   owner must answer, with the choices as chips or letters; they answer by number in the terminal; an answered
-   question is removed and the numbering restarts), **Done since** (ticks with commit hashes, real game
-   pictures), **The next release**, **Numbers** (store and ads only), **Things you can say to me**, **Your pages**.
-   Fewer words always; one picture beats a paragraph; real captures only.
+   scrolling on their MacBook). Source, structure and update recipe: `Docs/tools/report_page/README.md`.
+   The structure is fixed (owner, 9 November: "the report had fixed sections ... stop keep changing it"):
+   **Next** (You / Me), **Q&A** (the owner's questions, newest first), **Current** (today's work, newest first),
+   **MVP**, **Backlog**, **Analysis** (store and ads numbers only), plus the **Visuals** page of real captures.
+   Never add, rename, remove or reorder a section unless the owner asks.
+   Every Q&A and Current entry ends with check boxes ("Seen, remove this", then the choices); they are the
+   owner's action buttons and are saved in the page's db (doc `ticks/state`). Every session that touches the
+   report reads them first (`db_get`), deletes the Seen entries and acts on the ticked choices before any other write.
+   Fewer words always; one picture beats a paragraph; real captures only; no instruction text in the page.
    The old Claude Doc "FoodTruckCafe Code Review", https://claude.ai/code/artifact/726347e1-dd8c-42fd-917b-be80474ff9ae,
-   holds everything up to 9 November (Report and Visuals tabs) and is history only; its routine is in Claude's
-   memory file `report-writing-playbook.md`.
+   holds everything up to 9 November (Report and Visuals tabs) and is history only.
    Chat replies are one or two lines plus the link; substance goes in the page.
 4. **Decide, don't ask**, except for real owner choices (store wording, art direction, anything outward-facing).
 5. **Never type passwords**; the owner signs in to App Store Connect, Unity and Apple themselves.

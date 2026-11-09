@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Food Truck Cafe, Visuals</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* Tokens: cream page, white cards, four pastel fills (pink, mint, sky, sun); Nunito for everything; one column of cards, 980px wide. */
+:root{color-scheme:light;--bg:#fdf8f3;--card:#fff;--ink:#3b2f2f;--soft:#7a6a64;--pink:#e98aa5;--pinkbg:#fde8ee;--mint:#5fb8a6;--mintbg:#e3f4ef;--sky:#6aa6d8;--skybg:#e6f0fa;--sun:#e9b44c;--sunbg:#fdf2dc;--line:#efe3da}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#211c1b;--card:#2c2524;--ink:#f3e9e4;--soft:#b9a9a2;--pinkbg:#4a2a33;--mintbg:#21403a;--skybg:#22344a;--sunbg:#45391f;--line:#413633}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#211c1b;--card:#2c2524;--ink:#f3e9e4;--soft:#b9a9a2;--pinkbg:#4a2a33;--mintbg:#21403a;--skybg:#22344a;--sunbg:#45391f;--line:#413633}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Nunito,system-ui,sans-serif}
+main{max-width:1600px;margin:0 auto;padding:28px 36px 60px}
+h1{font-size:34px;margin:0 0 4px;font-weight:800;text-wrap:balance}
+.sub{color:var(--soft);margin:0 0 22px}
+h2{font-size:21px;margin:38px 0 12px;font-weight:800;display:flex;gap:10px;align-items:center;scroll-margin-top:72px}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+nav.toc{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px;margin:0 0 6px;display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--line)}
+nav.toc a{text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:14px;font-weight:600;display:inline-flex;gap:7px;align-items:center}
+nav.toc a:hover,nav.toc a:focus-visible{border-color:var(--pink);outline:none}
+nav.toc a b{background:var(--pink);color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+h2 .n{background:var(--pink);color:#fff;border-radius:50%;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;flex:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:10px 0}
+img{width:100%;max-width:100%;border-radius:14px;border:1px solid var(--line);display:block}
+figure{margin:0}figcaption{color:var(--soft);font-size:14px;margin:6px 2px 0}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.shots{grid-template-columns:repeat(auto-fit,minmax(240px,440px))}
+.two{grid-template-columns:repeat(auto-fit,minmax(300px,760px))}
+.ok{display:flex;gap:10px;align-items:flex-start;margin:4px 0}.tick{color:var(--mint);font-weight:800;flex:none}
+.dot{color:var(--pink);font-weight:800;flex:none}
+.who{border-radius:14px;padding:14px 16px}
+.who h3{margin:0 0 6px;font-size:17px}.who p{margin:4px 0;font-size:15px}
+.p1{background:var(--pinkbg)}.p2{background:var(--mintbg)}.p3{background:var(--skybg)}.p4{background:var(--sunbg)}
+.q{border-radius:14px;padding:14px 16px;margin:10px 0;background:var(--sunbg)}
+.q h3{margin:0 0 6px;font-size:17px}.q p{margin:4px 0;font-size:15px}.q .opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:14px}
+ol.plan{padding-left:0;list-style:none;counter-reset:d;margin:0}
+ol.plan li{counter-increment:d;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px 12px 58px;margin:8px 0;position:relative}
+ol.plan li:before{content:counter(d);position:absolute;left:14px;top:12px;width:30px;height:30px;border-radius:50%;background:var(--mint);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}td,th{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--soft);font-weight:600}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.sum td{font-weight:800}
+a{color:var(--sky)}
+.say{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--skybg);padding:2px 7px;border-radius:7px;display:inline-block;margin:3px 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--skybg);padding:1px 6px;border-radius:6px}
+.letters p{margin:3px 0;font-size:15px}
+.letters b{display:inline-block;width:22px;color:var(--pink)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.checks{list-style:none;padding:0;margin:8px 0 0}
+.checks li{margin:3px 0;font-size:15px}
+.checks label{display:flex;gap:9px;align-items:flex-start;cursor:pointer}
+.checks input{accent-color:var(--pink);width:18px;height:18px;margin:2px 0 0;flex:none}
+.checks b{display:inline-block;width:22px;color:var(--pink)}
+#saved{margin-left:auto;align-self:center;font-size:13px;color:var(--soft)}
+h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
+</style>
+</head>
+<body><main>
+
+<h1>Food Truck Cafe, Visuals</h1>
+<p class="sub">Gameplay captures of build 21, the live 26.10.26. iPhone 6.9-inch unless named.</p>
+
+<nav class="toc" aria-label="Sections"><a href="index.html" class="page">Report</a><a href="#store"><b>1</b>Store page</a><a href="#maps"><b>2</b>Menu and maps</a><a href="#c1"><b>3</b>Chapter 1 day</a><a href="#tut2"><b>4</b>Chapter 2 tutorial</a><a href="#c2"><b>5</b>Chapter 2 day</a><a href="#change"><b>6</b>Chapter change</a><a href="#sizes"><b>7</b>Screen sizes</a></nav>
+
+<h2 id="store"><span class="n">1</span>Store page</h2>
+<div class="grid two">
+<figure><img src="visuals/store_iphone_1_3.jpg" alt="iPhone screenshots 1 to 3"><figcaption>iPhone screenshots 1 to 3.</figcaption></figure>
+<figure><img src="visuals/store_iphone_4_6.jpg" alt="iPhone screenshots 4 to 6"><figcaption>iPhone screenshots 4 to 6.</figcaption></figure>
+</div>
+<figure style="margin-top:12px"><img src="visuals/store_ipad_1_6.jpg" alt="iPad screenshots 1 to 6"><figcaption>iPad screenshots 1 to 6.</figcaption></figure>
+<div class="grid" style="margin-top:12px;grid-template-columns:minmax(200px,320px) 1fr">
+<figure><img src="visuals/preview.gif" alt="App preview video"><figcaption>App preview video, 24 seconds, chapter 1 then chapter 2 (a small GIF copy).</figcaption></figure>
+</div>
+
+<h2 id="maps"><span class="n">2</span>Menu and maps</h2>
+<figure><img src="visuals/menu_map.jpg" alt="Main menu, chapter 1 map, chapter 2 map, chapter 2 second page"><figcaption>Main menu, chapter 1 map, chapter 2 map, chapter 2 second page.</figcaption></figure>
+
+<h2 id="c1"><span class="n">3</span>Chapter 1 day</h2>
+<figure><img src="visuals/c1_start.jpg" alt="Chapter 1 arrangement, menu, day"><figcaption>Arranging, the menu board, the day, then the day running on.</figcaption></figure>
+<figure style="margin-top:12px"><img src="visuals/c1_later.jpg" alt="Chapter 1 candy, dusk, night, finish"><figcaption>A candy given, dusk, night, the day-end card.</figcaption></figure>
+<div class="grid" style="margin-top:12px;grid-template-columns:minmax(240px,760px) 1fr">
+<figure><img src="visuals/c1_kitchen_shop.jpg" alt="Chapter 1 kitchen and shop"><figcaption>Kitchen and shop.</figcaption></figure>
+</div>
+
+<h2 id="tut2"><span class="n">4</span>Chapter 2 tutorial</h2>
+<div class="grid" style="grid-template-columns:minmax(240px,900px) 1fr">
+<figure><img src="visuals/c2_tutorial.jpg" alt="Chapter 2 tutorial steps"><figcaption>The waffle machine, the kitchen blender, back to serve, then Ready to go.</figcaption></figure>
+</div>
+
+<h2 id="c2"><span class="n">5</span>Chapter 2 day</h2>
+<figure><img src="visuals/c2_start.jpg" alt="Chapter 2 arrangement, menu, day"><figcaption>Four flavours, six glasses, the candy jar.</figcaption></figure>
+<figure style="margin-top:12px"><img src="visuals/c2_icecream.jpg" alt="Chapter 2 ice cream"><figcaption>Waffle bake, glasses with bowls and scoops, a candy given.</figcaption></figure>
+<figure style="margin-top:12px"><img src="visuals/c2_station_large.jpg" alt="Ice cream station and glasses"><figcaption>The station at full size: ChatGPT's ice cream and the glass foot ring.</figcaption></figure>
+<div class="grid two" style="margin-top:12px">
+<figure><img src="visuals/c2_later.jpg" alt="Chapter 2 dusk, night, finish"><figcaption>Dusk, night, the day-end card.</figcaption></figure>
+<figure><img src="visuals/c2_kitchen_shop.jpg" alt="Chapter 2 kitchen, blender, shop"><figcaption>Kitchen, blender, shop.</figcaption></figure>
+</div>
+
+<h2 id="change"><span class="n">6</span>Chapter change</h2>
+<div class="grid" style="grid-template-columns:minmax(240px,760px) 1fr">
+<figure><img src="visuals/chapter_change.jpg" alt="Day 12 finish and the chapter 2 map"><figcaption>Chapter 1 day 12 finishes, then chapter 2 opens with its tutorial due.</figcaption></figure>
+</div>
+
+<h2 id="sizes"><span class="n">7</span>Screen sizes</h2>
+<div class="grid" style="grid-template-columns:minmax(240px,1000px) 1fr">
+<figure><img src="visuals/sizes.jpg" alt="iPad and iPhone SE, chapter 2"><figcaption>iPad and iPhone SE, chapter 2.</figcaption></figure>
+</div>
+
+</main></body></html>
