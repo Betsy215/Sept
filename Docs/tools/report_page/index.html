@@ -15,7 +15,13 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Nunito,system
 main{max-width:1600px;margin:0 auto;padding:28px 36px 60px}
 h1{font-size:34px;margin:0 0 4px;font-weight:800;text-wrap:balance}
 .sub{color:var(--soft);margin:0 0 22px}
-h2{font-size:21px;margin:38px 0 12px;font-weight:800;display:flex;gap:10px;align-items:center}
+h2{font-size:21px;margin:38px 0 12px;font-weight:800;display:flex;gap:10px;align-items:center;scroll-margin-top:72px}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+nav.toc{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px;margin:0 0 6px;display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--line)}
+nav.toc a{text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:14px;font-weight:600;display:inline-flex;gap:7px;align-items:center}
+nav.toc a:hover,nav.toc a:focus-visible{border-color:var(--pink);outline:none}
+nav.toc a b{background:var(--pink);color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
 h2 .n{background:var(--pink);color:#fff;border-radius:50%;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;flex:none}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:10px 0}
 img{width:100%;max-width:100%;border-radius:14px;border:1px solid var(--line);display:block}
@@ -52,12 +58,14 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--sk
 <h1>Food Truck Cafe</h1>
 <p class="sub">Your report for 9 November. Version 26.10.26 has been live on the App Store since 27 October. Answer the questions by number, like the bakery pages.</p>
 
+<nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#questions"><b>2</b>Questions</a><a href="#done"><b>3</b>Done since 31 Oct</a><a href="#release"><b>4</b>Next release</a><a href="#numbers"><b>5</b>Numbers</a><a href="#say"><b>6</b>Things to say</a><a href="#pages"><b>7</b>Your pages</a></nav>
+
 <div class="grid shots">
 <figure><img src="table.jpg" alt="Chapter 1: the table in the park"><figcaption>Chapter 1, the park. The store picture of 26.10.26.</figcaption></figure>
 <figure><img src="beach.jpg" alt="Chapter 2: the ice cream station on the beach"><figcaption>Chapter 2, the beach, with the ice cream station.</figcaption></figure>
 </div>
 
-<h2><span class="n">1</span>Next</h2>
+<h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p>Answer Q1 to Q6 below.</p>
@@ -74,7 +82,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--sk
 </div>
 </div>
 
-<h2><span class="n">2</span>Six questions waiting on you</h2>
+<h2 id="questions"><span class="n">2</span>Six questions waiting on you</h2>
 <p class="sub" style="margin:0 0 6px">Answer by number. A skipped question stays here until you answer it.</p>
 
 <div class="q"><h3>Q1 · The polish release: which groups?</h3>
@@ -119,7 +127,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--sk
 <p>They are in section 3. Default is keep all.</p>
 <div class="opts"><span class="chip">keep all</span><span class="chip">Let's go straight into day 1 too</span><span class="chip">drop the pop sound</span><span class="chip">discard the hop</span><span class="chip">discard the haptics</span><span class="chip">discard the cups</span><span class="chip">day 1 with the arrangement again</span></div></div>
 
-<h2><span class="n">3</span>Done since 31 October, not in a build</h2>
+<h2 id="done"><span class="n">3</span>Done since 31 October, not in a build</h2>
 <div class="card">
 <div class="ok"><span class="tick">✓</span><span><b>Day 1 goes straight into play.</b> The arrangement and the menu start on day 2. Let's go still opens the map first. Commit 3985869.</span></div>
 <div class="ok"><span class="tick">✓</span><span><b>Haptics.</b> A light tap on each served item, two taps on a fast order, no buzz on a wrong tap. It follows the phone's System Haptics switch, nothing for the privacy label. Felt only on the phone. Commit 1df58cd.</span></div>
@@ -131,7 +139,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--sk
 <figure><img src="report_cups.jpg" alt="Coffee cups old and new on the table"><figcaption>Top left the old cups. Then the new: two cups, the empty tray, three cups with the upgrade.</figcaption></figure>
 </div>
 
-<h2><span class="n">4</span>The next release</h2>
+<h2 id="release"><span class="n">4</span>The next release</h2>
 <ol class="plan">
 <li><b>Merge the branch into main</b>, so main matches the store. 51 commits, yours to run.</li>
 <li><b>Build the polish release</b> from your Q1 to Q4 answers. Done so far: day 1 pre-arranged, haptics, the refill hop, the coffee set. The 7 November date has passed; the new date comes with your answers.</li>
@@ -139,7 +147,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--sk
 <li><b>Store submission</b> on your yes, with your texts.</li>
 </ol>
 
-<h2><span class="n">5</span>Numbers, 2 to 8 November</h2>
+<h2 id="numbers"><span class="n">5</span>Numbers, 2 to 8 November</h2>
 <p class="sub" style="margin:0 0 8px">Read 9 November, 10:00 PST. Days are UTC. Players and ads from Unity. App Store Connect is signed out, so Apple's downloads, impressions and page views wait for your sign-in.</p>
 <div class="card tw"><table>
 <tr><th>Day</th><th class="n">New players</th><th class="n">Finished the tutorial</th><th class="n">Days finished</th><th class="n">Ad requests</th><th class="n">Ads shown</th><th class="n">Ad revenue</th></tr>
@@ -161,7 +169,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--sk
 <div class="ok"><span class="dot">●</span><span>Ads: 3 shown this week, $0.05. The 31 October spike (50 requests, 12 shown) is the day-16 player. Still no payout profile.</span></div>
 </div>
 
-<h2><span class="n">6</span>Things you can say to me</h2>
+<h2 id="say"><span class="n">6</span>Things you can say to me</h2>
 <div class="card">
 <p style="margin-top:0"><span class="say">Q1 all, Q2 tips, Q3 a d g, Q4 a b c, Q5 yes, Q6 keep all</span><br>Answers the questions. I build what you picked and drop the rest.</p>
 <p><span class="say">numbers</span><br>After your App Store Connect sign-in: I fill Apple's rows in section 5.</p>
@@ -169,7 +177,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--sk
 <p style="margin-bottom:0"><span class="say">merge done</span><br>I check main, then export the next TestFlight build from it.</p>
 </div>
 
-<h2><span class="n">7</span>Your pages</h2>
+<h2 id="pages"><span class="n">7</span>Your pages</h2>
 <div class="card"><table>
 <tr><td><a href="https://claude.ai/code/artifact/726347e1-dd8c-42fd-917b-be80474ff9ae">The old report</a></td><td>Everything up to 9 November, with the Visuals tab. History only from now on.</td></tr>
 <tr><td><a href="https://appstoreconnect.apple.com/analytics/app/d30/6755611355/metrics?measureKey=units&amp;frequency=day">App Store Connect</a></td><td>Sign in here, then say numbers.</td></tr>
