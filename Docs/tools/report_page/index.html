@@ -82,13 +82,13 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p>Pick the two gameplay improvements for the next release (MVP, step 1).</p>
 <p>Tick the shadows, beans and cup handles under Current. Say <span class="say">build</span> when the sprites are right and I upload TestFlight build 22 for your play test.</p>
 <p>Tick your choices under Q1 and Q2, under Current, and in the Backlog.</p>
-<p>Sign in to App Store Connect in Chrome, then say <span class="say">numbers</span>.</p>
+<p>App Store Connect: the Paid Apps Agreement and the Remove Ads product (steps under Current). While there, sign in in Chrome and say <span class="say">numbers</span>.</p>
 <p>Unity payout profile: finish step 3, the tax form. Your March W-9 failed the IRS name-and-number check (Unity's mail of 25 March), which is why payouts are on hold. Sole proprietor: your own legal name on line 1, the DBA on line 2, and the SSN as the number, or the EIN only with the exact name on its IRS letter.</p>
 <p>Bugs folder: IMG_9758 and IMG_9759 look fixed in 26.10.26; delete them if you agree. The PDF in there is not a game bug.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
 <p>Main merged and pushed, 9 November: 55 commits, main at 0a73a05. The store build and the four Current changes are all on main now.</p>
-<p>Napkin, cup handles, beans and the basket shadows are in. Next I build your two picks, night lights and the shop NEW tag with the fly-in, then the star shop and Remove Ads. No build until you say so.</p>
+<p>Remove Ads is built. Next: night lights and the shop NEW tag with the fly-in, then the star shop. Release goal Thursday 13 November. No build until you say so.</p>
 <p>Round 1 starts when you pick the two improvements: I build them and upload a TestFlight build.</p>
 <p>ChatGPT: the cake first, on your word <span class="say">chatgpt cake</span>.</p>
 </div>
@@ -120,7 +120,16 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Basket shadows, 9 November.</b> The bread keeps its drawn shadow. The apple basket now carries the bread basket's own shadow: lifted from the bread frame, scaled to the apple basket's width, set under it the same way, over the napkin and under the basket, the same in all eight fill frames. In the game, in the next build.</p>
+<p style="margin-top:0"><b>Remove Ads, built, 9 November.</b> MVP 3. In the game on main: a Remove Ads card at the end of the shop grid, paid through the App Store at $1.99 (the store's own price text once it answers), never with coins; the between-day ad stops the moment it is owned, the daily treat and coin ads stay; a small "Restore purchases" line at the bottom of the shop, which Apple requires; ownership survives a reinstall through the receipt. Unity's purchasing package is added to the project, your editor imports it the next time it has focus. The card uses the red cross icon as a placeholder until you give it one.</p>
+<p>Your three steps in App Store Connect, before it can be tested: 1 sign the Paid Apps Agreement (Business, Agreements). 2 In the app, Monetization, In-App Purchases: a Non-Consumable, reference name Remove Ads, product ID <code>com.BetzzzGame.FoodTruckCafe.removeads</code>, price $1.99, display name Remove Ads, description "No more ads between days." 3 Add it to the next version's review page when we submit. TestFlight uses the sandbox, so your play test can buy it for free.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.removeads.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.removeads.ascdone"> The three App Store Connect steps are done</label></li>
+<li><label><input type="checkbox" data-id="cur.removeads.icon"> I will give you an icon for the card</label></li>
+</ul>
+</div>
+<div class="card">
+<p style="margin-top:0"><b>Basket shadows, 9 November.</b> The bread keeps its drawn shadow. The apple basket now carries the bread basket's own shadow: lifted from the bread frame, scaled to the apple basket's width, set under it the same way, under the cloth, with a smooth outline, the same in all eight fill frames. In the game, in the next build.</p>
 <figure><img src="shadows_big.jpg" alt="Apple basket full and empty and the bread basket: before on the left, now on the right, close up" style="max-height:620px"><figcaption>Close up, left before and right now: apple basket full, apple basket empty, bread basket (unchanged).</figcaption></figure>
 
 
@@ -131,7 +140,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Your words, 9 November.</p>
+<p class="sub" style="margin:0 0 8px">Your words, 9 November. Release goal: Thursday 13 November.</p>
 <ol class="plan">
 <li>A couple of things to improve gameplay. Your picks (Q2): <b>d</b> night lights (lit truck windows and fireflies in chapter 1, a lantern glow in chapter 2) and <b>e</b> the shop NEW tag and the bought item flying to the table.</li>
 <li>Stars as a currency, and a star shop panel in the shop.</li>
