@@ -28,6 +28,9 @@ public class CandyJar : MonoBehaviour, IPointerClickHandler
 
     private void Start() { orderSystem = FindObjectOfType<OrderSystem>(); rest = transform.localPosition; Refresh(); }
 
+    /// The shake returns to this spot; TableBackRowAlign moves the jar after Ensure, so it tells us the new rest.
+    public void Rebase() { rest = transform.localPosition; }
+
     public static int Candies => SessionManager.Instance != null ? SessionManager.Instance.Candies : 0;
 
     public void Refresh()

@@ -445,6 +445,7 @@ public class LevelManager : MonoBehaviour
         KitchenButtonOverTable.Setup();   // the truck button a third onto the cloth (12 October)
         // Money and stars live on the table now (13 October): the flip clock next to the truck; the sign at the top goes
         MoneyFlipClock.Setup(scoreManager);
+        TableBackRowAlign.Snap();         // every back-row bottom on the flower pot's line (owner, 9 November)
         if (levelInfoText != null && levelInfoText.transform.parent != null) levelInfoText.transform.parent.gameObject.SetActive(false);
 
         if (customerManager != null)
