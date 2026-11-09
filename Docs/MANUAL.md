@@ -40,26 +40,19 @@ store page and marketing before more content. Re-read the numbers in November.
    not to fix.
 2. **No App Store submission, release, pricing or availability change without an explicit yes in the same
    conversation.** A TestFlight upload is fine when the owner asks for a build.
-3. **The owner reads the report, not the terminal.** Report: Claude Doc "FoodTruckCafe Code Review",
-   https://claude.ai/code/artifact/726347e1-dd8c-42fd-917b-be80474ff9ae, two tabs:
-   - **Report** (body node `9a385004-98ab`): fixed sections with short headings only. **Never add, rename or
-     remove a section without the owner asking** (owner, 14 October: "stop changing the report structures"). Order:
-     **Next** (Who / Now / Waiting-on table, always first; each cell one bullet list, rewritten whole at the start
-     and end of every batch: the owner reads it first), **Q&A** (only answers to questions the owner asked, every
-     question gets one, cleared once ticked), **Current** (the task in hand: dated bold lead, short bullets, pictures,
-     newest first; superseded entries removed), **MVP** (the next release), **Backlog**, **Analysis** (store and ads
-     numbers only). The Chapter 2 section was removed at the owner's word on 18 October 2026; never re-add it.
-     Questions to the owner go in Next's "You" row, not in Q&A. Every Q&A and Current entry ends with a check list
-     (`- [ ] Seen, remove this` plus the choices); read the doc with `sinceRev` before each write, delete what is
-     ticked, act on ticked choices. Removed entries are in the doc history (`view` with `atRev`). The full playbook,
-     grammar and current block ids are in Claude's memory file `report-writing-playbook.md`.
-   - **Visuals** (body node `fa3ac61b-f7d8`, owner 14 October: keep as it is, they like it): real game captures only, never mock-ups ("everything needs to be from
-     real game play, not by guess"). Holds the store-page assets of the current version, plus a temporary
-     "Test before release" section when asked (remove it after the submission).
-   - Images: upload with the Artifact tool (`asset: true`), then Docs `create` a blob from the asset id, then
-     `![alt](blob/<id>)` in markdown.
-   - Write in short, plain sentences. Chat replies are one or two lines plus the link; substance goes in the report.
-     Every question in chat, even a quick one ("where is it", "did you update the report"), gets its own Q&A entry at once, before the Current work it belongs to (owner, 23 October: "you don't answer me things in q&a section anymore"); a short chat answer too.
+3. **The owner reads the report, not the terminal.** Since 9 November 2026 the report is the HTML page
+   "Food Truck Cafe", https://claude.ai/artifact/VeYt7HSLpyotQEW5sTMvPP (slug `e7fe0ca8-59d9-4f3f-b8c6-7ed7a3495e06`),
+   in the style of the owner's bakery pages (they asked for it: "the style is cuter"; the Claude Doc stopped
+   scrolling on their MacBook). Source and update recipe: `Docs/tools/report_page/`. Sections in order:
+   **Next** (You / Me cards, rewritten first and last in every batch), **Questions** Q1..Qn (every question the
+   owner must answer, with the choices as chips or letters; they answer by number in the terminal; an answered
+   question is removed and the numbering restarts), **Done since** (ticks with commit hashes, real game
+   pictures), **The next release**, **Numbers** (store and ads only), **Things you can say to me**, **Your pages**.
+   Fewer words always; one picture beats a paragraph; real captures only.
+   The old Claude Doc "FoodTruckCafe Code Review", https://claude.ai/code/artifact/726347e1-dd8c-42fd-917b-be80474ff9ae,
+   holds everything up to 9 November (Report and Visuals tabs) and is history only; its routine is in Claude's
+   memory file `report-writing-playbook.md`.
+   Chat replies are one or two lines plus the link; substance goes in the page.
 4. **Decide, don't ask**, except for real owner choices (store wording, art direction, anything outward-facing).
 5. **Never type passwords**; the owner signs in to App Store Connect, Unity and Apple themselves.
 6. Commit each working change with a message saying what was broken or added, push to `origin main`, end the
