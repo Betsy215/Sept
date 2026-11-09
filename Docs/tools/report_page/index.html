@@ -88,7 +88,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 <div class="who p2"><h3>Me</h3>
 <p>Main merged and pushed, 9 November: 55 commits, main at 0a73a05. The store build and the four Current changes are all on main now.</p>
-<p>Cup handles in. Pick the napkin shape (A or B); the shadows and beans wait for your tick. No build until you say so.</p>
+<p>Napkin, cup handles and beans in. The basket shadows wait for your tick under Current. Next I build your two picks, night lights and the shop NEW tag with the fly-in, then the star shop and Remove Ads. No build until you say so.</p>
 <p>Round 1 starts when you pick the two improvements: I build them and upload a TestFlight build.</p>
 <p>ChatGPT: the cake first, on your word <span class="say">chatgpt cake</span>.</p>
 </div>
@@ -110,40 +110,28 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="qa.ideas.a"> <b>a</b> Last call: the music picks up and the sign flips in the last ten seconds.</label></li>
 <li><label><input type="checkbox" data-id="qa.ideas.b"> <b>b</b> A petal drops when a daisy wilts; a sweat drop on the last daisy.</label></li>
 <li><label><input type="checkbox" data-id="qa.ideas.c"> <b>c</b> Table life: steam off the cups, a bird on the truck, drifting leaves.</label></li>
-<li><label><input type="checkbox" data-id="qa.ideas.d"> <b>d</b> Night: lit truck windows and fireflies in chapter 1, a lantern glow in chapter 2.</label></li>
-<li><label><input type="checkbox" data-id="qa.ideas.e"> <b>e</b> Shop: a NEW tag the day a card unlocks; the bought item flies to the table.</label></li>
+<li><label><input type="checkbox" data-id="qa.ideas.d"> <b>d</b> Night: lit truck windows and fireflies in chapter 1, a lantern glow in chapter 2. <i>Picked, in MVP.</i></label></li>
+<li><label><input type="checkbox" data-id="qa.ideas.e"> <b>e</b> Shop: a NEW tag the day a card unlocks; the bought item flies to the table. <i>Picked, in MVP.</i></label></li>
 <li><label><input type="checkbox" data-id="qa.ideas.f"> <b>f</b> Finish card captions: Good day, Great day, Perfect day.</label></li>
 <li><label><input type="checkbox" data-id="qa.ideas.g"> <b>g</b> Map: the new star pops onto the day with a ding.</label></li>
 </ul></div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Back row bottoms on one line, 9 November.</b> Your word: the fixed items' bottoms must align strictly. They were set in four places and sat on four lines, 0.33 to 0.42 units below the cloth edge, about 26 px apart on the phone. Now one pass after the row is built measures each real bottom (truck, hen board, candy jar, green pot) and sets it on the flower pot's line; measured at runtime, so it holds on iPad too. Compiled; in the game on main, seen in the next build.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.backrow.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.backrow.discard"> Discard</label></li>
-</ul>
-</div>
-<div class="card">
-<p style="margin-top:0"><b>Cake napkin from your kitchen painting, 9 November.</b> Your word: use the kitchen one, made square. The napkin under the kitchen cake (your painting) is taken clear of the stand, mirrored whole, and laid under the seven table frames with the old shadow shape, lighter and smooth-edged. Two shapes, pick one. The ChatGPT napkin is out of the game again.</p>
-<figure><img src="cake_kitchen_napkin.jpg" alt="Your kitchen napkin under the cake: top row a square seen from the camera, bottom row a literal square" style="max-height:420px"><figcaption>Top, A: a square seen from the table camera (0.77 as tall as wide). Bottom, B: a literal square. Full cake, cut cake, empty stand.</figcaption></figure>
+<p style="margin-top:0"><b>Cake napkin from your kitchen painting, in the game, 9 November.</b> Shape A on your tick: a square at the table camera, 0.77 as tall as wide, on the old napkin's footprint (same width, same bottom). Checked: the stand and cake pixels are untouched, the old napkin is gone, and the existing shadow is kept as it was: its shape and darkness were measured pixel by pixel against the old checks and laid back over the new cloth. Commit a599d35, in the next build.</p>
+<figure><img src="cake_kitchen_napkin.jpg" alt="Cake frames before (top) and with the kitchen napkin (bottom)" style="max-height:400px"><figcaption>Top: before. Bottom: your kitchen napkin, shape A, the old shadow kept. Full cake, cut cake, empty stand.</figcaption></figure>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.knapkin.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.knapkin.a"> Use A</label></li>
-<li><label><input type="checkbox" data-id="cur.knapkin.b"> Use B</label></li>
-<li><label><input type="checkbox" data-id="cur.knapkin.smaller"> Smaller checks (scale the pattern down)</label></li>
-<li><label><input type="checkbox" data-id="cur.knapkin.old"> Keep the old napkin after all</label></li>
+<li><label><input type="checkbox" data-id="cur.knapkin.discard"> Discard: back to the old napkin</label></li>
 </ul>
 </div>
 <div class="card">
-<p style="margin-top:0"><b>Coffee beans with bean shapes, 9 November.</b> Your word: the hopper fill should show beans with outlines like your drawing, not a chunk of colour. Each of the six fill levels keeps its heap shape and is filled with drawn beans: cocoa ovals, a darker outline, a light seam. Same files, nothing moves. Not in the game yet.</p>
+<p style="margin-top:0"><b>Coffee beans with bean shapes, in the game, 9 November.</b> On your tick: each of the six fill levels keeps its heap shape, filled with drawn beans (cocoa ovals, darker outline, light seam), and the bowl's glass tint and highlights lie over them so they read as inside the transparent hopper. Same files, nothing moves. In the next build.</p>
 <figure><img src="beans_before_after.jpg" alt="Hopper fill before (top) and with bean shapes (bottom), three levels" style="max-height:360px"><figcaption>Top: now. Bottom: bean shapes. Full, middle and low fill.</figcaption></figure>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.beans.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.beans.use"> Use these beans</label></li>
 <li><label><input type="checkbox" data-id="cur.beans.smaller"> Smaller beans, more of them</label></li>
-<li><label><input type="checkbox" data-id="cur.beans.lighter"> Lighter outline, closer to your old drawing</label></li>
-<li><label><input type="checkbox" data-id="cur.beans.discard"> Discard</label></li>
+<li><label><input type="checkbox" data-id="cur.beans.discard"> Discard: back to the plain fill</label></li>
 </ul>
 </div>
 <div class="card">
@@ -155,7 +143,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 </div>
 <div class="card">
-<p style="margin-top:0"><b>Basket shadows, 9 November.</b> Your rule: a little transparent, not a dark chunk, smooth outline, the saucers as the reference, and the shape of each shadow kept as drawn. So the bread and apple baskets keep their shadow shape; it is now navy at two thirds opacity like the saucers', with a clean smooth edge like theirs, not a blur. Same files and canvas, nothing moves. Not in the game yet.</p>
+<p style="margin-top:0"><b>Basket shadows, 9 November.</b> Your rule: a little transparent, not a dark chunk, smooth outline, the saucers as the reference, and the shape of each shadow kept as drawn. The bread basket keeps its shadow shape, navy at two thirds opacity like the saucers', with a clean smooth edge. The apple basket, on your word, gets the same oval as the bread's instead of its irregular shape: 0.97 of the basket wide, centred a little left, its bottom on the basket's bottom. Same files and canvas, nothing moves. Not in the game yet.</p>
 <figure><img src="shadows_before_after.jpg" alt="Bread and apple baskets, hard shadow above, soft shadow below" style="max-height:420px"><figcaption>Top: now. Bottom: the saucer-style shadow. Bread full and empty, apples full and empty; the saucers at the right for reference.</figcaption></figure>
 <p>The same script can do every table item (cake, cookies plate, coconuts, pots, candy jar, juice, machine tray, ice cream station) so all shadows match. Your own hand-drawn shadows (juice, choux) would change too; say if they should stay.</p>
 <ul class="checks">
@@ -167,32 +155,11 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="cur.shadows.discard"> Discard, keep the hard shadows</label></li>
 </ul>
 </div>
-<div class="card">
-<p style="margin-top:0"><b>Done since 31 October, on main, not in a build</b></p>
-<div class="ok"><span class="tick">✓</span><span><b>Day 1 goes straight into play.</b> The arrangement and the menu start on day 2. Let's go still opens the map first. Commit 3985869.</span></div>
-<div class="ok"><span class="tick">✓</span><span><b>Haptics.</b> A light tap on each served item, two taps on a fast order, no buzz on a wrong tap. It follows the phone's System Haptics switch, nothing for the privacy label. Felt only on the phone. Commit 1df58cd.</span></div>
-<div class="ok"><span class="tick">✓</span><span><b>Refill hop.</b> A refill swells a little and settles with a soft pop, on every refillable item but the ice cream.</span></div>
-<div class="ok"><span class="tick">✓</span><span><b>Coffee machine and cups</b> at the 40-degree angle in the cute style, same file names. Commits 7380c49 and 4227012.</span></div>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.oct31.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.oct31.keep"> Keep all</label></li>
-<li><label><input type="checkbox" data-id="cur.oct31.letsgo"> Let's go straight into day 1 too</label></li>
-<li><label><input type="checkbox" data-id="cur.oct31.nopop"> Drop the pop sound</label></li>
-<li><label><input type="checkbox" data-id="cur.oct31.nohop"> Discard the hop</label></li>
-<li><label><input type="checkbox" data-id="cur.oct31.nohaptics"> Discard the haptics</label></li>
-<li><label><input type="checkbox" data-id="cur.oct31.nocups"> Discard the cups</label></li>
-<li><label><input type="checkbox" data-id="cur.oct31.arrange"> Day 1 with the arrangement again</label></li>
-</ul>
-</div>
-<div class="grid two" style="margin-top:14px">
-<figure><img src="day1_prearranged_2026-10-31.jpg" alt="Day 1 straight into play, day 2 with the arrangement"><figcaption>Left, day 1 as a player sees it. Right, day 2 with the menu open.</figcaption></figure>
-<figure><img src="report_cups.jpg" alt="Coffee cups old and new on the table"><figcaption>Top left the old cups. Then the new: two cups, the empty tray, three cups with the upgrade.</figcaption></figure>
-</div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
 <p class="sub" style="margin:0 0 8px">Your words, 9 November.</p>
 <ol class="plan">
-<li>A couple of things to improve gameplay.</li>
+<li>A couple of things to improve gameplay. Your picks (Q2): <b>d</b> night lights (lit truck windows and fireflies in chapter 1, a lantern glow in chapter 2) and <b>e</b> the shop NEW tag and the bought item flying to the table.</li>
 <li>Stars as a currency, and a star shop panel in the shop.</li>
 <li>Remove Ads purchase, $1.99 (the Paid Apps Agreement first).</li>
 <li>At least five rounds of your own play test on TestFlight, feedback after each.</li>
