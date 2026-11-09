@@ -75,7 +75,8 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p>Tick your choices under Q1 to Q5, under Current, and in the Backlog.</p>
+<p>Pick the two gameplay improvements for the next release (MVP, step 1).</p>
+<p>Tick your choices under Q1 to Q6, under Current, and in the Backlog.</p>
 <p>Was the 31 October player who reached day 16 in a day you? If yes, that player leaves the Analysis.</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="next.day16.yes"> yes</label></li>
@@ -87,14 +88,30 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 <div class="who p2"><h3>Me</h3>
 <p>Main merged and pushed, 9 November: 55 commits, main at 0a73a05. The store build and the four Current changes are all on main now.</p>
-<p>Nothing in progress. When Q3 is answered I build that group first and upload a TestFlight build when it plays clean.</p>
+<p>Nothing in progress. Round 1 starts when you pick the two improvements: I build them and upload a TestFlight build.</p>
 <p>ChatGPT: the cake first, on your word <span class="say">chatgpt cake</span>.</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
 
-<div class="q"><h3>Q1 · Is there a way to exclude my test play? <small>9 November</small></h3>
+<div class="q"><h3>Q1 · Why update the cake sprite? Show me drafts of the change <small>9 November</small></h3>
+<p>The cake is already at the 40-degree camera (ChatGPT, 13 October). Three reasons remain, two of them yours from that day:</p>
+<p><b>1.</b> The napkin stands up like a diamond instead of lying flat on the table. <b>2.</b> The cut slice shows a pink strawberry face; you asked for plain cream sponge with a thin jam line. <b>3.</b> The new machine and cups are in the cute style: soft pastel, simple shapes, thick soft edges. The cake is detailed watercolour, so the table now mixes two styles.</p>
+<p>If none of the three bothers you in play, the cake stays. Nothing is cut into the game without your tick.</p>
+<div class="grid two" style="margin-top:10px">
+<figure><img src="cake_why.jpg" alt="The cake sprite set beside the new machine and cups"><figcaption>Why: the cake set beside the new machine and cups at table scale. Soft cute machine, detailed cake, napkin on its point.</figcaption></figure>
+<figure><img src="cake_draft1.jpg" alt="Cake now and draft 1 with a flat napkin and a cream cut face"><figcaption>Draft 1, a geometry mock only: left now, right with the napkin flat on the table and the cut face cream. The napkin is a placeholder pattern, not the final paint.</figcaption></figure>
+</div>
+<p style="margin-top:10px"><b>Draft 2</b> would be ChatGPT's: the same cake repainted in the machine's cute style, flat napkin, cream cut face, seven slice frames as now. One picture of the three a day.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.cake.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="qa.cake.keep"> Keep the cake as it is</label></li>
+<li><label><input type="checkbox" data-id="qa.cake.draft1"> Draft 1 for real: flat napkin and cream cut face, keeping the painting</label></li>
+<li><label><input type="checkbox" data-id="qa.cake.chatgpt"> Draft 2: brief ChatGPT for the cute-style cake</label></li>
+</ul></div>
+
+<div class="q"><h3>Q2 · Is there a way to exclude my test play? <small>9 November</small></h3>
 <p>Yes, already built in. Install the game from TestFlight and play that copy: a TestFlight build sends its analytics to the development environment and shows test ads, so nothing you do counts. Build 21 on TestFlight is the same game as the store.</p>
 <p>The App Store copy always counts. If you play it anyway, tell me the day and the hour; I find that player and leave the id out of every read from then on.</p>
 <ul class="checks">
@@ -102,7 +119,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="qa.testplay.switch"> Add a tester switch in the next release: tap the version label seven times, no analytics and no real ads on that phone</label></li>
 </ul></div>
 
-<div class="q"><h3>Q2 · What is on the list for ChatGPT to improve? <small>9 November</small></h3>
+<div class="q"><h3>Q3 · What is on the list for ChatGPT to improve? <small>9 November</small></h3>
 <p>Table items at the 40-degree camera in the coffee machine's cute style, in this order: cake (flat napkin, no pink cut face), choux board, juice jug and glass (you said the juice stays on 21 October, so only if you want the set to match), candy jar, the two flower pots.</p>
 <p>Then the nine menu stickers on your oven-note paper, and the beach: the right palm's trunk, the stripe cloth texture, the kitchen palm's crown.</p>
 <p>Done already: coffee machine and cups, apple and bread baskets, apple counts, ice cream station fills, the candies icon (Gemini).</p>
@@ -114,7 +131,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="qa.chatgpt.beach"> Start with the beach</label></li>
 </ul></div>
 
-<div class="q"><h3>Q3 · The polish release: which groups? <small>31 October</small></h3>
+<div class="q"><h3>Q4 · The polish release: which groups? <small>31 October</small></h3>
 <p><b>A. Feel.</b> A serve sound per food, the wrong-tap shake on every food, coins fly to the hen board, a Perfect! stamp, the last daisy pulses, stars pop on the finish card, a rating prompt after the first three-star day.</p>
 <p><b>B. Play.</b> Let's go straight into day 1, a table clock, an Open! and Closed bell, analytics for the map and Ready taps. Day 1 pre-arranged is done.</p>
 <p><b>C. Look.</b> The 40-degree set in the machine's style (cake, choux, juice, candy jar, pots), menu stickers on your oven-note paper, the beach palm trunk, the cloth texture, the kitchen palm crown.</p>
@@ -129,7 +146,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="qa.plan.clockshop"> Clock as a shop item, not free</label></li>
 </ul></div>
 
-<div class="q"><h3>Q4 · Fast serve and the streak reward <small>31 October</small></h3>
+<div class="q"><h3>Q5 · Fast serve and the streak reward <small>31 October</small></h3>
 <p>Fast serve = the game's perfect rule: the whole order done with half the patience left. Streak = fast serves in a row, broken by a slow order or a walk-off. Nothing is built until you pick the reward.</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.streak.seen"> Seen, remove this</label></li>
@@ -139,7 +156,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="qa.streak.none"> None, only On a roll! and a sting</label></li>
 </ul></div>
 
-<div class="q"><h3>Q5 · More ideas for the polish release <small>31 October</small></h3>
+<div class="q"><h3>Q6 · More ideas for the polish release <small>31 October</small></h3>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.ideas.seen"> Seen, remove this</label></li>
 <li><label><input type="checkbox" data-id="qa.ideas.a"> <b>a</b> Last call: the music picks up and the sign flips in the last ten seconds.</label></li>
@@ -175,11 +192,12 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">The polish release. Feel, play and look only; no features, no new chapters. The 7 November date passed; the new date comes with your Q3 answer.</p>
+<p class="sub" style="margin:0 0 8px">Your plan of 9 November: a couple of gameplay improvements, then at least five rounds of your own play test, feedback after each. Feel and play only; no features, no new chapters.</p>
 <ol class="plan">
-<li><b>Build the polish release</b> from Q3, Q4, Q5 and the Backlog letters. Done so far: day 1 pre-arranged, haptics, the refill hop, the coffee set.</li>
-<li><b>TestFlight</b> when the first group plays clean in the editor. Haptics can only be felt there.</li>
-<li><b>Store submission</b> on your yes, with your texts. The privacy label gets the analytics entry.</li>
+<li><b>You pick two gameplay improvements.</b> Tick them in Q4 (groups), Q5 (streak) and Q6 (small ideas). My pick if you want one: Let's go straight into day 1, and the fast-serve streak with a Perfect! stamp.</li>
+<li><b>I build the two</b> on main, play them in the editor, upload TestFlight build 22.</li>
+<li><b>Round 1 to 5.</b> You play the TestFlight build on your phone (it stays out of the numbers and the ads) and tell me what felt wrong or good. Each round: I fix, upload the next build, and log the round here under Current.</li>
+<li><b>Store submission</b> on your yes after round 5, with your texts. The privacy label gets the analytics entry.</li>
 </ol>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
