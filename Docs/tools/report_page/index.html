@@ -81,14 +81,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="who p1"><h3>You</h3>
 <p>Pick the two gameplay improvements for the next release (MVP, step 1).</p>
 <p>Tick the shadows, beans and cup handles under Current. Say <span class="say">build</span> when the sprites are right and I upload TestFlight build 22 for your play test.</p>
-<p>Tick your choices under Q2, under Current, and in the Backlog.</p>
+<p>Tick your choices under Q1 and Q2, under Current, and in the Backlog.</p>
 <p>Sign in to App Store Connect in Chrome, then say <span class="say">numbers</span>.</p>
 <p>Unity payout profile: finish step 3, the tax form. Your March W-9 failed the IRS name-and-number check (Unity's mail of 25 March), which is why payouts are on hold. Sole proprietor: your own legal name on line 1, the DBA on line 2, and the SSN as the number, or the EIN only with the exact name on its IRS letter.</p>
 <p>Bugs folder: IMG_9758 and IMG_9759 look fixed in 26.10.26; delete them if you agree. The PDF in there is not a game bug.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
 <p>Main merged and pushed, 9 November: 55 commits, main at 0a73a05. The store build and the four Current changes are all on main now.</p>
-<p>Napkin, cup handles and beans in. The basket shadows wait for your tick under Current. Next I build your two picks, night lights and the shop NEW tag with the fly-in, then the star shop and Remove Ads. No build until you say so.</p>
+<p>Napkin, cup handles, beans and the basket shadows are in. Next I build your two picks, night lights and the shop NEW tag with the fly-in, then the star shop and Remove Ads. No build until you say so.</p>
 <p>Round 1 starts when you pick the two improvements: I build them and upload a TestFlight build.</p>
 <p>ChatGPT: the cake first, on your word <span class="say">chatgpt cake</span>.</p>
 </div>
@@ -96,12 +96,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
 
-<div class="q"><h3>Q1 · The kitchen cloth: is it at 40 degrees? <small>9 November</small></h3>
-<p>A is, B is not. Your kitchen napkin was painted straight on, so its checks are square. A square cloth lying flat under the table camera (40 degrees above, long lens) is seen 0.77 as tall as it is wide, the same ratio as the plate's ellipse, and every check gets squashed the same way. That is exactly what A does: the napkin and its checks are 0.77 as tall as wide, so it reads as a flat square from the table's camera. B keeps 1 : 1, which is the straight-on view, like a cloth hung on a wall.</p>
-<p>The one thing the squash cannot add is a thin front edge or hem; the long lens makes that almost nothing, and the baskets' napkins have none either. My pick is A.</p>
+<div class="q"><h3>Q1 · The cake: your tick says one thing, your words another <small>9 November</small></h3>
+<p>You wrote "leave the cake as is, don't change it anymore", and a minute later the napkin entry got a tick on "Discard: back to the old napkin". I did nothing: the kitchen napkin is still in. Which is it?</p>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="qa.cloth40.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="qa.cakeq.keep"> Keep the kitchen napkin, the cake is final</label></li>
+<li><label><input type="checkbox" data-id="qa.cakeq.old"> Go back to the old napkin, then it is final</label></li>
 </ul></div>
+
+
 
 
 <div class="q"><h3>Q2 · More ideas for the polish release <small>31 October</small></h3>
@@ -118,40 +120,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Cake napkin from your kitchen painting, in the game, 9 November.</b> Shape A on your tick: a square at the table camera, 0.77 as tall as wide, on the old napkin's footprint (same width, same bottom). Checked: the stand and cake pixels are untouched, the old napkin is gone, and the existing shadow is kept as it was: its shape and darkness were measured pixel by pixel against the old checks and laid back over the new cloth. Commit a599d35, in the next build. Your word: the cake stays as it is now, no more changes.</p>
-<figure><img src="cake_kitchen_napkin.jpg" alt="Cake frames before (top) and with the kitchen napkin (bottom)" style="max-height:400px"><figcaption>Top: before. Bottom: your kitchen napkin, shape A, the old shadow kept. Full cake, cut cake, empty stand.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.knapkin.seen"> Seen, remove this</label></li>
-</ul>
-</div>
-<div class="card">
-<p style="margin-top:0"><b>Coffee beans with bean shapes, in the game, 9 November.</b> On your tick: each of the six fill levels keeps its heap shape, filled with drawn beans (cocoa ovals, darker outline, light seam), and the bowl's glass tint and highlights lie over them so they read as inside the transparent hopper. Same files, nothing moves. In the next build.</p>
-<figure><img src="beans_before_after.jpg" alt="Hopper fill before (top) and with bean shapes (bottom), three levels" style="max-height:360px"><figcaption>Top: now. Bottom: bean shapes. Full, middle and low fill.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.beans.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.beans.smaller"> Smaller beans, more of them</label></li>
-<li><label><input type="checkbox" data-id="cur.beans.discard"> Discard: back to the plain fill</label></li>
-</ul>
-</div>
-<div class="card">
-<p style="margin-top:0"><b>Cup handles see-through, 9 November.</b> In the game on your tick: the hole inside each handle is cut out on the six cup frames, one pixel feathered. Shown on red so the holes are visible.</p>
-<figure><img src="cups_handles.jpg" alt="Cup handles before and after on a red ground" style="max-height:300px"><figcaption>Left pair: now. Right pair: handles see-through. Three cups and the big set.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.handles.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.handles.discard"> Discard: back to the white handles</label></li>
-</ul>
-</div>
-<div class="card">
-<p style="margin-top:0"><b>Basket shadows, 9 November.</b> Your rule: a little transparent, not a dark chunk, smooth outline, the saucers as the reference, and the shape of each shadow kept as drawn. Both baskets keep their own drawn shadow shape, navy at two thirds opacity like the saucers', with a clean smooth edge; the apple basket done the same way as the bread, as you said. Same files and canvas, nothing moves. Not in the game yet.</p>
+<p style="margin-top:0"><b>Basket shadows, 9 November.</b> Your rule: a little transparent, not a dark chunk, smooth outline, the saucers as the reference, and the shape of each shadow kept as drawn. Both baskets keep their own drawn shadow shape, navy at two thirds opacity like the saucers', with a clean smooth edge; the apple basket done the same way as the bread, as you said. Same files and canvas, nothing moves. In the game now, commit below; in the next build.</p>
 <figure><img src="shadows_before_after.jpg" alt="Bread and apple baskets, hard shadow above, soft shadow below" style="max-height:420px"><figcaption>Top: now. Bottom: the saucer-style shadow. Bread full and empty, apples full and empty; the saucers at the right for reference.</figcaption></figure>
 <p>The same script can do every table item (cake, cookies plate, coconuts, pots, candy jar, juice, machine tray, ice cream station) so all shadows match. Your own hand-drawn shadows (juice, choux) would change too; say if they should stay.</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.shadows.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.shadows.baskets"> Put the bread and apple baskets in</label></li>
-<li><label><input type="checkbox" data-id="cur.shadows.all"> Do every table item the same way</label></li>
-<li><label><input type="checkbox" data-id="cur.shadows.allbutowner"> Every item except your hand-drawn ones (juice, choux)</label></li>
+<li><label><input type="checkbox" data-id="cur.shadows.all"> Do every other table item the same way (cake stays)</label></li>
 <li><label><input type="checkbox" data-id="cur.shadows.lighter"> Lighter (more transparent)</label></li>
-<li><label><input type="checkbox" data-id="cur.shadows.discard"> Discard, keep the hard shadows</label></li>
+<li><label><input type="checkbox" data-id="cur.shadows.discard"> Discard: back to the hard shadows</label></li>
 </ul>
 </div>
 
