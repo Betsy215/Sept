@@ -12,7 +12,7 @@
 :root[data-theme="dark"]{color-scheme:dark;--bg:#211c1b;--card:#2c2524;--ink:#f3e9e4;--soft:#b9a9a2;--pinkbg:#4a2a33;--mintbg:#21403a;--skybg:#22344a;--sunbg:#45391f;--line:#413633}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Nunito,system-ui,sans-serif}
-main{max-width:980px;margin:0 auto;padding:28px 16px 60px}
+main{max-width:1600px;margin:0 auto;padding:28px 36px 60px}
 h1{font-size:34px;margin:0 0 4px;font-weight:800;text-wrap:balance}
 .sub{color:var(--soft);margin:0 0 22px}
 h2{font-size:21px;margin:38px 0 12px;font-weight:800;display:flex;gap:10px;align-items:center}
@@ -20,7 +20,9 @@ h2 .n{background:var(--pink);color:#fff;border-radius:50%;width:30px;height:30px
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:10px 0}
 img{width:100%;max-width:100%;border-radius:14px;border:1px solid var(--line);display:block}
 figure{margin:0}figcaption{color:var(--soft);font-size:14px;margin:6px 2px 0}
-.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.shots{grid-template-columns:repeat(auto-fit,minmax(240px,440px))}
+.two{grid-template-columns:repeat(auto-fit,minmax(300px,760px))}
 .ok{display:flex;gap:10px;align-items:flex-start;margin:4px 0}.tick{color:var(--mint);font-weight:800;flex:none}
 .dot{color:var(--pink);font-weight:800;flex:none}
 .who{border-radius:14px;padding:14px 16px}
@@ -50,7 +52,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--sk
 <h1>Food Truck Cafe</h1>
 <p class="sub">Your report for 9 November. Version 26.10.26 has been live on the App Store since 27 October. Answer the questions by number, like the bakery pages.</p>
 
-<div class="grid">
+<div class="grid shots">
 <figure><img src="table.jpg" alt="Chapter 1: the table in the park"><figcaption>Chapter 1, the park. The store picture of 26.10.26.</figcaption></figure>
 <figure><img src="beach.jpg" alt="Chapter 2: the ice cream station on the beach"><figcaption>Chapter 2, the beach, with the ice cream station.</figcaption></figure>
 </div>
@@ -124,7 +126,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--sk
 <div class="ok"><span class="tick">✓</span><span><b>Refill hop.</b> A refill swells a little and settles with a soft pop, on every refillable item but the ice cream.</span></div>
 <div class="ok"><span class="tick">✓</span><span><b>Coffee machine and cups</b> at the 40-degree angle in the cute style, same file names. Commits 7380c49 and 4227012.</span></div>
 </div>
-<div class="grid" style="margin-top:14px">
+<div class="grid two" style="margin-top:14px">
 <figure><img src="day1_prearranged_2026-10-31.jpg" alt="Day 1 straight into play, day 2 with the arrangement"><figcaption>Left, day 1 as a player sees it. Right, day 2 with the menu open.</figcaption></figure>
 <figure><img src="report_cups.jpg" alt="Coffee cups old and new on the table"><figcaption>Top left the old cups. Then the new: two cups, the empty tray, three cups with the upgrade.</figcaption></figure>
 </div>
