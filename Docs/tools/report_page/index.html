@@ -81,7 +81,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="who p1"><h3>You</h3>
 <p>Pick the two gameplay improvements for the next release (MVP, step 1).</p>
 <p>Tick the shadows, beans and cup handles under Current. Say <span class="say">build</span> when the sprites are right and I upload TestFlight build 22 for your play test.</p>
-<p>Tick your choices under Q1, under Current, and in the Backlog.</p>
+<p>Tick your choices under Q2, under Current, and in the Backlog.</p>
 <p>Sign in to App Store Connect in Chrome, then say <span class="say">numbers</span>.</p>
 <p>Unity Ads: add a payout profile in the Unity dashboard.</p>
 <p>Bugs folder: IMG_9758 and IMG_9759 look fixed in 26.10.26; delete them if you agree. The PDF in there is not a game bug.</p>
@@ -96,7 +96,15 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
 
-<div class="q"><h3>Q1 · More ideas for the polish release <small>31 October</small></h3>
+<div class="q"><h3>Q1 · The kitchen cloth: is it at 40 degrees? <small>9 November</small></h3>
+<p>A is, B is not. Your kitchen napkin was painted straight on, so its checks are square. A square cloth lying flat under the table camera (40 degrees above, long lens) is seen 0.77 as tall as it is wide, the same ratio as the plate's ellipse, and every check gets squashed the same way. That is exactly what A does: the napkin and its checks are 0.77 as tall as wide, so it reads as a flat square from the table's camera. B keeps 1 : 1, which is the straight-on view, like a cloth hung on a wall.</p>
+<p>The one thing the squash cannot add is a thin front edge or hem; the long lens makes that almost nothing, and the baskets' napkins have none either. My pick is A.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.cloth40.seen"> Seen, remove this</label></li>
+</ul></div>
+
+
+<div class="q"><h3>Q2 · More ideas for the polish release <small>31 October</small></h3>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.ideas.seen"> Seen, remove this</label></li>
 <li><label><input type="checkbox" data-id="qa.ideas.a"> <b>a</b> Last call: the music picks up and the sign flips in the last ten seconds.</label></li>
