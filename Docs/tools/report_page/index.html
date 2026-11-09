@@ -80,7 +80,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p>Pick the two gameplay improvements for the next release (MVP, step 1).</p>
-<p>Tick the cake napkin in Q2 if you want it in. Say <span class="say">build</span> when the sprites are right and I upload TestFlight build 22 for your play test.</p>
+<p>Tick the soft shadows under Current and the cake napkin in Q2 if you want them in. Say <span class="say">build</span> when the sprites are right and I upload TestFlight build 22 for your play test.</p>
 <p>Tick your choices under Q1 to Q7, under Current, and in the Backlog.</p>
 <p>Sign in to App Store Connect in Chrome, then say <span class="say">numbers</span>.</p>
 <p>Unity Ads: add a payout profile in the Unity dashboard.</p>
@@ -88,7 +88,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 <div class="who p2"><h3>Me</h3>
 <p>Main merged and pushed, 9 November: 55 commits, main at 0a73a05. The store build and the four Current changes are all on main now.</p>
-<p>Choux board stays as it is (your word). The cake napkin waits for your tick in Q2. No build until you say so.</p>
+<p>Soft shadows for the baskets and the second napkin are ready for your tick (Current, Q2). No build until you say so.</p>
 <p>Round 1 starts when you pick the two improvements: I build them and upload a TestFlight build.</p>
 <p>ChatGPT: the cake first, on your word <span class="say">chatgpt cake</span>.</p>
 </div>
@@ -117,11 +117,11 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <figure><img src="cake_why.jpg" alt="The cake sprite set beside the new machine and cups"><figcaption>The cake beside the new machine and cups at table scale.</figcaption></figure>
 <figure><img src="cake_draft1.jpg" alt="Cake now and draft 1 with a flat napkin and a cream cut face"><figcaption>Left now, right the mock: napkin flat, cut face cream. The napkin pattern is a placeholder, the real one keeps your gingham paint.</figcaption></figure>
 </div>
-<p style="margin-top:12px"><b>ChatGPT's flat napkin, 9 November</b> (you said: ask GPT). The cake and stand kept, the napkin flat and foreshortened with a corner fold. Its shadow came back soft; I harden it to navy when cutting. The napkin from the empty-stand half goes under all seven cake frames.</p>
-<figure><img src="cake_napkin_gpt_1.jpg" alt="ChatGPT's cake stand on a flat napkin, empty and full" style="max-height:300px"><figcaption>ChatGPT: empty stand and full cake on the flat napkin.</figcaption></figure>
+<p style="margin-top:12px"><b>ChatGPT's napkin, second try, 9 November</b> (you said the first edge was not natural). A real cloth edge now: uneven hem, soft corners, a lifted corner; the shadow half transparent with a smooth edge, as your new shadow rule says. Cake and stand untouched.</p>
+<figure><img src="cake_napkin_gpt_2.jpg" alt="ChatGPT's second napkin: natural cloth edge and a soft half-transparent shadow" style="max-height:300px"><figcaption>Second napkin: natural edge, soft shadow. Empty stand and full cake.</figcaption></figure>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.cake.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="qa.cake.gptnapkin"> Cut ChatGPT's napkin under all seven frames</label></li>
+<li><label><input type="checkbox" data-id="qa.cake.gptnapkin2"> Cut this napkin and shadow under all seven frames</label></li>
 <li><label><input type="checkbox" data-id="qa.cake.gptnapkin_cream"> The same, and make the cut face cream too</label></li>
 <li><label><input type="checkbox" data-id="qa.cake.redo"> Ask ChatGPT again (say what to change)</label></li>
 <li><label><input type="checkbox" data-id="qa.cake.keep"> Leave the cake and napkin as they are</label></li>
@@ -185,6 +185,19 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul></div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
+<div class="card">
+<p style="margin-top:0"><b>Soft shadows, 9 November.</b> Your rule: shadows a little transparent, not a dark chunk, with a smooth outline. The bread basket and the apple basket redone first: the old hard navy stripped, a new navy shadow at half transparency with a blurred edge, same files and canvas so nothing moves in the game. Not in the game yet.</p>
+<figure><img src="shadows_before_after.jpg" alt="Bread and apple baskets, hard shadow above, soft shadow below" style="max-height:420px"><figcaption>Top: now. Bottom: the soft shadow. Bread full and empty, apples full and empty.</figcaption></figure>
+<p>The same script can do every table item (cake, cookies plate, coconuts, pots, candy jar, juice, machine tray, ice cream station) so all shadows match. Your own hand-drawn shadows (juice, choux) would change too; say if they should stay.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.shadows.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.shadows.baskets"> Put the bread and apple baskets in</label></li>
+<li><label><input type="checkbox" data-id="cur.shadows.all"> Do every table item the same way</label></li>
+<li><label><input type="checkbox" data-id="cur.shadows.allbutowner"> Every item except your hand-drawn ones (juice, choux)</label></li>
+<li><label><input type="checkbox" data-id="cur.shadows.lighter"> Lighter still (more transparent)</label></li>
+<li><label><input type="checkbox" data-id="cur.shadows.discard"> Discard, keep the hard shadows</label></li>
+</ul>
+</div>
 <div class="card">
 <p style="margin-top:0"><b>Done since 31 October, on main, not in a build</b></p>
 <div class="ok"><span class="tick">✓</span><span><b>Day 1 goes straight into play.</b> The arrangement and the menu start on day 2. Let's go still opens the map first. Commit 3985869.</span></div>
