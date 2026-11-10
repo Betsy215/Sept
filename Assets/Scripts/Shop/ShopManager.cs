@@ -941,5 +941,4 @@ public class ShopManager : MonoBehaviour
             tabNote.gameObject.SetActive(!any && tabNote.text.Length > 0);
         }
     }
-    }
 }
