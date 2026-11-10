@@ -857,6 +857,7 @@ public class ShopManager : MonoBehaviour
 
     private Image panelImage;
     private RectTransform panelRect;
+    private const float TabHeight = 104f;
     private RectTransform panelGroup;   // the panel and its tabs live in this one object; the slide-in moves it (owner, round 1: "make tab and panel a whole")
 
     private void EnsureTabs()
@@ -885,7 +886,10 @@ public class ShopManager : MonoBehaviour
         // the panel's edges in the group's space (the group is the panel's rectangle)
         var tl = new Vector2(-parent.rect.width * 0.5f, parent.rect.height * 0.5f); var br = new Vector2(parent.rect.width * 0.5f, -parent.rect.height * 0.5f);
         var pivotOff = Vector2.zero;
-        var panelW = br.x - tl.x; var gap = 10f; var tabW = Mathf.Floor((panelW - 2f * gap) / 3f); var tabH = 92f; var overlap = 1f;   // 1 px into the panel: no seam, no double band
+        // folder tabs (owner, 10 November: "tabs a part of panel, like a part sticking out"): the three tabs share the panel's
+        // full width with no gaps, the open one is taller and in the panel's own colour so it is one shape with it, the
+        // closed ones sit lower and a shade darker behind
+        var panelW = br.x - tl.x; var gap = 0f; var tabW = Mathf.Floor(panelW / 3f); var tabH = TabHeight; var overlap = 1f;   // 1 px into the panel: no seam
         string[] labels = { "Stars", "Coins", "$" };
         for (var i = 0; i < 3; i++)
         {
@@ -893,7 +897,7 @@ public class ShopManager : MonoBehaviour
             go.transform.SetParent(parent, false);
             var rt = go.GetComponent<RectTransform>();
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0f);
-            var cx = tl.x + gap * 0 + tabW * (i + 0.5f) + gap * i;
+            var cx = tl.x + tabW * (i + 0.5f);
             var pos = new Vector2(cx, tl.y - overlap) - pivotOff; rt.anchoredPosition = new Vector2(Mathf.Round(pos.x), Mathf.Round(pos.y));   // whole units: no anti-aliased hairline
             rt.sizeDelta = new Vector2(tabW, tabH + overlap);
             var img = go.GetComponent<Image>();
@@ -942,12 +946,14 @@ public class ShopManager : MonoBehaviour
         // one piece with the panel: the open tab wears the panel's own sprite and colour and sits just in front of the
         // panel, so its foot covers the panel's top edge; the closed tabs are a shade darker and sit behind the panel
         var baseCol = panelImage != null ? panelImage.color : new Color(1f, 0.96f, 0.86f, 0.92f);
-        var closed = new Color(baseCol.r * 0.86f, baseCol.g * 0.86f, baseCol.b * 0.86f, baseCol.a);
+        var closed = new Color(baseCol.r * 0.90f, baseCol.g * 0.90f, baseCol.b * 0.90f, baseCol.a);
         for (var i = 0; i < tabButtons.Count; i++)
         {
             var on = i == (int)currentTab;
             var img = tabButtons[i].GetComponent<Image>();
             if (img != null) img.color = on ? baseCol : closed;
+            var trt = tabButtons[i].GetComponent<RectTransform>();
+            if (trt != null) trt.sizeDelta = new Vector2(trt.sizeDelta.x, (on ? TabHeight : TabHeight - 18f) + 1f);   // the open tab sticks out higher
             var lbl = tabButtons[i].GetComponentInChildren<TextMeshProUGUI>();
             if (lbl != null) lbl.alpha = on ? 1f : 0.6f;
             if (panelRect != null)
