@@ -44,14 +44,12 @@ public class DayNightTint : MonoBehaviour
 
     private static Sprite starSprite;
 
-    // Night lights (owner's pick d, 9 November 2026): the truck sticker's windows light up, chapter 1 gets fireflies
-    // over the grass, chapter 2 a warm lantern glow on the table. All runtime-built, all faded by the day's stage.
+    // Night lights (owner's pick d, 9 November 2026): the truck sticker's windows light up and chapter 1 gets fireflies
+    // over the grass (the chapter 2 lantern glow was dropped on 10 November). All runtime-built, faded by the day's stage.
     private readonly System.Collections.Generic.List<Image> truckLights = new System.Collections.Generic.List<Image>();
     private Image[] fireflies = new Image[0];
     private Vector2[] fireflyBase = new Vector2[0];
     private float[] fireflyPhase = new float[0];
-    private Image lantern;
-    private SpriteRenderer lanternSprite;
     /// Editor captures only: a stage forced from outside (-1 = off)
     public static float ForceStage = -1f;
 
@@ -311,25 +309,7 @@ public class DayNightTint : MonoBehaviour
                 fireflyPhase[i] = i * 2.1f;
             }
         }
-        else
-        {
-            // a lantern's warm pool on the table cloth (the lantern itself stands off screen, upper right): a world
-            // sprite one sorting step above the cloth, so the food and the stations still sit on top of it
-            var layer = FindObjectOfType<TableLayer>();
-            var cloth = layer != null ? layer.tableClothSprite : null;
-            if (cloth != null)
-            {
-                var go = new GameObject("LanternGlow", typeof(SpriteRenderer));
-                go.transform.SetParent(cloth.transform.parent, false);
-                var sr = go.GetComponent<SpriteRenderer>();
-                sr.sprite = StarSprite(); sr.sortingLayerID = cloth.sortingLayerID; sr.sortingOrder = cloth.sortingOrder + 1;
-                var b = cloth.bounds; var unit = sr.sprite.bounds.size.x;
-                go.transform.position = new Vector3(b.center.x + b.size.x * 0.12f, b.max.y - b.size.y * 0.30f, cloth.transform.position.z);
-                go.transform.localScale = new Vector3(b.size.x * 1.5f / unit, b.size.y * 1.1f / unit, 1f);
-                sr.color = new Color(1f, 0.72f, 0.35f, 0f);
-                lanternSprite = sr;
-            }
-        }
+        // chapter 2 has no extra light of its own (owner, 10 November: "keep the fireflies, drop the lantern lights")
     }
 
     private void UpdateNightLights()
@@ -349,7 +329,6 @@ public class DayNightTint : MonoBehaviour
             var c = fireflies[i].color; c.a = k * (0.35f + 0.65f * pulse); fireflies[i].color = c;
             fireflies[i].rectTransform.anchoredPosition = fireflyBase[i] + new Vector2(Mathf.Sin(t * 0.5f + ph) * 28f, Mathf.Sin(t * 0.37f + ph * 1.3f) * 18f);
         }
-        if (lanternSprite != null) { var c = lanternSprite.color; c.a = 0.30f * k * (0.96f + 0.04f * Mathf.Sin(t * 3f)); lanternSprite.color = c; }
     }
 
     private static Sprite StarSprite()
