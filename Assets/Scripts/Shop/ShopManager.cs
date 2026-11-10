@@ -859,6 +859,9 @@ public class ShopManager : MonoBehaviour
         var viewport = itemContainer.transform.parent as RectTransform;              // the masked ShopPanel
         if (viewport == null) return;
         panelRect = viewport; panelImage = viewport.GetComponent<Image>();
+        // the panel drops its grey-rimmed built-in sprite for a plain rectangle, the same as the tabs: the open tab and the
+        // panel then render the very same colour and read as one piece, no edge between them (owner, 10 November)
+        if (panelImage != null) panelImage.sprite = null;
         var parent = viewport.parent as RectTransform; if (parent == null) return;
         var font = playerScoreText != null ? playerScoreText.font : null;
         // the panel's real edges in its parent's space
