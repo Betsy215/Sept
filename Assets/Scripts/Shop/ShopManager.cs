@@ -882,6 +882,7 @@ public class ShopManager : MonoBehaviour
         panelGroup.SetSiblingIndex(viewport.GetSiblingIndex());
         viewport.SetParent(panelGroup, false);
         viewport.anchorMin = viewport.anchorMax = new Vector2(0.5f, 0.5f); viewport.pivot = new Vector2(0.5f, 0.5f); viewport.anchoredPosition = Vector2.zero;
+        viewport.localScale = Vector3.one;   // the group carries the panel's scale now; left on both, the panel shrank a fifth inside the group (found 10 November)
         var parent = panelGroup;
         // the panel's edges in the group's space (the group is the panel's rectangle)
         var tl = new Vector2(-parent.rect.width * 0.5f, parent.rect.height * 0.5f); var br = new Vector2(parent.rect.width * 0.5f, -parent.rect.height * 0.5f);
