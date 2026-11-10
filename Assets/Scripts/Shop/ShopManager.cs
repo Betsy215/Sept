@@ -848,42 +848,47 @@ public class ShopManager : MonoBehaviour
         return ShopTab.Coins;
     }
 
+    private Image panelImage;
+    private RectTransform panelRect;
+
     private void EnsureTabs()
     {
         if (itemContainer == null || tabButtons.Count > 0) return;
         var viewport = itemContainer.transform.parent as RectTransform;              // the masked ShopPanel
         if (viewport == null) return;
+        panelRect = viewport; panelImage = viewport.GetComponent<Image>();
+        var parent = viewport.parent as RectTransform; if (parent == null) return;
         var font = playerScoreText != null ? playerScoreText.font : null;
+        // the panel's real edges in its parent's space
+        var corners = new Vector3[4]; viewport.GetWorldCorners(corners);
+        var tl = parent.InverseTransformPoint(corners[1]); var br = parent.InverseTransformPoint(corners[3]);
+        var pivotOff = new Vector2(parent.rect.width * (0.5f - parent.pivot.x), parent.rect.height * (0.5f - parent.pivot.y));
+        var panelW = br.x - tl.x; var gap = 10f; var tabW = (panelW - 2f * gap) / 3f; var tabH = 92f; var overlap = 22f;
         string[] labels = { "Stars", "Coins", "$" };
         for (var i = 0; i < 3; i++)
         {
             var go = new GameObject("Tab" + labels[i], typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-            go.transform.SetParent(viewport.parent, false);
+            go.transform.SetParent(parent, false);
             var rt = go.GetComponent<RectTransform>();
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0f);
-            // a row of three just above the panel's real top edge (under the EARNED line), measured in the parent's space
-            var parent = viewport.parent as RectTransform;
-            var corners = new Vector3[4]; viewport.GetWorldCorners(corners);
-            var topLeft = parent.InverseTransformPoint(corners[1]);
-            var centre = parent.InverseTransformPoint((corners[0] + corners[2]) * 0.5f);
-            var pivotOff = new Vector2(parent.rect.width * (0.5f - parent.pivot.x), parent.rect.height * (0.5f - parent.pivot.y));
-            rt.anchoredPosition = new Vector2(centre.x + (i - 1) * 300f, topLeft.y + 10f) - pivotOff;
-            rt.sizeDelta = new Vector2(280f, 72f);
-            var img = go.GetComponent<Image>(); img.color = new Color(1f, 0.96f, 0.86f, 0.92f);
+            var cx = tl.x + gap * 0 + tabW * (i + 0.5f) + gap * i;
+            rt.anchoredPosition = new Vector2(cx, tl.y - overlap) - pivotOff;      // the tab's foot sits inside the panel's top edge
+            rt.sizeDelta = new Vector2(tabW, tabH + overlap);
+            var img = go.GetComponent<Image>();
+            if (panelImage != null) { img.sprite = panelImage.sprite; img.type = panelImage.type; img.material = panelImage.material; }
             var lgo = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
             lgo.transform.SetParent(go.transform, false);
-            var lrt = lgo.GetComponent<RectTransform>(); lrt.anchorMin = Vector2.zero; lrt.anchorMax = Vector2.one; lrt.offsetMin = lrt.offsetMax = Vector2.zero;
+            var lrt = lgo.GetComponent<RectTransform>(); lrt.anchorMin = Vector2.zero; lrt.anchorMax = Vector2.one; lrt.offsetMin = new Vector2(0f, overlap); lrt.offsetMax = Vector2.zero;
             var t = lgo.GetComponent<TextMeshProUGUI>(); t.text = labels[i]; t.fontSize = 44f; t.alignment = TextAlignmentOptions.Center;
             t.color = new Color(0.30f, 0.22f, 0.18f); t.fontStyle = FontStyles.Bold; if (font != null) t.font = font;
             var tab = (ShopTab)i;
             go.GetComponent<Button>().onClick.AddListener(() => SetTab(tab));
             tabButtons.Add(go.GetComponent<Button>());
         }
-        // a line for a tab with nothing on it yet
         var ngo = new GameObject("TabNote", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-        ngo.transform.SetParent(viewport.parent, false);
+        ngo.transform.SetParent(parent, false);
         var nrt = ngo.GetComponent<RectTransform>(); nrt.anchorMin = nrt.anchorMax = new Vector2(0.5f, 0.5f);
-        nrt.anchoredPosition = viewport.anchoredPosition; nrt.sizeDelta = new Vector2(800f, 120f);
+        nrt.anchoredPosition = new Vector2((tl.x + br.x) * 0.5f, (tl.y + br.y) * 0.5f) - pivotOff; nrt.sizeDelta = new Vector2(800f, 120f);
         tabNote = ngo.GetComponent<TextMeshProUGUI>(); tabNote.fontSize = 44f; tabNote.alignment = TextAlignmentOptions.Center;
         tabNote.color = new Color(0.30f, 0.22f, 0.18f, 0.85f); if (font != null) tabNote.font = font; tabNote.text = ""; ngo.SetActive(false);
         PaintTabs();
@@ -911,13 +916,22 @@ public class ShopManager : MonoBehaviour
 
     private void PaintTabs()
     {
+        // one piece with the panel: the open tab wears the panel's own sprite and colour and sits just in front of the
+        // panel, so its foot covers the panel's top edge; the closed tabs are a shade darker and sit behind the panel
+        var baseCol = panelImage != null ? panelImage.color : new Color(1f, 0.96f, 0.86f, 0.92f);
+        var closed = new Color(baseCol.r * 0.86f, baseCol.g * 0.86f, baseCol.b * 0.86f, baseCol.a);
         for (var i = 0; i < tabButtons.Count; i++)
         {
             var on = i == (int)currentTab;
             var img = tabButtons[i].GetComponent<Image>();
-            if (img != null) img.color = on ? new Color(1f, 0.85f, 0.45f, 1f) : new Color(1f, 0.96f, 0.86f, 0.75f);
+            if (img != null) img.color = on ? baseCol : closed;
             var lbl = tabButtons[i].GetComponentInChildren<TextMeshProUGUI>();
-            if (lbl != null) lbl.alpha = on ? 1f : 0.65f;
+            if (lbl != null) lbl.alpha = on ? 1f : 0.6f;
+            if (panelRect != null)
+            {
+                var t = tabButtons[i].transform;
+                if (on) t.SetSiblingIndex(panelRect.GetSiblingIndex() + 1); else t.SetSiblingIndex(Mathf.Max(0, panelRect.GetSiblingIndex() - 1));
+            }
         }
         if (tabNote != null)
         {
@@ -926,5 +940,6 @@ public class ShopManager : MonoBehaviour
             tabNote.text = currentTab == ShopTab.Stars ? "The star shop opens soon" : "";
             tabNote.gameObject.SetActive(!any && tabNote.text.Length > 0);
         }
+    }
     }
 }
