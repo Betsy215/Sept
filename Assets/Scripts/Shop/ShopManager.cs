@@ -863,7 +863,7 @@ public class ShopManager : MonoBehaviour
         var corners = new Vector3[4]; viewport.GetWorldCorners(corners);
         var tl = parent.InverseTransformPoint(corners[1]); var br = parent.InverseTransformPoint(corners[3]);
         var pivotOff = new Vector2(parent.rect.width * (0.5f - parent.pivot.x), parent.rect.height * (0.5f - parent.pivot.y));
-        var panelW = br.x - tl.x; var gap = 10f; var tabW = (panelW - 2f * gap) / 3f; var tabH = 92f; var overlap = 22f;
+        var panelW = br.x - tl.x; var gap = 10f; var tabW = Mathf.Floor((panelW - 2f * gap) / 3f); var tabH = 92f; var overlap = 1f;   // 1 px into the panel: no seam, no double band
         string[] labels = { "Stars", "Coins", "$" };
         for (var i = 0; i < 3; i++)
         {
@@ -872,10 +872,10 @@ public class ShopManager : MonoBehaviour
             var rt = go.GetComponent<RectTransform>();
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0f);
             var cx = tl.x + gap * 0 + tabW * (i + 0.5f) + gap * i;
-            rt.anchoredPosition = new Vector2(cx, tl.y - overlap) - pivotOff;      // the tab's foot sits inside the panel's top edge
+            var pos = new Vector2(cx, tl.y - overlap) - pivotOff; rt.anchoredPosition = new Vector2(Mathf.Round(pos.x), Mathf.Round(pos.y));   // whole units: no anti-aliased hairline
             rt.sizeDelta = new Vector2(tabW, tabH + overlap);
             var img = go.GetComponent<Image>();
-            if (panelImage != null) { img.sprite = panelImage.sprite; img.type = panelImage.type; img.material = panelImage.material; }
+            img.sprite = null; if (panelImage != null) img.material = panelImage.material;   // a plain rectangle in the panel's colour reads as one piece with it
             var lgo = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
             lgo.transform.SetParent(go.transform, false);
             var lrt = lgo.GetComponent<RectTransform>(); lrt.anchorMin = Vector2.zero; lrt.anchorMax = Vector2.one; lrt.offsetMin = new Vector2(0f, overlap); lrt.offsetMax = Vector2.zero;
