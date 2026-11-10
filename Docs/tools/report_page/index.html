@@ -91,17 +91,11 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul></div>
 
 
-<div class="q"><h3>Q2 · The cake: your tick says one thing, your words another <small>9 November</small></h3>
-<p>You wrote "leave the cake as is, don't change it anymore", and a minute later the napkin entry got a tick on "Discard: back to the old napkin". I did nothing: the kitchen napkin is still in. Which is it?</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.cakeq.keep"> Keep the kitchen napkin, the cake is final</label></li>
-<li><label><input type="checkbox" data-id="qa.cakeq.old"> Go back to the old napkin, then it is final</label></li>
-</ul></div>
 
 
 
 
-<div class="q"><h3>Q3 · More ideas for the polish release <small>31 October</small></h3>
+<div class="q"><h3>Q2 · More ideas for the polish release <small>31 October</small></h3>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.ideas.seen"> Seen, remove this</label></li>
 <li><label><input type="checkbox" data-id="qa.ideas.a"> <b>a</b> Last call: the music picks up and the sign flips in the last ten seconds.</label></li>
@@ -115,39 +109,24 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Shop tabs, 10 November.</b> Your word: three tabs on the shop panel. Left Stars, middle Coins, right $; Coins is the page that opens and holds all the existing items; Remove Ads moved to the $ tab; the Stars tab says "The star shop opens soon" until it has items. The tabs are one piece with the panel: the open tab wears the panel's own colour and covers its top edge, the closed tabs sit a shade darker behind it. On main, in the next build.</p>
-<div class="grid two" style="margin-top:10px">
-<figure><img src="shop_tabs_coins.jpg" alt="The shop with three tabs, Coins open" style="max-height:520px"><figcaption>Coins, the default page.</figcaption></figure>
-<figure><img src="shop_tabs_dollar.jpg" alt="The $ tab with the Remove Ads card" style="max-height:520px"><figcaption>The $ tab: Remove Ads alone.</figcaption></figure>
-<figure><img src="shop_tabs_stars.jpg" alt="The Stars tab, empty for now" style="max-height:520px"><figcaption>The Stars tab, waiting for its items.</figcaption></figure>
+<p style="margin-top:0"><b>Shop tabs one piece with the panel, 10 November.</b> The band between the tabs and the panel is gone: the open tab and the panel are one shape, the closed tabs sit darker behind.</p>
+<div class="shots">
+<figure><img src="shop_tabs_coins.jpg" alt="Shop with the Coins tab open, joined to the panel"><figcaption>Coins tab, the default.</figcaption></figure>
+<figure><img src="shop_tabs_dollar.jpg" alt="Shop with the dollar tab open, Remove Ads card"><figcaption>$ tab with Remove Ads.</figcaption></figure>
 </div>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.tabs.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.tabs.discard"> Discard the tabs</label></li>
+<li><label><input type="checkbox" data-id="cur.tabs2.seen"> Seen, remove this</label></li>
 </ul>
 </div>
 <div class="card">
-<p style="margin-top:0"><b>Candies shop icon, 9 November.</b> Your word: the white gaps between the candies are transparent now; the candies' own white highlights stay. On main, in the next build.</p>
-<figure><img src="candies_icon_before_after.jpg" alt="Candies icon before and after on two backgrounds" style="max-height:240px"><figcaption>Left pair before, right pair after, on red and on green so the gaps show.</figcaption></figure>
+<p style="margin-top:0"><b>Cake back to its old napkin, final, 10 November.</b> Your tick on the question: the kitchen napkin is out, the cake frames are the ones the store has. Committed; nothing touches the cake again.</p>
+<figure><img src="cake_final.jpg" alt="The cake stand with its old napkin, full and empty" style="max-height:360px"><figcaption>As shipped: full cake, empty stand.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.candiesicon.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.cakefinal.seen"> Seen, remove this</label></li>
 </ul>
 </div>
 <div class="card">
-<p style="margin-top:0"><b>Remove Ads, built, 9 November.</b> MVP 3. In the game on main: a Remove Ads card at the end of the shop grid, paid through the App Store at $1.99 (the store's own price text once it answers), never with coins; the between-day ad stops the moment it is owned, the daily treat and coin ads stay; a small "Restore purchases" line at the bottom of the shop, which Apple requires; ownership survives a reinstall through the receipt. Unity's purchasing package is added to the project, your editor imports it the next time it has focus. The card uses the red cross icon as a placeholder until you give it one.</p>
-<p>Your three steps in App Store Connect, before it can be tested: 1 sign the Paid Apps Agreement (Business, Agreements). 2 In the app, Monetization, In-App Purchases: a Non-Consumable, reference name Remove Ads, product ID <code>com.BetzzzGame.FoodTruckCafe.removeads</code>, price $1.99, display name Remove Ads, description "No more ads between days." 3 Add it to the next version's review page when we submit. TestFlight uses the sandbox, so your play test can buy it for free.</p>
-<div class="grid two" style="margin-top:10px">
-<figure><img src="shop_removeads.jpg" alt="The shop with the Restore purchases line at the bottom" style="max-height:520px"><figcaption>The shop in the editor: the "Restore purchases" line at the bottom.</figcaption></figure>
-<figure><img src="shop_removeads_2.jpg" alt="The shop scrolled to the end: the Remove Ads card" style="max-height:520px"><figcaption>Scrolled to the end: the Remove Ads card, $1.99, placeholder icon.</figcaption></figure>
-</div>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.removeads.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.removeads.ascdone"> The three App Store Connect steps are done</label></li>
-<li><label><input type="checkbox" data-id="cur.removeads.icon"> I will give you an icon for the card</label></li>
-</ul>
-</div>
-<div class="card">
-<p style="margin-top:0"><b>Basket shadows, 9 November.</b> The bread keeps its drawn shadow. The apple basket now has a true oval: drawn as a curve at four times the size and scaled down, so its outline is smooth at any zoom; it spans the old shadow's left edge to just short of the basket's right side and sits under the cloth and the basket, so a crescent shows at the lower left like the bread's; the bread shadow's navy and 82 % opacity. The old shadow and its stray edge pixels are cleaned out of all eight frames; the napkin, basket and apples are untouched. In the game, in the next build.</p>
+<p style="margin-top:0"><b>Basket shadows, 9 November.</b> The bread keeps its drawn shadow. The apple basket now casts the shape of its own bowl, like the bread: shifted down and to the left, the bread's navy and strength, smooth edge, over the cloth and under the basket. Same shadow on all eight frames.</p>
 <figure><img src="shadows_big.jpg" alt="Apple basket full and empty and the bread basket: before on the left, now on the right, close up" style="max-height:620px"><figcaption>At table scale: apple basket full, apple basket empty, bread basket for reference.</figcaption></figure>
 
 
