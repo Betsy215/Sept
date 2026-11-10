@@ -44,6 +44,16 @@ public class DayNightTint : MonoBehaviour
 
     private static Sprite starSprite;
 
+    // Night lights (owner's pick d, 9 November 2026): the truck sticker's windows light up, chapter 1 gets fireflies
+    // over the grass, chapter 2 a warm lantern glow on the table. All runtime-built, all faded by the day's stage.
+    private readonly System.Collections.Generic.List<Image> truckLights = new System.Collections.Generic.List<Image>();
+    private Image[] fireflies = new Image[0];
+    private Vector2[] fireflyBase = new Vector2[0];
+    private float[] fireflyPhase = new float[0];
+    private Image lantern;
+    /// Editor captures only: a stage forced from outside (-1 = off)
+    public static float ForceStage = -1f;
+
     public void Begin(OrderSystem os)
     {
         CurrentStage = 0f;
@@ -63,6 +73,7 @@ public class DayNightTint : MonoBehaviour
         // no moon and stars of our own then
         var nightArt = Chapter.Art<Sprite>(SessionManager.CurrentChapter, "bg_night");
         if (nightArt != null) BuildNightPicture(bg, nightArt); else BuildSky(bg);
+        BuildNightLights(bg, nightArt != null);
     }
 
     private Image nightPicture;
@@ -113,6 +124,7 @@ public class DayNightTint : MonoBehaviour
             }
         }
 
+        UpdateNightLights();
         UpdateKitchenWindow();
     }
 
@@ -201,6 +213,7 @@ public class DayNightTint : MonoBehaviour
 
     private int WantedStage()
     {
+        if (ForceStage >= 0f) return Mathf.RoundToInt(ForceStage);
         // Timed days (13 October): dusk at 65% of the day, night at 85%
         if (levelManager == null) levelManager = FindObjectOfType<LevelManager>();
         if (levelManager != null && levelManager.DayStarted && levelManager.DayDuration > 0f)
@@ -264,6 +277,66 @@ public class DayNightTint : MonoBehaviour
         img.sprite = sprite;
         img.raycastTarget = false;
         return img;
+    }
+
+    private void BuildNightLights(Transform bg, bool beach)
+    {
+        // the truck sticker (the kitchen button): a warm glow over the serving hatch and one over the cab window,
+        // placed as shares of the sprite (truck.png 460 x 428, the Image stretches the whole texture)
+        var truck = GameObject.Find("KitchenButton");
+        var trt = truck != null ? truck.GetComponent<RectTransform>() : null;
+        if (trt != null)
+        {
+            truckLights.Add(MakeAnchoredImage(trt, "WindowLight", StarSprite(), new Vector2(0.06f, 0.26f), new Vector2(0.70f, 0.70f)));
+            truckLights.Add(MakeAnchoredImage(trt, "WindowLight", StarSprite(), new Vector2(0.66f, 0.42f), new Vector2(0.90f, 0.68f)));
+            foreach (var l in truckLights) { l.preserveAspect = false; l.color = new Color(1f, 0.86f, 0.5f, 0f); }
+        }
+        if (!beach)
+        {
+            // fireflies over the grass and bushes (canvas space, 1080 x 1920, centre origin: the bushes sit around y 0 to 300)
+            var go = new GameObject("Fireflies", typeof(RectTransform));
+            go.transform.SetParent(bg.parent, false);
+            go.transform.SetSiblingIndex(bg.GetSiblingIndex() + 1);
+            var rt = (RectTransform)go.transform;
+            rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
+            Vector2[] spots = { new Vector2(-420f, 60f), new Vector2(-300f, 230f), new Vector2(-150f, 120f), new Vector2(-30f, 280f),
+                                new Vector2(110f, 40f), new Vector2(250f, 190f), new Vector2(380f, 90f), new Vector2(460f, 260f), new Vector2(-470f, 330f) };
+            fireflies = new Image[spots.Length]; fireflyBase = spots; fireflyPhase = new float[spots.Length];
+            for (var i = 0; i < spots.Length; i++)
+            {
+                var size = 16f + 6f * ((i * 7) % 3);
+                fireflies[i] = MakeImage(rt, "Firefly", StarSprite(), spots[i], new Vector2(size, size));
+                fireflies[i].color = new Color(0.85f, 1f, 0.45f, 0f);
+                fireflyPhase[i] = i * 2.1f;
+            }
+        }
+        else
+        {
+            // a lantern's warm pool over the table (the lantern itself stands off screen, to the upper right)
+            lantern = MakeImage((RectTransform)bg.parent, "LanternGlow", StarSprite(), new Vector2(120f, -420f), new Vector2(1500f, 1100f));
+            lantern.transform.SetSiblingIndex(bg.GetSiblingIndex() + 2);
+            lantern.color = new Color(1f, 0.72f, 0.35f, 0f);
+        }
+    }
+
+    private void UpdateNightLights()
+    {
+        var k = stage <= 1f ? 0.6f * stage : 0.6f + 0.4f * (stage - 1f);   // dusk 0.6, night 1
+        var t = Time.time;
+        for (var i = 0; i < truckLights.Count; i++)
+        {
+            if (truckLights[i] == null) continue;
+            var c = truckLights[i].color; c.a = k * (0.78f + 0.07f * Mathf.Sin(t * 5.3f + i)); truckLights[i].color = c;
+        }
+        for (var i = 0; i < fireflies.Length; i++)
+        {
+            if (fireflies[i] == null) continue;
+            var ph = fireflyPhase[i];
+            var pulse = Mathf.Clamp01(Mathf.Sin(t * 1.1f + ph) * 1.6f - 0.3f);          // mostly dark, a soft blink
+            var c = fireflies[i].color; c.a = k * (0.15f + 0.85f * pulse); fireflies[i].color = c;
+            fireflies[i].rectTransform.anchoredPosition = fireflyBase[i] + new Vector2(Mathf.Sin(t * 0.5f + ph) * 28f, Mathf.Sin(t * 0.37f + ph * 1.3f) * 18f);
+        }
+        if (lantern != null) { var c = lantern.color; c.a = 0.26f * k * (0.96f + 0.04f * Mathf.Sin(t * 3f)); lantern.color = c; }
     }
 
     private static Sprite StarSprite()
