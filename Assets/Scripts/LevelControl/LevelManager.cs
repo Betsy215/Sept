@@ -445,7 +445,7 @@ public class LevelManager : MonoBehaviour
         KitchenButtonOverTable.Setup();   // the truck button a third onto the cloth (12 October)
         // Money and stars live on the table now (13 October): the flip clock next to the truck; the sign at the top goes
         MoneyFlipClock.Setup(scoreManager);
-        TableBackRowAlign.Snap();         // every back-row bottom on the flower pot's line (owner, 9 November)
+        StartCoroutine(SnapBackRow());    // every back-row bottom on the flower pot's line (owner, 9 November)
         if (levelInfoText != null && levelInfoText.transform.parent != null) levelInfoText.transform.parent.gameObject.SetActive(false);
 
         if (customerManager != null)
@@ -955,5 +955,16 @@ public class LevelManager : MonoBehaviour
 
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayMoneyTransferComplete();
+    }
+
+    /// The back row is measured from real renderers and the kitchen button's canvas rect; at Start the canvas scaler has
+    /// not run yet, so the first snap landed the truck 20 % of its height too low (round 1, 10 November). Snap after the
+    /// first frame and once more half a second later, when every builder has settled.
+    private System.Collections.IEnumerator SnapBackRow()
+    {
+        yield return new WaitForEndOfFrame();
+        TableBackRowAlign.Snap();
+        yield return new WaitForSeconds(0.5f);
+        TableBackRowAlign.Snap();
     }
 }

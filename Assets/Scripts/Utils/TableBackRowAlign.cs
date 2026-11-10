@@ -8,8 +8,10 @@ using UnityEngine;
 public static class TableBackRowAlign
 {
     // transparent rows under each drawing in its sprite, in sprite pixels (the renderer bounds cover the whole rect)
-    const int PotFlowersPad = 30, PotGreenPad = 77, JarPad = 35, HenPad = 0;
-    const float TruckPadShare = 9f / 428f;   // truck.png: 9 empty rows of 428 under the wheels; the Image stretches the whole texture
+    // measured 10 November 2026 (lowest row with alpha > 8): pot_flowers.png 37 of 398, pot_green.png 84 of 398, candy_jar_*.png 39 of 240,
+    // UI/money_hen.png 6 of 222; the kitchen button's Image is decor/kit1_table.png, 3 empty rows of 406 (the Image stretches the whole texture)
+    const int PotFlowersPad = 37, PotGreenPad = 84, JarPad = 39, HenPad = 6;
+    const float TruckPadShare = 3f / 406f;
 
     public static void Snap()
     {

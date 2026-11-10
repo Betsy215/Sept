@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelNumber: 28
   levelName: Day 28
-  ordersPerLevel: 16
+  ordersPerLevel: 18
   orderDisplayTime: 5
   timeBetweenOrders: 5
-  dayDurationSeconds: 118
+  dayDurationSeconds: 128
   minOrderItems: 2
   maxOrderItems: 4
-  starThreshold1: 750
-  starThreshold2: 1370
-  starThreshold3: 1990
+  starThreshold1: 1120
+  starThreshold2: 1820
+  starThreshold3: 2460
   maxPossibleScore: 50
   backgroundSprite: {fileID: 0}
   useSpecificFoodTypes: 0
