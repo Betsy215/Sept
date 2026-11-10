@@ -327,6 +327,12 @@ public class CustomerManager : MonoBehaviour
             return null;
         }
 
+        // the tutorials get the girl (owner, round 1 of the November test: "during tutorial, use a girl customer")
+        if (levelIndex == 0 || levelIndex == Chapter.FirstDay(2))
+        {
+            var girl = availableCustomers.Find(p => p.name.Contains("Girl"));
+            if (girl != null) return girl;
+        }
         // never the same person as the one already at the counter (two Chefs side by side, 13 October)
         if (availableCustomers.Count > 1)
             foreach (var c in slots)

@@ -857,6 +857,19 @@ public class ShopManager : MonoBehaviour
 
     private Image panelImage;
     private RectTransform panelRect;
+    private readonly List<Vector2> tabOffsets = new List<Vector2>();   // each tab's place relative to the panel, so the tabs ride the slide-in (owner, round 1: "they are a whole")
+    private Vector2 tabNoteOffset;
+
+    private void LateUpdate()
+    {
+        if (panelRect == null) return;
+        for (var i = 0; i < tabButtons.Count && i < tabOffsets.Count; i++)
+        {
+            var rt = tabButtons[i] != null ? tabButtons[i].GetComponent<RectTransform>() : null;
+            if (rt != null) rt.anchoredPosition = panelRect.anchoredPosition + tabOffsets[i];
+        }
+        if (tabNote != null) tabNote.rectTransform.anchoredPosition = panelRect.anchoredPosition + tabNoteOffset;
+    }
 
     private void EnsureTabs()
     {
@@ -894,6 +907,7 @@ public class ShopManager : MonoBehaviour
             var tab = (ShopTab)i;
             go.GetComponent<Button>().onClick.AddListener(() => SetTab(tab));
             tabButtons.Add(go.GetComponent<Button>());
+            tabOffsets.Add(rt.anchoredPosition - viewport.anchoredPosition);
         }
         var ngo = new GameObject("TabNote", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
         ngo.transform.SetParent(parent, false);
@@ -901,6 +915,7 @@ public class ShopManager : MonoBehaviour
         nrt.anchoredPosition = new Vector2((tl.x + br.x) * 0.5f, (tl.y + br.y) * 0.5f) - pivotOff; nrt.sizeDelta = new Vector2(800f, 120f);
         tabNote = ngo.GetComponent<TextMeshProUGUI>(); tabNote.fontSize = 44f; tabNote.alignment = TextAlignmentOptions.Center;
         tabNote.color = new Color(0.30f, 0.22f, 0.18f, 0.85f); if (font != null) tabNote.font = font; tabNote.text = ""; ngo.SetActive(false);
+        tabNoteOffset = nrt.anchoredPosition - viewport.anchoredPosition;
         PaintTabs();
     }
 
