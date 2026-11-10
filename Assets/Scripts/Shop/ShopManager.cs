@@ -656,7 +656,7 @@ public class ShopManager : MonoBehaviour
 
     private void StartShopAnimation()
     {
-        var panelRect = shopPanel.GetComponent<RectTransform>();
+        var panelRect = panelGroup != null ? panelGroup : shopPanel.GetComponent<RectTransform>();   // the group carries panel and tabs together
         // slide in from the left to the panel's own saved place (the scene keeps it at y 20; the old end point y 0 dropped
         // the panel 20 units after the tabs had been laid on its edge, which left a band between them: owner, 10 November)
         var endPos = panelRect.anchoredPosition;
@@ -857,19 +857,7 @@ public class ShopManager : MonoBehaviour
 
     private Image panelImage;
     private RectTransform panelRect;
-    private readonly List<Vector2> tabOffsets = new List<Vector2>();   // each tab's place relative to the panel, so the tabs ride the slide-in (owner, round 1: "they are a whole")
-    private Vector2 tabNoteOffset;
-
-    private void LateUpdate()
-    {
-        if (panelRect == null) return;
-        for (var i = 0; i < tabButtons.Count && i < tabOffsets.Count; i++)
-        {
-            var rt = tabButtons[i] != null ? tabButtons[i].GetComponent<RectTransform>() : null;
-            if (rt != null) rt.anchoredPosition = panelRect.anchoredPosition + tabOffsets[i];
-        }
-        if (tabNote != null) tabNote.rectTransform.anchoredPosition = panelRect.anchoredPosition + tabNoteOffset;
-    }
+    private RectTransform panelGroup;   // the panel and its tabs live in this one object; the slide-in moves it (owner, round 1: "make tab and panel a whole")
 
     private void EnsureTabs()
     {
@@ -880,12 +868,23 @@ public class ShopManager : MonoBehaviour
         // the panel drops its grey-rimmed built-in sprite for a plain rectangle, the same as the tabs: the open tab and the
         // panel then render the very same colour and read as one piece, no edge between them (owner, 10 November)
         if (panelImage != null) panelImage.sprite = null;
-        var parent = viewport.parent as RectTransform; if (parent == null) return;
+        var canvasRt = viewport.parent as RectTransform; if (canvasRt == null) return;
         var font = playerScoreText != null ? playerScoreText.font : null;
-        // the panel's real edges in its parent's space
-        var corners = new Vector3[4]; viewport.GetWorldCorners(corners);
-        var tl = parent.InverseTransformPoint(corners[1]); var br = parent.InverseTransformPoint(corners[3]);
-        var pivotOff = new Vector2(parent.rect.width * (0.5f - parent.pivot.x), parent.rect.height * (0.5f - parent.pivot.y));
+        // One object for the panel and its tabs: a group that takes the panel's exact rectangle and place, the panel
+        // re-parented inside it at zero offset, the tabs beside it. The slide-in moves the group, so panel and tabs
+        // are one piece in motion as well as in looks.
+        var groupGo = new GameObject("ShopPanelGroup", typeof(RectTransform));
+        groupGo.transform.SetParent(canvasRt, false);
+        panelGroup = groupGo.GetComponent<RectTransform>();
+        panelGroup.anchorMin = viewport.anchorMin; panelGroup.anchorMax = viewport.anchorMax; panelGroup.pivot = viewport.pivot;
+        panelGroup.anchoredPosition = viewport.anchoredPosition; panelGroup.sizeDelta = viewport.rect.size; panelGroup.localScale = viewport.localScale;
+        panelGroup.SetSiblingIndex(viewport.GetSiblingIndex());
+        viewport.SetParent(panelGroup, false);
+        viewport.anchorMin = viewport.anchorMax = new Vector2(0.5f, 0.5f); viewport.pivot = new Vector2(0.5f, 0.5f); viewport.anchoredPosition = Vector2.zero;
+        var parent = panelGroup;
+        // the panel's edges in the group's space (the group is the panel's rectangle)
+        var tl = new Vector2(-parent.rect.width * 0.5f, parent.rect.height * 0.5f); var br = new Vector2(parent.rect.width * 0.5f, -parent.rect.height * 0.5f);
+        var pivotOff = Vector2.zero;
         var panelW = br.x - tl.x; var gap = 10f; var tabW = Mathf.Floor((panelW - 2f * gap) / 3f); var tabH = 92f; var overlap = 1f;   // 1 px into the panel: no seam, no double band
         string[] labels = { "Stars", "Coins", "$" };
         for (var i = 0; i < 3; i++)
@@ -907,7 +906,6 @@ public class ShopManager : MonoBehaviour
             var tab = (ShopTab)i;
             go.GetComponent<Button>().onClick.AddListener(() => SetTab(tab));
             tabButtons.Add(go.GetComponent<Button>());
-            tabOffsets.Add(rt.anchoredPosition - viewport.anchoredPosition);
         }
         var ngo = new GameObject("TabNote", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
         ngo.transform.SetParent(parent, false);
@@ -915,7 +913,6 @@ public class ShopManager : MonoBehaviour
         nrt.anchoredPosition = new Vector2((tl.x + br.x) * 0.5f, (tl.y + br.y) * 0.5f) - pivotOff; nrt.sizeDelta = new Vector2(800f, 120f);
         tabNote = ngo.GetComponent<TextMeshProUGUI>(); tabNote.fontSize = 44f; tabNote.alignment = TextAlignmentOptions.Center;
         tabNote.color = new Color(0.30f, 0.22f, 0.18f, 0.85f); if (font != null) tabNote.font = font; tabNote.text = ""; ngo.SetActive(false);
-        tabNoteOffset = nrt.anchoredPosition - viewport.anchoredPosition;
         PaintTabs();
     }
 
