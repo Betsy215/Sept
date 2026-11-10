@@ -84,7 +84,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
 
-<div class="q"><h3>Q1 · Can the games we played in the Unity editor end up in the analysis data? <small>10 November</small></h3>
+<div class="q"><h3>Q1 · What is the shape of the bread basket's shadow? Draw it. <small>10 November</small></h3>
+<p>A flat oval lying on the table under the basket, as wide as the basket and about two fifths as tall, pushed a little to the left, its bottom on the basket's bottom. The basket hides most of it, so what shows is a crescent: thick at the upper left, thinning to a point under the basket's bottom. Middle picture: the drawn shadow in navy, the oval in red. Right: that oval rebuilt under the bread. Bottom: the same oval under the apple basket, now in the game.</p>
+<figure><img src="bread_shadow_shape.jpg" alt="The bread basket, its shadow alone with the fitted oval, the oval rebuilt under the bread, and the apple basket with the same oval" style="max-height:560px"></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.breadshape.seen"> Seen, remove this</label></li>
+</ul></div>
+
+<div class="q"><h3>Q2 · Can the games we played in the Unity editor end up in the analysis data? <small>10 November</small></h3>
 <p>No. The game picks its analytics environment at start: in the editor or in a TestFlight build it sends to <b>development</b>, only an App Store copy sends to <b>production</b>. The Analysis section reads production alone. Tonight's editor sessions (the shop captures) are in development next to your TestFlight phone, and I never count that environment.</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.editordata.seen"> Seen, remove this</label></li>
@@ -95,7 +102,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 
 
-<div class="q"><h3>Q2 · More ideas for the polish release <small>31 October</small></h3>
+<div class="q"><h3>Q3 · More ideas for the polish release <small>31 October</small></h3>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.ideas.seen"> Seen, remove this</label></li>
 <li><label><input type="checkbox" data-id="qa.ideas.a"> <b>a</b> Last call: the music picks up and the sign flips in the last ten seconds.</label></li>
@@ -109,7 +116,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Shop tabs one piece with the panel, 10 November.</b> The band between the tabs and the panel is gone: the open tab and the panel are one shape, the closed tabs sit darker behind.</p>
+<p style="margin-top:0"><b>Shop tabs one piece with the panel, 10 November.</b> No band, no edge: the panel slides to its own place now (it used to drop 20 units after the tabs were laid on its edge), and it is a plain rectangle like the tabs, so the open tab and the panel render the very same colour. Closed tabs sit darker behind.</p>
 <div class="shots">
 <figure><img src="shop_tabs_coins.jpg" alt="Shop with the Coins tab open, joined to the panel"><figcaption>Coins tab, the default.</figcaption></figure>
 <figure><img src="shop_tabs_dollar.jpg" alt="Shop with the dollar tab open, Remove Ads card"><figcaption>$ tab with Remove Ads.</figcaption></figure>
@@ -126,7 +133,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 </div>
 <div class="card">
-<p style="margin-top:0"><b>Basket shadows, 9 November.</b> The bread keeps its drawn shadow. The apple basket now casts the shape of its own bowl, like the bread: shifted down and to the left, the bread's navy and strength, smooth edge, over the cloth and under the basket. Same shadow on all eight frames.</p>
+<p style="margin-top:0"><b>Basket shadows, 9 November.</b> The bread keeps its drawn shadow. The apple basket now has the bread's shadow: the same flat oval, scaled to its basket, same place, same navy and strength, over the napkin and under the basket. One shadow on all eight frames. The oval is drawn in Q1.</p>
 <figure><img src="shadows_big.jpg" alt="Apple basket full and empty and the bread basket: before on the left, now on the right, close up" style="max-height:620px"><figcaption>At table scale: apple basket full, apple basket empty, bread basket for reference.</figcaption></figure>
 
 
@@ -139,7 +146,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
 <p class="sub" style="margin:0 0 8px">Your words, 9 November. Release goal: Thursday 13 November.</p>
 <ol class="plan">
-<li>A couple of things to improve gameplay. Your picks (Q2): <b>d</b> night lights (lit truck windows and fireflies in chapter 1, a lantern glow in chapter 2) and <b>e</b> the shop NEW tag and the bought item flying to the table.</li>
+<li>A couple of things to improve gameplay. Your picks (Q3): <b>d</b> night lights (lit truck windows and fireflies in chapter 1, a lantern glow in chapter 2) and <b>e</b> the shop NEW tag and the bought item flying to the table.</li>
 <li>Stars as a currency, and a star shop panel in the shop. Tabs on the shop panel: left Stars, middle Coins (default, the existing items), right $ (real money, Remove Ads).</li>
 <li>Remove Ads purchase, $1.99 (the Paid Apps Agreement first).</li>
 <li>At least five rounds of your own play test on TestFlight, feedback after each.</li>
