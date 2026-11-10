@@ -54,6 +54,7 @@ public class ShopManager : MonoBehaviour
         EvenOutCharacterIcons();
         EnsureTabs();            // Stars | Coins | $ (owner, 10 November 2026); Coins is the default
         LayoutCards();
+        ShopFlourish.BeginVisit(); ShopFlourish.ApplyTags(GetAllShopItems());   // NEW tags on cards first open this visit (owner, 9 November 2026)
         EnsureRestoreButton();
         if (itemScrollRect != null) itemScrollRect.onValueChanged.AddListener(_ => UpdateScrollButtons());   // a finger drag updates the lock too
 
@@ -238,9 +239,12 @@ public class ShopManager : MonoBehaviour
         if (!(item.itemType == ItemType.Decor && item.itemName == "Candies")) item.MarkAsPurchased();
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayPurchaseSound();
+        var nextButton = GameObject.Find("NextLevelButton");   // the bought item flies to the way to the table (owner, 9 November 2026)
+        ShopFlourish.Fly(this, popupItemIcon, nextButton != null ? nextButton.transform as RectTransform : null);
 
         // Refresh all items to update affordability
         RefreshShopDisplay();
+        ShopFlourish.ApplyTags(GetAllShopItems());
 
         Debug.Log($"Successfully purchased {item.itemName} for {item.price} points!");
 
@@ -386,6 +390,7 @@ public class ShopManager : MonoBehaviour
     public void LoadNextGameLevel()
     {
         if (IsPurchasePopupOpen) return;
+        ShopFlourish.MarkSeen(GetAllShopItems());
         AudioManager.Instance.PlayGameplayMusic();
         SceneTransitionManager.Instance.TransitionToScene("GameSceneOne");
     }
@@ -905,6 +910,7 @@ public class ShopManager : MonoBehaviour
         currentTab = tab;
         PaintTabs();
         LayoutCards();
+        ShopFlourish.ApplyTags(GetAllShopItems());
         if (itemScrollRect != null) itemScrollRect.verticalNormalizedPosition = 1f;
         RefreshShopDisplay();
         UpdateScrollButtons();
