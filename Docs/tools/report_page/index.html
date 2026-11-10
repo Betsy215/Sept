@@ -78,8 +78,8 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
-<div class="who p1"><h3>You</h3><p>Look over the seven round 1 fixes under Current. Say <span class="say">build</span> (or tick it there) when you want build 23.</p></div>
-<div class="who p2"><h3>Me</h3><p>All seven are on main. I read the data again later tonight for your build 22 session. Next: the star shop once Q1 is answered; ChatGPT's apple shadow pass after 1 PM.</p></div>
+<div class="who p1"><h3>You</h3><p>Check the four entries under Current and tick the customer plan. Say <span class="say">build</span> when you want build 23.</p></div>
+<div class="who p2"><h3>Me</h3><p>Customer clean-ups on your tick; ChatGPT briefs for Boy, Girl, Kid at 1 PM; the star shop once Q1 is answered.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
@@ -103,64 +103,50 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 
 <h2 id="current"><span class="n">3</span>Current</h2>
+
 <div class="card">
-<p style="margin-top:0"><b>Round 1, your play test, 9 November.</b> Your seven points and what each became, all on main; no build until you say so. Your device id: not settled yet, see Q2 (my first reading was wrong: the "day 15" id was my own editor).</p>
-<ol class="plan">
-<li><b>Tutorial customer.</b> Both tutorials (day 1 and the chapter 2 first day) now always bring the girl.</li>
-<li><b>Coffee machine.</b> The bean container was never empty: its renderer drew the beans at half strength (alpha 0.5 in the scene), and the 9 November fill was a dark mass on top of that, so it read as empty at phone size. The renderer is at full strength now and the beans are new heaps, lighter, with drawn beans, six fill levels. The pour: the painted stream ended on the cup's far rim; it is redrawn from the same spout tip curving down into the cup's mouth, in the four frames that pour. All frames of both brew clips are below.</li>
-<li><b>Brewing with an empty container.</b> The code refuses a brew at zero beans and a brew always eats one; what you saw was the full container looking empty (point 2). If it happens again, tell me the day and what the container showed.</li>
-<li><b>Candy jar.</b> The ten frames had a stair-stepped edge and jagged lines; each is anti-aliased now (drawn at four times the size and brought back), nothing redrawn.</li>
-<li><b>Bottoms on one line.</b> How I measure: the pink line is the flower pot's lowest painted row; each cyan tick is that item's lowest painted row, counted from its sprite (transparent rows under the drawing left out); yellow is the sprite rectangle's bottom. Two faults found: the empty-row counts were 4 to 7 pixels off for every sprite, and the snap ran before the screen scaler had sized the truck button, which left the truck a fifth of its height too low. Now the counts are measured and the snap runs after the first frame and again half a second later. The truck's bottom still breathes about five pixels with its wobble animation.</li>
-<li><b>Shop tabs.</b> The tabs are tied to the panel's position every frame, so they slide in with it and are never on screen before it.</li>
-<li><b>Balance.</b> Two more customers every day; each day two beats longer so they fit; star lines raised from 30 / 55 / 80 % of a perfect day to 40 / 65 / 88 %. Full table below; say the word if you want a day changed.</li>
-</ol>
-<div class="shots">
-<figure><img src="tutorial_girl.jpg" alt="The day 1 tutorial with the girl customer" style="max-height:420px"><figcaption>1 Tutorial: the girl.</figcaption></figure>
-<figure><img src="coffee_beans.jpg" alt="The bean container at fill levels 0 to 6" style="max-height:200px"><figcaption>2 Bean container, 0 to 6 beans.</figcaption></figure>
-<figure><img src="machine_in_game.jpg" alt="The machine on the table in the tutorial with the full bean container" style="max-height:300px"><figcaption>2 In the tutorial now.</figcaption></figure>
-</div>
-<figure><img src="coffee_stream.jpg" alt="The four pouring frames, before above and after below: the stream now lands in the cup" style="max-height:300px"><figcaption>2 The pour: before (top), now (bottom).</figcaption></figure>
-<figure><img src="coffee_frames.jpg" alt="All frames of the one-cup and two-cup brew clips in order"><figcaption>2 Every frame of both brew clips, in order.</figcaption></figure>
-<figure><img src="candy_jar_frames.jpg" alt="Candy jar frames 0 to 9, before above and after below"><figcaption>4 Candy jar frames: before (top), now (bottom).</figcaption></figure>
-<figure><img src="back_row_line.jpg" alt="The back row with the measuring line and ticks" style="max-height:300px"><figcaption>5 Back row: pink line, cyan measured bottoms, yellow sprite rectangles.</figcaption></figure>
-<figure><img src="tabs_slide.jpg" alt="The shop panel before and during its slide-in, tabs riding on it" style="max-height:420px"><figcaption>6 Slide-in: nothing on screen before the panel; the tabs come with it (slowed for the picture).</figcaption></figure>
-<div class="card tw"><table><tr><th>Day</th><th class="n">Customers</th><th class="n">Seconds</th><th class="n">Stars before</th><th class="n">Stars now</th></tr>
-<tr><td>1</td><td class="n">7 &rarr; 9</td><td class="n">40 &rarr; 48</td><td class="n">70 / 110 / 150</td><td class="n">100 / 160 / 210</td></tr>
-<tr><td>2</td><td class="n">7 &rarr; 9</td><td class="n">40 &rarr; 48</td><td class="n">120 / 190 / 260</td><td class="n">170 / 270 / 370</td></tr>
-<tr><td>3</td><td class="n">8 &rarr; 10</td><td class="n">45 &rarr; 53</td><td class="n">160 / 260 / 370</td><td class="n">230 / 380 / 510</td></tr>
-<tr><td>4</td><td class="n">8 &rarr; 10</td><td class="n">45 &rarr; 53</td><td class="n">190 / 310 / 430</td><td class="n">270 / 440 / 590</td></tr>
-<tr><td>5</td><td class="n">9 &rarr; 11</td><td class="n">50 &rarr; 58</td><td class="n">270 / 440 / 620</td><td class="n">380 / 620 / 830</td></tr>
-<tr><td>6</td><td class="n">10 &rarr; 12</td><td class="n">55 &rarr; 63</td><td class="n">330 / 540 / 770</td><td class="n">460 / 750 / 1020</td></tr>
-<tr><td>7</td><td class="n">10 &rarr; 12</td><td class="n">55 &rarr; 63</td><td class="n">350 / 560 / 790</td><td class="n">470 / 770 / 1040</td></tr>
-<tr><td>8</td><td class="n">10 &rarr; 12</td><td class="n">55 &rarr; 63</td><td class="n">350 / 560 / 790</td><td class="n">470 / 770 / 1040</td></tr>
-<tr><td>9</td><td class="n">11 &rarr; 13</td><td class="n">65 &rarr; 73</td><td class="n">350 / 560 / 790</td><td class="n">470 / 760 / 1030</td></tr>
-<tr><td>10</td><td class="n">11 &rarr; 13</td><td class="n">65 &rarr; 73</td><td class="n">350 / 560 / 790</td><td class="n">470 / 760 / 1030</td></tr>
-<tr><td>11</td><td class="n">11 &rarr; 13</td><td class="n">65 &rarr; 73</td><td class="n">350 / 560 / 790</td><td class="n">470 / 760 / 1030</td></tr>
-<tr><td>12</td><td class="n">12 &rarr; 14</td><td class="n">70 &rarr; 78</td><td class="n">350 / 570 / 800</td><td class="n">470 / 760 / 1030</td></tr>
-<tr><td>13</td><td class="n">12 &rarr; 14</td><td class="n">70 &rarr; 80</td><td class="n">310 / 570 / 830</td><td class="n">480 / 790 / 1070</td></tr>
-<tr><td>14</td><td class="n">13 &rarr; 15</td><td class="n">75 &rarr; 85</td><td class="n">330 / 610 / 880</td><td class="n">510 / 830 / 1120</td></tr>
-<tr><td>15</td><td class="n">13 &rarr; 15</td><td class="n">75 &rarr; 85</td><td class="n">330 / 610 / 880</td><td class="n">510 / 830 / 1120</td></tr>
-<tr><td>16</td><td class="n">14 &rarr; 16</td><td class="n">80 &rarr; 90</td><td class="n">330 / 610 / 880</td><td class="n">500 / 820 / 1110</td></tr>
-<tr><td>17</td><td class="n">14 &rarr; 16</td><td class="n">85 &rarr; 95</td><td class="n">510 / 940 / 1370</td><td class="n">780 / 1270 / 1720</td></tr>
-<tr><td>18</td><td class="n">15 &rarr; 17</td><td class="n">88 &rarr; 98</td><td class="n">520 / 950 / 1380</td><td class="n">780 / 1270 / 1720</td></tr>
-<tr><td>19</td><td class="n">15 &rarr; 17</td><td class="n">91 &rarr; 101</td><td class="n">570 / 1040 / 1510</td><td class="n">860 / 1390 / 1880</td></tr>
-<tr><td>20</td><td class="n">16 &rarr; 18</td><td class="n">94 &rarr; 104</td><td class="n">570 / 1040 / 1510</td><td class="n">850 / 1380 / 1870</td></tr>
-<tr><td>21</td><td class="n">16 &rarr; 18</td><td class="n">97 &rarr; 107</td><td class="n">610 / 1120 / 1620</td><td class="n">910 / 1480 / 2000</td></tr>
-<tr><td>22</td><td class="n">17 &rarr; 19</td><td class="n">100 &rarr; 110</td><td class="n">640 / 1170 / 1700</td><td class="n">950 / 1540 / 2090</td></tr>
-<tr><td>23</td><td class="n">17 &rarr; 19</td><td class="n">103 &rarr; 113</td><td class="n">640 / 1170 / 1700</td><td class="n">950 / 1540 / 2090</td></tr>
-<tr><td>24</td><td class="n">18 &rarr; 20</td><td class="n">106 &rarr; 116</td><td class="n">640 / 1170 / 1700</td><td class="n">940 / 1530 / 2080</td></tr>
-<tr><td>25</td><td class="n">14 &rarr; 16</td><td class="n">109 &rarr; 119</td><td class="n">640 / 1170 / 1700</td><td class="n">970 / 1580 / 2140</td></tr>
-<tr><td>26</td><td class="n">15 &rarr; 17</td><td class="n">112 &rarr; 122</td><td class="n">640 / 1170 / 1700</td><td class="n">960 / 1570 / 2120</td></tr>
-<tr><td>27</td><td class="n">15 &rarr; 17</td><td class="n">115 &rarr; 125</td><td class="n">680 / 1250 / 1820</td><td class="n">1030 / 1680 / 2270</td></tr>
-<tr><td>28</td><td class="n">16 &rarr; 18</td><td class="n">118 &rarr; 128</td><td class="n">750 / 1370 / 1990</td><td class="n">1120 / 1820 / 2460</td></tr>
-<tr><td>29</td><td class="n">16 &rarr; 18</td><td class="n">121 &rarr; 131</td><td class="n">780 / 1430 / 2080</td><td class="n">1170 / 1900 / 2570</td></tr>
-<tr><td>30</td><td class="n">17 &rarr; 19</td><td class="n">124 &rarr; 134</td><td class="n">800 / 1470 / 2140</td><td class="n">1200 / 1940 / 2630</td></tr>
-<tr><td>31</td><td class="n">17 &rarr; 19</td><td class="n">127 &rarr; 137</td><td class="n">800 / 1470 / 2140</td><td class="n">1200 / 1940 / 2630</td></tr>
-<tr><td>32</td><td class="n">18 &rarr; 20</td><td class="n">130 &rarr; 140</td><td class="n">800 / 1470 / 2140</td><td class="n">1190 / 1930 / 2620</td></tr>
-</table></div>
+<p style="margin-top:0"><b>Back row bottoms, whole screen, 10 November.</b> Every fixed item with the pots bought: the pink line is the flower pot's lowest painted row, each cyan post marks that item's own lowest painted row. Truck, hen board, jar, both pots: all on the line (the truck breathes a few pixels with its wobble).</p>
+<figure><img src="back_row_full.jpg" alt="The whole table screen with the pink bottom line and a cyan post on each back-row item" style="max-height:620px"></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.round1.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.round1.build"> Build 23 now</label></li>
+<li><label><input type="checkbox" data-id="cur.rowfull.seen"> Seen, remove this</label></li>
+</ul>
+</div>
+<div class="card">
+<p style="margin-top:0"><b>Shop tabs: one object with the panel, 10 November.</b> No position tying any more: the panel and its tabs sit inside one group object, and the slide-in moves the group. Three moments of the slide (slowed for the picture): nothing on screen, then panel and tabs arriving together, then in place.</p>
+<figure><img src="tabs_slide.jpg" alt="The shop panel group sliding in with its tabs attached" style="max-height:440px"></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.tabsgroup.seen"> Seen, remove this</label></li>
+</ul>
+</div>
+<div class="card">
+<p style="margin-top:0"><b>Coffee machine, 10 November evening.</b> Beans the way your own sprites did it: the heap is inset inside the bowl's inner walls and the bowl's glass front is laid over it, so the beans sit between back and front. The coffee stream now runs down into the cup: to the floor of an empty cup, to the surface of a full one. The steam wand pours cream into the latte cup in its two frothing frames.</p>
+<figure><img src="machine_in_game.jpg" alt="The machine on the table in the tutorial with beans inside the bowl" style="max-height:300px"><figcaption>In the tutorial now.</figcaption></figure>
+<figure><img src="coffee_beans.jpg" alt="The bean container at fill levels 0 to 6" style="max-height:200px"><figcaption>Bean levels 0 to 6.</figcaption></figure>
+<figure><img src="coffee_stream.jpg" alt="The four coffee frames and the two foam frames, close up"><figcaption>Coffee into the cups, foam into the latte cup.</figcaption></figure>
+<figure><img src="coffee_frames.jpg" alt="All frames of the one-cup and two-cup brew clips in order"><figcaption>Every frame of both brew clips, in order.</figcaption></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.coffee2.seen"> Seen, remove this</label></li>
+</ul>
+</div>
+<div class="card">
+<p style="margin-top:0"><b>Customer sprites, review, 10 November.</b> All seven, both moods, below; the second sheet shows the faults close up. What I found and what I propose:</p>
+<ol class="plan">
+<li><b>Boy</b>, worst fit: a shiny 3D-render look unlike the painted others; hard cut edges on the hair; a cut line and flat toe on the shoes; his happy frame is a smaller canvas (228 x 546 against 241 x 600), so he shrinks when he smiles. Repaint both moods in the painted style.</li>
+<li><b>Girl</b>: a white dot left in the hair, ragged cut wisps, ink blotches on the plaid trousers. Repaint both moods, same design.</li>
+<li><b>Kid</b>: stair-stepped cut around the head, hard white blocks on the socks, and her happy frame is a different drawing and size (402 x 665). Repaint both moods to match.</li>
+<li><b>Grandma</b>: the glasses frame is cut on the right, white specks in the hair, a white pocket at the collar. Clean-up only, no repaint.</li>
+<li><b>Businessman</b>: a white pocket at the cuff, a white sliver at the shoulder, a hard hair edge. Clean-up only.</li>
+<li><b>Chef</b>: one grey smudge on the left sleeve. Clean-up only.</li>
+<li><b>Yoga</b>: fine as is.</li>
+</ol>
+<p>Plan: I clean the specks, pockets and hard edges on Grandma, Businessman and Chef myself today (no quota). ChatGPT repaints Boy, Girl and Kid, one character per picture, both moods on one sheet, same pose and clothes, plain white background, no shadow (the game adds it): three pictures, so the first three go out at 1 PM when the quota returns.</p>
+<figure><img src="customers_sheet.jpg" alt="All seven customers, neutral and happy"><figcaption>The fourteen sprites as they are.</figcaption></figure>
+<figure><img src="customers_defects.jpg" alt="Close-ups of the faults on each customer"><figcaption>The faults, close up.</figcaption></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.customers.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.customers.go"> Go: clean-ups now, ChatGPT for Boy, Girl, Kid at 1 PM</label></li>
+<li><label><input type="checkbox" data-id="cur.customers.all"> ChatGPT for all seven instead</label></li>
+<li><label><input type="checkbox" data-id="cur.customers.cleanonly"> Clean-ups only, no ChatGPT</label></li>
 </ul>
 </div>
 
