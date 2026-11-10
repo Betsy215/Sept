@@ -652,8 +652,10 @@ public class ShopManager : MonoBehaviour
     private void StartShopAnimation()
     {
         var panelRect = shopPanel.GetComponent<RectTransform>();
-        var startPos = new Vector2(-1284, 0);
-        var endPos = new Vector2(0, 0);
+        // slide in from the left to the panel's own saved place (the scene keeps it at y 20; the old end point y 0 dropped
+        // the panel 20 units after the tabs had been laid on its edge, which left a band between them: owner, 10 November)
+        var endPos = panelRect.anchoredPosition;
+        var startPos = new Vector2(-1284, endPos.y);
         StartCoroutine(SlidePanel(panelRect, startPos, endPos, slideAnimationDuration));
     }
 
