@@ -51,6 +51,7 @@ public class DayNightTint : MonoBehaviour
     private Vector2[] fireflyBase = new Vector2[0];
     private float[] fireflyPhase = new float[0];
     private Image lantern;
+    private SpriteRenderer lanternSprite;
     /// Editor captures only: a stage forced from outside (-1 = off)
     public static float ForceStage = -1f;
 
@@ -299,23 +300,35 @@ public class DayNightTint : MonoBehaviour
             go.transform.SetSiblingIndex(bg.GetSiblingIndex() + 1);
             var rt = (RectTransform)go.transform;
             rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
-            Vector2[] spots = { new Vector2(-420f, 60f), new Vector2(-300f, 230f), new Vector2(-150f, 120f), new Vector2(-30f, 280f),
-                                new Vector2(110f, 40f), new Vector2(250f, 190f), new Vector2(380f, 90f), new Vector2(460f, 260f), new Vector2(-470f, 330f) };
+            Vector2[] spots = { new Vector2(-420f, -160f), new Vector2(-300f, 40f), new Vector2(-150f, -90f), new Vector2(-30f, 90f),
+                                new Vector2(110f, -170f), new Vector2(250f, 0f), new Vector2(380f, -110f), new Vector2(460f, 60f), new Vector2(-470f, 150f) };
             fireflies = new Image[spots.Length]; fireflyBase = spots; fireflyPhase = new float[spots.Length];
             for (var i = 0; i < spots.Length; i++)
             {
-                var size = 16f + 6f * ((i * 7) % 3);
+                var size = 26f + 8f * ((i * 7) % 3);
                 fireflies[i] = MakeImage(rt, "Firefly", StarSprite(), spots[i], new Vector2(size, size));
-                fireflies[i].color = new Color(0.85f, 1f, 0.45f, 0f);
+                fireflies[i].color = new Color(0.95f, 1f, 0.45f, 0f);
                 fireflyPhase[i] = i * 2.1f;
             }
         }
         else
         {
-            // a lantern's warm pool over the table (the lantern itself stands off screen, to the upper right)
-            lantern = MakeImage((RectTransform)bg.parent, "LanternGlow", StarSprite(), new Vector2(120f, -420f), new Vector2(1500f, 1100f));
-            lantern.transform.SetSiblingIndex(bg.GetSiblingIndex() + 2);
-            lantern.color = new Color(1f, 0.72f, 0.35f, 0f);
+            // a lantern's warm pool on the table cloth (the lantern itself stands off screen, upper right): a world
+            // sprite one sorting step above the cloth, so the food and the stations still sit on top of it
+            var layer = FindObjectOfType<TableLayer>();
+            var cloth = layer != null ? layer.tableClothSprite : null;
+            if (cloth != null)
+            {
+                var go = new GameObject("LanternGlow", typeof(SpriteRenderer));
+                go.transform.SetParent(cloth.transform.parent, false);
+                var sr = go.GetComponent<SpriteRenderer>();
+                sr.sprite = StarSprite(); sr.sortingLayerID = cloth.sortingLayerID; sr.sortingOrder = cloth.sortingOrder + 1;
+                var b = cloth.bounds; var unit = sr.sprite.bounds.size.x;
+                go.transform.position = new Vector3(b.center.x + b.size.x * 0.12f, b.max.y - b.size.y * 0.30f, cloth.transform.position.z);
+                go.transform.localScale = new Vector3(b.size.x * 1.5f / unit, b.size.y * 1.1f / unit, 1f);
+                sr.color = new Color(1f, 0.72f, 0.35f, 0f);
+                lanternSprite = sr;
+            }
         }
     }
 
@@ -332,11 +345,11 @@ public class DayNightTint : MonoBehaviour
         {
             if (fireflies[i] == null) continue;
             var ph = fireflyPhase[i];
-            var pulse = Mathf.Clamp01(Mathf.Sin(t * 1.1f + ph) * 1.6f - 0.3f);          // mostly dark, a soft blink
-            var c = fireflies[i].color; c.a = k * (0.15f + 0.85f * pulse); fireflies[i].color = c;
+            var pulse = 0.5f + 0.5f * Mathf.Sin(t * 1.1f + ph);                          // a slow soft blink, never fully out
+            var c = fireflies[i].color; c.a = k * (0.35f + 0.65f * pulse); fireflies[i].color = c;
             fireflies[i].rectTransform.anchoredPosition = fireflyBase[i] + new Vector2(Mathf.Sin(t * 0.5f + ph) * 28f, Mathf.Sin(t * 0.37f + ph * 1.3f) * 18f);
         }
-        if (lantern != null) { var c = lantern.color; c.a = 0.26f * k * (0.96f + 0.04f * Mathf.Sin(t * 3f)); lantern.color = c; }
+        if (lanternSprite != null) { var c = lanternSprite.color; c.a = 0.30f * k * (0.96f + 0.04f * Mathf.Sin(t * 3f)); lanternSprite.color = c; }
     }
 
     private static Sprite StarSprite()
