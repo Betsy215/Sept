@@ -78,78 +78,15 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
-<div class="who p1"><h3>You</h3><p>Apple holds the upload until you accept its updated Program License Agreement: developer.apple.com, Account, Agreements (or the banner at the top of App Store Connect). Sign in yourself, accept, then tick.</p><ul class="checks"><li><label><input type="checkbox" data-id="next.pla.accepted"> Accepted, upload build 22 again</label></li></ul></div>
-<div class="who p2"><h3>Me</h3><p>Build 22 is exported and archived (the game as in the store plus everything since). On your tick I upload it; TestFlight has it about 15 minutes later. Meanwhile: the shop NEW tag and the item flying to the table.</p></div>
+<div class="who p1"><h3>You</h3><p>1 Accept Apple's updated Program License Agreement (developer.apple.com, Account, Agreements, or the banner in App Store Connect), then tick. 2 When build 22 shows in TestFlight, play round 1 on your new iPhone and tell me the feedback.</p><ul class="checks"><li><label><input type="checkbox" data-id="next.pla.accepted"> Accepted, upload build 22</label></li></ul></div>
+<div class="who p2"><h3>Me</h3><p>Upload build 22 on your tick (TestFlight about 15 minutes later). Then I read the development data for your new iPhone's id and the date and time of your session, record both under Current, and keep that id out of every count (TestFlight play never reaches the production numbers anyway). Meanwhile: the shop NEW tag and the item flying to the table.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-
-<div class="q"><h3>Q1 · What is the shape of the bread basket's shadow? Draw it. <small>10 November</small></h3>
-<p>A flat oval lying on the table under the basket, as wide as the basket and about two fifths as tall, pushed a little to the left, its bottom on the basket's bottom. The basket hides most of it, so what shows is a crescent: thick at the upper left, thinning to a point under the basket's bottom. Middle picture: the drawn shadow in navy, the oval in red. Right: that oval rebuilt under the bread. Bottom: the same oval under the apple basket, now in the game.</p>
-<figure><img src="bread_shadow_shape.jpg" alt="The bread basket, its shadow alone with the fitted oval, the oval rebuilt under the bread, and the apple basket with the same oval" style="max-height:560px"></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.breadshape.seen"> Seen, remove this</label></li>
-</ul></div>
-
-<div class="q"><h3>Q2 · Can the games we played in the Unity editor end up in the analysis data? <small>10 November</small></h3>
-<p>No. The game picks its analytics environment at start: in the editor or in a TestFlight build it sends to <b>development</b>, only an App Store copy sends to <b>production</b>. The Analysis section reads production alone. Tonight's editor sessions (the shop captures) are in development next to your TestFlight phone, and I never count that environment.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.editordata.seen"> Seen, remove this</label></li>
-</ul></div>
-
-
-
-
-
-
-<div class="q"><h3>Q3 · More ideas for the polish release <small>31 October</small></h3>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.ideas.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="qa.ideas.a"> <b>a</b> Last call: the music picks up and the sign flips in the last ten seconds.</label></li>
-<li><label><input type="checkbox" data-id="qa.ideas.b"> <b>b</b> A petal drops when a daisy wilts; a sweat drop on the last daisy.</label></li>
-<li><label><input type="checkbox" data-id="qa.ideas.c"> <b>c</b> Table life: steam off the cups, a bird on the truck, drifting leaves.</label></li>
-<li><label><input type="checkbox" data-id="qa.ideas.d"> <b>d</b> Night: lit truck windows and fireflies in chapter 1, a lantern glow in chapter 2. <i>Picked, in MVP.</i></label></li>
-<li><label><input type="checkbox" data-id="qa.ideas.e"> <b>e</b> Shop: a NEW tag the day a card unlocks; the bought item flies to the table. <i>Picked, in MVP.</i></label></li>
-<li><label><input type="checkbox" data-id="qa.ideas.f"> <b>f</b> Finish card captions: Good day, Great day, Perfect day.</label></li>
-<li><label><input type="checkbox" data-id="qa.ideas.g"> <b>g</b> Map: the new star pops onto the day with a ding.</label></li>
-</ul></div>
+<p class="sub" style="margin:4px 0 8px">No open questions.</p>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
-<div class="card">
-<p style="margin-top:0"><b>Build 22, 10 November.</b> Exported from the editor (32 s) and archived; the upload stopped at Apple's "PLA Update available", which only your sign-in can clear. In it since build 21: shop tabs Stars / Coins / $, the Remove Ads card and Restore purchases (the purchase itself needs your App Store Connect product), see-through cup handles, beans behind the glass, the back row on one line, the candies icon, the cake as shipped, the apple basket's new shadow.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.build22.seen"> Seen, remove this</label></li>
-</ul>
-</div>
-<div class="card">
-<p style="margin-top:0"><b>Shop tabs one piece with the panel, 10 November.</b> No band, no edge: the panel slides to its own place now (it used to drop 20 units after the tabs were laid on its edge), and it is a plain rectangle like the tabs, so the open tab and the panel render the very same colour. Closed tabs sit darker behind.</p>
-<div class="shots">
-<figure><img src="shop_tabs_coins.jpg" alt="Shop with the Coins tab open, joined to the panel"><figcaption>Coins tab, the default.</figcaption></figure>
-<figure><img src="shop_tabs_dollar.jpg" alt="Shop with the dollar tab open, Remove Ads card"><figcaption>$ tab with Remove Ads.</figcaption></figure>
-</div>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.tabs2.seen"> Seen, remove this</label></li>
-</ul>
-</div>
-<div class="card">
-<p style="margin-top:0"><b>Cake back to its old napkin, final, 10 November.</b> Your tick on the question: the kitchen napkin is out, the cake frames are the ones the store has. Committed; nothing touches the cake again.</p>
-<figure><img src="cake_final.jpg" alt="The cake stand with its old napkin, full and empty" style="max-height:360px"><figcaption>As shipped: full cake, empty stand.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.cakefinal.seen"> Seen, remove this</label></li>
-</ul>
-</div>
-<div class="card">
-<p style="margin-top:0"><b>Basket shadows, 9 November.</b> The bread keeps its drawn shadow. The apple basket has the bread's shadow: the same flat oval scaled to its basket, the bread shadow's own colour and opacity (navy 45,45,65 at 55 %), over the napkin, under the basket and the flowers. One shadow on all eight frames. The oval is drawn in Q1. ChatGPT was asked for a detail pass (a contact line under the rim, the checks showing through the shadow); its free picture quota is used up until tomorrow 1 PM, the brief waits in the chat and goes out then. Its version comes here for your pick.</p>
-<figure><img src="shadows_big.jpg" alt="Apple basket full and empty and the bread basket: before on the left, now on the right, close up" style="max-height:620px"><figcaption>At table scale: apple basket full, apple basket empty, bread basket for reference.</figcaption></figure>
-
-
-<figure><img src="apple_shadow_onoff.jpg" alt="Apple basket full and empty, each with the shadow and without" style="max-height:420px"><figcaption>With the shadow, without; full and empty.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.shadows.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.shadows.none"> No shadow under the apple basket</label></li>
-<li><label><input type="checkbox" data-id="cur.shadows.discard"> Discard: the apple basket back to its old shadow</label></li>
-</ul>
-</div>
+<p class="sub" style="margin:4px 0 8px">Cleared 10 November on your word. Round 1 of your TestFlight play test goes here.</p>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
 <p class="sub" style="margin:0 0 8px">Your words, 9 November. Release goal: Thursday 13 November.</p>
