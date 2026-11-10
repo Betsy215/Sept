@@ -84,7 +84,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
 
-<div class="q"><h3>Q1 · The cake: your tick says one thing, your words another <small>9 November</small></h3>
+<div class="q"><h3>Q1 · Can the games we played in the Unity editor end up in the analysis data? <small>10 November</small></h3>
+<p>No. The game picks its analytics environment at start: in the editor or in a TestFlight build it sends to <b>development</b>, only an App Store copy sends to <b>production</b>. The Analysis section reads production alone. Tonight's editor sessions (the shop captures) are in development next to your TestFlight phone, and I never count that environment.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.editordata.seen"> Seen, remove this</label></li>
+</ul></div>
+
+
+<div class="q"><h3>Q2 · The cake: your tick says one thing, your words another <small>9 November</small></h3>
 <p>You wrote "leave the cake as is, don't change it anymore", and a minute later the napkin entry got a tick on "Discard: back to the old napkin". I did nothing: the kitchen napkin is still in. Which is it?</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.cakeq.keep"> Keep the kitchen napkin, the cake is final</label></li>
@@ -94,7 +101,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 
 
-<div class="q"><h3>Q2 · More ideas for the polish release <small>31 October</small></h3>
+<div class="q"><h3>Q3 · More ideas for the polish release <small>31 October</small></h3>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.ideas.seen"> Seen, remove this</label></li>
 <li><label><input type="checkbox" data-id="qa.ideas.a"> <b>a</b> Last call: the music picks up and the sign flips in the last ten seconds.</label></li>
