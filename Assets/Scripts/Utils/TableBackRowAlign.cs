@@ -11,10 +11,12 @@ public static class TableBackRowAlign
 {
     static readonly Dictionary<Sprite, int> emptyRowsUnder = new Dictionary<Sprite, int>();
 
-    /// Rows under the drawing's solid bottom edge in the sprite's rectangle, from the texture pixels. Every one of these
-    /// sprites carries a soft shadow or anti-aliased fringe below the object (alpha climbing over 20 to 60 rows), which the
-    /// eye does not read as the bottom, so a row counts as painted only when a pixel reaches alpha 230.
-    public static int EmptyRowsUnder(Sprite sprite)
+    /// The texture row (counted from the sprite rectangle's bottom row, rect.y) of the drawing's solid bottom edge, from the
+    /// texture pixels. Every one of these sprites carries a soft shadow or anti-aliased fringe below the object (alpha
+    /// climbing over 20 to 60 rows), which the eye does not read as the bottom, so a row counts as painted only when a pixel
+    /// reaches alpha 230. Unity trims textureRect to the non-transparent area, so the scan starts at textureRect.y and that
+    /// offset is part of the answer (missing it put the pots and the jar 30 to 75 rows too high on 10 November).
+    public static int SolidBottomRow(Sprite sprite)
     {
         if (sprite == null) return 0;
         if (emptyRowsUnder.TryGetValue(sprite, out var cached)) return cached;
@@ -24,6 +26,7 @@ public static class TableBackRowAlign
             var tex = sprite.texture; var r = sprite.textureRect;
             var x0 = Mathf.RoundToInt(r.x); var y0 = Mathf.RoundToInt(r.y); var w = Mathf.RoundToInt(r.width); var h = Mathf.RoundToInt(r.height);
             var px = tex.GetPixels32(); var tw = tex.width;
+            rows = y0 - Mathf.RoundToInt(sprite.rect.y);
             for (var y = y0; y < y0 + h; y++)                 // texture rows run bottom-up
             {
                 var painted = false;
@@ -41,17 +44,25 @@ public static class TableBackRowAlign
         return rows;
     }
 
-    /// World y of the sprite's lowest painted pixel.
+    /// Kept for callers: rows between the renderer's bounds bottom and the solid bottom edge.
+    public static int EmptyRowsUnder(Sprite sprite)
+    {
+        if (sprite == null) return 0;
+        var boundsBottomRow = sprite.pivot.y + sprite.bounds.min.y * sprite.pixelsPerUnit;   // 0 for a full-rect mesh, higher for a tight one
+        return Mathf.RoundToInt(SolidBottomRow(sprite) - boundsBottomRow);
+    }
+
+    /// World y of the sprite's solid bottom edge.
     public static float VisibleBottom(SpriteRenderer sr) =>
         sr.bounds.min.y + EmptyRowsUnder(sr.sprite) / sr.sprite.pixelsPerUnit * Mathf.Abs(sr.transform.lossyScale.y);
 
-    /// World y of a UI Image's lowest painted pixel (the Image stretches the whole texture over its rectangle).
+    /// World y of a UI Image's solid bottom edge (the Image stretches the sprite's whole rectangle over its own).
     public static float VisibleBottom(RectTransform rt, Sprite sprite, out bool ok)
     {
         var c = new Vector3[4]; rt.GetWorldCorners(c);           // 0 bottom-left, 1 top-left
         var worldHeight = c[1].y - c[0].y; ok = worldHeight > 0f && sprite != null;
         if (!ok) return c[0].y;
-        return c[0].y + worldHeight * (EmptyRowsUnder(sprite) / sprite.rect.height);
+        return c[0].y + worldHeight * (SolidBottomRow(sprite) / sprite.rect.height);
     }
 
     public static void Snap()
