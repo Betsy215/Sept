@@ -78,8 +78,8 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
-<div class="who p1"><h3>You</h3><p>Tick the girl's fate under Current (use, retry the happy face, or keep). Say <span class="say">build</span> when you want build 23.</p></div>
-<div class="who p2"><h3>Me</h3><p>On your girl tick: cut and place her (same size and pivot as now), then the next customer. Two ChatGPT pictures left today. The star shop once Q1 is answered.</p></div>
+<div class="who p1"><h3>You</h3><p>Boy and Kid repaints arrive under Current for your pick. Say <span class="say">build</span> when you want build 23.</p></div>
+<div class="who p2"><h3>Me</h3><p>Boy and Kid from ChatGPT, then the Grandma, Businessman and Chef clean-ups. The star shop once Q1 is answered.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
@@ -105,50 +105,28 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Back row bottoms, whole screen, 10 November.</b> Measured from the sprite content now, not the image: the game reads each sprite's pixels and takes its lowest solid row (every one of these sprites has a soft shadow fringe fading out below the object, which the eye does not read as the bottom, so faint rows do not count). No spacing numbers typed by hand. The pink line is the flower pot's lowest painted row; each cyan post is that item's own. Truck, hen board, jar, both pots: on the line (the truck breathes a few pixels with its wobble).</p>
+<p style="margin-top:0"><b>Back row bottoms, 10 November.</b> You were right, twice. The fringe: each sprite fades out below the object (a soft shadow), and the first measure took the faintest row as the bottom; it now takes the first solid row. The offset: Unity trims a sprite's texture rectangle to its painted area, and the scan started at that trimmed edge instead of the sprite's own bottom, which put the pots and the jar 30 to 75 rows too high; fixed. Proof on screen, items against the bare cloth: truck, hen board, jar and both pots now end within three pixels of each other.</p>
 <figure><img src="back_row_full.jpg" alt="The whole table screen with the pink bottom line and a cyan post on each back-row item" style="max-height:620px"></figure>
+<figure><img src="back_row_zoom.jpg" alt="Each item at the line, five times enlarged"><figcaption>Each item at the line, five times enlarged.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.rowfull.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.rowfix.seen"> Seen, remove this</label></li>
 </ul>
 </div>
 <div class="card">
-<p style="margin-top:0"><b>Shop tabs: part of the panel, 10 November.</b> Folder tabs: the three share the panel's full width with no gaps, the open one is taller and in the panel's colour so it is one shape with the panel, the closed ones sit lower and a shade darker behind. Panel and tabs are one object; the slide-in moves it whole. Left: mid-slide (slowed), right: in place.</p>
-<figure><img src="tabs_slide.jpg" alt="The shop panel group sliding in with its tabs attached" style="max-height:440px"></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.tabsgroup.seen"> Seen, remove this</label></li>
-</ul>
-</div>
-<div class="card">
-<p style="margin-top:0"><b>Coffee machine, 10 November.</b> Your previous bean sprites, set inside the bowl: the bowl's glass front is laid over them so they sit between back and front. The pours the way your old frames did them: a thick straight dark bar from each spout straight down to the cup's bottom. All cups stay on the tray line; the steam wand is lengthened instead, so its tip reaches into the latte cup, in front of the cup, with the puff at the milk.</p>
-<figure><img src="machine_in_game.jpg" alt="The machine on the table in the tutorial with beans inside the bowl" style="max-height:300px"><figcaption>In the tutorial now.</figcaption></figure>
-<figure><img src="coffee_beans.jpg" alt="The bean container at fill levels 0 to 6" style="max-height:200px"><figcaption>Bean levels 0 to 6, your sprites.</figcaption></figure>
-<figure><img src="coffee_stream.jpg" alt="The four coffee frames and three wand frames, close up"><figcaption>The pours and the wand cup, close up.</figcaption></figure>
+<p style="margin-top:0"><b>Coffee machine, 10 November.</b> Your bean sprites, inside the bowl under its glass front. Pours as thick straight bars from each spout, ending in the middle of the cup's floor, on the cup's centre line, in all four pouring frames. Cups all on the tray line; the steam wand lengthened into the latte cup, in front of it, puff at the milk.</p>
+<figure><img src="machine_in_game.jpg" alt="The machine on the table in the tutorial" style="max-height:300px"><figcaption>In the tutorial now.</figcaption></figure>
+<figure><img src="coffee_stream.jpg" alt="The four coffee frames and two wand frames, close up"><figcaption>The pours and the wand, close up.</figcaption></figure>
 <figure><img src="coffee_frames.jpg" alt="All frames of the one-cup and two-cup brew clips in order"><figcaption>Every frame of both brew clips, in order.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.coffee2.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.coffee3.seen"> Seen, remove this</label></li>
 </ul>
 </div>
 <div class="card">
-<p style="margin-top:0"><b>Customer sprites, review, 10 November.</b> All seven, both moods, below; the second sheet shows the faults close up. What I found and what I propose:</p>
-<ol class="plan">
-<li><b>Boy</b>, worst fit: a shiny 3D-render look unlike the painted others; hard cut edges on the hair; a cut line and flat toe on the shoes; his happy frame is a smaller canvas (228 x 546 against 241 x 600), so he shrinks when he smiles. Repaint both moods in the painted style.</li>
-<li><b>Girl</b>: a white dot left in the hair, ragged cut wisps, ink blotches on the plaid trousers. Repaint both moods, same design.</li>
-<li><b>Kid</b>: stair-stepped cut around the head, hard white blocks on the socks, and her happy frame is a different drawing and size (402 x 665). Repaint both moods to match.</li>
-<li><b>Grandma</b>: the glasses frame is cut on the right, white specks in the hair, a white pocket at the collar. Clean-up only, no repaint.</li>
-<li><b>Businessman</b>: a white pocket at the cuff, a white sliver at the shoulder, a hard hair edge. Clean-up only.</li>
-<li><b>Chef</b>: one grey smudge on the left sleeve. Clean-up only.</li>
-<li><b>Yoga</b>: fine as is.</li>
-</ol>
-<p>Your word: the girl first. ChatGPT's answer is below, next to the sprites as they are: clean hair edges, neat plaid, no stray pixels, same clothes and pose. One miss: the right-hand face reads as a pout with closed eyes, where your happy sprite smiles with closed eyes. Nothing is cut until you tick.</p>
-<figure><img src="girl_gpt.jpg" alt="The current girl sprites, neutral and happy, and ChatGPT's repaint of both" style="max-height:520px"><figcaption>Left two: now. Right: ChatGPT's repaint, neutral and happy.</figcaption></figure>
-<figure><img src="customers_sheet.jpg" alt="All seven customers, neutral and happy"><figcaption>The fourteen sprites as they are.</figcaption></figure>
-<figure><img src="customers_defects.jpg" alt="Close-ups of the faults on each customer"><figcaption>The faults, close up.</figcaption></figure>
+<p style="margin-top:0"><b>Customer sprites, 10 November.</b> Girl: shipped. ChatGPT's two figures are cut to the old sprites' size and place, with the soft ground halo the others have, and are in the game. Boy and Kid: their briefs are with ChatGPT now; the results come here for your pick. Grandma, Businessman and Chef: clean-ups (specks, white pockets, one smudge) still to do; Yoga stays.</p>
+<figure><img src="girl_gpt.jpg" alt="The old girl sprites and ChatGPT's repaint" style="max-height:420px"><figcaption>Girl: before (left two) and the repaint now in the game.</figcaption></figure>
+<figure><img src="customers_defects.jpg" alt="Close-ups of the faults on each customer" style="max-height:420px"><figcaption>The faults found, close up.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.customers.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.girl.use"> Girl: cut ChatGPT's two figures into the game as they are</label></li>
-<li><label><input type="checkbox" data-id="cur.girl.retryhappy"> Girl: one more ChatGPT try for a smiling happy face, then cut</label></li>
-<li><label><input type="checkbox" data-id="cur.girl.keep"> Girl: keep the old sprites</label></li>
-<li><label><input type="checkbox" data-id="cur.customers.cleanups"> Also clean Grandma, Businessman and Chef myself meanwhile</label></li>
+<li><label><input type="checkbox" data-id="cur.customers2.seen"> Seen, remove this</label></li>
 </ul>
 </div>
 
