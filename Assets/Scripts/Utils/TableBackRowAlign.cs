@@ -11,7 +11,9 @@ public static class TableBackRowAlign
 {
     static readonly Dictionary<Sprite, int> emptyRowsUnder = new Dictionary<Sprite, int>();
 
-    /// Transparent rows under the drawing in the sprite's rectangle, from the texture pixels (alpha 16 or more counts).
+    /// Rows under the drawing's solid bottom edge in the sprite's rectangle, from the texture pixels. Every one of these
+    /// sprites carries a soft shadow or anti-aliased fringe below the object (alpha climbing over 20 to 60 rows), which the
+    /// eye does not read as the bottom, so a row counts as painted only when a pixel reaches alpha 230.
     public static int EmptyRowsUnder(Sprite sprite)
     {
         if (sprite == null) return 0;
@@ -25,7 +27,7 @@ public static class TableBackRowAlign
             for (var y = y0; y < y0 + h; y++)                 // texture rows run bottom-up
             {
                 var painted = false;
-                for (var x = x0; x < x0 + w; x++) if (px[y * tw + x].a >= 16) { painted = true; break; }
+                for (var x = x0; x < x0 + w; x++) if (px[y * tw + x].a >= 230) { painted = true; break; }
                 if (painted) break;
                 rows++;
             }
