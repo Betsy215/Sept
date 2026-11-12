@@ -78,97 +78,53 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
-<div class="who p1"><h3>You</h3><p>Read the release recap under Current and tick: $ tab in or out, Boy and Kid, then <span class="say">build</span>.</p></div>
-<div class="who p2"><h3>Me</h3><p>Build 23 on your word, TestFlight, then the store on your word "release". Nothing else goes into this release unless you say so.</p></div>
+<div class="who p1"><h3>You</h3><p>Review the release pictures under Current. Tick the customers to ship and the $ tab choice. Then say <span class="say">release</span>.</p></div>
+<div class="who p2"><h3>Me</h3><p>Build 23 is uploading. Customers you tick go into a build 24. On "release": version 26.11.13 in App Store Connect with your What's New, the build attached, submitted.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>Q1 · Star shop: what does it sell? <small>10 November</small></h3>
-<p>MVP 2 needs your list. The stars a day earns (1 to 3) already count on the map; I can add a star total and spend it in the Stars tab. Tick what the first star items should be, or write them.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.starshop.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="qa.starshop.decor"> Table decor only (new pots, a lantern, a tablecloth colour)</label></li>
-<li><label><input type="checkbox" data-id="qa.starshop.boost"> Day boosts (a longer day, patient customers, double tips once)</label></li>
-<li><label><input type="checkbox" data-id="qa.starshop.chars"> Special customers</label></li>
-</ul></div>
-
-<div class="q"><h3>Q2 · Which device data is yours? <small>10 November</small></h3>
-<p>The development data (TestFlight and editor) since 8 November holds only my two editors; your build 22 session has not arrived there yet. The production data (store copies) has one new player since 9 November: id <b>e048d9</b>, iOS, version 26.10.26, Saturday 8 November 20:46 to 21:14 PST, three days started and finished. If that was you on the new iPhone, it stays out of the store numbers.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.device.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="qa.device.mine"> e048d9 on 8 November was me</label></li>
-<li><label><input type="checkbox" data-id="qa.device.notmine"> Not me</label></li>
-</ul></div>
-
-
+<p class="sub" style="margin:4px 0 8px">No open questions.</p>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Night: the truck's windows, 11 November.</b> Day, dusk and night, the truck sticker close up (editor captures of 9 November; the glow code has not changed since). The open hatch and the cab window take a warm glow from dusk, a little stronger at night. It is subtle: at phone size it reads as a soft light in the hatch, not as lit windows. I can make it stronger or add the glow to the chalkboards too.</p>
-<figure><img src="truck_night.jpg" alt="The truck sticker at day, dusk and night" style="max-height:620px"></figure>
+<p style="margin-top:0"><b>Release 26.11.13, review in pictures, 11 November.</b> Build 23 holds everything below and is on its way to TestFlight. Nothing goes to the store until you say <span class="say">release</span>.</p>
+<p><b>Shop.</b> EARNED now shows coins, then a star and the stars earned so far. Folder tabs: Coins (default, NEW tags on cards not seen yet), Stars ("the star shop opens soon"), $ with Remove Ads under the new green check, and its description panel.</p>
+<figure><img src="rel_shop.jpg" alt="Shop: Coins tab, Stars tab, dollar tab, Remove Ads panel"><figcaption>Coins, Stars, $, the Remove Ads panel.</figcaption></figure>
+<p><b>Table.</b> A day with the back row on one line, then dusk and night: the truck's hatch and cab window glow, fireflies over the grass.</p>
+<figure><img src="rel_table.jpg" alt="The table by day, at dusk and at night" style="max-height:620px"><figcaption>Day, dusk, night.</figcaption></figure>
+<figure><img src="truck_night.jpg" alt="The truck sticker at day, dusk and night" style="max-height:420px"><figcaption>The truck close up: day, dusk, night.</figcaption></figure>
+<p><b>Start.</b> The tutorial brings the girl (new sprite, waiting face). Day 1 is pre-arranged; the menu and arranging start on day 2.</p>
+<figure><img src="rel_start.jpg" alt="Tutorial with the girl; day 2 opens with the menu" style="max-height:560px"><figcaption>Tutorial; day 2 opening with the menu.</figcaption></figure>
+<p><b>Candy jar.</b> It was not fixed before: frames 4 to 9 had candies cut in pieces (the store has the same). They are rebuilt now with whole candies stacked inside the glass; frames 0 to 3 keep their smooth edge.</p>
+<figure><img src="candy_jar_frames.jpg" alt="Candy jar frames 0 to 9: the store's above, now below"><figcaption>Store version above, now below, 0 to 9 candies.</figcaption></figure>
+<p><b>Coffee machine.</b> Pours end in the middle of the cup's bottom; your beans inside the bowl; the wand into the latte cup.</p>
+<figure><img src="coffee_frames.jpg" alt="All frames of both brew clips"><figcaption>Every frame of both brew clips.</figcaption></figure>
+<p><b>Balance.</b> Two more customers every day, days two beats longer, star lines at 40 / 65 / 88 % of a perfect day (were 30 / 55 / 80).</p>
+<p><b>What's New, your words:</b> Tune balance. Night decorations. Added star as a currency in shop. Remove ads feature in shop. Sprites tune. <i>One caution: in this build stars are shown in the shop but cannot be spent yet (the Stars tab says "opens soon"). A line like "Stars now show in the shop; the star shop opens soon" would match what players get. Your call.</i></p>
+<p><b>Yours before the store:</b> the Remove Ads product in App Store Connect (non-consumable, <code>com.BetzzzGame.FoodTruckCafe.removeads</code>, $1.99, Paid Apps agreement), or tick "hide" below and the $ tab stays out of this release.</p>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.truckglow.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.truckglow.stronger"> Stronger glow</label></li>
-<li><label><input type="checkbox" data-id="cur.truckglow.ok"> Keep as is</label></li>
-</ul>
-</div>
-
-
-<div class="card">
-<p style="margin-top:0"><b>Release 26.11.13, what goes in, 11 November.</b> Everything on main since the store's build 21 (27 October). Back row bottoms shipped on your word.</p>
-<p><b>Play</b></p>
-<ul>
-<li>Two more customers every day, each day two beats longer to fit them; star lines raised (40 / 65 / 88 % of a perfect day, was 30 / 55 / 80).</li>
-<li>Day 1 comes pre-arranged; arranging starts on day 2.</li>
-<li>Haptics: a tap on each served item, a double tap on a refill.</li>
-<li>Night: the truck's windows light up from dusk; fireflies over the chapter 1 grass.</li>
-<li>Both tutorials bring the girl.</li>
-</ul>
-<p><b>Shop</b></p>
-<ul>
-<li>Three folder tabs on the panel: Stars (says "opens soon"), Coins (the items, default), $ (Remove Ads).</li>
-<li>A NEW tag on a card during its first open visit; the bought item hops to the Continue button.</li>
-<li>Remove Ads for $1.99 and a Restore purchases line. The purchase works only once the product exists in App Store Connect (your step, see below).</li>
-</ul>
-<p><b>Look</b></p>
-<ul>
-<li>Coffee machine and cups redrawn at the table's camera; pours straight into the cups, beans inside the bowl, the wand into the latte cup; see-through cup handles.</li>
-<li>Back row (truck, hen board, jar, pots) on one bottom line; candy jar frames smooth; candies icon clean; apple basket with the bread's shadow.</li>
-<li>Girl customer repainted. Cake and choux board unchanged.</li>
-</ul>
-<p><b>Not in this release:</b> the star shop (Stars tab only says "opens soon"), Boy and Kid repaints (your tick decides), the Grandma, Businessman and Chef clean-ups, ChatGPT's apple shadow pass.</p>
-<p><b>Your steps before the store:</b> 1 App Store Connect: Paid Apps agreement and the non-consumable product <code>com.BetzzzGame.FoodTruckCafe.removeads</code> at $1.99, or I hide the $ tab for this release. 2 The What's New words, yours. 3 Say <span class="say">build</span> for build 23 to TestFlight, play it once, then say <span class="say">release</span>; I then create 26.11.13 in App Store Connect, attach the build and submit, nothing before that word.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.rel.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.rel.hidedollar"> Hide the $ tab and Remove Ads for this release</label></li>
-<li><label><input type="checkbox" data-id="cur.rel.build"> Build 23 now</label></li>
-</ul>
-</div>
-
-
-
-<div class="card">
-<p style="margin-top:0"><b>Coffee machine, 10 November.</b> Your bean sprites, inside the bowl under its glass front. Pours as thick straight bars from each spout, ending in the middle of the cup's bottom: the centre of the coffee disc, the same point in the empty cup, in all four pouring frames (the earlier pictures here still showed the bars at the cup's lower edge). Cups all on the tray line; the steam wand lengthened into the latte cup, in front of it, puff at the milk.</p>
-<figure><img src="machine_in_game.jpg" alt="The machine on the table in the tutorial" style="max-height:300px"><figcaption>In the tutorial now.</figcaption></figure>
-<figure><img src="coffee_stream.jpg" alt="The four coffee frames and two wand frames, close up"><figcaption>The pours and the wand, close up.</figcaption></figure>
-<figure><img src="coffee_frames.jpg" alt="All frames of the one-cup and two-cup brew clips in order"><figcaption>Every frame of both brew clips, in order.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.coffee3.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.rel2.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.rel2.hidedollar"> Hide the $ tab and Remove Ads for this release</label></li>
+<li><label><input type="checkbox" data-id="cur.rel2.starline"> Use the softer star line in What's New</label></li>
+<li><label><input type="checkbox" data-id="cur.rel2.glow"> Truck glow stronger</label></li>
 </ul>
 </div>
 <div class="card">
-<p style="margin-top:0"><b>Customer sprites, 10 November.</b> Girl: shipped, in the game at the old sprites' size and place. Her halo is rebuilt with the old sprites' own colour and falloff (measured ring by ring), so the soft dark shadow around her matches the others; Boy and Kid are cut the same way. Boy and Kid: ChatGPT's repaints are below, already cut to the old sizes and ready; they go in on your tick. Boy: picture-book paint instead of the shiny render, clean hair, clean shoes, the happy pose with clasped hands as before. Kid: same child, clean head edge and socks, the happy pose with open arms. ChatGPT's pictures for today are used up. Grandma, Businessman and Chef: clean-ups still to do; Yoga stays.</p>
-<figure><img src="girl_halo.jpg" alt="Old girl sprite and the new one on the cloth colour, the halo around both" style="max-height:300px"><figcaption>The halo: old sprite left, new right.</figcaption></figure>
-<figure><img src="girl_gpt.jpg" alt="The old girl sprites and ChatGPT's repaint" style="max-height:360px"><figcaption>Girl: before (left two) and the repaint now in the game.</figcaption></figure>
-<figure><img src="boy_gpt.jpg" alt="The old boy sprites and ChatGPT's repaint" style="max-height:360px"><figcaption>Boy: before (left two) and ChatGPT's repaint.</figcaption></figure>
-<figure><img src="kid_gpt.jpg" alt="The old kid sprites and ChatGPT's repaint" style="max-height:360px"><figcaption>Kid: before (left two) and ChatGPT's repaint.</figcaption></figure>
-<figure><img src="customers_defects.jpg" alt="Close-ups of the faults on each customer" style="max-height:420px"><figcaption>The faults found, close up.</figcaption></figure>
+<p style="margin-top:0"><b>Customers from ChatGPT, 11 November.</b> Girl is in the game. The other five are repainted and cut to the old sprites' size and place, with the old sprites' own halo copied ring for ring; none is in the game or in build 23 until you tick it. Each picture: old waiting, new waiting, old happy, new happy. Yoga stays as she is.</p>
+<figure><img src="cust_boy.jpg" alt="Boy: old and new, both moods" style="max-height:330px"><figcaption>Boy.</figcaption></figure>
+<figure><img src="cust_kid.jpg" alt="Kid: old and new, both moods" style="max-height:330px"><figcaption>Kid.</figcaption></figure>
+<figure><img src="cust_grandma.jpg" alt="Grandma: old and new, both moods" style="max-height:330px"><figcaption>Grandma.</figcaption></figure>
+<figure><img src="cust_businessman.jpg" alt="Businessman: old and new, both moods" style="max-height:330px"><figcaption>Businessman.</figcaption></figure>
+<figure><img src="cust_chef.jpg" alt="Chef: old and new, both moods" style="max-height:330px"><figcaption>Chef.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.customers2.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.boy.ship"> Boy: ship it</label></li>
-<li><label><input type="checkbox" data-id="cur.kid.ship"> Kid: ship it</label></li>
-<li><label><input type="checkbox" data-id="cur.boykid.redo"> One of them needs another try (tell me what)</label></li>
+<li><label><input type="checkbox" data-id="cur.cust.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.cust.all"> Ship all five</label></li>
+<li><label><input type="checkbox" data-id="cur.cust.boy"> Ship Boy</label></li>
+<li><label><input type="checkbox" data-id="cur.cust.kid"> Ship Kid</label></li>
+<li><label><input type="checkbox" data-id="cur.cust.grandma"> Ship Grandma</label></li>
+<li><label><input type="checkbox" data-id="cur.cust.businessman"> Ship Businessman</label></li>
+<li><label><input type="checkbox" data-id="cur.cust.chef"> Ship Chef</label></li>
 </ul>
 </div>
 
