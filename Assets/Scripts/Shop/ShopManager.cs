@@ -352,10 +352,48 @@ public class ShopManager : MonoBehaviour
         if (playerScoreText != null)
         {
             var currentScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : 0;
-            playerScoreText.text = $"EARNED: ${Mathf.FloorToInt(currentScore)}";   // one line, whole dollars (owner, 13 October: it wrapped)
+            // "EARNED: $900 [star] 12": the coins, then the stars earned so far behind a little star (owner, 11 November 2026).
+            // The star is an Image laid into a gap left in the text, placed from the text's own glyph positions.
+            var stars = SessionManager.Instance != null ? SessionManager.Instance.GetTotalStars() : 0;
+            playerScoreText.enableWordWrapping = false;
+            if (scoreFontMax <= 0f) scoreFontMax = playerScoreText.fontSize;
+            playerScoreText.enableAutoSizing = true; playerScoreText.fontSizeMax = scoreFontMax; playerScoreText.fontSizeMin = scoreFontMax * 0.55f;
+            playerScoreText.text = $"EARNED: ${Mathf.FloorToInt(currentScore)}<space=1.5em>{stars}";   // one line, whole dollars (owner, 13 October: it wrapped)
             playerScoreText.color = playerScoreOriginalColor;
             scoreMessageSerial++; // any pending feedback restore is now stale
+            PlaceStarIcon(stars.ToString().Length);
         }
+    }
+
+    private float scoreFontMax;
+    private Image scoreStarIcon;
+
+    private void PlaceStarIcon(int digits)
+    {
+        if (scoreStarIcon == null)
+        {
+            var sprite = Resources.Load<Sprite>("UI/star_icon"); if (sprite == null) return;
+            var go = new GameObject("StarIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            go.transform.SetParent(playerScoreText.transform, false);
+            scoreStarIcon = go.GetComponent<Image>(); scoreStarIcon.sprite = sprite; scoreStarIcon.preserveAspect = true; scoreStarIcon.raycastTarget = false;
+            var rt0 = scoreStarIcon.rectTransform; rt0.anchorMin = rt0.anchorMax = new Vector2(0.5f, 0.5f); rt0.pivot = new Vector2(0.5f, 0.5f);
+        }
+        playerScoreText.ForceMeshUpdate();
+        var info = playerScoreText.textInfo; var first = info.characterCount - digits;
+        if (first < 1 || first >= info.characterCount) { scoreStarIcon.enabled = false; return; }
+        var digit = info.characterInfo[first]; var em = playerScoreText.fontSize;
+        var midY = (digit.bottomLeft.y + digit.topRight.y) * 0.5f;
+        var pivotOff = new Vector2(playerScoreText.rectTransform.rect.width * (0.5f - playerScoreText.rectTransform.pivot.x), playerScoreText.rectTransform.rect.height * (0.5f - playerScoreText.rectTransform.pivot.y));
+        var rt = scoreStarIcon.rectTransform;
+        rt.sizeDelta = new Vector2(em * 1.05f, em * 1.05f);
+        rt.anchoredPosition = new Vector2(digit.bottomLeft.x - em * 0.68f, midY + em * 0.04f) - pivotOff;
+        scoreStarIcon.enabled = true;
+    }
+
+    private void LateUpdate()
+    {
+        // the star belongs to the EARNED line only; the purchase messages that borrow the same text hide it
+        if (scoreStarIcon != null && playerScoreText != null) scoreStarIcon.enabled = playerScoreText.text.StartsWith("EARNED:");
     }
 
     private void InitializeShop()

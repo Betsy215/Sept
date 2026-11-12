@@ -540,6 +540,14 @@ public class SessionManager : MonoBehaviour
         }
     }
 
+    /// All stars earned so far: the best of every day, summed (shown in the shop, owner 11 November 2026).
+    public int GetTotalStars()
+    {
+        var list = currentSession?.levelStars; var n = 0;
+        if (list != null) foreach (var v in list) n += v;
+        return n;
+    }
+
     /// Best stars earned on a day (0 when never played).
     public int GetLevelStars(int levelIndex)
     {
