@@ -16,7 +16,7 @@ APP = "6755611355"
 TOKEN = subprocess.run(["python3", "-I", os.path.join(os.path.dirname(os.path.abspath(__file__)), "asc_token.py")],
                        capture_output=True, text=True).stdout.strip().splitlines()[-1]
 
-WHATS_NEW = ""   # empty until the owner says yes to the wording (26 October 2026: the draft is in the report's MVP); set it then, or type it in App Store Connect
+WHATS_NEW = "- Tune balance\n- Night decorations\n- Added star as a currency in shop\n- Sprites tune"   # 26.11.13: the owner's words of 11 November 2026; their "Remove ads feature in shop" line is left out because the $ tab stays hidden until the Paid Apps Agreement is signed
 DESCRIPTION_EDITS = {}  # {"old words": "new words"}; filled only on the owner's tick, e.g. the "two customers" line
 
 
