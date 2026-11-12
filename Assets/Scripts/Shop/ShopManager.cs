@@ -394,6 +394,8 @@ public class ShopManager : MonoBehaviour
     {
         // the star belongs to the EARNED line only; the purchase messages that borrow the same text hide it
         if (scoreStarIcon != null && playerScoreText != null) scoreStarIcon.enabled = playerScoreText.text.StartsWith("EARNED:");
+        // the store answers a moment after the shop opens: show or hide the $ tab when its answer changes
+        if (tabButtons.Count > 0 && RemoveAds.Available != dollarShown) { PaintTabs(); LayoutCards(); RefreshShopDisplay(); }
     }
 
     private void InitializeShop()
@@ -877,6 +879,7 @@ public class ShopManager : MonoBehaviour
             ShowPurchaseSuccessFeedback("Checking with the App Store...");
             RemoveAds.Restore((ok, msg) => { RefreshShopDisplay(); if (ok) ShowPurchaseSuccessFeedback(msg); else ShowPurchaseFailedFeedback(msg); });
         });
+        restoreButton = go; go.SetActive(RemoveAds.Available);   // only while the store offers the purchase
     }
 
     // --- Shop tabs (owner, 10 November 2026): left Stars, middle Coins (default, the existing items), right $ -------
@@ -895,6 +898,7 @@ public class ShopManager : MonoBehaviour
 
     private Image panelImage;
     private RectTransform panelRect;
+    private float tabRowLeft, tabRowWidth; private bool dollarShown = true; private GameObject restoreButton;
     private const float TabHeight = 86f;   // 104 touched the EARNED line above (review captures, 11 November)
     private RectTransform panelGroup;   // the panel and its tabs live in this one object; the slide-in moves it (owner, round 1: "make tab and panel a whole")
 
@@ -929,6 +933,7 @@ public class ShopManager : MonoBehaviour
         // full width with no gaps, the open one is taller and in the panel's own colour so it is one shape with it, the
         // closed ones sit lower and a shade darker behind
         var panelW = br.x - tl.x; var gap = 0f; var tabW = Mathf.Floor(panelW / 3f); var tabH = TabHeight; var overlap = 1f;   // 1 px into the panel: no seam
+        tabRowLeft = tl.x - pivotOff.x; tabRowWidth = panelW;
         string[] labels = { "Stars", "Coins", "$" };
         for (var i = 0; i < 3; i++)
         {
@@ -986,8 +991,19 @@ public class ShopManager : MonoBehaviour
         // panel, so its foot covers the panel's top edge; the closed tabs are a shade darker and sit behind the panel
         var baseCol = panelImage != null ? panelImage.color : new Color(1f, 0.96f, 0.86f, 0.92f);
         var closed = new Color(baseCol.r * 0.90f, baseCol.g * 0.90f, baseCol.b * 0.90f, baseCol.a);
+        // the $ tab exists only while the App Store offers Remove Ads; the tabs that show share the panel's width
+        dollarShown = RemoveAds.Available;
+        if (!dollarShown && currentTab == ShopTab.Dollars) currentTab = ShopTab.Coins;
+        var shown = 0; for (var i = 0; i < tabButtons.Count; i++) if (i != (int)ShopTab.Dollars || dollarShown) shown++;
+        var w = shown > 0 ? Mathf.Floor(tabRowWidth / shown) : 0f; var slot = 0;
+        var restore = GameObject.Find("RestorePurchases"); if (restore != null || restoreButton != null) { if (restoreButton == null) restoreButton = restore; restoreButton.SetActive(dollarShown); }
         for (var i = 0; i < tabButtons.Count; i++)
         {
+            var visible = i != (int)ShopTab.Dollars || dollarShown;
+            tabButtons[i].gameObject.SetActive(visible);
+            if (!visible) continue;
+            var prt = tabButtons[i].GetComponent<RectTransform>();
+            prt.anchoredPosition = new Vector2(Mathf.Round(tabRowLeft + w * (slot + 0.5f)), prt.anchoredPosition.y); prt.sizeDelta = new Vector2(w, prt.sizeDelta.y); slot++;
             var on = i == (int)currentTab;
             var img = tabButtons[i].GetComponent<Image>();
             if (img != null) img.color = on ? baseCol : closed;

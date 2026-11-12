@@ -22,6 +22,10 @@ public static class RemoveAds
     /// Localized price from the store once it answered, else the fallback.
     public static string PriceText => RemoveAdsStore.LocalizedPrice ?? FallbackPrice;
     public static bool StoreReady => RemoveAdsStore.Ready;
+    /// True when the App Store really offers the product (or it is already owned). The shop shows the $ tab, the card and
+    /// the restore line only then, so a build is safe to ship before the product exists in App Store Connect (11 November
+    /// 2026: the Paid Apps Agreement was not signed yet) and lights up by itself once it does.
+    public static bool Available => Owned || RemoveAdsStore.ProductAvailable;
 
     public static void Init() => RemoveAdsStore.Ensure();
     public static void Buy(Action<bool, string> done) => RemoveAdsStore.Ensure().Buy(done);
@@ -45,6 +49,7 @@ public class RemoveAdsStore : MonoBehaviour
     static RemoveAdsStore instance;
     public static string LocalizedPrice { get; private set; }
     public static bool Ready { get; private set; }
+    public static bool ProductAvailable { get; private set; }
     Action<bool, string> pending;
 
     public static RemoveAdsStore Ensure()
@@ -80,6 +85,7 @@ public class RemoveAdsStore : MonoBehaviour
     {
         controller = c; extensions = e; Ready = true; initializing = false;
         var p = c.products.WithID(RemoveAds.ProductId);
+        ProductAvailable = p != null && p.availableToPurchase;
         if (p != null)
         {
             if (!string.IsNullOrEmpty(p.metadata?.localizedPriceString)) LocalizedPrice = p.metadata.localizedPriceString;
@@ -91,7 +97,7 @@ public class RemoveAdsStore : MonoBehaviour
     public void OnInitializeFailed(InitializationFailureReason error) => OnInitializeFailed(error, null);
     public void OnInitializeFailed(InitializationFailureReason error, string message)
     {
-        initializing = false; Ready = false;
+        initializing = false; Ready = false; ProductAvailable = false;
         Debug.LogWarning($"[RemoveAds] store init failed: {error} {message}");
     }
 
