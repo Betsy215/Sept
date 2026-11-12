@@ -78,8 +78,8 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
-<div class="who p1"><h3>You</h3><p>Tick Boy and Kid under Current (ship, or another try). Say <span class="say">build</span> when you want build 23.</p></div>
-<div class="who p2"><h3>Me</h3><p>Boy and Kid go in on your ticks; then the Grandma, Businessman and Chef clean-ups. The star shop once Q1 is answered.</p></div>
+<div class="who p1"><h3>You</h3><p>Read the release recap under Current and tick: $ tab in or out, Boy and Kid, then <span class="say">build</span>.</p></div>
+<div class="who p2"><h3>Me</h3><p>Build 23 on your word, TestFlight, then the store on your word "release". Nothing else goes into this release unless you say so.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
@@ -105,13 +105,38 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Back row bottoms, 10 November.</b> You were right, twice. The fringe: each sprite fades out below the object (a soft shadow), and the first measure took the faintest row as the bottom; it now takes the first solid row. The offset: Unity trims a sprite's texture rectangle to its painted area, and the scan started at that trimmed edge instead of the sprite's own bottom, which put the pots and the jar 30 to 75 rows too high; fixed. Proof on screen, items against the bare cloth: truck, hen board, jar and both pots now end within three pixels of each other.</p>
-<figure><img src="back_row_full.jpg" alt="The whole table screen with the pink bottom line and a cyan post on each back-row item" style="max-height:620px"></figure>
-<figure><img src="back_row_zoom.jpg" alt="Each item at the line, five times enlarged"><figcaption>Each item at the line, five times enlarged.</figcaption></figure>
+<p style="margin-top:0"><b>Release 26.11.13, what goes in, 11 November.</b> Everything on main since the store's build 21 (27 October). Back row bottoms shipped on your word.</p>
+<p><b>Play</b></p>
+<ul>
+<li>Two more customers every day, each day two beats longer to fit them; star lines raised (40 / 65 / 88 % of a perfect day, was 30 / 55 / 80).</li>
+<li>Day 1 comes pre-arranged; arranging starts on day 2.</li>
+<li>Haptics: a tap on each served item, a double tap on a refill.</li>
+<li>Night: the truck's windows light up from dusk; fireflies over the chapter 1 grass.</li>
+<li>Both tutorials bring the girl.</li>
+</ul>
+<p><b>Shop</b></p>
+<ul>
+<li>Three folder tabs on the panel: Stars (says "opens soon"), Coins (the items, default), $ (Remove Ads).</li>
+<li>A NEW tag on a card during its first open visit; the bought item hops to the Continue button.</li>
+<li>Remove Ads for $1.99 and a Restore purchases line. The purchase works only once the product exists in App Store Connect (your step, see below).</li>
+</ul>
+<p><b>Look</b></p>
+<ul>
+<li>Coffee machine and cups redrawn at the table's camera; pours straight into the cups, beans inside the bowl, the wand into the latte cup; see-through cup handles.</li>
+<li>Back row (truck, hen board, jar, pots) on one bottom line; candy jar frames smooth; candies icon clean; apple basket with the bread's shadow.</li>
+<li>Girl customer repainted. Cake and choux board unchanged.</li>
+</ul>
+<p><b>Not in this release:</b> the star shop (Stars tab only says "opens soon"), Boy and Kid repaints (your tick decides), the Grandma, Businessman and Chef clean-ups, ChatGPT's apple shadow pass.</p>
+<p><b>Your steps before the store:</b> 1 App Store Connect: Paid Apps agreement and the non-consumable product <code>com.BetzzzGame.FoodTruckCafe.removeads</code> at $1.99, or I hide the $ tab for this release. 2 The What's New words, yours. 3 Say <span class="say">build</span> for build 23 to TestFlight, play it once, then say <span class="say">release</span>; I then create 26.11.13 in App Store Connect, attach the build and submit, nothing before that word.</p>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.rowfix.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.rel.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.rel.hidedollar"> Hide the $ tab and Remove Ads for this release</label></li>
+<li><label><input type="checkbox" data-id="cur.rel.build"> Build 23 now</label></li>
 </ul>
 </div>
+
+
+
 <div class="card">
 <p style="margin-top:0"><b>Coffee machine, 10 November.</b> Your bean sprites, inside the bowl under its glass front. Pours as thick straight bars from each spout, ending in the middle of the cup's floor, on the cup's centre line, in all four pouring frames. Cups all on the tray line; the steam wand lengthened into the latte cup, in front of it, puff at the milk.</p>
 <figure><img src="machine_in_game.jpg" alt="The machine on the table in the tutorial" style="max-height:300px"><figcaption>In the tutorial now.</figcaption></figure>
