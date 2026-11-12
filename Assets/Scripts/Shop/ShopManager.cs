@@ -895,7 +895,7 @@ public class ShopManager : MonoBehaviour
 
     private Image panelImage;
     private RectTransform panelRect;
-    private const float TabHeight = 104f;
+    private const float TabHeight = 86f;   // 104 touched the EARNED line above (review captures, 11 November)
     private RectTransform panelGroup;   // the panel and its tabs live in this one object; the slide-in moves it (owner, round 1: "make tab and panel a whole")
 
     private void EnsureTabs()
