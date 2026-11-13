@@ -22,7 +22,23 @@ public static class AnalyticsLog
     private static bool IsTest => Application.isEditor || AdsInitializer.IsTestFlightBuild();
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private static void Boot() => Start();
+    private static void Boot()
+    {
+        Application.focusChanged -= OnFocus;
+        Application.focusChanged += OnFocus;
+        Start();
+    }
+
+    private static void OnFocus(bool focused) { if (!focused) Send(); }
+
+    /// Unity uploads once a minute and, when the app goes to the background, only writes to disk. So the last minute
+    /// of a player who never opens the game again was never seen (13 November 2026: two players "stopped" at
+    /// dayStarted 1, though they may have finished the day). Upload at the milestones and when the app loses focus.
+    private static void Send()
+    {
+        try { if (ready) AnalyticsService.Instance.Flush(); }
+        catch (Exception ex) { Debug.LogWarning("[Analytics] send: " + ex.Message); }
+    }
 
     private static async void Start()
     {
@@ -70,11 +86,14 @@ public static class AnalyticsLog
     }
 
     public static void TutorialStep(int step, string text) => Record("tutorialStep", ("stepNumber", step), ("stepText", text));
-    public static void TutorialFinished(int captionsShown) => Record("tutorialFinished", ("stepNumber", captionsShown));
-    public static void DayStarted(int levelIndex) => Record("dayStarted", ("day", Day(levelIndex)), ("foodsOn", EnabledFoods()));
-    public static void DayFinished(int levelIndex, int stars, float earnings) =>
+    public static void TutorialFinished(int captionsShown) { Record("tutorialFinished", ("stepNumber", captionsShown)); Send(); }
+    public static void DayStarted(int levelIndex) { Record("dayStarted", ("day", Day(levelIndex)), ("foodsOn", EnabledFoods())); Send(); }
+    public static void DayFinished(int levelIndex, int stars, float earnings)
+    {
         Record("dayFinished", ("day", Day(levelIndex)), ("stars", stars), ("dayEarnings", earnings));
-    public static void DayLeft(int levelIndex, string reason) => Record("dayLeft", ("day", Day(levelIndex)), ("reason", reason));
-    public static void ShopPurchase(string item, int price) => Record("shopPurchase", ("itemName", item ?? ""), ("price", price));
+        Send();
+    }
+    public static void DayLeft(int levelIndex, string reason) { Record("dayLeft", ("day", Day(levelIndex)), ("reason", reason)); Send(); }
+    public static void ShopPurchase(string item, int price) { Record("shopPurchase", ("itemName", item ?? ""), ("price", price)); Send(); }
     public static void AdWatched(string adType, bool completed) => Record("adWatched", ("adType", adType), ("completed", completed));
 }
