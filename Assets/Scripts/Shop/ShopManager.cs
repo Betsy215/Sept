@@ -900,6 +900,7 @@ public class ShopManager : MonoBehaviour
     private RectTransform panelRect;
     private float tabRowLeft, tabRowWidth; private bool dollarShown = true; private GameObject restoreButton;
     private const float TabHeight = 86f;   // 104 touched the EARNED line above (review captures, 11 November)
+    private const float ScoreLift = 56f;   // the EARNED line still sat on the open tab's top edge (owner, 13 November: "add some space between earned text line and the shop panel"): half a letter height of air
     private RectTransform panelGroup;   // the panel and its tabs live in this one object; the slide-in moves it (owner, round 1: "make tab and panel a whole")
 
     private void EnsureTabs()
@@ -913,6 +914,7 @@ public class ShopManager : MonoBehaviour
         if (panelImage != null) panelImage.sprite = null;
         var canvasRt = viewport.parent as RectTransform; if (canvasRt == null) return;
         var font = playerScoreText != null ? playerScoreText.font : null;
+        if (playerScoreText != null) playerScoreText.rectTransform.anchoredPosition += new Vector2(0f, ScoreLift);   // once: this method runs once per shop visit
         // One object for the panel and its tabs: a group that takes the panel's exact rectangle and place, the panel
         // re-parented inside it at zero offset, the tabs beside it. The slide-in moves the group, so panel and tabs
         // are one piece in motion as well as in looks.
