@@ -31,6 +31,7 @@ public class StarProgressBar : MonoBehaviour
     public LevelData currentLevelData;
     
     private float lastDisplayedScore = -1;
+    private OrderSystem orderSystem;
     private bool[] starStates = new bool[3];
     private Vector3[] originalStarScales = new Vector3[3];
     private Coroutine[] starAnimations = new Coroutine[3];
@@ -103,6 +104,12 @@ public class StarProgressBar : MonoBehaviour
         UpdateDisplay(currentScore, useAnimations);
     }
 
+    /// A customer's order has closed (served or lost): the stars may have changed though the money has not.
+    public void RefreshStars()
+    {
+        UpdateDisplay(lastDisplayedScore < 0 ? 0 : lastDisplayedScore, useAnimations);
+    }
+
     void UpdateDisplay(float currentScore, bool animate)
     {
         lastDisplayedScore = currentScore;
@@ -115,11 +122,11 @@ public class StarProgressBar : MonoBehaviour
     {
         if (currentLevelData == null) return;
         
-        bool[] newStarStates = {
-            currentLevelData.HasEarnedStar(currentScore, 1),
-            currentLevelData.HasEarnedStar(currentScore, 2),
-            currentLevelData.HasEarnedStar(currentScore, 3)
-        };
+        // Stars from the customers served, not from money (owner, 14 November 2026; StarRule). The level's money lines
+        // (LevelData.starThreshold1..3) are no longer read here.
+        if (orderSystem == null) orderSystem = FindObjectOfType<OrderSystem>();
+        int earned = orderSystem != null ? StarRule.Stars(orderSystem.CustomersServed, orderSystem.CustomersLost) : 0;
+        bool[] newStarStates = { earned >= 1, earned >= 2, earned >= 3 };
         
         for (int i = 0; i < 3; i++)
         {

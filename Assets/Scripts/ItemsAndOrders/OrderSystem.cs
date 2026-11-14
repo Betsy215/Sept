@@ -39,6 +39,10 @@ public class OrderSystem : MonoBehaviour
 
     /// Orders finished or expired so far this day (read by DayNightTint).
     public int OrdersCompleted => ordersCompleted;
+    // The day's customers by how their order closed (owner, 14 November 2026: the stars come from these, see StarRule)
+    private int customersServed, customersLost;
+    public int CustomersServed => customersServed;   // got the whole order
+    public int CustomersLost => customersLost;       // left with nothing, or with only part of it
 
     [Header("Two customers (12 October 2026)")]
     [Tooltip("How many customers can wait with an order at the same time: 2 in play, 1 in the tutorial")]
@@ -160,6 +164,7 @@ public class OrderSystem : MonoBehaviour
     {
         // Reset when re-enabled by LevelManager: no order survives a level change
         ordersCompleted = 0;
+        customersServed = 0; customersLost = 0;
         foreach (var o in orders.ToArray()) { PatienceMeter.Hide(o); ClearOrderDisplay(o); if (slots != null) SetBubble(slots[o.slot], 0); }
         orders.Clear();
         hasInitializedSinceEnable = false;
@@ -594,6 +599,7 @@ public class OrderSystem : MonoBehaviour
 
         // Count as completed
         ordersCompleted++;
+        customersServed++; RefreshStars();
         UpdateOrderProgress();
 
         // CUSTOMER INTEGRATION: Notify customer manager (once, null-guarded)
@@ -607,6 +613,11 @@ public class OrderSystem : MonoBehaviour
         SetBubble(slots[order.slot], 0);
         orders.Remove(order);
         AfterOrderClosed();
+    }
+
+    private void RefreshStars()
+    {
+        if (scoreManager != null && scoreManager.starProgressBar != null) scoreManager.starProgressBar.RefreshStars();
     }
 
     /// Customer flow: the day ends on the clock (LevelManager checks). Original flow: by the order count.
@@ -639,6 +650,7 @@ public class OrderSystem : MonoBehaviour
 
         // Count as completed (even if expired)
         ordersCompleted++;
+        customersLost++; RefreshStars();
         UpdateOrderProgress();
 
         // CUSTOMER INTEGRATION: Notify customer manager
