@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
 using UnityEngine;
-#if UNITY_PURCHASING
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
-#endif
 
 /// Remove Ads, a one-time purchase (owner, 9 November 2026, $1.99): switches off the interstitial between days.
 /// The rewarded ads (daily treat, the coin button) stay, the player asks for those. Ownership is a PlayerPrefs flag set
@@ -41,10 +39,11 @@ public static class RemoveAds
 }
 
 /// The hidden store listener; one per app, survives scene loads.
-public class RemoveAdsStore : MonoBehaviour
-#if UNITY_PURCHASING
-    , IDetailedStoreListener
-#endif
+/// 14 November 2026: the store code used to sit inside `#if UNITY_PURCHASING`. Nothing ever defined that symbol (the
+/// purchasing package is in the manifest, but the symbol only comes with the editor's Services switch, which is off), so
+/// every build up to 28 shipped the empty "Coming soon" stub and the $ tab could never show. The guard is gone: the
+/// package is a plain dependency of the game.
+public class RemoveAdsStore : MonoBehaviour, IDetailedStoreListener
 {
     static RemoveAdsStore instance;
     public static string LocalizedPrice { get; private set; }
@@ -61,7 +60,6 @@ public class RemoveAdsStore : MonoBehaviour
         return instance;
     }
 
-#if UNITY_PURCHASING
     IStoreController controller;
     IExtensionProvider extensions;
     bool initializing;
@@ -140,8 +138,4 @@ public class RemoveAdsStore : MonoBehaviour
         Debug.LogWarning("[RemoveAds] purchase failed: " + why);
         cb?.Invoke(false, why == "UserCancelled" ? "" : "Purchase failed");
     }
-#else
-    public void Buy(Action<bool, string> done) => done?.Invoke(false, "Coming soon");
-    public void Restore(Action<bool, string> done) => done?.Invoke(false, "Coming soon");
-#endif
 }
