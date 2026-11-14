@@ -3,7 +3,7 @@ Logs every action and the console's errors/warnings to /tmp/ap/run.log and a per
 import sys, json, time, re
 sys.path.insert(0, "/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools")
 import unity_mcp as U
-LOG = open("/tmp/ap/stars_run.log", "a"); DAYS = open("/tmp/ap/stars_days.tsv", "a")
+LOG = open("/tmp/ap/stars2_run.log", "a"); DAYS = open("/tmp/ap/stars2_days.tsv", "a")
 def log(*a):
     s = " ".join(str(x) for x in a); print(s, flush=True); LOG.write(time.strftime("%H:%M:%S ") + s + "\n"); LOG.flush()
 def res(text):
@@ -78,12 +78,12 @@ for day in range(0, 12):
     ex("UnityEngine.Time.timeScale = 1f; return \"speed 1\";")
     time.sleep(1)
     st = ex(open("/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools/autoplay/state.cs").read()); log("END", st, counts, f"{time.time() - t0:.0f}s")
-    # the star rule (owner, 14 November 2026): customers who came, and how many left without their whole order
-    logs = U.call("read_console", {"action": "get", "types": ["log"], "count": 500, "include_stacktrace": False, "format": "plain", "filter_text": "Order expired"})
-    lost = logs.count("Order expired!")
-    came = ex('var os = UnityEngine.Object.FindObjectOfType<OrderSystem>(); return os == null ? "?" : os.OrdersCompleted.ToString();')
-    log("STARS day", day + 1, "customers", came, "lost", lost)
-    DAYS.write(f"{day}\t{st}\t{json.dumps(counts)}\tcame {came}\tlost {lost}\n"); DAYS.flush()
+    # the star rule (owner, 14 November 2026): the game's own counters (OrderSystem.CustomersServed / CustomersLost).
+    # The first version counted "Order expired!" console lines and missed them (the console read is capped): withdrawn.
+    cs = ex('var os = UnityEngine.Object.FindObjectOfType<OrderSystem>(); return os == null ? "? ?" : os.CustomersServed + " " + os.CustomersLost;')
+    served, lost = (cs.split() + ["?", "?"])[:2]; came = (int(served) + int(lost)) if served.isdigit() and lost.isdigit() else "?"
+    log("STARS day", day + 1, "customers", came, "served", served, "lost", lost)
+    DAYS.write(f"{day}\t{st}\t{json.dumps(counts)}\tcame {came}\tserved {served}\tlost {lost}\n"); DAYS.flush()
     U.call("manage_camera", {"action": "screenshot", "screenshot_file_name": f"ap_day{day:02d}_end", "properties": {"include_image": False}})
     console(f"day {day}")
     if "panel True" in st:
