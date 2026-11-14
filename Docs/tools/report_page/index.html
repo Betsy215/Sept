@@ -67,7 +67,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <body><main>
 
 <h1>Food Truck Cafe</h1>
-<p class="sub">Your report for 14 November. 26.11.13 is live; 26.11.21 (build 28) is waiting for Apple's review since 12:12 PST.</p>
+<p class="sub">Your report for 14 November. 26.11.13 is live; 26.11.21 (build 28) is waiting for Apple's review; test build 29 is on TestFlight.</p>
 
 <nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#qa"><b>2</b>Q&amp;A</a><a href="#current"><b>3</b>Current</a><a href="#mvp"><b>4</b>MVP</a><a href="#backlog"><b>5</b>Backlog</a><a href="#analysis"><b>6</b>Analysis</a><a href="visuals.html" class="page">Visuals</a><span id="saved"></span></nav>
 
@@ -79,51 +79,57 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>26.11.21 is with Apple.</b> Sent to review on 14 November, 12:12 PST, on your "release": build 28, What's New "Bug fixes", and the US$1.99 Remove Ads purchase with it. Both show "Waiting for Review". Apple says up to 48 hours and mails you when it is done.</p>
-<p>It goes on sale by itself as soon as Apple approves; you do not have to press anything.</p>
-<p>If you buy Remove Ads on TestFlight build 28 before the reviewer does and anything is off, tell me at once; a fix needs a new build and a new submission.</p>
-<p>Still open for you in Q&amp;A: how to redo the stars, and whether to level the sound volumes. Both are for the release after.</p>
+<p><b>Test build 26.11.21 (29)</b> is on TestFlight since 14 November, 12:50 PST. It is build 28 plus the working Remove Ads tab. Open the shop: three tabs, Stars, Coins, $. Buy Remove Ads once; on TestFlight it costs nothing.</p>
+<p><b>At Apple:</b> 26.11.21 with build 28 is waiting for review since 12:12 PST, with the Remove Ads purchase attached. Build 28 cannot show that purchase, so Apple may reject. Your word: Remove Ads ships with this weekend's release, which replaces it either way. If you want build 28 to pass alone as the bug-fix release, say "pull it": I cancel the submission and send build 28 again without the purchase.</p>
+<p><b>This weekend's release</b> so far: Remove Ads working (build 29), pop, blender and coin quieter, and the new star rule once the measurement is in.</p>
 <p>Yoga lady sitting poses: the brief for ChatGPT goes out at 3:09 PM, when its free pictures are back.</p></div>
-<div class="who p2"><h3>Me</h3><p>Watch for Apple's answer. If the review asks for something, I tell you what and fix it.</p></div>
+<div class="who p2"><h3>Me</h3><p>Measure every day for the star rule and show the table. Watch for Apple's answer.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>You asked: are all the sound effects about the same volume? No.</h3>
-<p style="margin:4px 0 8px">Measured on the files, loud parts only. The quietest and the loudest are about 24 dB apart, which the ear hears as roughly five times louder.</p>
-<div class="card tw"><table>
-<tr><th>Group</th><th>Sounds</th><th class="n">Level</th></tr>
-<tr><td>Quiet</td><td>Oven, bean grinder, waffle ding, door, waffle sizzle, cash</td><td class="n">-36 to -29 dB</td></tr>
-<tr><td>Middle</td><td>Ice cubes, juice pour, squish, paper flip, coffee steam, serve clink, cha-ching, candy</td><td class="n">-25 to -19 dB</td></tr>
-<tr><td>Loud</td><td>Pop, blender, coin</td><td class="n">-15 to -11 dB</td></tr>
-</table></div>
-<p style="margin:8px 0 8px">The coffee pour was in the middle group but ran much louder than the other machine sounds (oven, grinder). In build 28 it is 5 dB down. Nothing else is changed.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.sfxlevel.all"> Level them all to the middle group, in the next release</label></li>
-<li><label><input type="checkbox" data-id="qa.sfxlevel.leave"> Leave the others as they are</label></li>
-</ul></div>
-
-<div class="q"><h3>Stars without money: three ways. Nothing is changed yet.</h3>
-<p style="margin:4px 0 8px">Today: stars come from the day's earnings (3 stars at 80 % of what a perfect player earns). Tips for fast orders can make up for customers who left, which is how you got 3 stars with missed orders. A day runs on the clock, so "all the orders" means: no customer left without their order.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.stars.served"> <b>A</b> Customers served, with a goal per day. Example day 1: 1 star at 4 served, 2 stars at 6, 3 stars at 8 <b>and</b> nobody left unserved. The goal shows during the day ("served 5 / 8"). My pick: it is the clearest to a player and it cannot be passed by tips.</label></li>
-<li><label><input type="checkbox" data-id="qa.stars.lost"> <b>B</b> Customers lost only. 3 stars: nobody lost. 2 stars: one or two lost. 1 star: at least half served. Simple, but a slow player who serves few and loses none still gets 3.</label></li>
-<li><label><input type="checkbox" data-id="qa.stars.happy"> <b>C</b> Happy customers. Like A, and 3 stars also needs half of the orders served fast (the "perfect" ones). Harder; rewards speed.</label></li>
+<div class="q"><h3>Stars: your rule, as I understand it. Nothing is changed in the game yet.</h3>
+<ul>
+<li><b>3 stars:</b> every customer who came that day got their whole order. One customer leaving, or leaving with part of an order, and it is not 3 stars.</li>
+<li><b>2 stars:</b> at least 90 % of the day's customers got their whole order, 90 % rounded to a whole customer.</li>
+<li>Money no longer decides stars. Coins and tips stay what you spend in the shop.</li>
+<li>Every level must be able to reach 3 stars; candies count as fair help.</li>
 </ul>
-<p style="margin:8px 0 0">Money stays what you spend in the shop. With A or C I measure each day's goal with the autoplay run, the way the money lines were set, and show you the table before it goes in.</p></div>
+<div class="card tw"><table>
+<tr><th class="n">Customers that day</th><th class="n">Needed for 2 stars</th><th class="n">Lost allowed</th></tr>
+<tr><td class="n">8</td><td class="n">7</td><td class="n">1</td></tr>
+<tr><td class="n">10</td><td class="n">9</td><td class="n">1</td></tr>
+<tr><td class="n">15</td><td class="n">13</td><td class="n">2</td></tr>
+<tr><td class="n">19</td><td class="n">17</td><td class="n">2</td></tr>
+</table></div>
+<p style="margin:8px 0 4px">Two gaps I fill; tick if they are wrong:</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.stars2.one70no"> 1 star at 70 % served and none below is NOT what I want</label></li>
+<li><label><input type="checkbox" data-id="qa.stars2.roundno"> Rounding a half down (15 customers: 13 needed) is NOT what I want</label></li>
+</ul>
+<p style="margin:8px 0 0">Next: the autoplay plays every day perfectly and counts customers lost. The table comes here before the rule goes in.</p></div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>26.11.21 sent to Apple, 14 November.</b> What players get when it is approved, compared with the live 26.11.13:</p>
-<ul>
-<li>Remove Ads in the shop's third tab, US$1.99.</li>
-<li>Five customers repainted (Boy, Kid, Grandma, Businessman, Chef).</li>
-<li>Candy jar repainted; coffee machine light, pour and steam sounds.</li>
-<li>Day 1 customers mix (the Girl only in the tutorial); the menu card opens sooner; more air under the EARNED line.</li>
-</ul>
-<figure><img src="removeads_popup.jpg" alt="The Remove Ads popup before and after: the text clear of the two buttons" style="max-height:620px"><figcaption>Remove Ads popup, before and after the last fix. The right one is what Apple's reviewer sees.</figcaption></figure>
+<p style="margin-top:0"><b>Remove Ads tab: why it never showed, and the fix, 14 November.</b> My mistake: the purchase code sat behind a switch nothing in the project turns on, so every build up to 28 had an empty stand-in and the $ tab could not appear. Fixed; build 29 on TestFlight has it. In the editor the shop now shows three tabs.</p>
+<figure><img src="shop_three_tabs.jpg" alt="The shop in the editor with three tabs: Stars, Coins and $" style="max-height:560px"><figcaption>The shop after the fix, in the editor: Stars, Coins, $.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.sent21.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.iapfix.ship"> Good to ship, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.iapfix.redo"> Not yet, I will say what</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Pop, blender and coin at the middle volume, 14 November.</b> Your word: "tune these to middle". Pop is 6 dB down, blender 9, coin 10; they now sit with the steam and the serve clink. In the project, not in a build yet.</p>
+<div class="card tw"><table>
+<tr><th>Sound</th><th>Before</th><th>After</th></tr>
+<tr><td>Pop</td><td><audio controls preload="none" src="snd_pop_before.mp3" style="width:220px"></audio></td><td><audio controls preload="none" src="snd_pop_after.mp3" style="width:220px"></audio></td></tr>
+<tr><td>Blender</td><td><audio controls preload="none" src="snd_blender_blend_before.mp3" style="width:220px"></audio></td><td><audio controls preload="none" src="snd_blender_blend_after.mp3" style="width:220px"></audio></td></tr>
+<tr><td>Coin</td><td><audio controls preload="none" src="snd_coin_before.mp3" style="width:220px"></audio></td><td><audio controls preload="none" src="snd_coin_after.mp3" style="width:220px"></audio></td></tr>
+</table></div>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.sfxmid.ship"> Good to ship, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.sfxmid.redo"> Not yet, I will say what</label></li>
 </ul>
 </div>
 
@@ -138,24 +144,8 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 </div>
 
-<div class="card">
-<p style="margin-top:0"><b>More air under the EARNED line, 13 November.</b> The line sat on the open tab's top edge; it is lifted by half a letter height.</p>
-<figure><img src="shop_earned_gap.jpg" alt="The shop's EARNED line before and after" style="max-height:420px"><figcaption>Before, after.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.gap.seen"> Seen, remove this</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>26.11.13 is on sale, 12 November.</b> Apple approved build 24 on 12 November, 09:02 PST. It was already released when I checked, so I pressed nothing. Players see two shop tabs, Stars and Coins; Remove Ads stays hidden until the Paid Apps Agreement is signed.</p>
-<figure><img src="rel_shop_two_tabs.jpg" alt="The shop in 26.11.13: two tabs, Coins and Stars" style="max-height:520px"><figcaption>The shop in 26.11.13.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.live.seen"> Seen, remove this</label></li>
-</ul>
-</div>
-
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">This release, 26.11.21. Your words, 14 November: "push this fix and release it asap"; fixes from your test run; Remove Ads included (your choice, 14 November).</p>
+<p class="sub" style="margin:0 0 8px">Your words, 14 November: "we will do another release this weekend"; Remove Ads goes out then; new star rule: 3 stars = every customer served their whole order, 2 stars = 90 %.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <div class="q" style="background:var(--skybg)"><h3>Do in the polish release. Unticked items go when you say clean up.</h3>
