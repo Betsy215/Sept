@@ -30,6 +30,12 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable, IPointerCl
     // False during the arrangement phase, where a tap on the machine is the start of a drag.
     private bool brewingEnabled = true;
 
+    // Light and sounds while it brews (owner, 14 November 2026): the round button glows from the tap to the last cup,
+    // a pour sound runs with the stream and a steam sound with each milk foam. The times are the brew clips' sprite keys.
+    private const float PourAt = 0.67f, FoamAt = 3.52f, SecondFoamAt = 5.57f;
+    private SpriteRenderer brewLight;
+    private Coroutine brewFx;
+
     private void Start()
     {
         Debug.Log($"🟢 CoffeeMachine Start() - currentUpgradeLevel: {currentUpgradeLevel}, Time: {Time.frameCount}");
@@ -125,6 +131,44 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable, IPointerCl
             OnFinish1Cup();
             if (isBrewing) OnFinish2Cup();
         }
+
+        if (isBrewing) BrewFeedback(true);
+    }
+
+    /// The button's light (a child sprite on the frames' own 512 canvas, Resources/Coffee/brew_light) and the brew sounds.
+    private void BrewFeedback(bool on)
+    {
+        if (brewFx != null) { StopCoroutine(brewFx); brewFx = null; }
+        if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+        if (on && brewLight == null && spriteRenderer != null)
+        {
+            var lit = Resources.Load<Sprite>("Coffee/brew_light");
+            if (lit != null)
+            {
+                var go = new GameObject("BrewLight"); go.transform.SetParent(transform, false);
+                brewLight = go.AddComponent<SpriteRenderer>(); brewLight.sprite = lit;
+            }
+        }
+        if (brewLight != null)
+        {
+            if (spriteRenderer != null) { brewLight.sortingLayerID = spriteRenderer.sortingLayerID; brewLight.sortingOrder = spriteRenderer.sortingOrder + 1; }
+            brewLight.enabled = on;
+        }
+        if (on && isActiveAndEnabled) brewFx = StartCoroutine(BrewSounds(activeBrewingLevel));
+    }
+
+    private System.Collections.IEnumerator BrewSounds(int level)
+    {
+        yield return new WaitForSeconds(PourAt); PlayBrewSound("Coffee/coffee_pour");
+        yield return new WaitForSeconds(FoamAt - PourAt); PlayBrewSound("Coffee/coffee_steam");
+        if (level >= 2) { yield return new WaitForSeconds(SecondFoamAt - FoamAt); PlayBrewSound("Coffee/coffee_steam"); }
+        brewFx = null;
+    }
+
+    private static void PlayBrewSound(string path)
+    {
+        var clip = Resources.Load<AudioClip>(path);
+        if (clip != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(clip);
     }
 
     // Animation event
@@ -174,6 +218,7 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable, IPointerCl
         if (animator != null)
             animator.enabled = false;
 
+        BrewFeedback(false);
         RestoreUpgradeSprite();
 
         Debug.Log($"✅ Brewing complete! Level {currentUpgradeLevel} machine finished {cupsBrewedThisSession} cup(s).");
