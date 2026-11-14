@@ -16,7 +16,7 @@ APP = "6755611355"
 TOKEN = subprocess.run(["python3", "-I", os.path.join(os.path.dirname(os.path.abspath(__file__)), "asc_token.py")],
                        capture_output=True, text=True).stdout.strip().splitlines()[-1]
 
-WHATS_NEW = "- Tune balance\n- Night decorations\n- Added star as a currency in shop\n- Sprites tune"   # 26.11.13: the owner's words of 11 November 2026; their "Remove ads feature in shop" line is left out because the $ tab stays hidden until the Paid Apps Agreement is signed
+WHATS_NEW = "Bug fixes"   # 26.11.21: the owner's words of 14 November 2026 ("for release note, in what's new, just put bug fixes"). 26.11.13 was: "- Tune balance\n- Night decorations\n- Added star as a currency in shop\n- Sprites tune"
 DESCRIPTION_EDITS = {}  # {"old words": "new words"}; filled only on the owner's tick, e.g. the "two customers" line
 
 

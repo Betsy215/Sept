@@ -79,31 +79,53 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 26.11.21 (27)</b> is on TestFlight, ready to install since 14 November, 11:00 PST.</p>
-<p>New in it, on your "ship these changes" (14 November):</p>
-<ul>
-<li>Candy jar: ChatGPT's clean repaint, empty to nine candies.</li>
-<li>Coffee machine: the button lights up while it brews.</li>
-<li>Coffee machine sounds: the pour you picked from Pixabay (number 1, cut to the pour's 2.9 seconds) and the steam with each milk foam.</li>
-</ul>
-<p>Also new for this build: Remove Ads exists at Apple now (US$1.99, "Ready to Submit", not sent to review), so the $ tab should show in the shop. Buying there is a test purchase and costs nothing. In its popup the last text line touches the two buttons; say if you want that fixed.</p>
-<p>In Current now: why day 1 was all Girl customers, and the fix (not in build 27).</p>
-<p><b>Release this weekend</b> (your word, 14 November). Remove Ads goes to review only when you say which release carries it.</p>
+<p><b>Test build 26.11.21 (28)</b> is on TestFlight, ready to install since 14 November, 11:59 PST.</p>
+<p><b>To release, I need one word from you: "release".</b> Then I create version 26.11.21 at Apple with build 28, What's New "Bug fixes" (your words), and send it to review together with the US$1.99 Remove Ads purchase (your choice today: include it).</p>
+<p>Before that, on build 28: buy Remove Ads once in the shop's $ tab. On TestFlight it is a test purchase and costs nothing. Apple's reviewer will do the same.</p>
+<p>Stars: nothing changed. Three ways to redo them without money are in Q&amp;A.</p>
 <p>Yoga lady sitting poses: the brief for ChatGPT goes out at 3:09 PM, when its free pictures are back.</p></div>
-<div class="who p2"><h3>Me</h3><p>Fix what you report, show it here. No store submission without your yes.</p></div>
+<div class="who p2"><h3>Me</h3><p>Fix what you report, show it here. No store submission before your word.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<p class="sub" style="margin:4px 0 8px">No open questions.</p>
+<div class="q"><h3>You asked: are all the sound effects about the same volume? No.</h3>
+<p style="margin:4px 0 8px">Measured on the files, loud parts only. The quietest and the loudest are about 24 dB apart, which the ear hears as roughly five times louder.</p>
+<div class="card tw"><table>
+<tr><th>Group</th><th>Sounds</th><th class="n">Level</th></tr>
+<tr><td>Quiet</td><td>Oven, bean grinder, waffle ding, door, waffle sizzle, cash</td><td class="n">-36 to -29 dB</td></tr>
+<tr><td>Middle</td><td>Ice cubes, juice pour, squish, paper flip, coffee steam, serve clink, cha-ching, candy</td><td class="n">-25 to -19 dB</td></tr>
+<tr><td>Loud</td><td>Pop, blender, coin</td><td class="n">-15 to -11 dB</td></tr>
+</table></div>
+<p style="margin:8px 0 8px">The coffee pour was in the middle group but ran much louder than the other machine sounds (oven, grinder). In build 28 it is 5 dB down. Nothing else is changed.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.sfxlevel.all"> Level them all to the middle group, in the next release</label></li>
+<li><label><input type="checkbox" data-id="qa.sfxlevel.leave"> Leave the others as they are</label></li>
+</ul></div>
+
+<div class="q"><h3>Stars without money: three ways. Nothing is changed yet.</h3>
+<p style="margin:4px 0 8px">Today: stars come from the day's earnings (3 stars at 80 % of what a perfect player earns). Tips for fast orders can make up for customers who left, which is how you got 3 stars with missed orders. A day runs on the clock, so "all the orders" means: no customer left without their order.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.stars.served"> <b>A</b> Customers served, with a goal per day. Example day 1: 1 star at 4 served, 2 stars at 6, 3 stars at 8 <b>and</b> nobody left unserved. The goal shows during the day ("served 5 / 8"). My pick: it is the clearest to a player and it cannot be passed by tips.</label></li>
+<li><label><input type="checkbox" data-id="qa.stars.lost"> <b>B</b> Customers lost only. 3 stars: nobody lost. 2 stars: one or two lost. 1 star: at least half served. Simple, but a slow player who serves few and loses none still gets 3.</label></li>
+<li><label><input type="checkbox" data-id="qa.stars.happy"> <b>C</b> Happy customers. Like A, and 3 stars also needs half of the orders served fast (the "perfect" ones). Harder; rewards speed.</label></li>
+</ul>
+<p style="margin:8px 0 0">Money stays what you spend in the shop. With A or C I measure each day's goal with the autoplay run, the way the money lines were set, and show you the table before it goes in.</p></div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Test feedback 3: day 1 was all Girl customers, 14 November.</b> Why: in round 1 you said "during tutorial, use a girl customer", and it was built too wide, for the whole of day 1 and of chapter 2's first day, not only the tutorial. The live version 26.11.13 has it too. Fixed in the editor: the Girl is forced only while a tutorial runs; afterwards the customers you own mix (Girl, Boy and Kid at the start). Not in a build yet.</p>
-<figure><img src="day1_customers.jpg" alt="Day 1 before: two Girls side by side. After: the Girl and the Kid."><figcaption>Day 1 in the game. I also ran the tutorial twice: its customer is still the Girl.</figcaption></figure>
+<p style="margin-top:0"><b>In build 28, from your test of build 27, 14 November.</b></p>
+<ul>
+<li>Day 1 customers mix again; the Girl is forced only during the tutorial.</li>
+<li>Coffee pour 5 dB quieter.</li>
+<li>Foam sound: the sounds now follow the animation's own frames. In the editor the steam used to start 0.8 seconds before the wand showed; now it starts 0.2 seconds after.</li>
+<li>Menu card opens 0.6 seconds into the arrangement instead of 2.</li>
+<li>Remove Ads popup: the text no longer runs into the buttons. Other popups are unchanged.</li>
+</ul>
+<figure><img src="removeads_popup.jpg" alt="The Remove Ads popup before and after: the text clear of the two buttons" style="max-height:620px"><figcaption>Remove Ads popup, before and after.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.day1girl.ship"> Good to ship, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.day1girl.redo"> Not yet, I will say what</label></li>
+<li><label><input type="checkbox" data-id="cur.b28.ship"> Good to ship, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.b28.redo"> Not yet, I will say what</label></li>
 </ul>
 </div>
 
@@ -135,7 +157,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Next release. Your words, 14 November: "I want to do a release this weekend"; fixes from your test run; Remove Ads "part of next release".</p>
+<p class="sub" style="margin:0 0 8px">This release, 26.11.21. Your words, 14 November: "push this fix and release it asap"; fixes from your test run; Remove Ads included (your choice, 14 November).</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <div class="q" style="background:var(--skybg)"><h3>Do in the polish release. Unticked items go when you say clean up.</h3>
