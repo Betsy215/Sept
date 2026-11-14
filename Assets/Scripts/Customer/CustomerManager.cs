@@ -327,8 +327,10 @@ public class CustomerManager : MonoBehaviour
             return null;
         }
 
-        // the tutorials get the girl (owner, round 1 of the November test: "during tutorial, use a girl customer")
-        if (levelIndex == 0 || levelIndex == Chapter.FirstDay(2))
+        // the tutorials get the girl (owner, round 1 of the November test: "during tutorial, use a girl customer"): only
+        // while a tutorial runs. The rule first covered all of day 1 and of chapter 2's first day, so every customer there
+        // was the girl, two of her side by side (owner, 14 November: "all the orders are girl customer, why")
+        if (FindObjectOfType<TutorialDirector>() != null)
         {
             var girl = availableCustomers.Find(p => p.name.Contains("Girl"));
             if (girl != null) return girl;
