@@ -750,6 +750,10 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.richText = true;
             popupItemInfo.fontSize = 70f; popupItemInfo.lineSpacing = -18f; popupItemInfo.alignment = TextAlignmentOptions.Center;   // one size, tighter lines (owner, 18 October)
             popupItemInfo.fontStyle = FontStyles.Bold;
+            // Remove Ads has two full sentences under its price: at 70 they wrapped to four lines and ran into the buttons
+            // (14 November 2026). That one card is set smaller, a sentence a line; every other card keeps its 70.
+            var longText = item.itemName == RemoveAdsCardName;
+            popupItemInfo.enableAutoSizing = longText; if (longText) { popupItemInfo.fontSizeMax = 52f; popupItemInfo.fontSizeMin = 40f; }
             popupItemInfo.rectTransform.anchorMin = popupItemInfo.rectTransform.anchorMax = new Vector2(0.5f, 0.5f); popupItemInfo.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(0f, 380f);   // dead centre, like the texts (owner, 18 October)
             popupItemInfo.margin = Vector4.zero;                                                               // the scene's right margin pushed the texts left

@@ -31,8 +31,10 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable, IPointerCl
     private bool brewingEnabled = true;
 
     // Light and sounds while it brews (owner, 14 November 2026): the round button glows from the tap to the last cup,
-    // a pour sound runs with the stream and a steam sound with each milk foam. The times are the brew clips' sprite keys.
-    private const float PourAt = 0.67f, FoamAt = 3.52f, SecondFoamAt = 5.57f;
+    // a pour sound runs with the stream and a steam sound with each milk foam. The sounds follow the animation's own
+    // frames (the first pour frame, each foam frame), so they can never run ahead of the picture; the steam waits a
+    // moment more, until the wand is seen in the cup (owner, 14 November: "the foam sound needs a small delay").
+    private const float FoamSoundDelay = 0.2f;
     private SpriteRenderer brewLight;
     private Coroutine brewFx;
 
@@ -154,14 +156,27 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable, IPointerCl
             if (spriteRenderer != null) { brewLight.sortingLayerID = spriteRenderer.sortingLayerID; brewLight.sortingOrder = spriteRenderer.sortingOrder + 1; }
             brewLight.enabled = on;
         }
-        if (on && isActiveAndEnabled) brewFx = StartCoroutine(BrewSounds(activeBrewingLevel));
+        if (on && isActiveAndEnabled) brewFx = StartCoroutine(BrewSounds());
     }
 
-    private System.Collections.IEnumerator BrewSounds(int level)
+    private System.Collections.IEnumerator BrewSounds()
     {
-        yield return new WaitForSeconds(PourAt); PlayBrewSound("Coffee/coffee_pour");
-        yield return new WaitForSeconds(FoamAt - PourAt); PlayBrewSound("Coffee/coffee_steam");
-        if (level >= 2) { yield return new WaitForSeconds(SecondFoamAt - FoamAt); PlayBrewSound("Coffee/coffee_steam"); }
+        string shown = null;
+        while (isBrewing)
+        {
+            var frame = spriteRenderer != null && spriteRenderer.sprite != null ? spriteRenderer.sprite.name : null;
+            if (frame != shown)
+            {
+                shown = frame;
+                if (frame == "0-2" || frame == "1-2") PlayBrewSound("Coffee/coffee_pour");          // the stream starts (one cup, two cups)
+                else if (frame == "1-5" || frame == "1-6")                                           // the wand goes into a cup
+                {
+                    yield return new WaitForSeconds(FoamSoundDelay);
+                    if (isBrewing) PlayBrewSound("Coffee/coffee_steam");
+                }
+            }
+            yield return null;
+        }
         brewFx = null;
     }
 

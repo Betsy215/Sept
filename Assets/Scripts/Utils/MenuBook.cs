@@ -17,7 +17,7 @@ using UnityEngine.UI;
 public class MenuBook : MonoBehaviour
 {
     private const int SortOrder = 40;                  // under the tutorial canvas (50), over the arrangement UI (0)
-    private const float AutoOpenDelay = 2f;            // seconds after the arrangement starts (owner)
+    private const float AutoOpenDelay = 0.6f;          // seconds after the arrangement starts (was 2: owner, 14 November 2026, "open faster with less delay")
     private const float StickerSize = 225f;            // on the paper
     private const float CarouselSize = 280f;           // doubled (owner, 16 October: the icons were too small)
     private const float FlySeconds = 0.38f;
