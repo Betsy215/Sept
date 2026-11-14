@@ -79,81 +79,58 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 26.11.21 (29)</b> is on TestFlight since 14 November, 12:50 PST. It is build 28 plus the working Remove Ads tab. Open the shop: three tabs, Stars, Coins, $. Buy Remove Ads once; on TestFlight it costs nothing.</p>
-<p><b>At Apple:</b> 26.11.21 with build 28 is waiting for review since 12:12 PST, with the Remove Ads purchase attached. Build 28 cannot show that purchase, so Apple may reject. Your word: Remove Ads ships with this weekend's release, which replaces it either way. If you want build 28 to pass alone as the bug-fix release, say "pull it": I cancel the submission and send build 28 again without the purchase.</p>
-<p><b>This weekend's release</b> so far: Remove Ads working (build 29), pop, blender and coin quieter, and the new star rule once the measurement is in.</p>
-<p>Yoga lady sitting poses: the brief for ChatGPT goes out at 3:09 PM, when its free pictures are back.</p></div>
-<div class="who p2"><h3>Me</h3><p>Measure every day for the star rule and show the table. Watch for Apple's answer.</p></div>
+<p><b>Test build 26.11.21 (30)</b> is uploading to TestFlight; I tell you when it is ready.</p>
+<p>In it: the new star rule (check it in Current), your foaming sound (Pixabay number 1, cut to 1.3 seconds and quieter), pop, blender and coin at the middle volume, the working Remove Ads tab.</p>
+<p><b>At Apple:</b> 26.11.21 with build 28 is waiting for review. This weekend's release replaces it.</p>
+<p>In Q&amp;A: the truck button and the swipe.</p></div>
+<div class="who p2"><h3>Me</h3><p>Measure every day again for the star rule and put the table in Current. The yoga lady brief goes to ChatGPT at 3:09 PM.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>Foaming sound: six from Pixabay. Tick the one you want.</h3>
-<p style="margin:4px 0 8px">The foam in the game lasts 1.3 seconds per cup; I cut your pick to fit, as with the pour. I cannot hear them; I picked by title and length. The foam sound in the game now is the one I made.</p>
+<div class="q"><h3>You asked: the truck button when something runs low, and what a swipe instead of the button would mean.</h3>
+<p style="margin:4px 0 6px"><b>Making the button remind you.</b> The game already knows when a food is at zero. Ideas, tick what you want:</p>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="qa.pixfoam.1"> <b>1</b> "Espresso Machine Steaming Milk" by DRAGON-STUDIO, 2.7 s, whole</label><br><audio controls preload="none" src="pix_foam_1.mp3" style="width:100%;max-width:420px;margin:4px 0 8px"></audio></li>
-<li><label><input type="checkbox" data-id="qa.pixfoam.2"> <b>2</b> "milk steamer" by freesound_community, 8 s cut from 33 s</label><br><audio controls preload="none" src="pix_foam_2.mp3" style="width:100%;max-width:420px;margin:4px 0 8px"></audio></li>
-<li><label><input type="checkbox" data-id="qa.pixfoam.3"> <b>3</b> "Steaming milk on a consumer-grade latte maker" by freesound_community, 8 s cut from 2 min</label><br><audio controls preload="none" src="pix_foam_3.mp3" style="width:100%;max-width:420px;margin:4px 0 8px"></audio></li>
-<li><label><input type="checkbox" data-id="qa.pixfoam.4"> <b>4</b> "Steam Hissing" by DRAGON-STUDIO, 1.1 s, whole</label><br><audio controls preload="none" src="pix_foam_4.mp3" style="width:100%;max-width:420px;margin:4px 0 8px"></audio></li>
-<li><label><input type="checkbox" data-id="qa.pixfoam.5"> <b>5</b> "Steam Hissing 2" by DRAGON-STUDIO, 1.1 s, whole</label><br><audio controls preload="none" src="pix_foam_5.mp3" style="width:100%;max-width:420px;margin:4px 0 8px"></audio></li>
-<li><label><input type="checkbox" data-id="qa.pixfoam.6"> <b>6</b> "Steaming Milk" by freesound_community, 8 s cut from 3 min</label><br><audio controls preload="none" src="pix_foam_6.mp3" style="width:100%;max-width:420px;margin:4px 0 8px"></audio></li>
-<li><label><input type="checkbox" data-id="qa.pixfoam.keep"> Keep the one in the game</label></li>
-<li><label><input type="checkbox" data-id="qa.pixfoam.none"> None of these, look for more</label></li>
-</ul></div>
-
-<div class="q"><h3>Stars: your rule, as I understand it. Nothing is changed in the game yet.</h3>
+<li><label><input type="checkbox" data-id="qa.truck.badge"> <b>1</b> A red badge on the truck with the picture of the food that ran out.</label></li>
+<li><label><input type="checkbox" data-id="qa.truck.bounce"> <b>2</b> The truck bounces every few seconds while something is at zero; one small wiggle when something is down to its last one.</label></li>
+<li><label><input type="checkbox" data-id="qa.truck.empty"> <b>3</b> The empty food's own spot on the table shows a small "!" as well.</label></li>
+<li><label><input type="checkbox" data-id="qa.truck.sound"> <b>4</b> A soft sound once, the moment something runs out.</label></li>
+</ul>
+<p style="margin:10px 0 6px"><b>A swipe instead of the button: what it means.</b></p>
 <ul>
-<li><b>3 stars:</b> every customer who came that day got their whole order. One customer leaving, or leaving with part of an order, and it is not 3 stars.</li>
-<li><b>2 stars:</b> at least 90 % of the day's customers got their whole order, 90 % rounded to a whole customer.</li>
-<li>Money no longer decides stars. Coins and tips stay what you spend in the shop.</li>
-<li>Every level must be able to reach 3 stars; candies count as fair help.</li>
+<li><b>The reminder:</b> a swipe shows nothing on screen, so it cannot remind you. Whatever reminds the player still has to be drawn somewhere. That is the main reason not to drop the button.</li>
+<li><b>New players:</b> a swipe is invisible. The numbers show new players leaving within a minute; they would never find the kitchen without a tutorial step and a hint on screen.</li>
+<li><b>Mistakes in a rush:</b> the game is fast tapping. A finger that slides while tapping would open the kitchen by accident and cost time. During the arrangement phase items are dragged, so the swipe must be off there or it fights with moving things.</li>
+<li><b>Feel:</b> it would make the kitchen feel like a second room beside the table, sliding in and out. That is the nice part, and good for one-handed play.</li>
+<li><b>Phone edges:</b> iPhone keeps the bottom edge for itself (home). A swipe from the side or across the cloth is fine.</li>
+<li><b>Work:</b> a gesture reader with a clear threshold, a slide between table and kitchen, both tutorials changed (they say "tap the truck"), the store video shows a tap. A few days, with testing on a phone.</li>
+<li><b>Other players:</b> some people find buttons easier than gestures; a button stays friendlier.</li>
 </ul>
-<div class="card tw"><table>
-<tr><th class="n">Customers that day</th><th class="n">Needed for 2 stars</th><th class="n">Lost allowed</th></tr>
-<tr><td class="n">8</td><td class="n">7</td><td class="n">1</td></tr>
-<tr><td class="n">10</td><td class="n">9</td><td class="n">1</td></tr>
-<tr><td class="n">15</td><td class="n">13</td><td class="n">2</td></tr>
-<tr><td class="n">19</td><td class="n">17</td><td class="n">2</td></tr>
-</table></div>
-<p style="margin:8px 0 4px">Two gaps I fill; tick if they are wrong:</p>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="qa.stars2.one70no"> 1 star at 70 % served and none below is NOT what I want</label></li>
-<li><label><input type="checkbox" data-id="qa.stars2.roundno"> Rounding a half down (15 customers: 13 needed) is NOT what I want</label></li>
-</ul>
-<p style="margin:8px 0 0">Next: the autoplay plays every day perfectly and counts customers lost. The table comes here before the rule goes in.</p></div>
+<li><label><input type="checkbox" data-id="qa.truck.both"> Keep the button and make it remind; add the swipe as a second way later (my pick)</label></li>
+<li><label><input type="checkbox" data-id="qa.truck.swipeonly"> Swipe only, no button</label></li>
+<li><label><input type="checkbox" data-id="qa.truck.buttononly"> Button only, no swipe</label></li>
+</ul></div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Remove Ads tab: why it never showed, and the fix, 14 November.</b> My mistake: the purchase code sat behind a switch nothing in the project turns on, so every build up to 28 had an empty stand-in and the $ tab could not appear. Fixed; build 29 on TestFlight has it. In the editor the shop now shows three tabs.</p>
-<figure><img src="shop_three_tabs.jpg" alt="The shop in the editor with three tabs: Stars, Coins and $" style="max-height:560px"><figcaption>The shop after the fix, in the editor: Stars, Coins, $.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.iapfix.ship"> Good to ship, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.iapfix.redo"> Not yet, I will say what</label></li>
+<p style="margin-top:0"><b>New star rule, in build 30. Please check it, 14 November.</b> Stars come from customers served, not from money:</p>
+<ul>
+<li><b>3 stars:</b> every customer of the day got their whole order.</li>
+<li><b>2 stars:</b> 90 % of them did, rounded to a whole customer, a half down (9 customers: 8; 10: 9; 15: 13).</li>
+<li><b>1 star:</b> 70 % (my gap-fill). Below that, none.</li>
+<li>A customer counts when the order closes: served whole, or gone (also when gone with part of the order).</li>
+<li>The three stars under the hen are lit when the day starts and go dark when customers leave; they can come back to two as you serve more, never to three.</li>
 </ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Pop, blender and coin at the middle volume, 14 November.</b> Your word: "tune these to middle". Pop is 6 dB down, blender 9, coin 10; they now sit with the steam and the serve clink. In the project, not in a build yet.</p>
-<div class="card tw"><table>
-<tr><th>Sound</th><th>Before</th><th>After</th></tr>
-<tr><td>Pop</td><td><audio controls preload="none" src="snd_pop_before.mp3" style="width:220px"></audio></td><td><audio controls preload="none" src="snd_pop_after.mp3" style="width:220px"></audio></td></tr>
-<tr><td>Blender</td><td><audio controls preload="none" src="snd_blender_blend_before.mp3" style="width:220px"></audio></td><td><audio controls preload="none" src="snd_blender_blend_after.mp3" style="width:220px"></audio></td></tr>
-<tr><td>Coin</td><td><audio controls preload="none" src="snd_coin_before.mp3" style="width:220px"></audio></td><td><audio controls preload="none" src="snd_coin_after.mp3" style="width:220px"></audio></td></tr>
-</table></div>
+<figure><img src="stars_rule.jpg" alt="Day start with three stars lit, and three day-end receipts with 2, 1 and 0 stars"><figcaption>Day 1 played in the editor, with customers made to leave on purpose. The receipts are the game's own.</figcaption></figure>
+<p style="margin:8px 0 4px"><b>What I checked:</b> the rule's numbers against a table for 1 to 19 customers; seven played days, where the stars shown, the rule and the stars saved for the day agreed every time.</p>
+<p style="margin:8px 0 4px"><b>What is not proven yet:</b> that 3 stars is reachable on every day. My automatic player lost one or two customers on day 1 in four runs out of four; an order waits 7 seconds there, and a coffee takes almost 6 to brew. A player who brews ahead, or gives a candy, can do it, but it is tight. My first table (nobody lost on all twelve days) counted wrong and is withdrawn. I am measuring again with the game's own counters; the table comes here.</p>
+<p style="margin:8px 0 4px">The day-end receipt does not say how many customers were served. Want a line there?</p>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.sfxmid.ship"> Good to ship, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.sfxmid.redo"> Not yet, I will say what</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>All customers, 13 November.</b> In the game on your word: Kid, Grandma, Businessman and Chef repainted, and the Boy with his own head on a cleaned body (same face, pixel for pixel; black and white sneakers in both moods; no longer smaller when happy). Girl and Yoga are unchanged. Every pair is one size and stands on one spot.</p>
-<figure><img src="cust4_game_a.jpg" alt="Girl, Boy, Kid and Grandma at the table in the game, waiting and happy"><figcaption>In the game, waiting on the left, happy on the right: Girl, Boy, Kid, Grandma.</figcaption></figure>
-<figure><img src="cust4_game_b.jpg" alt="Businessman, Chef and Yoga at the table in the game, waiting and happy"><figcaption>Businessman, Chef, Yoga.</figcaption></figure>
-<figure><img src="cust3_all_a.jpg" alt="Girl, Boy, Kid and Grandma sprites at their game sizes, waiting and happy"><figcaption>The sprites whole, at their game sizes: Girl, Boy, Kid, Grandma.</figcaption></figure>
-<figure><img src="cust3_all_b.jpg" alt="Businessman, Chef and Yoga sprites at their game sizes, waiting and happy"><figcaption>Businessman, Chef, Yoga.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.cust4.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.stars.line"> Add "Served 8 of 9" to the day-end receipt</label></li>
+<li><label><input type="checkbox" data-id="cur.stars.one70no"> 1 star at 70 % is not what I want</label></li>
+<li><label><input type="checkbox" data-id="cur.stars.ship"> The rule is right, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.stars.redo"> Not yet, I will say what</label></li>
 </ul>
 </div>
 
@@ -161,17 +138,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p class="sub" style="margin:0 0 8px">Your words, 14 November: "we will do another release this weekend"; Remove Ads goes out then; new star rule: 3 stars = every customer served their whole order, 2 stars = 90 %.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
-<div class="q" style="background:var(--skybg)"><h3>Do in the polish release. Unticked items go when you say clean up.</h3>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="backlog.a"> <b>a</b> Clock on the table, free or a shop item.</label></li>
-<li><label><input type="checkbox" data-id="backlog.b"> <b>b</b> Menu stickers in your oven-sticker style.</label></li>
-<li><label><input type="checkbox" data-id="backlog.c"> <b>c</b> Serve sound for every food.</label></li>
-<li><label><input type="checkbox" data-id="backlog.d"> <b>d</b> Rating prompt after the first three-star day.</label></li>
-<li><label><input type="checkbox" data-id="backlog.f"> <b>f</b> Customer voice sounds (you look for them).</label></li>
-<li><label><input type="checkbox" data-id="backlog.g"> <b>g</b> A cut scene when the game play starts.</label></li>
-<li><label><input type="checkbox" data-id="backlog.h"> <b>h</b> Double-tap Next replays the shop slide-in.</label></li>
-<li><label><input type="checkbox" data-id="backlog.i"> <b>i</b> Buttons under the notch and home indicator.</label></li>
-</ul></div>
+<p class="sub" style="margin:0 0 8px">Empty. Cleaned up on your word, 14 November; nothing was ticked.</p>
 
 <h2 id="analysis"><span class="n">6</span>Analysis, 9 to 13 November</h2>
 <p class="sub" style="margin:0 0 8px">Read 13 November, 15:00 PST. Days are UTC; the 13th is not over and its ad numbers are not in. Players and ads from Unity. App Store Connect is signed out in Chrome, so Apple's downloads and page views wait for your sign-in.</p>
