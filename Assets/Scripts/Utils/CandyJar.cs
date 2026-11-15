@@ -53,7 +53,9 @@ public class CandyJar : MonoBehaviour, IPointerClickHandler
         if (Candies <= 0 || orderSystem == null || !orderSystem.GiveFlowerToLowest()) { Reject(); return false; }
         SessionManager.Instance.UseCandy(); Refresh();
         StartCoroutine(Pop(transform));
-        var give = Resources.Load<AudioClip>("Decor/candy_give"); if (give != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(give);
+        // a chewing sound when a candy is fed (owner, 15 November 2026): Resources/Decor/candy_chew once picked, the old give sound until then
+        var give = Resources.Load<AudioClip>("Decor/candy_chew"); if (give == null) give = Resources.Load<AudioClip>("Decor/candy_give");
+        if (give != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(give);
         return true;
     }
 

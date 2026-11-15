@@ -550,23 +550,36 @@ public class OrderSystem : MonoBehaviour
         foreach (var o in orders) { if (!o.active || o.displayTime <= 0f) continue; var k = o.timer / o.displayTime; if (k < lowest) { lowest = k; low = o; } }
         if (low == null) return false;
         var per = low.displayTime / PatienceMeter.Flowers;
+        var before = low.timer;
         low.timer = Mathf.Min(low.displayTime, low.timer + per);
         PatienceMeter.OnItemServed(low);
+        if (low.timer > before + 0.01f) PlayFlowerPop();
         return true;
+    }
+
+    /// A pop when a flower grows back, from a candy or the yoga lady (owner, 15 November 2026). One pop per gift, also
+    /// when the yoga lady gives to several customers at once. Resources/Audio/flower_pop; silent while the file is absent.
+    private static void PlayFlowerPop()
+    {
+        var pop = Resources.Load<AudioClip>("Audio/flower_pop");
+        if (pop != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(pop);
     }
 
     /// The yoga lady's calm (owner, 14 November 2026): every open order gets one whole flower of time back (never above
     /// full) and its meter pops. Returns how many orders got one.
     public int GiveFlowerToAll()
     {
-        var n = 0;
+        var n = 0; var grew = false;
         foreach (var o in orders)
         {
             if (!o.active || o.displayTime <= 0f) continue;
+            var before = o.timer;
             o.timer = Mathf.Min(o.displayTime, o.timer + o.displayTime / PatienceMeter.Flowers);
             PatienceMeter.OnItemServed(o);
+            if (o.timer > before + 0.01f) grew = true;
             n++;
         }
+        if (grew) PlayFlowerPop();
         return n;
     }
 
