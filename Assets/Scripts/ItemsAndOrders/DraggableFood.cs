@@ -389,6 +389,9 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             }
         }
 
+        // the kitchen's pull handle, where the player put it on the table's edge (15 November 2026): no food on it
+        if (PullHandle.TableOverlaps(new Vector2(testPosition.x + centreOffset.x, testPosition.y + centreOffset.y), halfSize)) return true;
+
         return false;
     }
 

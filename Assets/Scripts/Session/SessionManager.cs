@@ -62,6 +62,9 @@ public class SessionData
     public int starsSpent;
     // Stars bought with money (the star pack, 15 November 2026). Only for spending: the days keep the stars they earned.
     public int starsBought;
+    // Where the player put the pull handles on their edges (15 November 2026): world heights, used only when set.
+    public float handleTableY, handleKitchenY;
+    public bool handleTableSet, handleKitchenSet;
 
     public SessionData()
     {
@@ -561,6 +564,21 @@ public class SessionManager : MonoBehaviour
 
     /// Stars left to spend in the star shop: earned minus spent.
     public int StarsAvailable => Mathf.Max(0, GetTotalStars() + (currentSession != null ? currentSession.starsBought : 0) - (currentSession != null ? currentSession.starsSpent : 0));
+
+    public bool TryGetHandleHeight(bool kitchen, out float worldY)
+    {
+        worldY = 0f; if (currentSession == null) return false;
+        if (kitchen) { worldY = currentSession.handleKitchenY; return currentSession.handleKitchenSet; }
+        worldY = currentSession.handleTableY; return currentSession.handleTableSet;
+    }
+
+    public void SetHandleHeight(bool kitchen, float worldY)
+    {
+        if (currentSession == null) return;
+        if (kitchen) { currentSession.handleKitchenY = worldY; currentSession.handleKitchenSet = true; }
+        else { currentSession.handleTableY = worldY; currentSession.handleTableSet = true; }
+        SaveSession();
+    }
 
     /// Stars paid for with money are added to what can be spent, in one save.
     public void AddBoughtStars(int stars)
