@@ -769,7 +769,8 @@ public class ShopManager : MonoBehaviour
             var chalk = Resources.Load<TMP_FontAsset>("Fonts & Materials/GloriaHallelujah SDF");
             if (chalk != null) popupItemInfo.font = chalk;
             var lines = (item.popupInfoText ?? "").Split('\n');
-            if (lines.Length > 0 && lines[0].TrimStart().StartsWith("$")) lines[0] = "<color=#9FD2FF>" + lines[0] + "</color>";
+            // the price line in blue chalk, for a price in stars as well (owner, 14 November 2026: the star card "use the same layout as the coins tab")
+            if (lines.Length > 0 && (lines[0].TrimStart().StartsWith("$") || TabOf(item) == ShopTab.Stars)) lines[0] = "<color=#9FD2FF>" + lines[0] + "</color>";
             var shown = DisplayName(item);                                                                    // the card's name on top (owner, 18 October: "why is it a big eater instead of chef")
             popupItemInfo.text = (shown != null ? shown + "\n" : "") + string.Join("\n", lines);
             popupItemInfo.color = Color.white;
@@ -906,7 +907,9 @@ public class ShopManager : MonoBehaviour
         card.upgradeFoodType = ""; card.specialNote = "";
         card.popupInfoText = YogaHire.StarPrice + " stars\nHire her to calm\ncustomers down";
         card.purchaseButtonText = YogaHire.StarPrice + " stars";
-        var icon = Resources.Load<Sprite>("Yoga/sit_0");
+        // her sitting, on a square picture with air under her like the coins tab's pictures, so the price keeps the
+        // same distance from the picture as theirs (owner, 14 November 2026: "the icon and text too close")
+        var icon = Resources.Load<Sprite>("Yoga/shop_icon");
         var iconT = go.transform.Find("ItemIcon"); var img = iconT != null ? iconT.GetComponent<Image>() : null;
         if (img != null && icon != null) { img.sprite = icon; img.preserveAspect = true; }
         var priceT = go.transform.Find("PriceText"); var price = priceT != null ? priceT.GetComponent<TextMeshProUGUI>() : null;
@@ -918,7 +921,7 @@ public class ShopManager : MonoBehaviour
             if (star != null)
             {
                 price.ForceMeshUpdate();
-                var size = price.fontSize * 0.95f; var gap = price.fontSize * 0.12f; var textWidth = price.preferredWidth;
+                var size = price.fontSize * 0.9f; var gap = price.fontSize * 0.28f; var textWidth = price.preferredWidth;   // the gap of the "$ 100" cards
                 var sgo = new GameObject("StarIcon", typeof(RectTransform), typeof(Image));
                 sgo.transform.SetParent(price.transform, false);
                 var srt = (RectTransform)sgo.transform;

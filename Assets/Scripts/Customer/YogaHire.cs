@@ -6,7 +6,8 @@ using UnityEngine;
 /// while, not always, but at least half of the game time for each level, she sits in the background and does yoga,
 /// when she appears, she does each poses, every poses when finishes, all the customer in game gets one flower, we can
 /// tune the timing by setting the duration for each pose, for now, do 4 seconds for each pose."
-/// She sits on the grass (or the sand) between the two customer spots, behind the customers. A day's plan: enough
+/// She sits on the grass (chapter 1) or on a float on the sea (chapter 2), behind the customers, at a spot of her own
+/// per chapter. A day's plan: enough
 /// poses to fill at least half the day, split into visits of at least one whole round of her five poses, with the
 /// rest of the day as breaks of random length before, between and after. Frames: Resources/Yoga/sit_0..4 (ChatGPT's
 /// sheet, cut by Store/characters/yoga_sit_2026-11-14/cut_frames.py).
@@ -18,13 +19,30 @@ public class YogaHire : MonoBehaviour
     public const float DayShare = 0.5f;          // she is there for at least this share of the day
     private const int Poses = 5;
     private const float Fade = 0.5f, Blend = 0.35f, FirstBreakMin = 1.5f;
-    // Where her picture's centre sits: the mat's lower edge lands about half a unit above the table's far edge, clear of
-    // the hen and the jar; z behind the customers (same layer and order: the farther one is drawn first)
-    private static readonly Vector3 Spot = new Vector3(0.12f, 1.22f, 0.5f);
+    // Where her mat's lower edge sits, per chapter (owner, 14 November 2026: "can we put her in different position in
+    // different chapter?"). Chapter 1: back on the grass and to the right, by the tree ("move her back (higher) a
+    // little", "closer to the tree on the right"). Chapter 2: out on the water on a small float ("put her on a small
+    // float in ocean instead"), a little smaller because she is further away, bobbing gently.
+    // x, y in world units; the table's far edge is y = 0, the screen is 4.6 wide; chapter 2's water runs from about
+    // y = 0.7 (the foam) to 1.95 (the horizon).
+    private static readonly Vector2 MatChapter1 = new Vector2(1.7f, 0.8f), MatChapter2 = new Vector2(0.05f, 1.12f);
+    private const float ScaleChapter2 = 0.78f;
+    private const float MatToCentre = 0.715f;   // from the mat's lower edge up to the picture's centre
+    private const float Behind = 0.5f;          // z behind the customers (same layer and order: the farther one is drawn first)
+    private const float BobHeight = 0.03f, BobTilt = 1.5f;
+
+    public static Vector3 SpotFor(int chapter)
+    {
+        var mat = chapter >= 2 ? MatChapter2 : MatChapter1;
+        return new Vector3(mat.x, mat.y + MatToCentre * (chapter >= 2 ? ScaleChapter2 : 1f), Behind);
+    }
 
     private LevelManager levelManager;
     private OrderSystem orderSystem;
     private SpriteRenderer front, back;          // two pictures so one pose melts into the next
+    private SpriteRenderer floatPicture;         // chapter 2: the float under her mat (Resources/Yoga/float)
+    private bool onWater;
+    private Vector3 home;
     private readonly Sprite[] frames = new Sprite[Poses];
 
     public static bool Owned => SessionManager.Instance != null && SessionManager.Instance.OwnsStarItem(ItemName);
@@ -34,9 +52,11 @@ public class YogaHire : MonoBehaviour
     {
         if (!Owned || lm == null || FindObjectOfType<YogaHire>() != null) return;
         var go = new GameObject("YogaHire");
-        go.transform.position = Spot;
+        var chapter = SessionManager.CurrentChapter;
+        go.transform.position = SpotFor(chapter);
         var y = go.AddComponent<YogaHire>();
-        y.levelManager = lm; y.orderSystem = os;
+        y.levelManager = lm; y.orderSystem = os; y.onWater = chapter >= 2; y.home = go.transform.position;
+        if (y.onWater) go.transform.localScale = Vector3.one * ScaleChapter2;
     }
 
     /// The day's plan: how many poses each visit holds. At least DayShare of the day in all, each visit at least one
@@ -57,7 +77,24 @@ public class YogaHire : MonoBehaviour
         for (var k = 0; k < Poses; k++) frames[k] = Resources.Load<Sprite>("Yoga/sit_" + k);
         if (frames[0] == null) { Destroy(gameObject); return; }
         back = NewPicture("Back", 0); front = NewPicture("Front", 1);
+        if (onWater)
+        {
+            floatPicture = NewPicture("Float", -1);
+            floatPicture.sprite = Resources.Load<Sprite>("Yoga/float");
+            floatPicture.transform.localPosition = new Vector3(0f, -MatToCentre + 0.0125f, 0.01f);   // the mat rests on the middle of its top
+        }
         StartCoroutine(Day());
+    }
+
+    /// On the water she and her float rise, sink and tip a little; the float shows whenever she does.
+    private void Update()
+    {
+        if (!onWater || front == null) return;
+        var shown = Mathf.Max(front.color.a, back.color.a);
+        if (floatPicture != null) floatPicture.color = new Color(1f, 1f, 1f, shown);
+        if (shown <= 0f) return;
+        transform.position = home + new Vector3(0f, Mathf.Sin(Time.time * 1.6f) * BobHeight, 0f);
+        transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(Time.time * 1.1f + 0.7f) * BobTilt);
     }
 
     private SpriteRenderer NewPicture(string name, int nearer)

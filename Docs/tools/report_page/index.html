@@ -79,121 +79,26 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 26.11.21 (30)</b> is the newest on TestFlight. Everything below is newer and in no build yet.</p>
-<p><b>You said "looks good" (cards removed):</b> the coffee machine always brewing two cups, the quieter pour and cash sounds.</p>
-<p><b>To check in Current:</b> the cookie stars on the receipt, the hen without stars, the kitchen swipe with its two tutorial hints, the yoga lady in the star shop, the mellower order-complete sound (three to pick from).</p>
-<p><b>At Apple:</b> 26.11.21 with build 28 is waiting for review. This weekend's release replaces it.</p>
-<p>In Q&amp;A: your 1 star on day 1; the truck button and the swipe.</p></div>
-<div class="who p2"><h3>Me</h3><p>Wait for your boxes. Next build only on your word. Still open: how 3 stars becomes reachable (star card).</p></div>
+<p><b>A new test build is on its way</b> with everything from this evening. I say here when it is ready to install.</p>
+<p><b>Check the yoga lady</b> (Current): her place in each chapter, and the star tab's card.</p>
+<p><b>At Apple:</b> 26.11.21 with build 28 is waiting for review. This weekend's release replaces it.</p></div>
+<div class="who p2"><h3>Me</h3><p>Make the test build and upload it to TestFlight.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>You asked: day 1, one order missed, only 1 star. Do you have logs?</h3>
-<ul>
-<li><b>The log</b> (it reached Unity about 20 minutes late; it keeps a day's stars and money, not each customer): day 1 at 4:32 PM, 1 star, $345. Day 1 again at 4:33 PM, 1 star, $353. Day 2, 2 stars, $488. Day 3, no star, $359.</li>
-<li><b>So the 1 star was the day's real result:</b> the game counted at least two customers as not served whole. One lost of 8 or 9 gives 2 stars.</li>
-<li><b>My reading, not proven by the log:</b> your money was higher than on this morning's 3-star days ($296 and $323), so nearly every order paid. A customer who gets part of the order and leaves pays for that part but counts as lost. That fits the measurement in the star card: the coffee is the usual missing part.</li>
-<li><b>From the next test build the receipt tells you what was counted</b> (test builds only, never the store):</li>
-</ul>
-<figure><img src="receipt_count.jpg" alt="Day-end receipt with a small line: test build, served 8 of 10, left with part 0, with nothing 2" style="max-width:420px"><figcaption>Editor run with two customers made to leave.</figcaption></figure>
-<ul>
-<li><b>Also found while replaying:</b> the stars under the hen were wrong during the day. They are off the hen now, as you asked.</li>
-<li>Day 3 with no star: under my 70 % line. With your "more than half" line it may have been 1.</li>
-</ul></div>
-<div class="q"><h3>You asked: the truck button when something runs low, and what a swipe instead of the button would mean.</h3>
-<p style="margin:4px 0 6px"><b>Making the button remind you.</b> The game already knows when a food is at zero. Ideas, tick what you want:</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.truck.badge"> <b>1</b> A red badge on the truck with the picture of the food that ran out.</label></li>
-<li><label><input type="checkbox" data-id="qa.truck.bounce"> <b>2</b> The truck bounces every few seconds while something is at zero; one small wiggle when something is down to its last one.</label></li>
-<li><label><input type="checkbox" data-id="qa.truck.empty"> <b>3</b> The empty food's own spot on the table shows a small "!" as well.</label></li>
-<li><label><input type="checkbox" data-id="qa.truck.sound"> <b>4</b> A soft sound once, the moment something runs out.</label></li>
-</ul>
-<p style="margin:10px 0 6px"><b>A swipe instead of the button: what it means.</b></p>
-<ul>
-<li><b>The reminder:</b> a swipe shows nothing on screen, so it cannot remind you. Whatever reminds the player still has to be drawn somewhere. That is the main reason not to drop the button.</li>
-<li><b>New players:</b> a swipe is invisible. The numbers show new players leaving within a minute; they would never find the kitchen without a tutorial step and a hint on screen.</li>
-<li><b>Mistakes in a rush:</b> the game is fast tapping. A finger that slides while tapping would open the kitchen by accident and cost time. During the arrangement phase items are dragged, so the swipe must be off there or it fights with moving things.</li>
-<li><b>Feel:</b> it would make the kitchen feel like a second room beside the table, sliding in and out. That is the nice part, and good for one-handed play.</li>
-<li><b>Phone edges:</b> iPhone keeps the bottom edge for itself (home). A swipe from the side or across the cloth is fine.</li>
-<li><b>Work:</b> a gesture reader with a clear threshold, a slide between table and kitchen, both tutorials changed (they say "tap the truck"), the store video shows a tap. A few days, with testing on a phone.</li>
-<li><b>Other players:</b> some people find buttons easier than gestures; a button stays friendlier.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.truck.both"> Keep the button and make it remind; add the swipe as a second way later (my pick)</label></li>
-<li><label><input type="checkbox" data-id="qa.truck.swipeonly"> Swipe only, no button</label></li>
-<li><label><input type="checkbox" data-id="qa.truck.buttononly"> Button only, no swipe</label></li>
-</ul></div>
+<p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Order-complete sound: mellower, 14 November.</b> The sharpness is one ring at 3.7 kHz that carries three quarters of the sound, so turning the highs down alone changes little. Three versions, all at the same loudness. B is in the game until you pick.</p>
-<div class="card tw"><table>
-<tr><th>Version</th><th>What changed</th><th>Listen</th></tr>
-<tr><td>Before</td><td>Today's quieter one</td><td><audio controls src="cash_before.mp3"></audio></td></tr>
-<tr><td>A</td><td>Highs turned down only</td><td><audio controls src="cash_a.mp3"></audio></td></tr>
-<tr><td>B (in the game)</td><td>A little lower in pitch, the ring softened</td><td><audio controls src="cash_b.mp3"></audio></td></tr>
-<tr><td>C</td><td>Lower still, the mellowest</td><td><audio controls src="cash_c.mp3"></audio></td></tr>
-</table></div>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.cashmellow.b"> B, good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.cashmellow.a"> A</label></li>
-<li><label><input type="checkbox" data-id="cur.cashmellow.c"> C</label></li>
-<li><label><input type="checkbox" data-id="cur.cashmellow.redo"> None, I will say what</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Receipt stars: the game's own cookie stars, popping in one by one, 14 November.</b> My painted gold stars are out; these are the stars already used on the map and in the shop.</p>
-<div class="two">
-<figure><img src="receipt_stars_ba.jpg" alt="Receipt stars before, flat, and after, cookie stars"><figcaption>Before and after (the small line under the stars shows in test builds only).</figcaption></figure>
-<figure><img src="receipt_stars_pop.gif" alt="Two cookie stars popping onto the receipt one after the other"><figcaption>The pop-in, filmed in the editor.</figcaption></figure>
-</div>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.star3d.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.star3d.redo"> Not yet, I will say what</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>No stars on the hen, 14 November.</b> The hen shows the money only. The day's stars show on the receipt.</p>
-<figure><img src="hen_stars_ba.jpg" alt="The hen with three small stars before, and without stars after"><figcaption>Before and after.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.henstars.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.henstars.redo"> Not yet, I will say what</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Kitchen swipe, with the two tutorial hints, 14 November.</b> Swipe right on the table: the kitchen slides in from the truck's side. Swipe left in the kitchen: it slides back. The truck button and the kitchen's own button still work.</p>
-<div class="two">
-<figure><img src="tutorial_swipe_1.gif" alt="Tutorial: an arrow slides to the right under the words Swipe to go to kitchen, then the kitchen slides in" style="max-width:300px"><figcaption>Tutorial: "Swipe to go to kitchen".</figcaption></figure>
-<figure><img src="tutorial_swipe_2.gif" alt="Tutorial: an arrow slides to the left under the words Swipe back to serve, then the kitchen slides out" style="max-width:300px"><figcaption>End of the kitchen part: "Swipe back to serve".</figcaption></figure>
-</div>
+<p style="margin-top:0"><b>Yoga lady, 14 November.</b> Hired in the star shop for 15 stars. She comes and goes during a day, does her poses 4 seconds each, and every finished pose gives each waiting customer a flower.</p>
+<figure><img src="yoga_ch1.jpg" alt="Chapter 1: the yoga lady on the grass at the right, by the tree"><figcaption>Chapter 1: further back and to the right, by the tree.</figcaption></figure>
+<figure><img src="yoga_ch2.jpg" alt="Chapter 2: the yoga lady on a striped float on the sea"><figcaption>Chapter 2: on a small float on the sea. She bobs gently. The float is my own painting.</figcaption></figure>
+<figure><img src="yoga_shop.jpg" alt="The coins tab, the star tab with the yoga lady's card, and her purchase card"><figcaption>Coins tab for comparison; the star tab with the same spacing between picture and price; her card with the price line in blue chalk like the others.</figcaption></figure>
 <ul>
-<li>The tutorial waits for the swipe; a swipe the wrong way does nothing; a tap on the truck (or the kitchen's button) also counts, so nobody gets stuck.</li>
-<li>In play it listens only while serving: off while arranging, when paused, with the menu book or the day-end card open.</li>
-<li>Not tested: the finger itself. The editor cannot swipe; how it feels needs your phone.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.swipe.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.swipe.redo"> Change it, I will say what</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Yoga lady in the star shop: built, 14 November.</b> 15 stars; her icon is her sitting on the mat; the card says "Hire her to calm customers down".</p>
-<figure><img src="yoga_shop.jpg" alt="The star tab with the yoga lady's card, her purchase card, and the card owned with one star left of sixteen"><figcaption>Star tab, the card, and after buying: 16 stars became 1. The star number at the top is now the stars left to spend.</figcaption></figure>
-<div class="two">
-<figure><img src="yoga_in_game.gif" alt="The yoga lady sitting on the grass behind the customers, moving through her poses" style="max-width:400px"><figcaption>Day 1, sped up about three times.</figcaption></figure>
-<figure><img src="yoga_in_game.jpg" alt="The yoga lady with her arms up, on the grass between two customers"><figcaption>She sits on the grass in the middle, behind the customers.</figcaption></figure>
-</div>
-<ul>
-<li><b>When:</b> she is there for at least half of each day, in one to three visits at random moments; each visit is at least one round of her five poses. Day 1 (42 seconds): one visit of six poses. A long day (128 seconds): three visits.</li>
-<li><b>Each pose:</b> 4 seconds, one number in the code to tune. When a pose ends, every customer waiting gets one flower back.</li>
-<li>Checked in the editor: the purchase takes 15 stars once and cannot be bought twice; she ran all five poses in order; the game played on normally.</li>
-<li><b>My fill-ins:</b> the card's name "Yoga lady"; ChatGPT's sheet 2; her exact spot and size; she fades in and out; no sound.</li>
-<li><b>To know:</b> a flower every 4 seconds is strong, orders run down far slower while she is there. Not measured yet against the 3-star question.</li>
+<li><b>Coming and going:</b> she fades in, does at least one full round of her five poses, and fades out. She is there for at least half of the day: once on a short day (day 1: about 24 of 42 seconds), up to three times on the longest days, with breaks of random length before, between and after, so it is not the same every day. She is not in the tutorials.</li>
+<li><b>Why this way:</b> every visit shows all her poses, the breaks make her help feel like a bonus and not a constant, and one number each sets the pose length (4 seconds) and her share of the day (half).</li>
+<li><b>To know:</b> an order bubble can cover her for a moment in chapter 2. A flower every 4 seconds is strong; not measured yet against the 3-star question.</li>
 </ul>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.yogahire.ship"> Good to ship</label></li>
@@ -202,50 +107,21 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>New star rule, in build 30 (the 1-star line changed after it). Please check it, 14 November.</b> Stars come from customers served, not from money:</p>
-<ul>
-<li><b>3 stars:</b> every customer of the day got their whole order.</li>
-<li><b>2 stars:</b> 90 % of them did, rounded to a whole customer, a half down (9 customers: 8; 10: 9; 15: 13).</li>
-<li><b>1 star:</b> more than half of them did (your words, 14 November evening; it replaces my 70 %). Exactly half or fewer: none.</li>
-<li>A customer counts when the order closes: served whole, or gone (also when gone with part of the order).</li>
-<li>The hen no longer shows stars (your words, 14 November evening); the receipt does.</li>
-</ul>
-<figure><img src="stars_rule.jpg" alt="Day start with three stars lit, and three day-end receipts with 2, 1 and 0 stars"><figcaption>Day 1 played in the editor, with customers made to leave on purpose. The receipts are the game's own.</figcaption></figure>
-<p style="margin:8px 0 4px"><b>What I checked:</b> the rule's numbers against a table for 1 to 19 customers; seven played days, where the stars shown, the rule and the stars saved for the day agreed every time.</p>
-<p style="margin:8px 0 4px"><b>Can every day reach 3 stars? Measured: not as the days are now.</b> Two automatic players, chapter 1, the game's own counters, no candies. The steady one acts about every second and a half. The fast one acts several times a second and had time to spare; it is the best case.</p>
-<div class="card tw"><table>
-<tr><th class="n">Day</th><th class="n">Steady: customers</th><th class="n">lost</th><th class="n">stars</th><th class="n">Fast: customers</th><th class="n">lost</th><th class="n">stars</th></tr>
-<tr><td class="n">1</td><td class="n">9</td><td class="n">1</td><td class="n">2</td><td class="n">8</td><td class="n">2</td><td class="n">1</td></tr>
-<tr><td class="n">2</td><td class="n">9</td><td class="n">3</td><td class="n">1</td><td class="n">9</td><td class="n">2</td><td class="n">1</td></tr>
-<tr><td class="n">3</td><td class="n">9</td><td class="n">1</td><td class="n">2</td><td class="n">12</td><td class="n">1</td><td class="n">2</td></tr>
-<tr><td class="n">4</td><td class="n">9</td><td class="n">2</td><td class="n">1</td><td class="n">10</td><td class="n">2</td><td class="n">1</td></tr>
-<tr><td class="n">5</td><td class="n">9</td><td class="n">2</td><td class="n">1</td><td class="n">11</td><td class="n">0</td><td class="n">3</td></tr>
-<tr><td class="n">6</td><td class="n">10</td><td class="n">2</td><td class="n">1</td><td class="n">14</td><td class="n">1</td><td class="n">2</td></tr>
-<tr><td class="n">7</td><td class="n">9</td><td class="n">2</td><td class="n">1</td><td class="n">12</td><td class="n">2</td><td class="n">1</td></tr>
-<tr><td class="n">8</td><td class="n">11</td><td class="n">2</td><td class="n">1</td><td class="n">14</td><td class="n">2</td><td class="n">1</td></tr>
-<tr><td class="n">9</td><td class="n">11</td><td class="n">3</td><td class="n">1</td><td class="n">14</td><td class="n">2</td><td class="n">1</td></tr>
-<tr><td class="n">10</td><td class="n">13</td><td class="n">1</td><td class="n">2</td><td class="n">15</td><td class="n">2</td><td class="n">2</td></tr>
-<tr><td class="n">11</td><td class="n">12</td><td class="n">4</td><td class="n">1</td><td class="n">15</td><td class="n">1</td><td class="n">2</td></tr>
-<tr><td class="n">12</td><td class="n">13</td><td class="n">2</td><td class="n">1</td><td class="n">16</td><td class="n">1</td><td class="n">2</td></tr>
-</table></div>
-<p style="margin:8px 0 4px">Even the fast player served everyone on one day of twelve. The cause is waiting, not tapping: an order waits 7 seconds (6 and 5 later on), a coffee takes almost 6 to brew, and the tray holds two cups, so a third coffee in a row is lost almost by design. So "3 stars must be possible on every level" does not hold yet. Ways to make it hold, yours to choose:</p>
+<p style="margin-top:0"><b>Order-complete sound: number 6 is in, 14 November.</b> "Cash Register Purchase" from Pixabay, cut to 1.3 seconds at the old loudness. The downloads are deleted from your Mac.</p>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Open: can every day reach 3 stars?</b> Measured this afternoon: not yet. Even a very fast automatic player served everyone on one day of twelve; orders wait 7 seconds and a coffee takes almost 6. The yoga lady's flowers will help and are not measured yet.</p>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.stars.patience"> Give orders more waiting time. I find by measurement the smallest amount with which the fast player loses nobody on every day, and show you the number before it goes in. (my pick)</label></li>
-<li><label><input type="checkbox" data-id="cur.stars.brew"> Make the coffee brew faster instead.</label></li>
-<li><label><input type="checkbox" data-id="cur.stars.candy"> Leave the days; 3 stars is meant to need candies.</label></li>
-<li><label><input type="checkbox" data-id="cur.stars.oneloss"> Soften the rule: 3 stars allows one customer lost.</label></li>
-</ul>
-<p style="margin:8px 0 4px">Chapter 2 is not measured yet; its measuring tool is out of date and I bring it up to date next.</p>
-<p style="margin:8px 0 4px">The count on the receipt is in test builds only. Players do not see it.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.stars.line"> Show "Served 8 of 9" on the receipt to players too (test builds show it now)</label></li>
-<li><label><input type="checkbox" data-id="cur.stars.ship"> The rule is right, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.stars.redo"> Not yet, I will say what</label></li>
+<li><label><input type="checkbox" data-id="cur.stars.yoga"> Measure again with the yoga lady first (my pick now)</label></li>
+<li><label><input type="checkbox" data-id="cur.stars.patience"> Give orders more waiting time; show me the number first</label></li>
+<li><label><input type="checkbox" data-id="cur.stars.brew"> Make the coffee brew faster</label></li>
+<li><label><input type="checkbox" data-id="cur.stars.candy"> Leave it; 3 stars is meant to be hard</label></li>
 </ul>
 </div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Your words, 14 November: "we will do another release this weekend"; Remove Ads goes out then; new star rule: 3 stars = every customer served their whole order, 2 stars = 90 %, 1 star = more than half.</p>
+<p class="sub" style="margin:0 0 8px">Your words, 14 November: "we will do another release this weekend"; Remove Ads goes out then; star rule: 3 stars = every customer served their whole order, 2 stars = 90 %, 1 star = more than half; no stars on the hen; the kitchen opens by swipe as well; the yoga lady is hired in the star shop for 15 stars.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Empty. Cleaned up on your word, 14 November; nothing was ticked.</p>
@@ -270,7 +146,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="ok"><span class="dot">●</span><span>26.11.13: one store install so far (12 Nov, 16:45 PST, US). Opened twice, left two seconds after "Tap the bread to serve it". Too early to read. The new tutorial itself works: your TestFlight run went through all 14 steps.</span></div>
 <div class="ok"><span class="dot">●</span><span>A hole in the numbers: Unity uploads once a minute, so the last minute of a player who never returns is lost. The two "started day 1" players may have finished it. Fixed in the code for the next build: it uploads at each day start, day end, purchase and when the app closes.</span></div>
 <div class="ok"><span class="dot">●</span><span>Your test play, left out of every count: 9 November, 18:43 to 18:52 PST, build 22, tutorial and days 1 to 3, day 4 started. No test play of builds 23 or 24 is recorded.</span></div>
-<div class="ok"><span class="dot">●</span><span>Ads: 3 shown, under one cent. Payouts are still on hold for the tax form.</span></div>
+<div class="ok"><span class="dot">●</span><span>Ads: 3 shown, under one cent. The payout profile is set since 14 November.</span></div>
 </div>
 
 </main>
