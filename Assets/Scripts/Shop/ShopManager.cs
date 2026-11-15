@@ -777,10 +777,12 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.richText = true;
             popupItemInfo.fontSize = 70f; popupItemInfo.lineSpacing = -18f; popupItemInfo.alignment = TextAlignmentOptions.Center;   // one size, tighter lines (owner, 18 October)
             popupItemInfo.fontStyle = FontStyles.Bold;
-            // Remove Ads has two full sentences under its price: at 70 they wrapped to four lines and ran into the buttons
-            // (14 November 2026). That one card is set smaller, a sentence a line; every other card keeps its 70.
+            // One text size on every card (owner, 15 November 2026: "Unity the font size in shop item panels, the size in
+            // coins tab looks good"). Remove Ads has two full sentences under its price, six lines at 70: instead of the
+            // smaller letters it had since 14 November, its lines sit a little closer and the block starts higher.
             var longText = item.itemName == RemoveAdsCardName;
-            popupItemInfo.enableAutoSizing = longText; if (longText) { popupItemInfo.fontSizeMax = 52f; popupItemInfo.fontSizeMin = 40f; }
+            popupItemInfo.enableAutoSizing = false;
+            if (longText) popupItemInfo.lineSpacing = -34f;
             popupItemInfo.rectTransform.anchorMin = popupItemInfo.rectTransform.anchorMax = new Vector2(0.5f, 0.5f); popupItemInfo.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(0f, 380f);   // dead centre, like the texts (owner, 18 October)
             popupItemInfo.margin = Vector4.zero;                                                               // the scene's right margin pushed the texts left
@@ -795,6 +797,11 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.alignment = TextAlignmentOptions.Top;
             popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 420f);
             popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -50f - shift);         // spans about +160 to -260
+            if (longText)
+            {
+                popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, 20f);            // six lines: the block starts 70 higher
+                if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(0f, 440f);
+            }
             if (hasNote) { note.fontSize = 66f; note.lineSpacing = -18f; note.rectTransform.sizeDelta = new Vector2(1000f, 200f); note.rectTransform.anchoredPosition = new Vector2(0f, -405f - shift * 0.5f); }   // a clear gap under the description   // up to two lines (Chef, Yoga coach: 18 October)
         }
 

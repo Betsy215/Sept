@@ -80,16 +80,50 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>Test build 26.11.21 (31)</b> on TestFlight: your test runs.</p>
-<p><b>Check the truck</b> (Current): both windows change together, in the glass's own shape.</p>
+<p><b>Check today's shop and sound changes</b> (Current, first card) and <b>the truck</b>.</p>
 <p><b>Pick how grass goes in front of the yoga lady</b> (Current): three demos for chapter 1, one for chapter 2.</p>
 <p><b>Send your What's New words</b> for the next release.</p></div>
 <div class="who p2"><h3>Me</h3><p>Build the front layer you pick. No build and nothing to Apple before your word.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<p class="sub" style="margin:0 0 8px">Nothing open.</p>
+<div class="q"><h3>You asked: why is the yoga lady in the coins tab greyed out sometimes?</h3>
+<div class="two">
+<figure><img src="shop_cantafford.jpg" alt="The coins tab with $150: candies and juice in colour, every dearer card a dark shape" style="max-width:300px"><figcaption>The coins tab with $150.</figcaption></figure>
+<ul>
+<li>That is how the shop shows a card you cannot pay for yet. She costs $220; with less than that she is a dark shape, like every other card above your money. On day 2 or 3 you have the coins, so she is in colour.</li>
+<li>It is not a fault, and it is the same on every card.</li>
+</ul>
+</div>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.grey.ok"> Fine as it is</label></li>
+<li><label><input type="checkbox" data-id="qa.grey.change"> Show it another way, I will say how</label></li>
+</ul></div>
+<div class="q"><h3>You asked: make sure the test-build text does not show in the released game.</h3>
+<ul>
+<li>It cannot. The line "Test build: served N of M" shows only in the editor and in TestFlight builds; a copy from the App Store never draws it.</li>
+<li>Apple's reviewers do not see it either: the game sorts by the same check where it sends its play records, and Apple's own review run of 26.11.21 was filed with the store players.</li>
+</ul></div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
+
+<div class="card">
+<p style="margin-top:0"><b>Shop and sound changes from your note, 15 November.</b> In no build yet.</p>
+<ul>
+<li><b>Order-complete sound:</b> 6 dB quieter. Before <audio controls src="order_before.mp3"></audio> After <audio controls src="order_after.mp3"></audio></li>
+<li><b>Prices:</b> Choux $1000 to $800, Strawberry cake $1500 to $1000, on the shop card, on the description card and on its button.</li>
+</ul>
+<figure><img src="shop_prices.jpg" alt="The description cards of Choux at $800 and Strawberry cake at $1000"></figure>
+<ul>
+<li><b>One text size on the description cards:</b> the coins and star cards already matched; Remove Ads was the small one. It now has the same size.</li>
+</ul>
+<figure><img src="removeads_size_ba.jpg" alt="The Remove Ads description card before, in small letters, and after, in the same size as the other cards"><figcaption>Remove Ads before and after. Its two sentences now break over four lines; send shorter words if you want it tidier.</figcaption></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.note15.ship"> All good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.note15.sound"> Sound: lower still</label></li>
+<li><label><input type="checkbox" data-id="cur.note15.redo"> Not yet, I will say what</label></li>
+</ul>
+</div>
 
 <div class="card">
 <p style="margin-top:0"><b>Truck: no wiggle, and a window light with three states, 15 November.</b></p>
@@ -156,6 +190,9 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p style="margin:10px 0 4px"><b>Done today, waiting for your check in Current:</b></p>
 <ul>
 <li><b>Truck:</b> no wiggle; both windows are dark when off, blink while the kitchen cooks, and are warm yellow at night.</li>
+<li><b>Order-complete sound</b> 6 dB quieter.</li>
+<li><b>Prices:</b> Choux $800 (was $1000), Strawberry cake $1000 (was $1500).</li>
+<li><b>Remove Ads card</b> in the same text size as the other cards.</li>
 </ul>
 <p style="margin:10px 0 4px"><b>Not decided, so not in:</b> grass in front of the yoga lady (demos in Current).</p>
 <p style="margin:10px 0 4px"><b>Still needed for the release:</b> your What's New words, a new version number (26.11.21 is used), and your word to submit.</p>
