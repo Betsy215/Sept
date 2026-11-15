@@ -6,6 +6,9 @@ where things live, how the game works now, and how each recurring job is done. D
 
 Last updated 25 October 2026 (afternoon: the coconut tray hugging its five coconuts (`Store/artkit/coconut_tray_hug.py`, 479 x 438), spoon-free level-1 wells, cropped apple tree, waffle machine 0.5 and centred, picker panel; ovens bought and free of recipe, the recipe picker, the saved menu, the owner's short station, the cloth-edge and palm-crown fixes, build 5; release plan for 26.10.18, asc_release.py; 21 October: eight bug fixes, Coconut a chapter 2 food, the verify21 recipes, recv.py; earlier: menu book, economy tune, chapter 2).
 
+**Chapter 3 (winter) and the secret chapter (Day of the Dead):** the owner's plan for the rest of 2026 is in
+`Docs/chapter3-and-secret-plan.md` (15 November 2026). Read it before any work on either.
+
 ## 1. State of the project
 
 | Item | Value |
