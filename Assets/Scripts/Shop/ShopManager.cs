@@ -51,6 +51,7 @@ public class ShopManager : MonoBehaviour
         foreach (var card in FindObjectsOfType<ShopItemController>(true))
             if (IsHeldBackCard(card)) card.gameObject.SetActive(false);
         EnsureRemoveAdsCard();   // the one-time Remove Ads card (owner, 9 November 2026)
+        EnsureStarYogaCard();    // the star shop's first card: the yoga lady (owner, 14 November 2026)
         EvenOutCharacterIcons();
         EnsureTabs();            // Stars | Coins | $ (owner, 10 November 2026); Coins is the default
         LayoutCards();
@@ -122,6 +123,12 @@ public class ShopManager : MonoBehaviour
                     if (RemoveAds.Owned) shopItem.MarkAsPurchased(); else shopItem.UpdateAffordability(true);
                     continue;
                 }
+                if (TabOf(shopItem) == ShopTab.Stars)   // paid in stars, bought once
+                {
+                    if (session != null && session.OwnsStarItem(shopItem.itemName)) shopItem.MarkAsPurchased();
+                    else shopItem.UpdateAffordability(session != null && session.StarsAvailable >= shopItem.price);
+                    continue;
+                }
                 var canAfford = session != null && session.CanAfford(shopItem.price);
                 if (shopItem.itemType == ItemType.Decor && shopItem.itemName == "Candies" && session != null && session.Candies >= CandyJar.Full)
                     canAfford = false;   // a full jar greys the card out and stops taps (owner, 26 October 2026: "when candy jar is full, disable the candy purchasing")
@@ -189,6 +196,25 @@ public class ShopManager : MonoBehaviour
         {
             ShowPurchaseFailedFeedback("The candy jar is full");   // nothing charged (26 October 2026)
             return false;
+        }
+
+        if (TabOf(item) == ShopTab.Stars)
+        {
+            // the star shop: the price is in stars, taken and recorded in one save
+            if (!session.BuyWithStars(item.itemName, item.price))
+            {
+                ShowPurchaseFailedFeedback($"Not enough stars!\nNeed: {item.price} | Have: {session.StarsAvailable}");
+                return false;
+            }
+            UpdateScoreDisplay();
+            item.MarkAsPurchased();
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayPurchaseSound();
+            var wayOut = GameObject.Find("NextLevelButton");
+            ShopFlourish.Fly(this, popupItemIcon, wayOut != null ? wayOut.transform as RectTransform : null);
+            RefreshShopDisplay();
+            if (purchaseConfirmationPopup != null) purchaseConfirmationPopup.SetActive(false);
+            ShowPurchaseSuccessFeedback($"Purchased {DisplayName(item)}!");
+            return true;
         }
 
         if (!session.CanAfford(item.price))
@@ -354,7 +380,7 @@ public class ShopManager : MonoBehaviour
             var currentScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : 0;
             // "EARNED: $900 [star] 12": the coins, then the stars earned so far behind a little star (owner, 11 November 2026).
             // The star is an Image laid into a gap left in the text, placed from the text's own glyph positions.
-            var stars = SessionManager.Instance != null ? SessionManager.Instance.GetTotalStars() : 0;
+            var stars = SessionManager.Instance != null ? SessionManager.Instance.StarsAvailable : 0;   // what is left to spend (the star shop, 14 November)
             playerScoreText.enableWordWrapping = false;
             if (scoreFontMax <= 0f) scoreFontMax = playerScoreText.fontSize;
             playerScoreText.enableAutoSizing = true; playerScoreText.fontSizeMax = scoreFontMax; playerScoreText.fontSizeMin = scoreFontMax * 0.55f;
@@ -862,6 +888,48 @@ public class ShopManager : MonoBehaviour
         if (price != null) price.text = RemoveAds.PriceText;
         RemoveAds.Init();
         if (!popupNames.ContainsKey(RemoveAdsCardName)) popupNames[RemoveAdsCardName] = "Remove ads";
+    }
+
+    // --- The star shop's first card (owner, 14 November 2026): the yoga lady, 15 stars, "hire her to calm customers
+    // down"; the icon is her sitting on her mat. Cloned from the Candies card like the Remove Ads card. ----------------
+    private void EnsureStarYogaCard()
+    {
+        if (itemContainer == null) return;
+        foreach (var c in GetAllShopItems()) if (c != null && c.itemName == YogaHire.ItemName) return;
+        ShopItemController template = null;
+        foreach (var c in GetAllShopItems()) if (c != null && c.itemName == "Candies") { template = c; break; }
+        if (template == null) return;
+        var go = Instantiate(template.gameObject, template.transform.parent);
+        go.name = YogaHire.ItemName; go.SetActive(true);
+        var card = go.GetComponent<ShopItemController>();
+        card.itemName = YogaHire.ItemName; card.itemType = ItemType.Decor; card.price = YogaHire.StarPrice; card.isPurchased = false;
+        card.upgradeFoodType = ""; card.specialNote = "";
+        card.popupInfoText = YogaHire.StarPrice + " stars\nHire her to calm\ncustomers down";
+        card.purchaseButtonText = YogaHire.StarPrice + " stars";
+        var icon = Resources.Load<Sprite>("Yoga/sit_0");
+        var iconT = go.transform.Find("ItemIcon"); var img = iconT != null ? iconT.GetComponent<Image>() : null;
+        if (img != null && icon != null) { img.sprite = icon; img.preserveAspect = true; }
+        var priceT = go.transform.Find("PriceText"); var price = priceT != null ? priceT.GetComponent<TextMeshProUGUI>() : null;
+        if (price != null)
+        {
+            // "15" with the cookie star in front of it, in place of the "$"
+            price.text = YogaHire.StarPrice.ToString();
+            var star = Resources.Load<Sprite>("UI/star_icon");
+            if (star != null)
+            {
+                price.ForceMeshUpdate();
+                var size = price.fontSize * 0.95f; var gap = price.fontSize * 0.12f; var textWidth = price.preferredWidth;
+                var sgo = new GameObject("StarIcon", typeof(RectTransform), typeof(Image));
+                sgo.transform.SetParent(price.transform, false);
+                var srt = (RectTransform)sgo.transform;
+                srt.anchorMin = srt.anchorMax = new Vector2(0.5f, 0.5f); srt.pivot = new Vector2(0.5f, 0.5f);
+                srt.sizeDelta = new Vector2(size, size);
+                srt.anchoredPosition = new Vector2(-textWidth / 2f - gap / 2f, 0f);   // just left of the centred number, which the margin below has moved right
+                var si = sgo.GetComponent<Image>(); si.sprite = star; si.preserveAspect = true; si.raycastTarget = false;
+                price.margin = new Vector4(size + gap, 0f, 0f, 0f);   // the number moves right by the star's width, so the pair stays centred
+            }
+        }
+        if (!popupNames.ContainsKey(YogaHire.ItemName)) popupNames[YogaHire.ItemName] = "Yoga lady";
     }
 
     /// Apple wants a way to restore a purchase: a small text button at the bottom of the shop.

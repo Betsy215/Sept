@@ -620,6 +620,7 @@ public class LevelManager : MonoBehaviour
         dayStarted = true;
         dayTimeLeft = DayDuration;
         dayClockDisabled = (currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance)) || TutorialDirector.IsDue2(SessionManager.Instance);   // the demos have no end of day
+        if (!dayClockDisabled) YogaHire.StartDay(this, orderSystem);   // the hired yoga lady, when bought in the star shop
 
         if (orderSystem != null)
         {

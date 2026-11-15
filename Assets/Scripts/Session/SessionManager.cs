@@ -56,6 +56,10 @@ public class SessionData
     // three-star bonus has been paid. Missing (null) in sessions saved before the map.
     public List<int> levelStars;
     public List<int> starBonusPaidDays;
+    // The star shop (14 November 2026): what was bought with stars, and how many stars that took. The stars a player
+    // can spend are the stars earned minus these; the days keep their stars on the map.
+    public List<string> starItems;
+    public int starsSpent;
 
     public SessionData()
     {
@@ -546,6 +550,22 @@ public class SessionManager : MonoBehaviour
         var list = currentSession?.levelStars; var n = 0;
         if (list != null) foreach (var v in list) n += v;
         return n;
+    }
+
+    /// Stars left to spend in the star shop: earned minus spent.
+    public int StarsAvailable => Mathf.Max(0, GetTotalStars() - (currentSession != null ? currentSession.starsSpent : 0));
+
+    public bool OwnsStarItem(string itemName) => currentSession != null && currentSession.starItems != null && currentSession.starItems.Contains(itemName);
+
+    /// Buys a star shop item: takes the stars and records the item in one save. False when owned already or too few stars.
+    public bool BuyWithStars(string itemName, int stars)
+    {
+        if (currentSession == null || string.IsNullOrEmpty(itemName) || stars < 0 || OwnsStarItem(itemName) || StarsAvailable < stars) return false;
+        if (currentSession.starItems == null) currentSession.starItems = new List<string>();
+        currentSession.starsSpent += stars;
+        currentSession.starItems.Add(itemName);
+        SaveSession();
+        return true;
     }
 
     /// Best stars earned on a day (0 when never played).

@@ -555,6 +555,21 @@ public class OrderSystem : MonoBehaviour
         return true;
     }
 
+    /// The yoga lady's calm (owner, 14 November 2026): every open order gets one whole flower of time back (never above
+    /// full) and its meter pops. Returns how many orders got one.
+    public int GiveFlowerToAll()
+    {
+        var n = 0;
+        foreach (var o in orders)
+        {
+            if (!o.active || o.displayTime <= 0f) continue;
+            o.timer = Mathf.Min(o.displayTime, o.timer + o.displayTime / PatienceMeter.Flowers);
+            PatienceMeter.OnItemServed(o);
+            n++;
+        }
+        return n;
+    }
+
     private void RefillPatience(ActiveOrder order)
     {
         if (!order.active || order.displayTime <= 0f) return;
