@@ -27,8 +27,12 @@ public static class KitchenBlender
     public static void Apply()
     {
         // the owner's own cream blender as drawn, cut from the background, with a blade added (owner, 17 October:
-        // "keep the original blender, only add a blade"); in chapter 2 its drink blends the four ice cream colours
+        // "keep the original blender, only add a blade"); its drink blends the four ice cream colours
         var ch2 = SessionManager.CurrentChapter >= 2;
+        // no ice cream, no blender (owner, 15 November 2026: "without ice cream purchase, the blender should not be
+        // there"); the kitchen picture itself no longer has one painted in (Store/kitchen_blender_patch_2026-11-15)
+        var sm = SessionManager.Instance;
+        if (sm != null && sm.HasActiveSession() && !sm.IsFoodItemPurchased("IceCream")) return;
         var body = Resources.Load<Sprite>("Kitchen/blender"); if (body == null) return;
         Transform bg = null;
         foreach (var canvas in Object.FindObjectsOfType<Canvas>())
