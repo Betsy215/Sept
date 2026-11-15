@@ -284,7 +284,7 @@ public class DayNightTint : MonoBehaviour
         // placed as shares of the sprite (truck.png 460 x 428, the Image stretches the whole texture)
         var truck = GameObject.Find("KitchenButton");
         var trt = truck != null ? truck.GetComponent<RectTransform>() : null;
-        if (trt != null)
+        if (trt != null && !KitchenButtonOverTable.Handle)   // the pull handle has no windows (15 November 2026)
         {
             // the two window panes themselves, the side window and the windshield, as one picture over the whole
             // button: Resources/UI/truck_windows_mask is the button's own picture (decor/kit1_table.png) with only the

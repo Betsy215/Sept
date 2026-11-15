@@ -48,8 +48,12 @@ public class OpenKitchenButton : MonoBehaviour
 
 
         // the pull handle bounces and opens the kitchen itself, with the slide (15 November 2026)
-        var handle = GetComponent<TruckHandle>();
-        if (handle != null && handle.Pull()) return;
+        var handle = GetComponent<PullHandle>();
+        if (handle != null && handle.Pull(() =>
+            {
+                var ksm = KitchenSceneManager.Instance;
+                if (ksm != null && !ksm.IsKitchenOpen) StartCoroutine(KitchenSwipe.SlideOpen());
+            })) return;
 
         if (KitchenSceneManager.Instance != null)
             KitchenSceneManager.Instance.OpenKitchen();

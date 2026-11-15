@@ -30,6 +30,8 @@ public class CloseKitchenButton : MonoBehaviour
         }
 
         button.onClick.AddListener(OnButtonClick);
+        // the way back as a pull handle on the right edge instead of the truck on the mat (owner, 15 November 2026)
+        if (KitchenButtonOverTable.Handle) PullHandle.Attach((RectTransform)transform, -1, true, PullHandle.KitchenHeight);
         DebugLog("CloseKitchenButton initialized");
     }
 
@@ -37,6 +39,14 @@ public class CloseKitchenButton : MonoBehaviour
     {
         if (clickSound != null && AudioManager.Instance != null)
             AudioManager.Instance.PlaySFX(clickSound);
+
+        // the pull handle bounces first, then the kitchen slides away as on a swipe
+        var handle = GetComponent<PullHandle>();
+        if (handle != null && handle.Pull(() =>
+            {
+                var ksm = KitchenSceneManager.Instance;
+                if (ksm != null && ksm.IsKitchenOpen && KitchenSwipe.Swipe(-1) != "closing") ksm.CloseKitchen();
+            })) return;
 
         if (KitchenSceneManager.Instance != null)
         {

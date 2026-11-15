@@ -8,8 +8,9 @@ using UnityEngine.UI;
 public static class KitchenButtonOverTable
 {
     const float OverlapShare = 0.56f;   // its bottom on the hen and pots' line (owner, 13 October)
-    // The truck as a pull handle on a stick, above the cloth instead of parked on it (owner, 15 November 2026; see
-    // TruckHandle). One switch: false puts it back on the cloth as in test build 32.
+    // The way to the kitchen as a pull handle on a stick, above the cloth, instead of the truck parked on it (owner,
+    // 15 November 2026; see PullHandle). One switch for the table and the kitchen: false gives the truck on the cloth
+    // and the truck on the kitchen's mat, as in test build 32.
     public static readonly bool Handle = true;
 
     public static void Setup()
@@ -42,11 +43,11 @@ public static class KitchenButtonOverTable
         rt.SetParent(go.transform, false);
         rt.anchorMin = anchorMin; rt.anchorMax = anchorMax; rt.sizeDelta = size; rt.pivot = pivot;
         // anchored to the left middle: y 0 is the cloth's top edge; bottom third of the button below it
-        rt.anchoredPosition = new Vector2(anchored.x, Handle ? TruckHandle.RestHeight : size.y * (0.5f - OverlapShare));
+        rt.anchoredPosition = new Vector2(anchored.x, Handle ? PullHandle.TableHeight : size.y * (0.5f - OverlapShare));
         // no wiggle on the truck (owner, 15 November 2026: "Remove the wiggle effect of the truck icon"): the wobble
         // takes the new place as its rest and is switched off there
         var wobble = button.GetComponent<BalatroWobble>();
         if (wobble != null) { wobble.Rebase(); wobble.ResetTransform(); wobble.enabled = false; }
-        if (Handle) TruckHandle.Attach(rt);
+        if (Handle) PullHandle.Attach(rt, 1, false, 0f);
     }
 }
