@@ -958,11 +958,31 @@ public class ShopManager : MonoBehaviour
         if (playerScoreText != null && playerScoreText.font != null) t.font = playerScoreText.font;
         go.GetComponent<Button>().onClick.AddListener(() =>
         {
-            if (IsPurchasePopupOpen) return;
-            ShowPurchaseSuccessFeedback("Checking with the App Store...");
-            RemoveAds.Restore((ok, msg) => { RefreshShopDisplay(); if (ok) ShowPurchaseSuccessFeedback(msg); else ShowPurchaseFailedFeedback(msg); });
+            if (IsPurchasePopupOpen || restoreAsking) return;
+            // The answer is written on the button itself (owner, 15 November 2026: "I don't see it has any feedback when
+            // I click on it"; it was written in the EARNED label at the top of the screen, far from the tap).
+            restoreAsking = true; t.text = "Checking with the App Store..."; var asked = ++restoreSerial;
+            StartCoroutine(RestoreAnswer(t, asked, "No answer from the App Store", 12f));   // if the store never calls back
+            RemoveAds.Restore((ok, msg) =>
+            {
+                if (asked != restoreSerial || t == null) return;
+                RefreshShopDisplay(); StartCoroutine(RestoreAnswer(t, ++restoreSerial, msg, 0f));
+            });
         });
         restoreButton = go; go.SetActive(RemoveAds.Available);   // only while the store offers the purchase
+    }
+
+    private bool restoreAsking; private int restoreSerial;
+    /// Writes the store's answer on the restore button after `wait` seconds, keeps it for three, then the button's own words.
+    private IEnumerator RestoreAnswer(TextMeshProUGUI label, int serial, string message, float wait)
+    {
+        if (wait > 0f) yield return new WaitForSecondsRealtime(wait);
+        if (serial != restoreSerial || label == null) yield break;
+        if (wait > 0f) restoreSerial++;   // the late answer of a store that did not reply in time is dropped
+        label.text = message;
+        yield return new WaitForSecondsRealtime(3f);
+        if (label != null) label.text = "Restore purchases";
+        restoreAsking = false;
     }
 
     // --- Shop tabs (owner, 10 November 2026): left Stars, middle Coins (default, the existing items), right $ -------

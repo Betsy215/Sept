@@ -79,25 +79,32 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Release today.</b> In it: everything in the MVP list. Not in it: the grass layer in front of the yoga lady, and the roll cake.</p>
-<p><b>Your test runs</b> and small changes first. Say "build" when you want a fresh test build with today's changes; build 31 does not have them.</p>
-<p><b>For the submission I need:</b> your What's New words and your word to submit. The version will be 26.11.22.</p>
+<p><b>Test build 32</b> (version 26.11.22) was uploaded at 10:49; it shows in TestFlight once Apple has processed it, usually within 15 minutes. It has everything in the MVP list. The yoga lady is still by the tree in it.</p>
+<p><b>Yoga lady in the middle</b> (Current): look and tick.</p>
+<p><b>Truck as a sticker</b> (Current): nine ideas, pick one or more.</p>
+<p><b>For the submission I need:</b> your What's New words and your word to submit.</p>
 <p><b>Roll cake</b> (last card in Current): look at ChatGPT's art.</p></div>
-<div class="who p2"><h3>Me</h3><p>Your small changes as they come. No build and nothing to Apple before your word.</p></div>
+<div class="who p2"><h3>Me</h3><p>Your changes as they come. Nothing to Apple's review before your word.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>You asked: why is the yoga lady in the coins tab greyed out sometimes?</h3>
-<div class="two">
-<figure><img src="shop_cantafford.jpg" alt="The coins tab with $150: candies and juice in colour, every dearer card a dark shape" style="max-width:300px"><figcaption>The coins tab with $150.</figcaption></figure>
+<div class="q"><h3>You asked: what does "Restore purchases" do? I see no feedback when I tap it.</h3>
 <ul>
-<li>That is how the shop shows a card you cannot pay for yet. She costs $220; with less than that she is a dark shape, like every other card above your money. On day 2 or 3 you have the coins, so she is in colour.</li>
-<li>It is not a fault, and it is the same on every card.</li>
+<li><b>What it does:</b> it asks the App Store whether this Apple ID already bought Remove Ads, and if so turns the ads off again without paying twice. It is for a new phone or after deleting the game. Apple requires the button.</li>
+<li><b>Why you saw nothing:</b> the answer was written in the EARNED line at the top of the shop for two seconds, far from the button.</li>
+<li><b>Fixed, not in build 32:</b> the answer is now written on the button itself for three seconds: "Checking with the App Store...", then "Nothing to restore", "Ads are off again" or "Ads are already off".</li>
 </ul>
-</div>
+<figure><img src="restore_answer.jpg" alt="The bottom of the shop: the Restore purchases line reads Nothing to restore"><figcaption>After a tap, when nothing was bought.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="qa.grey.ok"> Fine as it is</label></li>
-<li><label><input type="checkbox" data-id="qa.grey.change"> Show it another way, I will say how</label></li>
+<li><label><input type="checkbox" data-id="qa.restore.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="qa.restore.words"> Other words, I will send them</label></li>
+</ul></div>
+<div class="q"><h3>You asked: why is the yoga lady in the coins tab dimmed sometimes, though I can afford her?</h3>
+<ul>
+<li><b>My first answer was wrong.</b> The dark shape is the "cannot pay yet" look; what you saw is something else.</li>
+<li><b>The cause:</b> each shop picture is also a button, and the button lays its own tint on the picture: grey and half see-through while it cannot be tapped. That tint is not updated while a card is hidden, so it could stay grey after the card had become affordable. The picture was right, the stale tint dimmed it. It depends on timing, which is why it came and went.</li>
+<li><b>Fixed:</b> the button's tint is neutral now and reset on every change. Affordable, cannot-pay and owned cards look exactly as before when all is in step.</li>
+<li><b>What I could check:</b> I did not catch the yoga card dimmed myself. I saw the same stale tint on another card, the other way round, and after the fix every card's tint read neutral.</li>
 </ul></div>
 <div class="q"><h3>You asked: make sure the test-build text does not show in the released game.</h3>
 <ul>
@@ -108,63 +115,41 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Shop and sound changes from your note, 15 November.</b> In no build yet.</p>
+<p style="margin-top:0"><b>Chapter 1: yoga lady in the middle, bushes behind, small grass in front, 15 November.</b> Not in build 32.</p>
+<figure><img src="yoga_mid.jpg" alt="The yoga lady in the middle of the lawn, the bushes behind her and grass blades in front of her legs, by day, in the evening and at night"><figcaption>Day, evening, night. The grass in front is your painting's own near grass, drawn again over her; it takes the evening and night light with the background.</figcaption></figure>
 <ul>
-<li><b>Order-complete sound:</b> 6 dB quieter. Before <audio controls src="order_before.mp3"></audio> After <audio controls src="order_after.mp3"></audio></li>
-<li><b>Prices:</b> Choux $1000 to $800, Strawberry cake $1500 to $1000, on the shop card, on the description card and on its button.</li>
+<li>A customer standing in the middle covers her, as the customers cover the bushes.</li>
+<li>Chapter 2 stays as it is (your tick).</li>
 </ul>
-<figure><img src="shop_prices.jpg" alt="The description cards of Choux at $800 and Strawberry cake at $1000"></figure>
-<ul>
-<li><b>One text size on the description cards:</b> the coins and star cards already matched; Remove Ads was the small one. It now has the same size.</li>
-</ul>
-<figure><img src="removeads_size_ba.jpg" alt="The Remove Ads description card before, in small letters, and after, in the same size as the other cards"><figcaption>Remove Ads before and after. Its two sentences now break over four lines; send shorter words if you want it tidier.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.note15.ship"> All good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.note15.sound"> Sound: lower still</label></li>
-<li><label><input type="checkbox" data-id="cur.note15.redo"> Not yet, I will say what</label></li>
+<li><label><input type="checkbox" data-id="cur.ymid.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.ymid.more"> More grass in front of her</label></li>
+<li><label><input type="checkbox" data-id="cur.ymid.bigger"> Make her bigger</label></li>
+<li><label><input type="checkbox" data-id="cur.ymid.redo"> Not yet, I will say what</label></li>
 </ul>
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Truck: no wiggle, and a window light with three states, 15 November.</b></p>
-<figure><img src="truck_light.jpg" alt="The truck with its window dark, and with the window lit"><figcaption>Left: kitchen idle by day, both windows dark. Right: both lit, as they show while blinking and at night.</figcaption></figure>
+<p style="margin-top:0"><b>Truck as a sticker out of the left edge: ideas, 15 November.</b> Pictures only, drawn on a real game screen; nothing is changed in the game.</p>
+<figure><img src="truck_stickers.jpg" alt="Today's truck on the table, and nine ideas: peeking in, notebook tab, taped on, hanging sign, awning ribbon, round peeling sticker, luggage tag, peeking in higher, small peek"></figure>
 <ul>
-<li><b>Off:</b> by day, when the kitchen is making nothing. Both windows, the side window and the windshield, turn dark.</li>
-<li><b>The shape:</b> the dark and the light follow the glass itself, cut from the truck's own picture, so the tomatoes and the jar in front of the side window stay in front. No square.</li>
-<li><b>Blinking:</b> while the kitchen cooks: an oven baking, the blender or the waffle machine running. By day and by night, a little faster than once a second.</li>
-<li><b>Warm yellow, steady:</b> from dusk into night. This light was already there; it now gives way to the blink while something cooks.</li>
-<li>Checked in the editor: the truck stands still; the light read off, then swung between dim and bright during an 8-second bread bake, and was steady with the night forced.</li>
-<li>Kept: the glow around the truck when a food runs out.</li>
+<li><b>A, H, I:</b> the sticker you have, partly off the screen. <b>B, E, F, G:</b> the truck on a piece of paper or cloth. <b>C:</b> held by tape. <b>D:</b> hangs from a wooden arm and can swing.</li>
+<li><b>The first customer stands at that edge.</b> Above the table the truck covers part of them in every idea but H (higher up) and I (small).</li>
+<li><b>It can move, with any idea:</b> slide out further or swing while something is ready in the kitchen; the windows still light up as now.</li>
+<li><b>Your own truck pictures</b> (truck_blackout.png and truck_lightup.png, saved to "Updates") fit any idea.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.trucklight.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.trucklight.redo"> Change it, I will say what</label></li>
+<li><label><input type="checkbox" data-id="cur.sticker.a"> A</label></li>
+<li><label><input type="checkbox" data-id="cur.sticker.b"> B</label></li>
+<li><label><input type="checkbox" data-id="cur.sticker.c"> C</label></li>
+<li><label><input type="checkbox" data-id="cur.sticker.d"> D</label></li>
+<li><label><input type="checkbox" data-id="cur.sticker.e"> E</label></li>
+<li><label><input type="checkbox" data-id="cur.sticker.f"> F</label></li>
+<li><label><input type="checkbox" data-id="cur.sticker.g"> G</label></li>
+<li><label><input type="checkbox" data-id="cur.sticker.h"> H</label></li>
+<li><label><input type="checkbox" data-id="cur.sticker.i"> I</label></li>
+<li><label><input type="checkbox" data-id="cur.sticker.more"> More ideas, I will say which way</label></li>
 </ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>A layer in front of the yoga lady: how, and demos, 15 November.</b> The table liner is dropped. Nothing is changed in the game; the demos were shown live in the editor and are not saved.</p>
-<p style="margin:8px 0 4px"><b>How it works:</b></p>
-<ul>
-<li>The front layer is your background painting's own grass, cut out along its upper edge and drawn a second time, over her, at exactly the same place. Where she is not, the picture looks as it always did. Where she is, the grass covers her.</li>
-<li>Drawing order: background, yoga lady, front grass, customers, table.</li>
-<li>She has to sit down in the grass for it to reach her, so in the demos she sits lower than now.</li>
-<li>No new art is needed. If you would rather paint the front grass yourself, it is one see-through PNG on your background's canvas (1080 x 1920) with only the grass on it.</li>
-</ul>
-<figure><img src="yoga_front_ch1.jpg" alt="Chapter 1: now, and three demos with grass in front of the yoga lady"><figcaption><b>Now:</b> she sits on top of the grass. <b>A:</b> by the tree, lower, the near grass in front of her. <b>B:</b> the same, plus the tall blades by the tree in front of her. <b>C:</b> in the middle of the lawn, the near grass in front.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.yfront1.a"> Chapter 1: A</label></li>
-<li><label><input type="checkbox" data-id="cur.yfront1.b"> Chapter 1: B</label></li>
-<li><label><input type="checkbox" data-id="cur.yfront1.c"> Chapter 1: C</label></li>
-<li><label><input type="checkbox" data-id="cur.yfront1.mine"> I will paint the front grass myself</label></li>
-<li><label><input type="checkbox" data-id="cur.yfront1.redo"> None, I will say what</label></li>
-</ul>
-<figure><img src="yoga_front_ch2.jpg" alt="Chapter 2: the float on the water now, and with the water in front of its lower edge"><figcaption>Chapter 2, the same idea with the sea. <b>Now:</b> the float lies on the water. <b>A:</b> the water below a wavy line is in front, so the float sits in the sea.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.yfront2.a"> Chapter 2: A</label></li>
-<li><label><input type="checkbox" data-id="cur.yfront2.redo"> Leave chapter 2 as it is</label></li>
-</ul>
-<p style="margin:8px 0 4px"><b>What I see in the demos:</b> the cut grass is soft, so her mat shows through it in places; I can make it more solid. A customer or an order bubble can still stand in front of her, as now.</p>
 </div>
 
 <div class="card">
@@ -186,9 +171,9 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Everything for today's release (26.11.22). The store has 26.11.21 (build 28) since this morning; none of this is in it.</p>
+<p class="sub" style="margin:0 0 8px">Everything for today's release (26.11.22). All of it is in test build 32. The store has 26.11.21 (build 28) since this morning; none of this is in it.</p>
 <div class="card">
-<p style="margin-top:0"><b>In test build 31, which you played and approved:</b></p>
+<p style="margin-top:0"><b>Approved by you:</b></p>
 <ul>
 <li><b>Remove Ads</b> can be bought: the $ tab works. Apple approved the purchase today.</li>
 <li><b>Stars from customers served:</b> 3 stars for everyone served their whole order, 2 for 90 %, 1 for more than half.</li>
@@ -198,22 +183,19 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><b>Kitchen by swipe:</b> swipe right to go in, left to come back; the tutorial teaches both. The truck button still works.</li>
 <li><b>Yoga lady in the star shop,</b> 15 stars: she does yoga in the background and each finished pose gives every waiting customer a flower. By the tree in chapter 1, on a float in chapter 2.</li>
 <li><b>Star shop:</b> stars can be spent; the shop shows the stars left.</li>
-<li><b>Sounds:</b> a milk-foaming sound on the coffee machine; quieter coffee pour, pop, blender and coin; a new order-complete sound (your pick, number 6).</li>
-</ul>
-<p style="margin:10px 0 4px"><b>Approved by you today, in no build yet:</b></p>
-<ul>
+<li><b>Sounds:</b> a milk-foaming sound on the coffee machine; quieter coffee pour, pop, blender and coin; a new order-complete sound, 6 dB quieter since today.</li>
 <li><b>Kitchen blender:</b> no blur beside it; shown only once ice cream is owned.</li>
 <li><b>Patience flowers</b> larger.</li>
-</ul>
-<p style="margin:10px 0 4px"><b>Done today, waiting for your check in Current:</b></p>
-<ul>
-<li><b>Truck:</b> no wiggle; both windows are dark when off, blink while the kitchen cooks, and are warm yellow at night.</li>
-<li><b>Order-complete sound</b> 6 dB quieter.</li>
 <li><b>Prices:</b> Choux $800 (was $1000), Strawberry cake $1000 (was $1500).</li>
 <li><b>Remove Ads card</b> in the same text size as the other cards.</li>
 </ul>
-<p style="margin:10px 0 4px"><b>Not in today's release (your word):</b> the grass layer in front of the yoga lady; the roll cake. The yoga lady herself, approved yesterday, is in.</p>
-<p style="margin:10px 0 4px"><b>Still needed for the release:</b> your What's New words, a new version number (26.11.21 is used), and your word to submit.</p>
+<p style="margin:10px 0 4px"><b>In build 32 for your check:</b></p>
+<ul>
+<li><b>Truck:</b> no wiggle; both windows are dark when off, blink while the kitchen cooks, and are warm yellow at night.</li>
+<li><b>Shop:</b> an affordable card can no longer look dimmed.</li>
+</ul>
+<p style="margin:10px 0 4px"><b>Not in build 32:</b> the yoga lady in the middle with grass in front; the answer on the Restore purchases button; the truck as a sticker; the roll cake.</p>
+<p style="margin:10px 0 4px"><b>Still needed for the release:</b> your What's New words and your word to submit.</p>
 </div>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>

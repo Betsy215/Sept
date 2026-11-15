@@ -25,7 +25,16 @@ public class YogaHire : MonoBehaviour
     // float in ocean instead"), a little smaller because she is further away, bobbing gently.
     // x, y in world units; the table's far edge is y = 0, the screen is 4.6 wide; chapter 2's water runs from about
     // y = 0.7 (the foam) to 1.95 (the horizon).
-    private static readonly Vector2 MatChapter1 = new Vector2(1.7f, 0.8f), MatChapter2 = new Vector2(0.05f, 1.12f);
+    // Chapter 1, later the same day: "Put her in the middle of the screen. Bushes are behind her, the small grasses are
+    // in front." She sits between the bush line and the near grass; the grass is drawn again in front of her (FrontGrass).
+    // One switch for the whole change: false puts her back by the tree with no grass piece (the place approved on 14
+    // November, the one in test build 32), for a build made before the owner has approved the middle spot.
+    public static readonly bool Chapter1Middle = true;
+    private static readonly Vector2 MatChapter1 = Chapter1Middle ? new Vector2(0.05f, 0.5f) : new Vector2(1.7f, 0.8f), MatChapter2 = new Vector2(0.05f, 1.12f);
+    // The grass in front of her: Resources/Yoga/front_ch1 is the background painting's own near grass, rows 740 to 1000
+    // of its 1920 (Store/yoga_front_layer_2026-11-15/make_front.py), laid over the same rows of the screen between her
+    // and the customers. Picture over the same picture changes nothing where she is not, so it only shows with her.
+    private const float FrontTopRow = 740f, FrontBottomRow = 1000f, PaintingRows = 1920f, InFront = 0.25f;
     private const float ScaleChapter2 = 0.78f;
     private const float MatToCentre = 0.715f;   // from the mat's lower edge up to the picture's centre
     private const float Behind = 0.5f;          // z behind the customers (same layer and order: the farther one is drawn first)
@@ -41,6 +50,8 @@ public class YogaHire : MonoBehaviour
     private OrderSystem orderSystem;
     private SpriteRenderer front, back;          // two pictures so one pose melts into the next
     private SpriteRenderer floatPicture;         // chapter 2: the float under her mat (Resources/Yoga/float)
+    private SpriteRenderer frontGrass;           // chapter 1: the painting's near grass, in front of her
+    private UnityEngine.UI.Image backgroundPicture;   // for its evening and night tint
     private bool onWater;
     private Vector3 home;
     private readonly Sprite[] frames = new Sprite[Poses];
@@ -83,13 +94,40 @@ public class YogaHire : MonoBehaviour
             floatPicture.sprite = Resources.Load<Sprite>("Yoga/float");
             floatPicture.transform.localPosition = new Vector3(0f, -MatToCentre + 0.0125f, 0.01f);   // the mat rests on the middle of its top
         }
+        else if (Chapter1Middle) BuildFrontGrass();
         StartCoroutine(Day());
     }
+
+    private void BuildFrontGrass()
+    {
+        var grass = Resources.Load<Sprite>("Yoga/front_ch1"); var cam = Camera.main;
+        if (grass == null || cam == null) return;
+        var go = new GameObject("YogaFrontGrass");
+        go.transform.SetParent(transform.parent, false);
+        float worldHigh = cam.orthographicSize * 2f, worldWide = worldHigh * cam.aspect;
+        // the background fills the screen, so the piece takes the same rows of it, whatever the screen's shape
+        var high = worldHigh * (FrontBottomRow - FrontTopRow) / PaintingRows;
+        var middle = cam.transform.position.y + worldHigh / 2f - worldHigh * (FrontTopRow + FrontBottomRow) / 2f / PaintingRows;
+        go.transform.position = new Vector3(cam.transform.position.x, middle, InFront);
+        go.transform.localScale = new Vector3(worldWide / grass.bounds.size.x, high / grass.bounds.size.y, 1f);
+        frontGrass = go.AddComponent<SpriteRenderer>(); frontGrass.sprite = grass; frontGrass.color = new Color(1f, 1f, 1f, 0f);
+        var canvas = GameObject.Find("Canvas"); var bg = canvas != null ? canvas.transform.Find("bg") : null;
+        backgroundPicture = bg != null ? bg.GetComponent<UnityEngine.UI.Image>() : null;
+    }
+
+    private void OnDestroy() { if (frontGrass != null) Destroy(frontGrass.gameObject); }
 
     /// On the water she and her float rise, sink and tip a little; the float shows whenever she does.
     private void Update()
     {
-        if (!onWater || front == null) return;
+        if (front == null) return;
+        if (frontGrass != null)
+        {
+            // there only while she is, in the background's own light (the evening and night tint)
+            var tint = backgroundPicture != null ? backgroundPicture.color : Color.white;
+            frontGrass.color = new Color(tint.r, tint.g, tint.b, Mathf.Max(front.color.a, back.color.a));
+        }
+        if (!onWater) return;
         var shown = Mathf.Max(front.color.a, back.color.a);
         if (floatPicture != null) floatPicture.color = new Color(1f, 1f, 1f, shown);
         if (shown <= 0f) return;
