@@ -743,9 +743,10 @@ public class LevelManager : MonoBehaviour
     }
 
     /// The bottom of the level-complete card shows the day's stars (owner, 13 October: no unlock counts, no bonus text).
-    /// Three sockets pressed into the paper; the earned stars pop into them one by one, puffy gold ones (owner,
-    /// 14 November 2026: "The stars on this panel is flat, I want to make it more 3d looking, and show an animation of
-    /// stars popping appearing one by one"). Art: Resources/UI/star3d_gold and star3d_empty (Store/ui/stars3d_2026-11-14).
+    /// Three dark stars; the earned ones pop in over them one by one (owner, 14 November 2026: "The stars on this panel
+    /// is flat, I want to make it more 3d looking, and show an animation of stars popping appearing one by one").
+    /// The pictures are the game's own cookie stars, the same as under the hen and on the map (owner, same evening:
+    /// "just use styles we already use elsewhere, it's cuter and cookie looking"); a painted pair of mine was dropped.
     private Coroutine starsPop;
 
     private void UpdateUnlockedItemsDisplay()
@@ -757,7 +758,9 @@ public class LevelManager : MonoBehaviour
         var row = host.Find("StarsRow");
         if (row == null)
         {
-            var gold = Resources.Load<Sprite>("UI/star3d_gold"); var empty = Resources.Load<Sprite>("UI/star3d_empty");
+            var bar = scoreManager != null ? scoreManager.starProgressBar : null;
+            var gold = bar != null && bar.starFilledSprite != null ? bar.starFilledSprite : Resources.Load<Sprite>("UI/star_icon");
+            var empty = bar != null ? bar.starUnfilledSprite : null;
             row = new GameObject("StarsRow", typeof(RectTransform)).transform;
             row.SetParent(host, false);
             var rrt = (RectTransform)row;
@@ -765,8 +768,7 @@ public class LevelManager : MonoBehaviour
             rrt.anchoredPosition = Vector2.zero; rrt.sizeDelta = new Vector2(500f, 130f);
             for (var k = 0; k < 3; k++)
             {
-                // the painted stars keep a margin for their shadow, so the picture is larger than the flat star was
-                var size = k == 1 ? 166f : 142f;
+                var size = k == 1 ? 130f : 110f;
                 var s = new GameObject("Star" + k, typeof(RectTransform), typeof(UnityEngine.UI.Image));
                 s.transform.SetParent(row, false);
                 var srt = (RectTransform)s.transform;

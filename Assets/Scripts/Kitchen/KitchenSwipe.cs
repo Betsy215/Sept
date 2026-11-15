@@ -39,7 +39,27 @@ public class KitchenSwipe : MonoBehaviour
         Vector2 move = (Vector2)Input.mousePosition - downAt;
         if (Time.unscaledTime - downTime > MaxSeconds) return;
         if (Mathf.Abs(move.x) < Screen.width * MinWidthShare || Mathf.Abs(move.x) < Mathf.Abs(move.y) * Sideways) return;
-        Swipe(move.x > 0f ? 1 : -1);
+        var direction = move.x > 0f ? 1 : -1;
+        var tutorial = FindObjectOfType<TutorialDirector>();
+        if (tutorial != null) tutorial.OnSwipe(direction);   // the tutorial opens and closes the kitchen itself, on its own steps
+        else Swipe(direction);
+    }
+
+    /// For the tutorial's swipe steps: the same slide, without the play-phase checks.
+    public static IEnumerator SlideOpen()
+    {
+        var ksm = KitchenSceneManager.Instance;
+        if (ksm == null) yield break;
+        if (instance == null) { ksm.OpenKitchen(); yield break; }
+        yield return instance.Open(ksm);
+    }
+
+    public static IEnumerator SlideClose()
+    {
+        var ksm = KitchenSceneManager.Instance;
+        if (ksm == null) yield break;
+        if (instance == null) { ksm.CloseKitchen(); yield break; }
+        yield return instance.Close(ksm);
     }
 
     /// +1: a swipe to the right (open the kitchen), -1: to the left (close it). Returns what it did.

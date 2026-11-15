@@ -19,6 +19,9 @@ public class MoneyFlipClock : MonoBehaviour
     TextMeshPro money;
     Coroutine bounce;
     readonly SpriteRenderer[] stars = new SpriteRenderer[3];
+    // No stars on the hen (owner, 14 November 2026: "let's not show stars on the hen"); the day's stars show on the
+    // day-end receipt. The three renderers stay, switched off, so the layout code is untouched.
+    const bool ShowStars = false;
     int shownMoney = -1, shownStars = -1;
 
     public static void Setup(ScoreManager sm)
@@ -103,6 +106,7 @@ public class MoneyFlipClock : MonoBehaviour
             s.transform.localScale = Vector3.one * starScale;
             var sr = s.AddComponent<SpriteRenderer>();
             sr.sprite = StarSprite(); sr.sortingOrder = 4;
+            sr.enabled = ShowStars;
             stars[k] = sr;
         }
         foreach (var sr in GetComponentsInChildren<SpriteRenderer>()) sr.sortingLayerName = "FoodItems";
@@ -130,7 +134,7 @@ public class MoneyFlipClock : MonoBehaviour
         if (earned != shownStars)
         {
             for (var k = 0; k < 3; k++) stars[k].color = k < earned ? new Color(1f, 0.78f, 0.3f) : new Color(0.78f, 0.74f, 0.68f);
-            if (!instant && earned > shownStars && shownStars >= 0) { var st = stars[Mathf.Clamp(earned - 1, 0, 2)].transform; StartCoroutine(Pop(st, 0.5f, st.localScale.x)); }
+            if (ShowStars && !instant && earned > shownStars && shownStars >= 0) { var st = stars[Mathf.Clamp(earned - 1, 0, 2)].transform; StartCoroutine(Pop(st, 0.5f, st.localScale.x)); }
             shownStars = earned;
         }
     }

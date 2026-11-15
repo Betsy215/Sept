@@ -238,11 +238,12 @@ public class TutorialDirector : MonoBehaviour
         var kitchenButton = GameObject.Find("KitchenButton");
         if (kitchenButton != null && KitchenSceneManager.Instance != null)
         {
-            Say("Out of bread? Tap Kitchen");
-            yield return PointAtRect(kitchenButton.GetComponent<RectTransform>());
-            yield return WaitForTapOnRect(kitchenButton.GetComponent<RectTransform>());
-            HideHand();
-            KitchenSceneManager.Instance.OpenKitchen();
+            // The kitchen is taught as a swipe (owner, 14 November 2026: "in tutorial, add a swipe arrow indication
+            // 'swipe to go to kitchen', when kitchen tutorial ends, also show swipe arrow 'swipe back to serve'").
+            // A tap on the truck still counts, so nobody is stuck.
+            Say("Swipe to go to kitchen");
+            yield return WaitForSwipe(1, kitchenButton.GetComponent<RectTransform>());
+            yield return KitchenSwipe.SlideOpen();
             yield return new WaitUntil(() => SceneManager.GetSceneByName("KitchenScene").isLoaded);
             yield return new WaitForSeconds(0.8f);
 
@@ -306,7 +307,10 @@ public class TutorialDirector : MonoBehaviour
             }
 
             HideHand();
-            KitchenSceneManager.Instance.CloseKitchen();
+            Say("Swipe back to serve");
+            var closeButton = FindObjectOfType<CloseKitchenButton>();
+            yield return WaitForSwipe(-1, closeButton != null ? closeButton.GetComponent<RectTransform>() : null);
+            yield return KitchenSwipe.SlideClose();
             yield return new WaitForSeconds(0.6f);
         }
 
@@ -370,6 +374,47 @@ public class TutorialDirector : MonoBehaviour
         tapped = false;
         awaitingHit = hit;
         yield return new WaitUntil(() => tapped);
+    }
+
+    // A step that waits for a swipe: +1 to the right, -1 to the left (KitchenSwipe reports the finger's swipes here)
+    private int awaitingSwipe;
+    private const float SwipeHintDown = 0.21f, SwipeHintReach = 0.25f, SwipeHintScale = 1.7f;   // below the caption, as shares of the screen; a bigger arrow than the pointer
+
+    public void OnSwipe(int direction)
+    {
+        if (awaitingSwipe == 0 || direction != awaitingSwipe) return;
+        awaitingSwipe = 0; awaitingHit = null; tapped = true;
+    }
+
+    /// The arrow slides the way the finger should go, again and again, until the player swipes that way (or taps
+    /// the button that does the same).
+    private IEnumerator WaitForSwipe(int direction, RectTransform alsoTap)
+    {
+        hand.gameObject.SetActive(true);
+        if (pulse != null) StopCoroutine(pulse);
+        pulse = StartCoroutine(SlideArrow(direction));
+        awaitingSwipe = direction;
+        yield return alsoTap != null ? WaitForTapOnRect(alsoTap) : WaitForTap(_ => false);
+        awaitingSwipe = 0;
+        HideHand();
+    }
+
+    private IEnumerator SlideArrow(int direction)
+    {
+        hand.localRotation = Quaternion.Euler(0f, 0f, direction > 0 ? 90f : -90f);   // the arrow points down as drawn
+        hand.localScale = Vector3.one * SwipeHintScale;
+        float y = -canvasRect.rect.height * SwipeHintDown, reach = canvasRect.rect.width * SwipeHintReach;
+        var img = hand.GetComponent<Image>();
+        var t = 0f;
+        while (true)
+        {
+            t += Time.unscaledDeltaTime / 1.1f;
+            var u = t % 1f;
+            var x = Mathf.Lerp(-reach, reach, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(u / 0.75f))) * direction;
+            hand.anchoredPosition = new Vector2(x, y);
+            if (img != null) { var c = img.color; c.a = u < 0.1f ? u / 0.1f : u > 0.75f ? Mathf.Clamp01(1f - (u - 0.75f) / 0.2f) : 1f; img.color = c; }
+            yield return null;
+        }
     }
 
     private IEnumerator WaitForTapOnWorld(Transform target)
@@ -585,6 +630,9 @@ public class TutorialDirector : MonoBehaviour
     private void HideHand()
     {
         if (pulse != null) { StopCoroutine(pulse); pulse = null; }
+        hand.localRotation = Quaternion.identity; hand.localScale = Vector3.one;   // a swipe hint turns, grows and fades it
+        var handImage = hand.GetComponent<Image>();
+        if (handImage != null) { var c = handImage.color; c.a = 1f; handImage.color = c; }
         hand.gameObject.SetActive(false);
     }
 
