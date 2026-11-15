@@ -19,10 +19,11 @@ public class PullHandle : MonoBehaviour
     public const float KitchenHeight = 112f;     // the same height on the other side
     // Owner, 15 November 2026, on the first version (a 130 knob on a 250 stick): "use option L, make it smaller, about
     // half the size, make the stick half the lenth too". The knob is the vanilla donut with red drizzle.
-    private const float Knob = 65f, FromEdge = 78f;                    // the knob's size, and its middle from the screen's edge (45 of stick show)
+    // Their tick on that the same afternoon: "A little bigger": 65 became 80, the stick thicker with it.
+    private const float Knob = 80f, FromEdge = 85f;                    // the knob's size, and its middle from the screen's edge (45 of stick show)
     private const float TapWide = 170f, TapHigh = 130f;                // the area that takes the tap: bigger than the small knob, out to the edge
     public const float TableHenAnchor = 262f;                          // where the truck button's right edge was: the hen keeps its place by it (MoneyFlipClock)
-    private const float StickHigh = 24f, StickLong = 125f, StickEndsBeforeMiddle = 19f;   // it ends under the ring, not in the donut's hole
+    private const float StickHigh = 29f, StickLong = 135f, StickEndsBeforeMiddle = 23f;   // it ends under the ring, not in the donut's hole
     private const float PullOut = 46f, PullSeconds = 0.07f, SpringSeconds = 0.36f, SpringFade = 8f, SpringTurns = 4.2f;
     // The kitchen moves once the handle has sprung back and swung out once more: loading the kitchen stops the
     // picture for a moment and then covers the table, so a bounce that ran alongside it was never seen (measured in
