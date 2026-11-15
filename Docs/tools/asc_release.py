@@ -16,7 +16,7 @@ APP = "6755611355"
 TOKEN = subprocess.run(["python3", "-I", os.path.join(os.path.dirname(os.path.abspath(__file__)), "asc_token.py")],
                        capture_output=True, text=True).stdout.strip().splitlines()[-1]
 
-WHATS_NEW = "Bug fixes"   # 26.11.21: the owner's words of 14 November 2026 ("for release note, in what's new, just put bug fixes"). 26.11.13 was: "- Tune balance\n- Night decorations\n- Added star as a currency in shop\n- Sprites tune"
+WHATS_NEW = "Hire new staff.\nNew sound effects.\nRemove ads feature.\nNew swipe gesture and pulling handle for kitchen."   # 26.11.22: the owner's words of 15 November 2026 ("What's new for today's release"). 26.11.21 was "Bug fixes"; 26.11.13: "- Tune balance\n- Night decorations\n- Added star as a currency in shop\n- Sprites tune"
 DESCRIPTION_EDITS = {}  # {"old words": "new words"}; filled only on the owner's tick, e.g. the "two customers" line
 
 
