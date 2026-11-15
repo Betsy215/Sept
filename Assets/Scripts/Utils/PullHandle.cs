@@ -27,11 +27,11 @@ public class PullHandle : MonoBehaviour, IPointerDownHandler, IBeginDragHandler,
     // Owner, 15 November 2026, on the first version (a 130 knob on a 250 stick): "use option L, make it smaller, about
     // half the size, make the stick half the lenth too". The knob is the vanilla donut with red drizzle.
     // Their tick on that the same afternoon: "A little bigger": 65 became 80, the stick thicker with it. Then, after
-    // build 33: "make the handles slightly larger": 80 became 92.
-    private const float Knob = 92f, FromEdge = 91f;                    // the knob's size, and its middle from the screen's edge (45 of stick show)
+    // build 33: "make the handles slightly larger": 80 became 92. After build 34: "make the handle bigger": 112.
+    private const float Knob = 112f, FromEdge = 101f;                    // the knob's size, and its middle from the screen's edge (45 of stick show)
     private const float TapWide = 170f, TapHigh = 130f;                // the area that takes the tap: bigger than the small knob, out to the edge
     public const float TableHenAnchor = 262f;                          // where the truck button's right edge was: the hen keeps its place by it (MoneyFlipClock)
-    private const float StickHigh = 33f, StickLong = 142f, StickEndsBeforeMiddle = 26f;   // it ends under the ring, not in the donut's hole
+    private const float StickHigh = 40f, StickLong = 152f, StickEndsBeforeMiddle = 32f;   // it ends under the ring, not in the donut's hole
     private const float PullOut = 46f, PullSeconds = 0.07f, SpringSeconds = 0.36f, SpringFade = 8f, SpringTurns = 4.2f;
     // The kitchen moves once the handle has sprung back and swung out once more: loading the kitchen stops the
     // picture for a moment and then covers the table, so a bounce that ran alongside it was never seen (measured in
@@ -43,6 +43,10 @@ public class PullHandle : MonoBehaviour, IPointerDownHandler, IBeginDragHandler,
     private bool inKitchen, dragging, dragged, checkedAtStart; private float grabbedAt, heightAtGrab;
     private float savedWorldY = float.NaN;       // the player's own height; none: the game's
     private static PullHandle tableHandle;
+    // It wiggles while the table is being arranged, like the food, to show it can be moved (owner, 15 November 2026:
+    // "make it wiggle during arrangement"). The food's own speed; a wider swing, because the knob is small.
+    private const float WiggleDegrees = 4f, WiggleSpeed = 20f;
+    private GamePhaseManager phases; private bool wiggling;
     private static Canvas tableCanvas;           // remembered from the table's handle for the kitchen's (read later: its scaler has not run yet when the handle is made)
 
     /// side +1: out of the left edge, pulled to the right (the table); -1: out of the right edge (the kitchen).
@@ -109,7 +113,17 @@ public class PullHandle : MonoBehaviour, IPointerDownHandler, IBeginDragHandler,
                 if (Mathf.Abs(y - rt.anchoredPosition.y) > 0.01f) { rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, y); if (!pulling) hasRest = false; }
             }
         }
+        Wiggle();
         Follow();
+    }
+
+    private void Wiggle()
+    {
+        if (rt == null || inKitchen) return;
+        if (phases == null) phases = FindObjectOfType<GamePhaseManager>();
+        var on = phases != null && phases.GetCurrentPhase() == GamePhase.ARRANGEMENT && !pulling && !dragging && Time.timeScale != 0f;
+        if (on) { rt.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(Time.unscaledTime * WiggleSpeed) * WiggleDegrees); wiggling = true; }
+        else if (wiggling) { rt.localRotation = Quaternion.identity; wiggling = false; }
     }
 
     private void Follow()

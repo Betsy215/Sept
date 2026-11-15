@@ -5,7 +5,7 @@ using UnityEngine.UI;
 /// A "Chapter 2 test" button on the main menu, only in the editor and in TestFlight builds (owner, 23 October 2026:
 /// "a test build that I can play chapter 2 directly with everything in place"). One tap does what the test recipes do:
 /// a fresh session with every food and person bought, the coffee upgrades, day 17 (chapter 2's first day) with Coconut and
-/// Juice on the menu, then the game scene. Store builds never show it (AdsInitializer.IsTestFlightBuild is false there).
+/// Juice on the menu and 100 stars to spend, then the game scene. Store builds never show it (AdsInitializer.IsTestFlightBuild is false there).
 public static class Chapter2TestButton
 {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -43,6 +43,7 @@ public static class Chapter2TestButton
         foreach (var f in new[] { "Juice", "Apple", "Choux", "Cake", "Cookies", "Coconut" }) if (!s.purchasedFoodItems.Contains(f)) s.purchasedFoodItems.Add(f);
         foreach (var c in new[] { "Grandma", "Chef", "Yoga", "Businessman" }) if (!s.purchasedCharacters.Contains(c)) s.purchasedCharacters.Add(c);
         sm.UpgradeFood("Coffee"); sm.UpgradeFood("CoffeeMachine"); sm.UpgradeFood("Oven"); sm.UpgradeFood("Oven");   // all three ovens (25 October)
+        s.starsGranted = 100;   // 100 stars to spend (owner, 15 November 2026: "when test chapter 2 via the button, give me 100 stars")
         s.levelsCompleted = Chapter.FirstDay(2); sm.AddScoreImmediately(9000f); sm.SetCurrentLevel(Chapter.FirstDay(2)); sm.SetFoodEnabled("Coconut", true); sm.SetFoodEnabled("Juice", true);
         var t = SceneTransitionManager.Instance; if (t != null) t.TransitionToScene("GameSceneOne"); else SceneManager.LoadScene("GameSceneOne");
     }
