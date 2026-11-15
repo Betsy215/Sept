@@ -69,10 +69,24 @@ public class ShopItemController : MonoBehaviour
         UpdateVisualState(canAfford);
     }
 
+    // The picture's look is set here alone. The Button on the picture also tints it by its own state (Unity's colour
+    // tint: grey and half see-through when it cannot be tapped), and that second tint is not updated while the card is
+    // hidden, so it could stay "disabled" on a card that had become affordable: an affordable card looked dimmed
+    // (owner, 15 November 2026: "it is affordable but showing a dimmed version"; seen the other way round on another
+    // card in the editor). The disabled tint is now neutral and reset on every change; the three looks below carry
+    // what the tint used to add, so nothing looks different when all is in step.
+    private static readonly Color OwnedLook = new Color(0f, 0.78f, 0f, 0.5f);       // was green under the grey half tint
+    private static readonly Color CannotAffordLook = new Color(0f, 0f, 0f, 0.4f);   // was black 0.8 under the grey half tint
+
     private void UpdateVisualState(bool canAfford)
     {
         var iconButton = transform.Find("ItemIcon")?.GetComponent<Button>();
         var iconImage = iconButton?.GetComponent<Image>();
+        if (iconButton != null)
+        {
+            var colours = iconButton.colors;
+            if (colours.disabledColor != Color.white) { colours.disabledColor = Color.white; iconButton.colors = colours; }
+        }
 
         if (isPurchased)
         {
@@ -80,7 +94,7 @@ public class ShopItemController : MonoBehaviour
             if (iconButton != null)
                 iconButton.interactable = false;
             if (iconImage != null)
-                iconImage.color = Color.green;
+                iconImage.color = OwnedLook;
         }
         else if (canAfford)
         {
@@ -92,11 +106,12 @@ public class ShopItemController : MonoBehaviour
         }
         else
         {
-            // Item is not affordable - show as transparent (grey and non-clickable)
+            // Item is not affordable - a dark see-through shape, non-clickable
             if (iconButton != null)
                 iconButton.interactable = false;
             if (iconImage != null)
-                iconImage.color = new Color(0f, 0f, 0f, 0.8f);
+                iconImage.color = CannotAffordLook;
         }
+        if (iconImage != null) iconImage.canvasRenderer.SetColor(Color.white);   // the button's own tint back to neutral, hidden or not
     }
 }

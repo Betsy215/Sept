@@ -556,7 +556,8 @@ public class ShopManager : MonoBehaviour
             t = go.transform;
         }
         if (t != null) t.gameObject.SetActive(locked);
-        var ii = icon.GetComponent<Image>(); if (ii != null && locked) ii.color = new Color(0.75f, 0.75f, 0.75f, 1f);
+        // (0.59 grey at half strength: the 0.75 grey it had under the button's grey half tint, which is neutral now)
+        var ii = icon.GetComponent<Image>(); if (ii != null && locked) { ii.color = new Color(0.59f, 0.59f, 0.59f, 0.5f); ii.canvasRenderer.SetColor(Color.white); }
     }
 
     /// Cards that left the shop for good: Apple is owned from the start (owner, 25 October 2026: apple, bread and coffee as the three default items)
