@@ -588,6 +588,15 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     /// Moves the item by code and makes that its rest position, so the arrangement wiggle (which swings round
     /// originalPosition) does not pull it back to where the scene put it (18 October: the coconut tray slid back
     /// onto the ice cream station after being pushed off).
+    /// Brings the item's whole rectangle onto the table from wherever the layout put it, by the same rule a drag
+    /// uses. For the ice cream station (15 November 2026): it was placed by its box picture, and the glasses under the
+    /// box hung below the allowed area, so after the first drag it could never be put back as low as it started.
+    public void KeepRectOnTable()
+    {
+        CalculateItemRadius();
+        SetRestPosition(ClampRectToTable(transform.position));
+    }
+
     public void SetRestPosition(Vector3 world)
     {
         world.z = transform.position.z;

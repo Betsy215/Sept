@@ -88,7 +88,13 @@ public static class FixedStation
 
         // the station: a wooden tray under the row, a little wider than it, its floor at the row's floor.
         // Chapter 2's ice cream box stands on its own (owner, 17 October: no board under it); an old tray object goes
-        if (fixedFood == "IceCream") { var old = GameObject.Find("FixedStation"); if (old != null) old.SetActive(false); return; }
+        if (fixedFood == "IceCream")
+        {
+            var old = GameObject.Find("FixedStation"); if (old != null) old.SetActive(false);
+            // the whole station (box, glasses, waffle machine) inside the area a drag allows, so its starting place is one it can be dragged back to
+            var whole = food != null ? food.GetComponent<DraggableFood>() : null; if (whole != null) whole.KeepRectOnTable();
+            return;
+        }
         var sprite = Resources.Load<Sprite>("Table/coffee_station");
         if (sprite == null) return;
         var go = GameObject.Find("FixedStation"); if (go == null) go = new GameObject("FixedStation");

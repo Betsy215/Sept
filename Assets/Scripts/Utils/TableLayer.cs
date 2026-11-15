@@ -13,6 +13,8 @@ public class TableLayer : MonoBehaviour
     public float tableBoundsPadding = 0.3f;
     [Tooltip("The band along the back edge of the cloth kept for the truck button, the hen and the pots: food cannot be placed there (owner, 13 October). World units from the cloth's top edge")]
     public float topReserve = 0.75f;
+    [Tooltip("Room kept between the bottom of the screen (its safe area) and the food. Its own, smaller number since 15 November 2026: with the 0.3 of the sides, the ice cream station could not be dragged back down to where it starts (owner: 'it seems larger when i move it up')")]
+    public float bottomPadding = 0.1f;
 
     [Header("Table Coverage Settings")]
     [Tooltip("What percentage of the screen height should the tablecloth cover from bottom")]
@@ -234,7 +236,7 @@ public class TableLayer : MonoBehaviour
         // Interactive area = tablecloth ∩ safe area, inset by the comfort padding
         var minX = Mathf.Max(clothMinX, safeMinX) + tableBoundsPadding;
         var maxX = Mathf.Min(clothMaxX, safeMaxX) - tableBoundsPadding;
-        var minY = Mathf.Max(clothMinY, safeMinY) + tableBoundsPadding;
+        var minY = Mathf.Max(clothMinY, safeMinY) + bottomPadding;
         var maxY = Mathf.Min(clothMaxY - topReserve, safeMaxY - tableBoundsPadding);   // the back band is for the fixed items only
 
         // Degenerate (padding larger than the available area): collapse to the centre line
