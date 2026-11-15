@@ -6652,7 +6652,7 @@ MonoBehaviour:
   tableClothSprite: {fileID: 722960909}
   tableBounds: {fileID: 202445333}
   tableBoundsPadding: 0.3
-  topReserve: 0.5
+  topReserve: 0.3
   screenCoveragePercent: 0.5
   levelManager: {fileID: 905501929}
   mainCamera: {fileID: 199596645}

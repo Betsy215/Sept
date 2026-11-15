@@ -43,11 +43,11 @@ public static class KitchenButtonOverTable
         rt.SetParent(go.transform, false);
         rt.anchorMin = anchorMin; rt.anchorMax = anchorMax; rt.sizeDelta = size; rt.pivot = pivot;
         // anchored to the left middle: y 0 is the cloth's top edge; bottom third of the button below it
-        rt.anchoredPosition = new Vector2(anchored.x, Handle ? PullHandle.TableHeight : size.y * (0.5f - OverlapShare));
+        rt.anchoredPosition = new Vector2(anchored.x, size.y * (0.5f - OverlapShare));   // the pull handle sets its own place below
         // no wiggle on the truck (owner, 15 November 2026: "Remove the wiggle effect of the truck icon"): the wobble
         // takes the new place as its rest and is switched off there
         var wobble = button.GetComponent<BalatroWobble>();
         if (wobble != null) { wobble.Rebase(); wobble.ResetTransform(); wobble.enabled = false; }
-        if (Handle) PullHandle.Attach(rt, 1, false, 0f);
+        if (Handle) PullHandle.Attach(rt, 1, false, PullHandle.TableHeight);
     }
 }

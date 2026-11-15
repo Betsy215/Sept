@@ -47,6 +47,9 @@ public class MoneyFlipClock : MonoBehaviour
         if (rt == null) return;
         var corners = new Vector3[4]; rt.GetWorldCorners(corners);
         var truckRight = corners[2].x;
+        // the pull handle is small and close to the edge: the hen stays where the truck button's right edge was
+        if (KitchenButtonOverTable.Handle && rt.rect.width > 0f)
+            truckRight += (PullHandle.TableHenAnchor - (rt.anchoredPosition.x + rt.rect.width * 0.5f)) * (corners[2].x - corners[0].x) / rt.rect.width;
         var rs = GetComponentsInChildren<SpriteRenderer>();
         if (rs.Length == 0) return;
         var left = float.MaxValue;

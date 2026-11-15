@@ -60,6 +60,8 @@ public class SessionData
     // can spend are the stars earned minus these; the days keep their stars on the map.
     public List<string> starItems;
     public int starsSpent;
+    // Stars bought with money (the star pack, 15 November 2026). Only for spending: the days keep the stars they earned.
+    public int starsBought;
 
     public SessionData()
     {
@@ -248,9 +250,12 @@ public class SessionManager : MonoBehaviour
         { "Coffee", "Machine" }, { "Juice", "Counter" }, { "Apple", "Counter" }, { "Coconut", "Counter" }, { "IceCream", "Machine" }
     };
     // No Oven cap since 25 October 2026 (owner: any oven bakes any recipe, so every baked food can be on the menu at once)
-    public static readonly Dictionary<string, int> StationCap = new Dictionary<string, int> { { "Oven", 99 }, { "Machine", 1 }, { "Counter", 2 } };
+    // No cap at all since 15 November 2026 (owner: "do we have cap on how many items to put on menu? we should allow as
+    // much as possible, no cap"). The old numbers (Machine 1, Counter 2, nine on the paper) could not be reached by the
+    // foods the game has, at most seven in a chapter, but a new food would have met them. The paper holds thirty.
+    public static readonly Dictionary<string, int> StationCap = new Dictionary<string, int> { { "Oven", 99 }, { "Machine", 99 }, { "Counter", 99 } };
     public const int MinEnabledFoods = 2;
-    public const int MaxEnabledFoods = 9;   // the menu paper holds nine stickers (owner, 14 October)
+    public const int MaxEnabledFoods = 99;
     public static string StationOf(string foodType) => foodType != null && FoodStation.TryGetValue(foodType, out var st) ? st : "Other";
     public static int CapOf(string station) => StationCap.TryGetValue(station, out var cap) ? cap : 99;
 
@@ -429,7 +434,9 @@ public class SessionManager : MonoBehaviour
 
     public void StartNewSession()
     {
+        var paidStars = currentSession != null ? currentSession.starsBought : 0;
         currentSession = new SessionData();
+        currentSession.starsBought = paidStars;   // stars paid for with money stay through a new game: all of them can be spent again
         // Daily Treats collected on the menu start the new game off
         var pending = DailyTreats.TakePending();
         if (pending > 0) currentSession.totalScore = RoundToCents(currentSession.totalScore + pending);
@@ -553,7 +560,15 @@ public class SessionManager : MonoBehaviour
     }
 
     /// Stars left to spend in the star shop: earned minus spent.
-    public int StarsAvailable => Mathf.Max(0, GetTotalStars() - (currentSession != null ? currentSession.starsSpent : 0));
+    public int StarsAvailable => Mathf.Max(0, GetTotalStars() + (currentSession != null ? currentSession.starsBought : 0) - (currentSession != null ? currentSession.starsSpent : 0));
+
+    /// Stars paid for with money are added to what can be spent, in one save.
+    public void AddBoughtStars(int stars)
+    {
+        if (currentSession == null || stars <= 0) return;
+        currentSession.starsBought += stars;
+        SaveSession();
+    }
 
     public bool OwnsStarItem(string itemName) => currentSession != null && currentSession.starItems != null && currentSession.starItems.Contains(itemName);
 

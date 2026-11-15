@@ -51,6 +51,7 @@ public class ShopManager : MonoBehaviour
         foreach (var card in FindObjectsOfType<ShopItemController>(true))
             if (IsHeldBackCard(card)) card.gameObject.SetActive(false);
         EnsureRemoveAdsCard();   // the one-time Remove Ads card (owner, 9 November 2026)
+        EnsureStarPackCard();    // 15 stars for money (owner, 15 November 2026)
         EnsureStarYogaCard();    // the star shop's first card: the yoga lady (owner, 14 November 2026)
         EvenOutCharacterIcons();
         EnsureTabs();            // Stars | Coins | $ (owner, 10 November 2026); Coins is the default
@@ -123,6 +124,7 @@ public class ShopManager : MonoBehaviour
                     if (RemoveAds.Owned) shopItem.MarkAsPurchased(); else shopItem.UpdateAffordability(true);
                     continue;
                 }
+                if (shopItem.itemName == StarPackCardName) { shopItem.UpdateAffordability(true); continue; }   // can always be bought again
                 if (TabOf(shopItem) == ShopTab.Stars)   // paid in stars, bought once
                 {
                     if (session != null && session.OwnsStarItem(shopItem.itemName)) shopItem.MarkAsPurchased();
@@ -156,6 +158,18 @@ public class ShopManager : MonoBehaviour
         {
             ShowPurchaseFailedFeedback("No active session!");
             return false;
+        }
+
+        if (item.itemName == StarPackCardName)
+        {
+            if (purchaseConfirmationPopup != null) purchaseConfirmationPopup.SetActive(false);
+            ShowPurchaseSuccessFeedback("Opening the App Store...");
+            StarPack.Buy((ok, msg) =>
+            {
+                if (ok) { if (AudioManager.Instance != null) AudioManager.Instance.PlayPurchaseSound(); RefreshShopDisplay(); }
+                if (!string.IsNullOrEmpty(msg)) { if (ok) ShowPurchaseSuccessFeedback(msg); else ShowPurchaseFailedFeedback(msg); }
+            });
+            return false;   // no coins change hands; the stars arrive when the App Store confirms
         }
 
         if (item.itemName == RemoveAdsCardName)
@@ -421,7 +435,7 @@ public class ShopManager : MonoBehaviour
         // the star belongs to the EARNED line only; the purchase messages that borrow the same text hide it
         if (scoreStarIcon != null && playerScoreText != null) scoreStarIcon.enabled = playerScoreText.text.StartsWith("EARNED:");
         // the store answers a moment after the shop opens: show or hide the $ tab when its answer changes
-        if (tabButtons.Count > 0 && RemoveAds.Available != dollarShown) { PaintTabs(); LayoutCards(); RefreshShopDisplay(); }
+        if (tabButtons.Count > 0 && (DollarTabOffered != dollarShown || StarPack.Available != starPackShown)) { starPackShown = StarPack.Available; PaintTabs(); LayoutCards(); RefreshShopDisplay(); }
     }
 
     private void InitializeShop()
@@ -564,6 +578,7 @@ public class ShopManager : MonoBehaviour
     private static readonly string[] RemovedCards = { "Apple" };
     private static bool IsHeldBackCard(ShopItemController card) =>
         card != null && (SessionManager.IsHeldBack(card.itemName?.Trim()) || SessionManager.IsHeldBack(card.upgradeFoodType?.Trim()) || SessionManager.IsHeldBack(card.gameObject.name)
+                         || (card.itemName == StarPackCardName && !StarPack.Available)   // only while the App Store offers it
                          || System.Array.IndexOf(RemovedCards, card.itemName?.Trim()) >= 0);
 
     // Scroll bounds of the card container, set by LayoutCards (16 October); before that the cards were placed by hand
@@ -899,6 +914,35 @@ public class ShopManager : MonoBehaviour
         if (!popupNames.ContainsKey(RemoveAdsCardName)) popupNames[RemoveAdsCardName] = "Remove ads";
     }
 
+    // --- Stars for money (owner, 15 November 2026): one pack of 15 stars on the $ tab, a card cloned like Remove Ads ---
+    public const string StarPackCardName = "DollarStars";   // not "Star...": names that start so belong to the star tab
+    private bool starPackShown;
+    private static bool DollarTabOffered => RemoveAds.Available || StarPack.Available;
+
+    private void EnsureStarPackCard()
+    {
+        if (itemContainer == null) return;
+        foreach (var c in GetAllShopItems()) if (c != null && c.itemName == StarPackCardName) return;
+        ShopItemController template = null;
+        foreach (var c in GetAllShopItems()) if (c != null && c.itemName == "Candies") { template = c; break; }
+        if (template == null) return;
+        var go = Instantiate(template.gameObject, template.transform.parent);
+        go.name = StarPackCardName; go.SetActive(true);
+        var card = go.GetComponent<ShopItemController>();
+        card.itemName = StarPackCardName; card.itemType = ItemType.Decor; card.price = 0; card.isPurchased = false;
+        card.upgradeFoodType = ""; card.specialNote = "";
+        card.popupInfoText = StarPack.PriceText + "\n" + StarPack.Stars + " stars for the star shop.";
+        card.purchaseButtonText = "Buy";
+        var icon = Resources.Load<Sprite>("UI/star_pack");
+        var iconT = go.transform.Find("ItemIcon"); var img = iconT != null ? iconT.GetComponent<Image>() : null;
+        if (img != null && icon != null) img.sprite = icon;
+        var priceT = go.transform.Find("PriceText"); var price = priceT != null ? priceT.GetComponent<TextMeshProUGUI>() : null;
+        if (price != null) price.text = StarPack.PriceText;
+        RemoveAds.Init();
+        if (!popupNames.ContainsKey(StarPackCardName)) popupNames[StarPackCardName] = StarPack.Stars + " stars";
+        starPackShown = StarPack.Available;
+    }
+
     // --- The star shop's first card (owner, 14 November 2026): the yoga lady, 15 stars, "hire her to calm customers
     // down"; the icon is her sitting on her mat. Cloned from the Candies card like the Remove Ads card. ----------------
     private void EnsureStarYogaCard()
@@ -994,7 +1038,7 @@ public class ShopManager : MonoBehaviour
     private static ShopTab TabOf(ShopItemController c)
     {
         if (c == null) return ShopTab.Coins;
-        if (c.itemName == RemoveAdsCardName) return ShopTab.Dollars;
+        if (c.itemName == RemoveAdsCardName || c.itemName == StarPackCardName) return ShopTab.Dollars;
         if (c.gameObject.name.StartsWith("Star") || (c.itemName != null && c.itemName.StartsWith("Star"))) return ShopTab.Stars;
         return ShopTab.Coins;
     }
@@ -1097,7 +1141,7 @@ public class ShopManager : MonoBehaviour
         var baseCol = panelImage != null ? panelImage.color : new Color(1f, 0.96f, 0.86f, 0.92f);
         var closed = new Color(baseCol.r * 0.90f, baseCol.g * 0.90f, baseCol.b * 0.90f, baseCol.a);
         // the $ tab exists only while the App Store offers Remove Ads; the tabs that show share the panel's width
-        dollarShown = RemoveAds.Available;
+        dollarShown = DollarTabOffered;
         if (!dollarShown && currentTab == ShopTab.Dollars) currentTab = ShopTab.Coins;
         var shown = 0; for (var i = 0; i < tabButtons.Count; i++) if (i != (int)ShopTab.Dollars || dollarShown) shown++;
         var w = shown > 0 ? Mathf.Floor(tabRowWidth / shown) : 0f; var slot = 0;

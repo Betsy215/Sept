@@ -38,6 +38,21 @@ public static class RemoveAds
     }
 }
 
+/// 15 stars for the star shop, bought with money (owner, 15 November 2026: "i want to add another product in dollar
+/// tab, use dollar to buy stars"; their pick in the report: one pack, 15 stars, $0.99). It can be bought again and again
+/// (a consumable): every confirmed purchase adds the stars to the save (SessionManager.AddBoughtStars). "Restore
+/// purchases" does not bring these back. The shop shows the card only while the App Store offers the product, so a
+/// build is safe to ship before the product exists.
+public static class StarPack
+{
+    public const string ProductId = "com.BetzzzGame.FoodTruckCafe.stars15";
+    public const int Stars = 15;
+    public const string FallbackPrice = "$0.99";
+    public static string PriceText => RemoveAdsStore.StarPackPrice ?? FallbackPrice;
+    public static bool Available => RemoveAdsStore.StarPackAvailable;
+    public static void Buy(Action<bool, string> done) => RemoveAdsStore.Ensure().BuyStars(done);
+}
+
 /// The hidden store listener; one per app, survives scene loads.
 /// 14 November 2026: the store code used to sit inside `#if UNITY_PURCHASING`. Nothing ever defined that symbol (the
 /// purchasing package is in the manifest, but the symbol only comes with the editor's Services switch, which is off), so
@@ -49,7 +64,10 @@ public class RemoveAdsStore : MonoBehaviour, IDetailedStoreListener
     public static string LocalizedPrice { get; private set; }
     public static bool Ready { get; private set; }
     public static bool ProductAvailable { get; private set; }
-    Action<bool, string> pending;
+    public static string StarPackPrice { get; private set; }
+    public static bool StarPackAvailable { get; private set; }
+    Action<bool, string> pending, pendingStars;
+    const string DoneKey = "ftc_starpack_done";   // the last transactions already paid out, so none is ever paid twice
 
     public static RemoveAdsStore Ensure()
     {
@@ -76,6 +94,7 @@ public class RemoveAdsStore : MonoBehaviour, IDetailedStoreListener
         initializing = true;
         var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
         builder.AddProduct(RemoveAds.ProductId, ProductType.NonConsumable);
+        builder.AddProduct(StarPack.ProductId, ProductType.Consumable);
         UnityPurchasing.Initialize(this, builder);
     }
 
@@ -89,13 +108,16 @@ public class RemoveAdsStore : MonoBehaviour, IDetailedStoreListener
             if (!string.IsNullOrEmpty(p.metadata?.localizedPriceString)) LocalizedPrice = p.metadata.localizedPriceString;
             if (p.hasReceipt) RemoveAds.SetOwned();     // bought on another device, or before a reinstall
         }
-        Debug.Log("[RemoveAds] store ready, price " + LocalizedPrice);
+        var s = c.products.WithID(StarPack.ProductId);
+        StarPackAvailable = s != null && s.availableToPurchase;
+        if (s != null && !string.IsNullOrEmpty(s.metadata?.localizedPriceString)) StarPackPrice = s.metadata.localizedPriceString;
+        Debug.Log("[RemoveAds] store ready, price " + LocalizedPrice + ", star pack " + (StarPackAvailable ? StarPackPrice : "not offered"));
     }
 
     public void OnInitializeFailed(InitializationFailureReason error) => OnInitializeFailed(error, null);
     public void OnInitializeFailed(InitializationFailureReason error, string message)
     {
-        initializing = false; Ready = false; ProductAvailable = false;
+        initializing = false; Ready = false; ProductAvailable = false; StarPackAvailable = false;
         Debug.LogWarning($"[RemoveAds] store init failed: {error} {message}");
     }
 
@@ -105,6 +127,13 @@ public class RemoveAdsStore : MonoBehaviour, IDetailedStoreListener
         if (controller == null) { done?.Invoke(false, "The store is not ready yet"); StartCoroutine(InitWhenServicesReady()); return; }
         pending = done;
         controller.InitiatePurchase(RemoveAds.ProductId);
+    }
+
+    public void BuyStars(Action<bool, string> done)
+    {
+        if (controller == null) { done?.Invoke(false, "The store is not ready yet"); StartCoroutine(InitWhenServicesReady()); return; }
+        pendingStars = done;
+        controller.InitiatePurchase(StarPack.ProductId);
     }
 
     public void Restore(Action<bool, string> done)
@@ -127,14 +156,32 @@ public class RemoveAdsStore : MonoBehaviour, IDetailedStoreListener
             RemoveAds.SetOwned();
             var cb = pending; pending = null; cb?.Invoke(true, "Ads are off. Thank you!");
         }
+        else if (args.purchasedProduct.definition.id == StarPack.ProductId)
+        {
+            // no save to put the stars in yet (a purchase finished while the game was closed): the store sends it again
+            if (SessionManager.Instance == null || !SessionManager.Instance.HasActiveSession()) return PurchaseProcessingResult.Pending;
+            var id = args.purchasedProduct.transactionID ?? ""; var done = PlayerPrefs.GetString(DoneKey, "");
+            if (id.Length == 0 || !("|" + done + "|").Contains("|" + id + "|"))
+            {
+                SessionManager.Instance.AddBoughtStars(StarPack.Stars);
+                if (id.Length > 0)
+                {
+                    var list = new System.Collections.Generic.List<string>(done.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)) { id };
+                    while (list.Count > 20) list.RemoveAt(0);
+                    PlayerPrefs.SetString(DoneKey, string.Join("|", list)); PlayerPrefs.Save();
+                }
+            }
+            var cb = pendingStars; pendingStars = null; cb?.Invoke(true, StarPack.Stars + " stars added. Thank you!");
+        }
         return PurchaseProcessingResult.Complete;
     }
 
-    public void OnPurchaseFailed(Product product, PurchaseFailureReason reason) => Fail(reason.ToString());
-    public void OnPurchaseFailed(Product product, PurchaseFailureDescription d) => Fail(d != null ? d.reason.ToString() : "failed");
-    void Fail(string why)
+    public void OnPurchaseFailed(Product product, PurchaseFailureReason reason) => Fail(product, reason.ToString());
+    public void OnPurchaseFailed(Product product, PurchaseFailureDescription d) => Fail(product, d != null ? d.reason.ToString() : "failed");
+    void Fail(Product product, string why)
     {
-        var cb = pending; pending = null;
+        var stars = product != null && product.definition != null && product.definition.id == StarPack.ProductId;
+        var cb = stars ? pendingStars : pending; if (stars) pendingStars = null; else pending = null;
         Debug.LogWarning("[RemoveAds] purchase failed: " + why);
         cb?.Invoke(false, why == "UserCancelled" ? "" : "Purchase failed");
     }

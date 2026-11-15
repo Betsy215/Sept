@@ -11,7 +11,9 @@ for tag in sys.argv[1:]:
     for name, x0, y0, x1, y1 in d["foods"]:
         col = (230, 30, 30, 255) if name == "IceCream" else (40, 110, 255, 255); dr.rectangle([X(x0), Y(y1), X(x1), Y(y0)], outline=col, width=5)
     for name, lo in d.get("fixed", []): dr.line([(0, Y(lo)), (W, Y(lo))], fill=(255, 255, 255, 230), width=3)
-    cells.append(im.crop((0, int(H * 0.44), W, H)))
+    for name, x0, y0, x1, y1, lo in d.get("fixedboxes", []):
+        dr.rectangle([X(x0), Y(y1), X(x1), Y(y0)], outline=(40, 200, 90, 255), width=4); dr.line([(X(x0) - 14, Y(lo)), (X(x1) + 14, Y(lo))], fill=(255, 255, 255, 255), width=4)
+    cells.append(im.crop((0, int(H * 0.44), W, H)) if not d.get("fixedboxes") else im.crop((0, int(H * 0.40), W, int(H * 0.68))))
     im.save(P + "boxes_%s_drawn.jpg" % tag, quality=88)
 sh = Image.new("RGB", (sum(c.width for c in cells) + 30 * (len(cells) - 1), cells[0].height), "white"); x = 0
 for c in cells: sh.paste(c, (x, 0)); x += c.width + 30

@@ -79,9 +79,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Pull handle</b> (Current): pick the circle. A pink donut is in for now.</p>
-<p><b>Check</b> (Current): coffee machine handle; the table area and the ice cream station.</p>
-<p><b>Stars for dollars</b> (Q&amp;A): pick the packs.</p>
+<p><b>Check</b> (Current): the small donut handle with its bounce, the star pack, the table gaps.</p>
 <p><b>Say "build"</b> for a test build with all of this. Build 32 has none of today's afternoon changes.</p>
 <p><b>For the submission I need:</b> your What's New words and your word to submit.</p>
 <p><b>Roll cake</b> (last card in Current): look at ChatGPT's art.</p></div>
@@ -89,28 +87,17 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>You asked: another product in the $ tab, dollars for stars. Suggestions?</h3>
+<div class="q"><h3>You asked: is there a cap on how many foods go on the menu? There should be none.</h3>
 <ul>
-<li><b>What stars are worth now:</b> a player earns at most 3 a day, 36 in a chapter. The star shop has one thing, the yoga lady for 15.</li>
-<li><b>Kind of purchase:</b> one that can be bought again and again (Apple calls it consumable). "Restore purchases" does not bring these back; the stars live in the save on the phone.</li>
-<li><b>Bought stars are only for spending.</b> The stars on the map stay what the player earned.</li>
-</ul>
-<p style="margin:8px 0 4px"><b>Packs to choose from:</b></p>
+<li><b>There was:</b> nine on the paper, two from the counter, one machine food. No player could reach it: a chapter has at most seven foods.</li>
+<li><b>Removed.</b> Every food a player owns can be on the menu; a new food like the roll cake will not meet a limit. Two foods must still stay on.</li>
+</ul></div>
+<div class="q"><h3>You asked: what is the yellow box, and why is it not the size of the red one?</h3>
 <ul>
-<li><b>A, one pack:</b> 15 stars for $0.99. Exactly one yoga lady. Simple, and right while the star shop has one thing.</li>
-<li><b>B, two packs:</b> 15 stars $0.99, 50 stars $2.99.</li>
-<li><b>C, three packs:</b> 15 stars $0.99, 50 stars $2.99, 120 stars $4.99.</li>
-</ul>
-<ul>
-<li><b>My pick: A now.</b> Bigger packs make sense once there is more to buy with stars; a player with 50 stars and nothing to spend them on feels cheated.</li>
-<li><b>What it takes:</b> the product in App Store Connect at your price, a card in the $ tab, and Apple reviews it with the next version it ships in. Not in today's release unless you say so.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.starpack.a"> A: 15 stars, $0.99</label></li>
-<li><label><input type="checkbox" data-id="qa.starpack.b"> B: two packs</label></li>
-<li><label><input type="checkbox" data-id="qa.starpack.c"> C: three packs</label></li>
-<li><label><input type="checkbox" data-id="qa.starpack.own"> Other numbers, I will send them</label></li>
-<li><label><input type="checkbox" data-id="qa.starpack.today"> Put it in today's release</label></li>
+<li><b>Yellow is the room:</b> the part of the table any food may stand in. It is the same for every food.</li>
+<li><b>Red is the furniture:</b> the ice cream station's own size, with its glasses and the waffle machine. The game keeps all of the red inside the yellow.</li>
+<li><b>Two flavours:</b> the station is narrower than the table, so red is smaller than yellow and can move left, right and up inside it.</li>
+<li><b>Four flavours:</b> the station is as wide as the yellow, so it can only move up and down.</li>
 </ul></div>
 <div class="q"><h3>You asked: why is the yoga lady in the coins tab dimmed sometimes, though I can afford her?</h3>
 <ul>
@@ -128,61 +115,57 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Pull handle instead of the truck, table and kitchen, 15 November.</b> In the game, not in build 32.</p>
-<figure><img src="pull_handle.jpg" alt="The table with a donut on a wooden stick out of the left edge, and the kitchen with the same handle out of the right edge"><figcaption>In the game now. Left: the table. Right: the kitchen.</figcaption></figure>
+<p style="margin-top:0"><b>Pull handle: donut L, half the size, on half the stick, 15 November.</b> In the game, not in build 32.</p>
+<div class="grid">
+<figure><img src="handle_bounce_table.gif" alt="The table: the small donut handle on the left edge is pulled out, springs back and settles"><figcaption>Table: the bounce after a tap, at its real speed. Then the kitchen slides in.</figcaption></figure>
+<figure><img src="handle_bounce_kitchen.gif" alt="The kitchen: the small donut handle on the right edge is pulled out, springs back and settles"><figcaption>Kitchen: the same, on the right edge. Then the kitchen slides away.</figcaption></figure>
+</div>
 <ul>
-<li><b>Table:</b> the truck is gone; the handle on the left opens the kitchen.</li>
-<li><b>Kitchen:</b> the truck is off the mat (the mat stays); the handle on the right goes back.</li>
-<li><b>Tap:</b> the handle is pulled out, springs back and settles, about a quarter of a second, then the kitchen slides. Swiping works as before.</li>
-<li><b>Gone with the truck:</b> its window light, which showed that the kitchen was cooking.</li>
+<li>The stick is thinner too, to match the smaller donut.</li>
+<li>The area that takes the tap is bigger than the donut and reaches the screen's edge.</li>
+<li>The hen stays where it was.</li>
 </ul>
-<figure><img src="pull_circles.jpg" alt="Twelve looks for the pulling circle: three donuts, a wooden ring, a red knob, a brass ring on a cord, a red check circle, a chef hat, arrows, a lollipop, a biscuit, and a half circle without a stick"><figcaption>Looks for the circle, drawn on a game screen. J is the one in the game now.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.circle.j"> J</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.k"> K</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.l"> L</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.a"> A</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.b"> B</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.c"> C</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.d"> D</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.e"> E</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.f"> F</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.g"> G</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.h"> H</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.i"> I</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.cook"> The handle should show when the kitchen is cooking</label></li>
-<li><label><input type="checkbox" data-id="cur.circle.redo"> None, I will say what</label></li>
+<li><label><input type="checkbox" data-id="cur.handle2.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.handle2.bigger"> A little bigger</label></li>
+<li><label><input type="checkbox" data-id="cur.handle2.bounce"> More bounce</label></li>
+<li><label><input type="checkbox" data-id="cur.handle2.cook"> The handle should show when the kitchen is cooking</label></li>
+<li><label><input type="checkbox" data-id="cur.handle2.redo"> Not yet, I will say what</label></li>
 </ul>
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Coffee machine: the handle in front of the cups, 15 November.</b> Not in build 32.</p>
-<figure><img src="coffee_handle.jpg" alt="The upgraded machine with two cups: before, the cups cover the wooden handle; after, the handle is in front of the cups"><figcaption>Top: before. Bottom: now. The four pictures of the upgraded machine with two cups.</figcaption></figure>
+<p style="margin-top:0"><b>Star pack: 15 stars for $0.99, 15 November.</b> In the game, not in build 32.</p>
+<figure><img src="star_pack.jpg" alt="The shop's dollar tab with the star pack card beside Remove Ads, its description card, and the star count risen from 8 to 23"><figcaption>The $ tab, the description card, and after buying: 8 stars became 23. Bought here through the editor's stand-in store.</figcaption></figure>
 <ul>
-<li>The two cups stand a little further right, so the left cup is not lost behind the handle.</li>
-<li>The left coffee stream now falls behind the handle.</li>
+<li><b>In the game:</b> a card on the $ tab; it can be bought again and again. Bought stars are only for spending; the map keeps the stars each day earned. They stay through a new game.</li>
+<li><b>In App Store Connect:</b> the product "15 Stars" exists at US$0.99 in every country. It is not sent to review; that happens with the version it ships in, on your word.</li>
+<li><b>Words I used:</b> name "15 stars", line "15 stars for the star shop."</li>
+<li><b>Not tested:</b> a real purchase on a phone. That needs a test build.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.cofhandle.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.cofhandle.right"> Cups further right, both streams in view</label></li>
-<li><label><input type="checkbox" data-id="cur.cofhandle.redo"> Not yet, I will say what</label></li>
+<li><label><input type="checkbox" data-id="cur.starpack.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.starpack.words"> Other words, I will send them</label></li>
+<li><label><input type="checkbox" data-id="cur.starpack.redo"> Not yet, I will say what</label></li>
 </ul>
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Ice cream station and the room for food on the table, 15 November.</b> Not in build 32.</p>
-<figure><img src="station_boxes.jpg" alt="The ice cream station with its box drawn in red and the area food may stand in drawn in yellow, before and now, with two and with four flavours"><figcaption><b>Yellow:</b> where food may stand. <b>Red:</b> the station's own box; all of it must stay inside the yellow.</figcaption></figure>
+<p style="margin-top:0"><b>Room for food on the table, 15 November.</b> Not in build 32.</p>
+<figure><img src="fixed_gap.jpg" alt="The back of the table before and now: the hen, the jar and the pots in green boxes, a white line under their feet, the yellow edge of the food area, and the apple basket's blue box pushed as high as it goes"><figcaption><b>Under the fixed items. Green:</b> each fixed item's picture. <b>White line:</b> their feet. <b>Yellow:</b> the top of the area food may stand in. <b>Blue:</b> the apple basket, as high as it goes.</figcaption></figure>
+<ul>
+<li><b>The fixed items have no box of their own.</b> Food is kept below one line under them. That line was a little below their feet; now it is at their feet.</li>
+<li>What still shows between basket and hen is the empty edge of the basket's own box.</li>
+</ul>
+<figure><img src="station_boxes.jpg" alt="The ice cream station with its box drawn in red and the area food may stand in drawn in yellow, before and now, with two and with four flavours"><figcaption><b>At the bottom. Yellow:</b> where food may stand. <b>Red:</b> the station's own box; all of it must stay inside the yellow.</figcaption></figure>
 <ul>
 <li><b>You were right.</b> The station started with its glasses below the yellow area. After the first drag the game pushed it up into the area, and it could never go back down. On a phone the difference was bigger than here.</li>
-<li><b>Now:</b> the station starts inside the area, so where it starts is where it can return to.</li>
-<li><b>Bottom:</b> food may stand lower, down to just above the edge of the screen.</li>
-<li><b>Top:</b> food may stand higher, up to just under the hen and the jar.</li>
+<li><b>Now:</b> the station starts inside the area, and food may stand lower, down to just above the edge of the screen.</li>
 <li><b>Four flavours:</b> the station now fits on the screen whole; before, the waffle machine ran off the right edge.</li>
 </ul>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.tablearea.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.tablearea.lower"> Lower still</label></li>
-<li><label><input type="checkbox" data-id="cur.tablearea.higher"> Higher still under the fixed items</label></li>
+<li><label><input type="checkbox" data-id="cur.tablearea.lower"> Lower still at the bottom</label></li>
 <li><label><input type="checkbox" data-id="cur.tablearea.redo"> Not yet, I will say what</label></li>
 </ul>
 </div>
@@ -233,12 +216,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul>
 <li><b>Yoga lady in the middle</b> of chapter 1, bushes behind her, small grass in front.</li>
 <li><b>Restore purchases</b> writes its answer on the button itself.</li>
+<li><b>Coffee machine:</b> the handle in front of the cups.</li>
 </ul>
 <p style="margin:10px 0 4px"><b>For your check in Current, not in build 32:</b></p>
 <ul>
-<li><b>Pull handle</b> instead of the truck, on the table and in the kitchen.</li>
-<li><b>Coffee machine:</b> the handle in front of the cups.</li>
-<li><b>Table:</b> the ice cream station starts where it can be dragged back to; food may stand lower and higher.</li>
+<li><b>Pull handle</b> (a small donut) instead of the truck, on the table and in the kitchen.</li>
+<li><b>Star pack:</b> 15 stars for $0.99 on the $ tab. Apple reviews it with this version.</li>
+<li><b>Table:</b> food may stand right under the fixed items and lower at the bottom; the ice cream station starts where it can be dragged back to.</li>
+<li><b>Menu:</b> no cap on the number of foods.</li>
 </ul>
 <p style="margin:10px 0 4px"><b>Not in today's release:</b> the roll cake.</p>
 <p style="margin:10px 0 4px"><b>Still needed for the release:</b> your What's New words and your word to submit.</p>

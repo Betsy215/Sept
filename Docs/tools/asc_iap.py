@@ -1,10 +1,12 @@
-"""The Remove Ads in-app purchase in App Store Connect, through the API (14 November 2026).
-The owner's yes for the product and its US$1.99 price: 14 November 2026 ("For 1.99 yes"). Never run `submit` here: a first
-in-app purchase goes to review together with an app version, on the owner's explicit yes.
+"""The game's in-app purchases in App Store Connect, through the API (14 November 2026).
+Remove Ads: the owner's yes for the product and its US$1.99 price, 14 November 2026 ("For 1.99 yes").
+15 Stars: the owner's pick in the report on 15 November 2026 (box "A: 15 stars, $0.99") and "check my feedback on report
+and implement". There is no `submit` here: an in-app purchase goes to review together with an app version, on the
+owner's explicit yes.
 
-python3 -I asc_iap.py status      what exists
-python3 -I asc_iap.py create      create the non-consumable, its en-US name and description (the shop's own words), the
-                                  US$1.99 price, availability in every territory, and the review screenshot
+python3 -I asc_iap.py status [removeads|stars15]      what exists (default removeads)
+python3 -I asc_iap.py create [removeads|stars15]      create the product, its en-US name and description (the shop's own
+                                  words), its US price, availability in every territory, and the review screenshot
 Each step is skipped when it is already done, so `create` can be run again after a failure."""
 import hashlib, json, os, subprocess, sys, urllib.error, urllib.request
 
@@ -12,12 +14,18 @@ A = "https://api.appstoreconnect.apple.com"
 APP = "6755611355"
 HERE = os.path.dirname(os.path.abspath(__file__))
 TOKEN = subprocess.run(["python3", "-I", os.path.join(HERE, "asc_token.py")], capture_output=True, text=True).stdout.strip().splitlines()[-1]
-PRODUCT = "com.BetzzzGame.FoodTruckCafe.removeads"
-REF_NAME = "Remove Ads"
-NAME = "Remove Ads"                       # the shop card's name
-DESCRIPTION = "No more ads between days."  # the shop popup's line (ShopManager.EnsureRemoveAdsCard)
-PRICE = "1.99"
-SHOT = os.path.join(HERE, "..", "..", "Assets", "Screenshots", "iap_review_shop.png")   # 1320 x 2868: Apple refuses sizes that are not a device screenshot (IMAGE_INCORRECT_DIMENSIONS)
+SHOTS = os.path.join(HERE, "..", "..", "Assets", "Screenshots")   # 1320 x 2868: Apple refuses sizes that are not a device screenshot (IMAGE_INCORRECT_DIMENSIONS)
+PRODUCTS = {
+    "removeads": dict(product="com.BetzzzGame.FoodTruckCafe.removeads", kind="NON_CONSUMABLE", ref="Remove Ads", name="Remove Ads",   # the shop card's name
+                      description="No more ads between days.",   # the shop popup's line (ShopManager.EnsureRemoveAdsCard)
+                      price="1.99", shot="iap_review_shop.png", shot_name="remove_ads_shop.png"),
+    "stars15": dict(product="com.BetzzzGame.FoodTruckCafe.stars15", kind="CONSUMABLE", ref="15 Stars", name="15 Stars",              # StarPack.ProductId, the shop card's name
+                    description="15 stars for the star shop.",    # the shop popup's line (ShopManager.EnsureStarPackCard)
+                    price="0.99", shot="iap_review_stars.png", shot_name="stars15_shop.png"),
+}
+WHICH = PRODUCTS[sys.argv[2] if len(sys.argv) > 2 else "removeads"]
+PRODUCT, KIND, REF_NAME, NAME, DESCRIPTION, PRICE = WHICH["product"], WHICH["kind"], WHICH["ref"], WHICH["name"], WHICH["description"], WHICH["price"]
+SHOT = os.path.join(SHOTS, WHICH["shot"])
 
 
 def api(method, path, body=None, ok404=False):
@@ -59,7 +67,7 @@ def status():
 def create():
     p = find()
     if not p:
-        p = api("POST", "/v2/inAppPurchases", {"data": {"type": "inAppPurchases", "attributes": {"name": REF_NAME, "productId": PRODUCT, "inAppPurchaseType": "NON_CONSUMABLE"},
+        p = api("POST", "/v2/inAppPurchases", {"data": {"type": "inAppPurchases", "attributes": {"name": REF_NAME, "productId": PRODUCT, "inAppPurchaseType": KIND},
                 "relationships": {"app": {"data": {"type": "apps", "id": APP}}}}})["data"]
         print("created", p["id"])
     i = p["id"]
@@ -90,7 +98,7 @@ def create():
         api("DELETE", f"/v1/inAppPurchaseAppStoreReviewScreenshots/{sh['data']['id']}"); sh = None; print("failed screenshot removed")
     if not sh or not sh.get("data"):
         raw = open(SHOT, "rb").read()
-        r = api("POST", "/v1/inAppPurchaseAppStoreReviewScreenshots", {"data": {"type": "inAppPurchaseAppStoreReviewScreenshots", "attributes": {"fileName": "remove_ads_shop.png", "fileSize": len(raw)},
+        r = api("POST", "/v1/inAppPurchaseAppStoreReviewScreenshots", {"data": {"type": "inAppPurchaseAppStoreReviewScreenshots", "attributes": {"fileName": WHICH["shot_name"], "fileSize": len(raw)},
                 "relationships": {"inAppPurchaseV2": {"data": {"type": "inAppPurchases", "id": i}}}}})["data"]
         for op in r["attributes"]["uploadOperations"]:
             q = urllib.request.Request(op["url"], data=raw[op["offset"]:op["offset"] + op["length"]], method=op["method"])
