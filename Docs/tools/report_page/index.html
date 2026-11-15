@@ -79,94 +79,83 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Check</b> (Current): the small donut handle with its bounce, the star pack, the table gaps.</p>
-<p><b>Say "build"</b> for a test build with all of this. Build 32 has none of today's afternoon changes.</p>
-<p><b>For the submission I need:</b> your What's New words and your word to submit.</p>
+<p><b>Test build 33</b> (version 26.11.22) is being built and uploaded now; this line changes when it is on TestFlight. It has everything in the MVP list.</p>
+<p><b>To try on the phone:</b> the donut handle on both screens; the star pack on the $ tab (a TestFlight purchase is not charged); the ice cream station and food right under the hen; the yoga lady in the middle; Restore purchases.</p>
+<p><b>For the submission I need:</b> your What's New words and your word to submit. The star pack goes to Apple's review with it.</p>
 <p><b>Roll cake</b> (last card in Current): look at ChatGPT's art.</p></div>
-<div class="who p2"><h3>Me</h3><p><b>Chapter 2 background:</b> ChatGPT has no pictures left until 3:49 PM. The brief is written and goes out at 3:53 PM; the result comes here for your tick.</p><p>No build and nothing to Apple's review before your word.</p></div>
+<div class="who p2"><h3>Me</h3><p><b>Chapter 2 background:</b> ChatGPT has no pictures left until 3:49 PM. The brief is written and goes out at 3:53 PM; the result comes here for your tick.</p><p>Nothing to Apple's review before your word.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>You asked: is there a cap on how many foods go on the menu? There should be none.</h3>
-<ul>
-<li><b>There was:</b> nine on the paper, two from the counter, one machine food. No player could reach it: a chapter has at most seven foods.</li>
-<li><b>Removed.</b> Every food a player owns can be on the menu; a new food like the roll cake will not meet a limit. Two foods must still stay on.</li>
-</ul></div>
-<div class="q"><h3>You asked: what is the yellow box, and why is it not the size of the red one?</h3>
-<ul>
-<li><b>Yellow is the room:</b> the part of the table any food may stand in. It is the same for every food.</li>
-<li><b>Red is the furniture:</b> the ice cream station's own size, with its glasses and the waffle machine. The game keeps all of the red inside the yellow.</li>
-<li><b>Two flavours:</b> the station is narrower than the table, so red is smaller than yellow and can move left, right and up inside it.</li>
-<li><b>Four flavours:</b> the station is as wide as the yellow, so it can only move up and down.</li>
-</ul></div>
-<div class="q"><h3>You asked: why is the yoga lady in the coins tab dimmed sometimes, though I can afford her?</h3>
-<ul>
-<li><b>My first answer was wrong.</b> The dark shape is the "cannot pay yet" look; what you saw is something else.</li>
-<li><b>The cause:</b> each shop picture is also a button, and the button lays its own tint on the picture: grey and half see-through while it cannot be tapped. That tint is not updated while a card is hidden, so it could stay grey after the card had become affordable. The picture was right, the stale tint dimmed it. It depends on timing, which is why it came and went.</li>
-<li><b>Fixed:</b> the button's tint is neutral now and reset on every change. Affordable, cannot-pay and owned cards look exactly as before when all is in step.</li>
-<li><b>What I could check:</b> I did not catch the yoga card dimmed myself. I saw the same stale tint on another card, the other way round, and after the fix every card's tint read neutral.</li>
-</ul></div>
-<div class="q"><h3>You asked: make sure the test-build text does not show in the released game.</h3>
-<ul>
-<li>It cannot. The line "Test build: served N of M" shows only in the editor and in TestFlight builds; a copy from the App Store never draws it.</li>
-<li>Apple's reviewers do not see it either: the game sorts by the same check where it sends its play records, and Apple's own review run of 26.11.21 was filed with the store players.</li>
-</ul></div>
+<p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Pull handle: donut L, half the size, on half the stick, 15 November.</b> In the game, not in build 32.</p>
+<p style="margin-top:0"><b>Two new sounds to pick, 15 November.</b> Not in build 33. All from Pixabay, cut to the sound itself and set to one loudness.</p>
+<p style="margin:8px 0 4px"><b>Chewing, when a candy is fed to a customer:</b></p>
+<ul>
+<li><b>1.</b> Candy bar crunch <audio controls src="sfx_chew1.mp3"></audio></li>
+<li><b>2.</b> Cartoon bite <audio controls src="sfx_chew2.mp3"></audio></li>
+<li><b>3.</b> Eating <audio controls src="sfx_chew3.mp3"></audio></li>
+<li><b>4.</b> Fast crunch <audio controls src="sfx_chew4.mp3"></audio></li>
+<li><b>5.</b> Chip crunch <audio controls src="sfx_chew5.mp3"></audio></li>
+<li><b>6.</b> Eating chips <audio controls src="sfx_chew6.mp3"></audio></li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.sfx15.chew1"> 1</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.chew2"> 2</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.chew3"> 3</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.chew4"> 4</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.chew5"> 5</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.chew6"> 6</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.chewmore"> None, find more</label></li>
+</ul>
+<p style="margin:8px 0 4px"><b>Pop, when a flower grows back (candy or yoga lady):</b></p>
+<ul>
+<li><b>1.</b> Pop <audio controls src="sfx_pop1.mp3"></audio></li>
+<li><b>2.</b> Clean small pop <audio controls src="sfx_pop2.mp3"></audio></li>
+<li><b>3.</b> Bubble pop <audio controls src="sfx_pop3.mp3"></audio></li>
+<li><b>4.</b> Cartoon pop <audio controls src="sfx_pop4.mp3"></audio></li>
+<li><b>5.</b> Bubble pop, short <audio controls src="sfx_pop5.mp3"></audio></li>
+<li><b>6.</b> Pop, dry <audio controls src="sfx_pop6.mp3"></audio></li>
+<li><b>7.</b> Rising bubbly pop <audio controls src="sfx_pop7.mp3"></audio></li>
+<li><b>8.</b> Pop, soft <audio controls src="sfx_pop8.mp3"></audio></li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.sfx15.pop1"> 1</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.pop2"> 2</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.pop3"> 3</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.pop4"> 4</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.pop5"> 5</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.pop6"> 6</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.pop7"> 7</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.pop8"> 8</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx15.popmore"> None, find more</label></li>
+</ul>
+<ul>
+<li>The game is ready for both; they play once you pick. Until then a candy keeps its old sound and a flower grows back silently.</li>
+<li>The yoga lady gives one pop per pose, however many customers get a flower.</li>
+<li>After your pick the other samples are deleted; the downloads are already gone.</li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Pull handle: a little bigger, 15 November.</b> In build 33.</p>
 <div class="grid">
-<figure><img src="handle_bounce_table.gif" alt="The table: the small donut handle on the left edge is pulled out, springs back and settles"><figcaption>Table: the bounce after a tap, at its real speed. Then the kitchen slides in.</figcaption></figure>
-<figure><img src="handle_bounce_kitchen.gif" alt="The kitchen: the small donut handle on the right edge is pulled out, springs back and settles"><figcaption>Kitchen: the same, on the right edge. Then the kitchen slides away.</figcaption></figure>
+<figure><img src="handle_bounce_table.gif" alt="The table: the donut handle on the left edge is pulled out, springs back and settles"><figcaption>Table: the bounce after a tap, at its real speed. Then the kitchen slides in.</figcaption></figure>
+<figure><img src="handle_bounce_kitchen.gif" alt="The kitchen: the donut handle on the right edge is pulled out, springs back and settles"><figcaption>Kitchen: the same, on the right edge. Then the kitchen slides away.</figcaption></figure>
 </div>
 <ul>
-<li>The stick is thinner too, to match the smaller donut.</li>
-<li>The area that takes the tap is bigger than the donut and reaches the screen's edge.</li>
-<li>The hen stays where it was.</li>
+<li>The donut is a quarter bigger than the half-size one, the stick thicker with it.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.handle2.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.handle2.bigger"> A little bigger</label></li>
-<li><label><input type="checkbox" data-id="cur.handle2.bounce"> More bounce</label></li>
-<li><label><input type="checkbox" data-id="cur.handle2.cook"> The handle should show when the kitchen is cooking</label></li>
-<li><label><input type="checkbox" data-id="cur.handle2.redo"> Not yet, I will say what</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Star pack: 15 stars for $0.99, 15 November.</b> In the game, not in build 32.</p>
-<figure><img src="star_pack.jpg" alt="The shop's dollar tab with the star pack card beside Remove Ads, its description card, and the star count risen from 8 to 23"><figcaption>The $ tab, the description card, and after buying: 8 stars became 23. Bought here through the editor's stand-in store.</figcaption></figure>
-<ul>
-<li><b>In the game:</b> a card on the $ tab; it can be bought again and again. Bought stars are only for spending; the map keeps the stars each day earned. They stay through a new game.</li>
-<li><b>In App Store Connect:</b> the product "15 Stars" exists at US$0.99 in every country. It is not sent to review; that happens with the version it ships in, on your word.</li>
-<li><b>Words I used:</b> name "15 stars", line "15 stars for the star shop."</li>
-<li><b>Not tested:</b> a real purchase on a phone. That needs a test build.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.starpack.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.starpack.words"> Other words, I will send them</label></li>
-<li><label><input type="checkbox" data-id="cur.starpack.redo"> Not yet, I will say what</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Room for food on the table, 15 November.</b> Not in build 32.</p>
-<figure><img src="fixed_gap.jpg" alt="The back of the table before and now: the hen, the jar and the pots in green boxes, a white line under their feet, the yellow edge of the food area, and the apple basket's blue box pushed as high as it goes"><figcaption><b>Under the fixed items. Green:</b> each fixed item's picture. <b>White line:</b> their feet. <b>Yellow:</b> the top of the area food may stand in. <b>Blue:</b> the apple basket, as high as it goes.</figcaption></figure>
-<ul>
-<li><b>The fixed items have no box of their own.</b> Food is kept below one line under them. That line was a little below their feet; now it is at their feet.</li>
-<li>What still shows between basket and hen is the empty edge of the basket's own box.</li>
-</ul>
-<figure><img src="station_boxes.jpg" alt="The ice cream station with its box drawn in red and the area food may stand in drawn in yellow, before and now, with two and with four flavours"><figcaption><b>At the bottom. Yellow:</b> where food may stand. <b>Red:</b> the station's own box; all of it must stay inside the yellow.</figcaption></figure>
-<ul>
-<li><b>You were right.</b> The station started with its glasses below the yellow area. After the first drag the game pushed it up into the area, and it could never go back down. On a phone the difference was bigger than here.</li>
-<li><b>Now:</b> the station starts inside the area, and food may stand lower, down to just above the edge of the screen.</li>
-<li><b>Four flavours:</b> the station now fits on the screen whole; before, the waffle machine ran off the right edge.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.tablearea.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.tablearea.lower"> Lower still at the bottom</label></li>
-<li><label><input type="checkbox" data-id="cur.tablearea.redo"> Not yet, I will say what</label></li>
+<li><label><input type="checkbox" data-id="cur.handle3.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.handle3.bigger"> Bigger still</label></li>
+<li><label><input type="checkbox" data-id="cur.handle3.smaller"> Back to the smaller one</label></li>
+<li><label><input type="checkbox" data-id="cur.handle3.bounce"> More bounce</label></li>
+<li><label><input type="checkbox" data-id="cur.handle3.cook"> The handle should show when the kitchen is cooking</label></li>
+<li><label><input type="checkbox" data-id="cur.handle3.redo"> Not yet, I will say what</label></li>
 </ul>
 </div>
 
@@ -189,43 +178,34 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Everything for today's release (26.11.22). Test build 32 has all of it except the three things marked. The store has 26.11.21 (build 28) since this morning; none of this is in it.</p>
+<p class="sub" style="margin:0 0 8px">Everything for today's release (26.11.22). All of it is in test build 33. The store has 26.11.21 (build 28) since this morning; none of this is in it.</p>
 <div class="card">
 <p style="margin-top:0"><b>Approved by you:</b></p>
 <ul>
 <li><b>Remove Ads</b> can be bought: the $ tab works. Apple approved the purchase today.</li>
+<li><b>Star pack:</b> 15 stars for $0.99 on the $ tab. Apple reviews it with this version.</li>
 <li><b>Stars from customers served:</b> 3 stars for everyone served their whole order, 2 for 90 %, 1 for more than half.</li>
 <li><b>Day-end receipt:</b> the cookie stars pop in one by one.</li>
 <li><b>No stars on the hen.</b></li>
-<li><b>Coffee machine upgrade</b> always brews two cups; the extra cup waits on the machine.</li>
-<li><b>Kitchen by swipe:</b> swipe right to go in, left to come back; the tutorial teaches both. The truck button still works.</li>
-<li><b>Yoga lady in the star shop,</b> 15 stars: she does yoga in the background and each finished pose gives every waiting customer a flower. On a float in chapter 2.</li>
+<li><b>Coffee machine upgrade</b> always brews two cups; the extra cup waits on the machine. Its handle is in front of the cups.</li>
+<li><b>Kitchen by swipe:</b> swipe right to go in, left to come back; the tutorial teaches both.</li>
+<li><b>Yoga lady in the star shop,</b> 15 stars: she does yoga in the background and each finished pose gives every waiting customer a flower. In the middle of the lawn in chapter 1, grass in front of her; on a float in chapter 2.</li>
 <li><b>Star shop:</b> stars can be spent; the shop shows the stars left.</li>
-<li><b>Sounds:</b> a milk-foaming sound on the coffee machine; quieter coffee pour, pop, blender and coin; a new order-complete sound, 6 dB quieter since today.</li>
+<li><b>Sounds:</b> a milk-foaming sound on the coffee machine; quieter coffee pour, pop, blender and coin; a new, quieter order-complete sound.</li>
 <li><b>Kitchen blender:</b> no blur beside it; shown only once ice cream is owned.</li>
 <li><b>Patience flowers</b> larger.</li>
 <li><b>Prices:</b> Choux $800 (was $1000), Strawberry cake $1000 (was $1500).</li>
 <li><b>Remove Ads card</b> in the same text size as the other cards.</li>
-</ul>
-<p style="margin:10px 0 4px"><b>In build 32 for your check:</b></p>
-<ul>
-<li><b>Truck:</b> no wiggle; window lights. Replaced by the pull handle if you approve it.</li>
-<li><b>Shop:</b> an affordable card can no longer look dimmed.</li>
-</ul>
-<p style="margin:10px 0 4px"><b>Approved by you, not in build 32:</b></p>
-<ul>
-<li><b>Yoga lady in the middle</b> of chapter 1, bushes behind her, small grass in front.</li>
 <li><b>Restore purchases</b> writes its answer on the button itself.</li>
-<li><b>Coffee machine:</b> the handle in front of the cups.</li>
-</ul>
-<p style="margin:10px 0 4px"><b>For your check in Current, not in build 32:</b></p>
-<ul>
-<li><b>Pull handle</b> (a small donut) instead of the truck, on the table and in the kitchen.</li>
-<li><b>Star pack:</b> 15 stars for $0.99 on the $ tab. Apple reviews it with this version.</li>
 <li><b>Table:</b> food may stand right under the fixed items and lower at the bottom; the ice cream station starts where it can be dragged back to.</li>
+</ul>
+<p style="margin:10px 0 4px"><b>In build 33 for your check:</b></p>
+<ul>
+<li><b>Pull handle</b> (a donut on a stick) instead of the truck, on the table and in the kitchen.</li>
+<li><b>Shop:</b> an affordable card can no longer look dimmed.</li>
 <li><b>Menu:</b> no cap on the number of foods.</li>
 </ul>
-<p style="margin:10px 0 4px"><b>Not in today's release:</b> the roll cake.</p>
+<p style="margin:10px 0 4px"><b>Not in today's release:</b> the roll cake; the new chapter 2 background.</p>
 <p style="margin:10px 0 4px"><b>Still needed for the release:</b> your What's New words and your word to submit.</p>
 </div>
 
