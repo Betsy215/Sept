@@ -286,11 +286,17 @@ public class DayNightTint : MonoBehaviour
         var trt = truck != null ? truck.GetComponent<RectTransform>() : null;
         if (trt != null)
         {
-            // the hatch's white window pane itself (the button's picture is decor/kit1_table.png, 419 x 406; its white
-            // window is x 124 to 166, y 137 to 224): dark while the light is off, warm when it is on (owner,
-            // 15 November 2026: "when truck is off, i want that white window to become dark color"); under the two glows
-            truckPane = MakeAnchoredImage(trt, "WindowPane", null, new Vector2(0.293f, 0.443f), new Vector2(0.402f, 0.666f));
-            truckPane.preserveAspect = false; truckPane.color = PaneDark;
+            // the two window panes themselves, the side window and the windshield, as one picture over the whole
+            // button: Resources/UI/truck_windows_mask is the button's own picture (decor/kit1_table.png) with only the
+            // glass kept, so the tomatoes and the jar in front of the side window stay in front (owner, 15 November
+            // 2026: "I want both window to change at the same time ... I don't want it to be a square"). Dark while
+            // the light is off, warm when it is on; it lies under the two glows. Store/ui/truck_windows_2026-11-15.
+            var glass = Resources.Load<Sprite>("UI/truck_windows_mask");
+            if (glass != null)
+            {
+                truckPane = MakeAnchoredImage(trt, "WindowPane", glass, Vector2.zero, Vector2.one);
+                truckPane.preserveAspect = false; truckPane.color = PaneDark;
+            }
             truckLights.Add(MakeAnchoredImage(trt, "WindowLight", StarSprite(), new Vector2(0.06f, 0.26f), new Vector2(0.70f, 0.70f)));
             truckLights.Add(MakeAnchoredImage(trt, "WindowLight", StarSprite(), new Vector2(0.66f, 0.42f), new Vector2(0.90f, 0.68f)));
             foreach (var l in truckLights) { l.preserveAspect = false; l.color = new Color(1f, 0.86f, 0.5f, 0f); }

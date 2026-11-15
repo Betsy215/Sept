@@ -80,10 +80,10 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>Test build 26.11.21 (31)</b> on TestFlight: your test runs.</p>
-<p><b>Check the truck's window light</b> (Current): the window is now dark when off.</p>
-<p><b>Draw the table liner</b> when you like; the template is in your iCloud art folder.</p>
+<p><b>Check the truck</b> (Current): both windows change together, in the glass's own shape.</p>
+<p><b>Pick how grass goes in front of the yoga lady</b> (Current): three demos for chapter 1, one for chapter 2.</p>
 <p><b>Send your What's New words</b> for the next release.</p></div>
-<div class="who p2"><h3>Me</h3><p>Put your liner in when it arrives. No build and nothing to Apple before your word.</p></div>
+<div class="who p2"><h3>Me</h3><p>Build the front layer you pick. No build and nothing to Apple before your word.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
@@ -93,9 +93,10 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <div class="card">
 <p style="margin-top:0"><b>Truck: no wiggle, and a window light with three states, 15 November.</b></p>
-<figure><img src="truck_light.jpg" alt="The truck with its window dark, and with the window lit"><figcaption>Left: kitchen idle by day, the window dark. Right: the window lit, as it shows while blinking and at night.</figcaption></figure>
+<figure><img src="truck_light.jpg" alt="The truck with its window dark, and with the window lit"><figcaption>Left: kitchen idle by day, both windows dark. Right: both lit, as they show while blinking and at night.</figcaption></figure>
 <ul>
-<li><b>Off:</b> by day, when the kitchen is making nothing. The white window turns dark, like the blackboards beside it (your words, today).</li>
+<li><b>Off:</b> by day, when the kitchen is making nothing. Both windows, the side window and the windshield, turn dark.</li>
+<li><b>The shape:</b> the dark and the light follow the glass itself, cut from the truck's own picture, so the tomatoes and the jar in front of the side window stay in front. No square.</li>
 <li><b>Blinking:</b> while the kitchen cooks: an oven baking, the blender or the waffle machine running. By day and by night, a little faster than once a second.</li>
 <li><b>Warm yellow, steady:</b> from dusk into night. This light was already there; it now gives way to the blink while something cooks.</li>
 <li>Checked in the editor: the truck stands still; the light read off, then swung between dim and bright during an 8-second bread bake, and was steady with the night forced.</li>
@@ -108,16 +109,28 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Your table liner: size and template, 15 November.</b> The canvas is upright now: <b>1080 x 1920 pixels</b>, the same canvas as your background paintings. Draw the liner as one more layer over your background and export that layer alone, see-through, one PNG per chapter.</p>
-<figure><img src="liner_template.jpg" alt="The guide's middle part alone, over the chapter 1 background with the grass sample, and over the chapter 2 background with the plants sample"><figcaption>The middle of the canvas. Left: the guide alone. Middle and right: the guide over your two backgrounds, with the sample liners.</figcaption></figure>
+<p style="margin-top:0"><b>A layer in front of the yoga lady: how, and demos, 15 November.</b> The table liner is dropped. Nothing is changed in the game; the demos were shown live in the editor and are not saved.</p>
+<p style="margin:8px 0 4px"><b>How it works:</b></p>
 <ul>
-<li><b>In your iCloud folder "FoodTruckCafe art":</b> table_liner_guide.png (the lines; put it on top while you draw, hide it before you export) and two samples to paint over, table_liner_sample_ch1.png and table_liner_sample_ch2.png. All three are 1080 x 1920.</li>
-<li><b>Table edge:</b> the middle line of the canvas, 960 pixels from the top. The table covers everything below it. Paint 40 pixels below the line solid, and leave the rest of the lower half empty.</li>
-<li><b>Height:</b> in the middle keep it under the green line, about 100 pixels above the table edge (the customers' hips). At the sides it may go up to the brown line, about 220 pixels above.</li>
-<li><b>Paint:</b> solid shapes, day colours only, no shadow onto the table. The truck, hen and jar stand in front of it; customers and the yoga lady behind.</li>
-<li><b>In the game</b> it is laid over the screen exactly like your background, so it sits on the background the way you drew it. I cut away the empty part myself.</li>
-<li><b>When done:</b> save liner_ch1.png and liner_ch2.png to your "Updates" folder and tell me.</li>
+<li>The front layer is your background painting's own grass, cut out along its upper edge and drawn a second time, over her, at exactly the same place. Where she is not, the picture looks as it always did. Where she is, the grass covers her.</li>
+<li>Drawing order: background, yoga lady, front grass, customers, table.</li>
+<li>She has to sit down in the grass for it to reach her, so in the demos she sits lower than now.</li>
+<li>No new art is needed. If you would rather paint the front grass yourself, it is one see-through PNG on your background's canvas (1080 x 1920) with only the grass on it.</li>
 </ul>
+<figure><img src="yoga_front_ch1.jpg" alt="Chapter 1: now, and three demos with grass in front of the yoga lady"><figcaption><b>Now:</b> she sits on top of the grass. <b>A:</b> by the tree, lower, the near grass in front of her. <b>B:</b> the same, plus the tall blades by the tree in front of her. <b>C:</b> in the middle of the lawn, the near grass in front.</figcaption></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.yfront1.a"> Chapter 1: A</label></li>
+<li><label><input type="checkbox" data-id="cur.yfront1.b"> Chapter 1: B</label></li>
+<li><label><input type="checkbox" data-id="cur.yfront1.c"> Chapter 1: C</label></li>
+<li><label><input type="checkbox" data-id="cur.yfront1.mine"> I will paint the front grass myself</label></li>
+<li><label><input type="checkbox" data-id="cur.yfront1.redo"> None, I will say what</label></li>
+</ul>
+<figure><img src="yoga_front_ch2.jpg" alt="Chapter 2: the float on the water now, and with the water in front of its lower edge"><figcaption>Chapter 2, the same idea with the sea. <b>Now:</b> the float lies on the water. <b>A:</b> the water below a wavy line is in front, so the float sits in the sea.</figcaption></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.yfront2.a"> Chapter 2: A</label></li>
+<li><label><input type="checkbox" data-id="cur.yfront2.redo"> Leave chapter 2 as it is</label></li>
+</ul>
+<p style="margin:8px 0 4px"><b>What I see in the demos:</b> the cut grass is soft, so her mat shows through it in places; I can make it more solid. A customer or an order bubble can still stand in front of her, as now.</p>
 </div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
@@ -142,9 +155,9 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 <p style="margin:10px 0 4px"><b>Done today, waiting for your check in Current:</b></p>
 <ul>
-<li><b>Truck:</b> no wiggle; the window is dark when off, blinks while the kitchen cooks, and is warm yellow at night.</li>
+<li><b>Truck:</b> no wiggle; both windows are dark when off, blink while the kitchen cooks, and are warm yellow at night.</li>
 </ul>
-<p style="margin:10px 0 4px"><b>Coming from you:</b> the liner picture between customers and table (template in Current).</p>
+<p style="margin:10px 0 4px"><b>Not decided, so not in:</b> grass in front of the yoga lady (demos in Current).</p>
 <p style="margin:10px 0 4px"><b>Still needed for the release:</b> your What's New words, a new version number (26.11.21 is used), and your word to submit.</p>
 </div>
 
