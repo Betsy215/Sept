@@ -788,7 +788,32 @@ public class LevelManager : MonoBehaviour
             }
         }
         if (starsPop == null) starsPop = StartCoroutine(PopStars(row, stars));
+        ShowServedCountForTesters(host);
         Debug.Log($"Level Complete: {stars} stars shown on the card");
+    }
+
+    /// Test builds only (editor and TestFlight, never the store): what the star rule counted, under the stars. The owner
+    /// asked for logs after a day that ended on one star with "only one order missed" (14 November 2026); the phone
+    /// keeps none, so the receipt says it: customers served whole, and of the lost, how many left with part.
+    private void ShowServedCountForTesters(RectTransform host)
+    {
+        if (!(Application.isEditor || AdsInitializer.IsTestFlightBuild()) || orderSystem == null) return;
+        var t = host.Find("ServedCount");
+        TMPro.TextMeshProUGUI label;
+        if (t == null)
+        {
+            var go = new GameObject("ServedCount", typeof(RectTransform), typeof(TMPro.TextMeshProUGUI));
+            go.transform.SetParent(host, false);
+            var rt = (RectTransform)go.transform;
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 1f);
+            rt.anchoredPosition = new Vector2(0f, -88f); rt.sizeDelta = new Vector2(820f, 110f);
+            label = go.GetComponent<TMPro.TextMeshProUGUI>();
+            label.font = unlockedItemsText.font; label.fontSize = 30f; label.alignment = TMPro.TextAlignmentOptions.Top;
+            label.color = new Color(0.36f, 0.3f, 0.26f); label.raycastTarget = false; label.enableWordWrapping = true;
+        }
+        else label = t.GetComponent<TMPro.TextMeshProUGUI>();
+        int served = orderSystem.CustomersServed, lost = orderSystem.CustomersLost, partly = orderSystem.CustomersLostPartly;
+        label.text = $"Test build: served {served} of {served + lost}" + (lost > 0 ? $"\nleft with part: {partly}, with nothing: {lost - partly}" : "");
     }
 
     /// The earned stars pop into their sockets one after the other: grow past full size, settle, with a small turn.

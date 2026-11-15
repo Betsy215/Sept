@@ -11,6 +11,7 @@ public class KitchenSceneManager : MonoBehaviour
     [Header("Debug")] public bool enableDebugLogs = true;
 
     private bool isKitchenOpen = false;
+    public bool IsKitchenOpen => isKitchenOpen;
 
     // In-flight unload from the last CloseKitchen; a second additive load while it runs would
     // give two kitchen scenes (and two sets of timers re-attaching to the same cooldown keys).

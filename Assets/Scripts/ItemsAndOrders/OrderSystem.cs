@@ -43,6 +43,8 @@ public class OrderSystem : MonoBehaviour
     private int customersServed, customersLost;
     public int CustomersServed => customersServed;   // got the whole order
     public int CustomersLost => customersLost;       // left with nothing, or with only part of it
+    private int customersLostPartly;
+    public int CustomersLostPartly => customersLostPartly;   // of the lost: those who got part of their order (the testers' receipt line)
 
     [Header("Two customers (12 October 2026)")]
     [Tooltip("How many customers can wait with an order at the same time: 2 in play, 1 in the tutorial")]
@@ -164,7 +166,7 @@ public class OrderSystem : MonoBehaviour
     {
         // Reset when re-enabled by LevelManager: no order survives a level change
         ordersCompleted = 0;
-        customersServed = 0; customersLost = 0;
+        customersServed = 0; customersLost = 0; customersLostPartly = 0;
         foreach (var o in orders.ToArray()) { PatienceMeter.Hide(o); ClearOrderDisplay(o); if (slots != null) SetBubble(slots[o.slot], 0); }
         orders.Clear();
         hasInitializedSinceEnable = false;
@@ -652,6 +654,7 @@ public class OrderSystem : MonoBehaviour
         // Count as completed (even if expired)
         ordersCompleted++;
         customersLost++;
+        if (order.items.Exists(i => i.isServed)) customersLostPartly++;
         UpdateOrderProgress();
 
         // CUSTOMER INTEGRATION: Notify customer manager

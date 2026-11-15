@@ -83,18 +83,24 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p>In it: the new star rule (check it in Current), your foaming sound (Pixabay number 1, cut to 1.3 seconds and quieter), pop, blender and coin at the middle volume, the working Remove Ads tab.</p>
 <p><b>At Apple:</b> 26.11.21 with build 28 is waiting for review. This weekend's release replaces it.</p>
 <p><b>New in Current, from your play of build 30 (no build made):</b> the hen's stars fixed, 1 star at more than half, 3D stars popping onto the receipt, the coffee machine upgrade, pour and cash sounds quieter. Each has a "Good to ship" box.</p>
+<p><b>The kitchen swipe try-out is built</b> (Current). Trying it with a finger needs a test build: say the word.</p>
 <p>Also in Current: the yoga lady's sitting poses from ChatGPT, two sheets to pick from.</p>
 <p>In Q&amp;A: your 1 star on day 1; the truck button and the swipe.</p></div>
-<div class="who p2"><h3>Me</h3><p>Build the kitchen swipe try-out you asked for (button stays, swipe added). Next build only on your word. Then: your choice on how 3 stars becomes reachable (star card).</p></div>
+<div class="who p2"><h3>Me</h3><p>Wait for your boxes. Next build only on your word. Still open: your choice on how 3 stars becomes reachable (star card).</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
 <div class="q"><h3>You asked: day 1, one order missed, only 1 star. Do you have logs?</h3>
 <ul>
-<li><b>Logs:</b> the game records a day's stars and money, not each customer. Your phone's records after the day started (4:31 PM) have not reached Unity yet, so I cannot see that day's end.</li>
-<li><b>Found by replaying day 1:</b> a real fault in the stars under the hen. They were worked out from the customers so far only. First customer lost: no star. One lost among the first four: 1 star. Two stars came back only after four were served. Fixed, first card in Current.</li>
-<li><b>The day-end result was already right:</b> one lost of 8 or 9 customers ends on 2 stars. If your 1 star was on the receipt, the game counted two lost. A customer who leaves with part of the order counts as lost.</li>
-<li>The receipt can show the count ("Served 7 of 9") so you can check it yourself: box in the star card.</li>
+<li><b>The log</b> (it reached Unity about 20 minutes late; it keeps a day's stars and money, not each customer): day 1 at 4:32 PM, 1 star, $345. Day 1 again at 4:33 PM, 1 star, $353. Day 2, 2 stars, $488. Day 3, no star, $359.</li>
+<li><b>So the 1 star was the day's real result:</b> the game counted at least two customers as not served whole. One lost of 8 or 9 gives 2 stars.</li>
+<li><b>My reading, not proven by the log:</b> your money was higher than on this morning's 3-star days ($296 and $323), so nearly every order paid. A customer who gets part of the order and leaves pays for that part but counts as lost. That fits the measurement in the star card: the coffee is the usual missing part.</li>
+<li><b>From the next test build the receipt tells you what was counted</b> (test builds only, never the store):</li>
+</ul>
+<figure><img src="receipt_count.jpg" alt="Day-end receipt with a small line: test build, served 8 of 10, left with part 0, with nothing 2" style="max-width:420px"><figcaption>Editor run with two customers made to leave.</figcaption></figure>
+<ul>
+<li><b>Also found while replaying:</b> the stars under the hen were wrong during the day (first card in Current, fixed).</li>
+<li>Day 3 with no star: under my 70 % line. With your "more than half" line it may have been 1.</li>
 </ul></div>
 <div class="q"><h3>You asked: the truck button when something runs low, and what a swipe instead of the button would mean.</h3>
 <p style="margin:4px 0 6px"><b>Making the button remind you.</b> The game already knows when a food is at zero. Ideas, tick what you want:</p>
@@ -171,6 +177,21 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <div class="card">
+<p style="margin-top:0"><b>Kitchen swipe: try-out built, 14 November.</b> Swipe right on the table and the kitchen slides in from the truck's side; swipe left in the kitchen and it slides back. The truck button and the kitchen's own button still work.</p>
+<figure><img src="kitchen_swipe.gif" alt="The kitchen sliding in over the table and back out" style="max-width:300px"><figcaption>Filmed in the editor, day 1.</figcaption></figure>
+<ul>
+<li>Only during play: off while arranging, in the tutorial, when paused, with the menu book or the day-end card open (each checked).</li>
+<li>A swipe must be fast, longer than about a fifth of the screen and mostly sideways, so a tap that slips does not open the kitchen.</li>
+<li>Not tested: the finger itself. The editor cannot swipe, so how it feels needs your phone, which needs a test build.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.swipe.build"> Make a test build with it so I can try it</label></li>
+<li><label><input type="checkbox" data-id="cur.swipe.drop"> Drop the swipe</label></li>
+<li><label><input type="checkbox" data-id="cur.swipe.redo"> Change it, I will say what</label></li>
+</ul>
+</div>
+
+<div class="card">
 <p style="margin-top:0"><b>Yoga lady sitting poses, ChatGPT, 14 November.</b> Five poses for the loop: hands on knees, palms together, arms up, bend right, bend left. ChatGPT drew two sheets. Nothing is in the game; no feature code is written.</p>
 <figure><img src="yoga_sit_1.jpg" alt="Sheet 1: the yoga lady sitting on her mat in five poses"><figcaption>Sheet 1. Hands flat on the knees. The mats differ in width (291 to 337 pixels).</figcaption></figure>
 <figure><img src="yoga_sit_2.jpg" alt="Sheet 2: the yoga lady sitting on her mat in five poses"><figcaption>Sheet 2. Meditation fingers on the knees. All five mats the same width and on the same line, so the frames line up without fixing.</figcaption></figure>
@@ -217,9 +238,9 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="cur.stars.oneloss"> Soften the rule: 3 stars allows one customer lost.</label></li>
 </ul>
 <p style="margin:8px 0 4px">Chapter 2 is not measured yet; its measuring tool is out of date and I bring it up to date next.</p>
-<p style="margin:8px 0 4px">The day-end receipt does not say how many customers were served. Want a line there?</p>
+<p style="margin:8px 0 4px">The count on the receipt is in test builds only. Players do not see it.</p>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.stars.line"> Add "Served 8 of 9" to the day-end receipt</label></li>
+<li><label><input type="checkbox" data-id="cur.stars.line"> Show "Served 8 of 9" on the receipt to players too (test builds show it now)</label></li>
 <li><label><input type="checkbox" data-id="cur.stars.ship"> The rule is right, remove this</label></li>
 <li><label><input type="checkbox" data-id="cur.stars.redo"> Not yet, I will say what</label></li>
 </ul>
