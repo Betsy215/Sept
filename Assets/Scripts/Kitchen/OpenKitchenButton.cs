@@ -47,6 +47,10 @@ public class OpenKitchenButton : MonoBehaviour
             AudioManager.Instance.PlaySFX(clickSound);
 
 
+        // the pull handle bounces and opens the kitchen itself, with the slide (15 November 2026)
+        var handle = GetComponent<TruckHandle>();
+        if (handle != null && handle.Pull()) return;
+
         if (KitchenSceneManager.Instance != null)
             KitchenSceneManager.Instance.OpenKitchen();
     }

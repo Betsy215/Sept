@@ -89,7 +89,7 @@ public static class TableBackRowAlign
         var truck = GameObject.Find("KitchenButton");
         var rt = truck != null ? truck.GetComponent<RectTransform>() : null;
         var img = truck != null ? truck.GetComponent<UnityEngine.UI.Image>() : null;
-        if (rt != null && rt.rect.height > 0f)
+        if (rt != null && rt.rect.height > 0f && !KitchenButtonOverTable.Handle)   // the pull handle floats above the cloth: not part of the back row
         {
             var bottom = VisibleBottom(rt, img != null ? img.sprite : null, out var ok);
             if (ok)

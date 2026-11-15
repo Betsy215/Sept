@@ -79,26 +79,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 32</b> (version 26.11.22) is on TestFlight. It has everything in the MVP list. The yoga lady is still by the tree in it.</p>
-<p><b>Yoga lady in the middle</b> (Current): look and tick.</p>
-<p><b>Truck as a sticker</b> (Current): nine ideas, pick one or more.</p>
+<p><b>Truck as a pull handle</b> (Current): look and tick.</p>
+<p><b>Test build 32</b> is on TestFlight. It does not have the pull handle, the yoga lady in the middle or the Restore answer. Say "build" for a test build with them.</p>
 <p><b>For the submission I need:</b> your What's New words and your word to submit.</p>
 <p><b>Roll cake</b> (last card in Current): look at ChatGPT's art.</p></div>
-<div class="who p2"><h3>Me</h3><p>Your changes as they come. Nothing to Apple's review before your word.</p></div>
+<div class="who p2"><h3>Me</h3><p>Your changes as they come. No build and nothing to Apple's review before your word.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>You asked: what does "Restore purchases" do? I see no feedback when I tap it.</h3>
-<ul>
-<li><b>What it does:</b> it asks the App Store whether this Apple ID already bought Remove Ads, and if so turns the ads off again without paying twice. It is for a new phone or after deleting the game. Apple requires the button.</li>
-<li><b>Why you saw nothing:</b> the answer was written in the EARNED line at the top of the shop for two seconds, far from the button.</li>
-<li><b>Fixed, not in build 32:</b> the answer is now written on the button itself for three seconds: "Checking with the App Store...", then "Nothing to restore", "Ads are off again" or "Ads are already off".</li>
-</ul>
-<figure><img src="restore_answer.jpg" alt="The bottom of the shop: the Restore purchases line reads Nothing to restore"><figcaption>After a tap, when nothing was bought.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.restore.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="qa.restore.words"> Other words, I will send them</label></li>
-</ul></div>
 <div class="q"><h3>You asked: why is the yoga lady in the coins tab dimmed sometimes, though I can afford her?</h3>
 <ul>
 <li><b>My first answer was wrong.</b> The dark shape is the "cannot pay yet" look; what you saw is something else.</li>
@@ -115,40 +103,19 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Chapter 1: yoga lady in the middle, bushes behind, small grass in front, 15 November.</b> Not in build 32.</p>
-<figure><img src="yoga_mid.jpg" alt="The yoga lady in the middle of the lawn, the bushes behind her and grass blades in front of her legs, by day, in the evening and at night"><figcaption>Day, evening, night. The grass in front is your painting's own near grass, drawn again over her; it takes the evening and night light with the background.</figcaption></figure>
+<p style="margin-top:0"><b>Truck as a pull handle on a stick, 15 November.</b> In the game, not in build 32.</p>
+<figure><img src="truck_handle.jpg" alt="The truck above the tablecloth on a wooden stick that comes out of the left edge of the screen; at rest, and pulled out during the bounce"><figcaption>Left: at rest. Right: the furthest point of the bounce after a tap.</figcaption></figure>
 <ul>
-<li>A customer standing in the middle covers her, as the customers cover the bushes.</li>
-<li>Chapter 2 stays as it is (your tick).</li>
+<li><b>Look:</b> the truck floats above the table on a wooden stick from the left edge. The hen stays where it was.</li>
+<li><b>Tap:</b> the handle is pulled out, springs back past its place and settles, about a quarter of a second. Then the kitchen slides in from the left, as on a swipe.</li>
+<li><b>Windows</b> light up as before. The stick is my drawing; yours can replace it.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.ymid.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.ymid.more"> More grass in front of her</label></li>
-<li><label><input type="checkbox" data-id="cur.ymid.bigger"> Make her bigger</label></li>
-<li><label><input type="checkbox" data-id="cur.ymid.redo"> Not yet, I will say what</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Truck as a sticker out of the left edge: ideas, 15 November.</b> Pictures only, drawn on a real game screen; nothing is changed in the game.</p>
-<figure><img src="truck_stickers.jpg" alt="Today's truck on the table, and nine ideas: peeking in, notebook tab, taped on, hanging sign, awning ribbon, round peeling sticker, luggage tag, peeking in higher, small peek"></figure>
-<ul>
-<li><b>A, H, I:</b> the sticker you have, partly off the screen. <b>B, E, F, G:</b> the truck on a piece of paper or cloth. <b>C:</b> held by tape. <b>D:</b> hangs from a wooden arm and can swing.</li>
-<li><b>The first customer stands at that edge.</b> Above the table the truck covers part of them in every idea but H (higher up) and I (small).</li>
-<li><b>It can move, with any idea:</b> slide out further or swing while something is ready in the kitchen; the windows still light up as now.</li>
-<li><b>Your own truck pictures</b> (truck_blackout.png and truck_lightup.png, saved to "Updates") fit any idea.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.sticker.a"> A</label></li>
-<li><label><input type="checkbox" data-id="cur.sticker.b"> B</label></li>
-<li><label><input type="checkbox" data-id="cur.sticker.c"> C</label></li>
-<li><label><input type="checkbox" data-id="cur.sticker.d"> D</label></li>
-<li><label><input type="checkbox" data-id="cur.sticker.e"> E</label></li>
-<li><label><input type="checkbox" data-id="cur.sticker.f"> F</label></li>
-<li><label><input type="checkbox" data-id="cur.sticker.g"> G</label></li>
-<li><label><input type="checkbox" data-id="cur.sticker.h"> H</label></li>
-<li><label><input type="checkbox" data-id="cur.sticker.i"> I</label></li>
-<li><label><input type="checkbox" data-id="cur.sticker.more"> More ideas, I will say which way</label></li>
+<li><label><input type="checkbox" data-id="cur.handle.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.handle.lower"> Lower, closer to the table</label></li>
+<li><label><input type="checkbox" data-id="cur.handle.bounce"> More bounce</label></li>
+<li><label><input type="checkbox" data-id="cur.handle.stick"> I will draw the stick, send me the file</label></li>
+<li><label><input type="checkbox" data-id="cur.handle.redo"> Not yet, I will say what</label></li>
 </ul>
 </div>
 
@@ -171,7 +138,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Everything for today's release (26.11.22). All of it is in test build 32. The store has 26.11.21 (build 28) since this morning; none of this is in it.</p>
+<p class="sub" style="margin:0 0 8px">Everything for today's release (26.11.22). Test build 32 has all of it except the three things marked. The store has 26.11.21 (build 28) since this morning; none of this is in it.</p>
 <div class="card">
 <p style="margin-top:0"><b>Approved by you:</b></p>
 <ul>
@@ -181,7 +148,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><b>No stars on the hen.</b></li>
 <li><b>Coffee machine upgrade</b> always brews two cups; the extra cup waits on the machine.</li>
 <li><b>Kitchen by swipe:</b> swipe right to go in, left to come back; the tutorial teaches both. The truck button still works.</li>
-<li><b>Yoga lady in the star shop,</b> 15 stars: she does yoga in the background and each finished pose gives every waiting customer a flower. By the tree in chapter 1, on a float in chapter 2.</li>
+<li><b>Yoga lady in the star shop,</b> 15 stars: she does yoga in the background and each finished pose gives every waiting customer a flower. On a float in chapter 2.</li>
 <li><b>Star shop:</b> stars can be spent; the shop shows the stars left.</li>
 <li><b>Sounds:</b> a milk-foaming sound on the coffee machine; quieter coffee pour, pop, blender and coin; a new order-complete sound, 6 dB quieter since today.</li>
 <li><b>Kitchen blender:</b> no blur beside it; shown only once ice cream is owned.</li>
@@ -194,7 +161,13 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><b>Truck:</b> no wiggle; both windows are dark when off, blink while the kitchen cooks, and are warm yellow at night.</li>
 <li><b>Shop:</b> an affordable card can no longer look dimmed.</li>
 </ul>
-<p style="margin:10px 0 4px"><b>Not in build 32:</b> the yoga lady in the middle with grass in front; the answer on the Restore purchases button; the truck as a sticker; the roll cake.</p>
+<p style="margin:10px 0 4px"><b>Approved by you, not in build 32:</b></p>
+<ul>
+<li><b>Yoga lady in the middle</b> of chapter 1, bushes behind her, small grass in front.</li>
+<li><b>Restore purchases</b> writes its answer on the button itself.</li>
+</ul>
+<p style="margin:10px 0 4px"><b>For your check in Current, not in build 32:</b> the truck as a pull handle.</p>
+<p style="margin:10px 0 4px"><b>Not in today's release:</b> the roll cake.</p>
 <p style="margin:10px 0 4px"><b>Still needed for the release:</b> your What's New words and your word to submit.</p>
 </div>
 
