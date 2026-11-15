@@ -24,8 +24,15 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable, IPointerCl
     private int currentUpgradeLevel = 1;
     private int cupsBrewedThisSession = 0;
 
-    // Level the running brew was started with (a level-2 machine with one free slot brews as level 1).
+    // Level the running brew was started with.
     private int activeBrewingLevel = 1;
+
+    // A level-2 machine always brews two cups: the shop card says "two cups per brew", and with one cup still on the
+    // tray it brewed only one (owner's play test, 14 November 2026). When the tray has room for one cup only, the
+    // second waits under the wand (the brew's own frame "1-66") and goes to the tray the moment a cup is served; the
+    // machine starts no new brew until then.
+    private bool cupWaiting;
+    private Sprite cupWaitingSprite;
 
     // False during the arrangement phase, where a tap on the machine is the start of a drag.
     private bool brewingEnabled = true;
@@ -96,7 +103,7 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable, IPointerCl
 
     private bool CanBrew()
     {
-        if (isBrewing) return false;
+        if (isBrewing || cupWaiting) return false;
         if (beanContainer == null || coffeeRefillableItem == null) return false;
 
         return beanContainer.HasEnoughBeans(1) && coffeeRefillableItem.HasSpace(1);
@@ -111,11 +118,6 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable, IPointerCl
         Debug.Log($"☕ Consumed 1 bean. Level {currentUpgradeLevel} machine starting...");
 
         activeBrewingLevel = currentUpgradeLevel >= 2 ? 2 : 1;
-        if (activeBrewingLevel == 2 && !coffeeRefillableItem.HasSpace(2))
-        {
-            activeBrewingLevel = 1;
-            Debug.Log("☕ Level 2 machine but only 1 space - animating as Level 1");
-        }
 
         if (animator != null)
         {
@@ -168,6 +170,7 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable, IPointerCl
             if (frame != shown)
             {
                 shown = frame;
+                if (frame == "1-66") cupWaitingSprite = spriteRenderer.sprite;   // one finished cup under the wand
                 if (frame == "0-2" || frame == "1-2") PlayBrewSound("Coffee/coffee_pour");          // the stream starts (one cup, two cups)
                 else if (frame == "1-5" || frame == "1-6")                                           // the wand goes into a cup
                 {
@@ -216,9 +219,12 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable, IPointerCl
             cupsBrewedThisSession++;
 
             if (coffeeRefillableItem != null)
-                coffeeRefillableItem.IncreaseCount(1);
+            {
+                if (coffeeRefillableItem.HasSpace(1)) coffeeRefillableItem.IncreaseCount(1);
+                else cupWaiting = true;   // the tray is full: the cup stays on the machine (Update hands it over)
+            }
 
-            Debug.Log($"☕ Cup 2 done! Total cups brewed: {cupsBrewedThisSession}");
+            Debug.Log($"☕ Cup 2 done! Total cups brewed: {cupsBrewedThisSession}{(cupWaiting ? " (waiting on the machine)" : "")}");
         }
 
         CompleteBrewing();
@@ -235,9 +241,19 @@ public class CoffeeMachine : MonoBehaviour, IDraggable, IUpgradeable, IPointerCl
 
         BrewFeedback(false);
         RestoreUpgradeSprite();
+        if (cupWaiting && cupWaitingSprite != null && spriteRenderer != null) spriteRenderer.sprite = cupWaitingSprite;
 
         Debug.Log($"✅ Brewing complete! Level {currentUpgradeLevel} machine finished {cupsBrewedThisSession} cup(s).");
         cupsBrewedThisSession = 0;
+    }
+
+    /// The cup waiting on the machine goes to the tray as soon as there is room for it.
+    private void Update()
+    {
+        if (!cupWaiting || coffeeRefillableItem == null || !coffeeRefillableItem.HasSpace(1)) return;
+        cupWaiting = false;
+        coffeeRefillableItem.IncreaseCount(1);
+        RestoreUpgradeSprite();
     }
 
     private void RestoreUpgradeSprite()

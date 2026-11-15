@@ -599,7 +599,7 @@ public class OrderSystem : MonoBehaviour
 
         // Count as completed
         ordersCompleted++;
-        customersServed++; RefreshStars();
+        customersServed++;
         UpdateOrderProgress();
 
         // CUSTOMER INTEGRATION: Notify customer manager (once, null-guarded)
@@ -612,6 +612,7 @@ public class OrderSystem : MonoBehaviour
 
         SetBubble(slots[order.slot], 0);
         orders.Remove(order);
+        RefreshStars();   // after the order has left the list: the stars count the orders still open as to be served
         AfterOrderClosed();
     }
 
@@ -650,7 +651,7 @@ public class OrderSystem : MonoBehaviour
 
         // Count as completed (even if expired)
         ordersCompleted++;
-        customersLost++; RefreshStars();
+        customersLost++;
         UpdateOrderProgress();
 
         // CUSTOMER INTEGRATION: Notify customer manager
@@ -661,6 +662,7 @@ public class OrderSystem : MonoBehaviour
         }
 
         orders.Remove(order);
+        RefreshStars();
         AfterOrderClosed();
     }
 

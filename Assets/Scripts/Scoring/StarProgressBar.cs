@@ -32,6 +32,8 @@ public class StarProgressBar : MonoBehaviour
     
     private float lastDisplayedScore = -1;
     private OrderSystem orderSystem;
+    private LevelManager levelManager;
+    private bool dayClosed;   // the day has ended: the stars are the exact count, nothing more is expected
     private bool[] starStates = new bool[3];
     private Vector3[] originalStarScales = new Vector3[3];
     private Coroutine[] starAnimations = new Coroutine[3];
@@ -78,6 +80,7 @@ public class StarProgressBar : MonoBehaviour
     public void Initialize(LevelData levelData)
     {
         currentLevelData = levelData;
+        dayClosed = false;
         InitializeStars();
 
         // Stars whose threshold is 0 (or that a level starts with already met) are shown filled
@@ -104,6 +107,14 @@ public class StarProgressBar : MonoBehaviour
         UpdateDisplay(currentScore, useAnimations);
     }
 
+    /// The day has ended: from here the stars are the exact count of the day's customers (LevelManager.OnLevelComplete
+    /// calls this before it reads and saves them).
+    public void CloseDay()
+    {
+        dayClosed = true;
+        RefreshStars();
+    }
+
     /// A customer's order has closed (served or lost): the stars may have changed though the money has not.
     public void RefreshStars()
     {
@@ -125,7 +136,19 @@ public class StarProgressBar : MonoBehaviour
         // Stars from the customers served, not from money (owner, 14 November 2026; StarRule). The level's money lines
         // (LevelData.starThreshold1..3) are no longer read here.
         if (orderSystem == null) orderSystem = FindObjectOfType<OrderSystem>();
-        int earned = orderSystem != null ? StarRule.Stars(orderSystem.CustomersServed, orderSystem.CustomersLost) : 0;
+        int earned = 0;
+        if (orderSystem != null)
+        {
+            // During the day: what the day will end on if everyone still to come is served (StarRule.StarsSoFar).
+            // Once the day is closed (CloseDay), or without a running clock, the customers counted are all there is.
+            if (levelManager == null) levelManager = FindObjectOfType<LevelManager>();
+            int toCome = 0;
+            if (!dayClosed && levelManager != null && levelManager.DayStarted && !levelManager.DayOver)
+                toCome = StarRule.StillToCome(orderSystem.CustomersServed, orderSystem.CustomersLost, orderSystem.OpenOrders,
+                    levelManager.DayDuration - levelManager.DayTimeLeft, levelManager.DayTimeLeft);
+            else if (!dayClosed) toCome = orderSystem.OpenOrders;
+            earned = StarRule.StarsSoFar(orderSystem.CustomersServed, orderSystem.CustomersLost, toCome);
+        }
         bool[] newStarStates = { earned >= 1, earned >= 2, earned >= 3 };
         
         for (int i = 0; i < 3; i++)

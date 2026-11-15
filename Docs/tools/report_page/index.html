@@ -67,7 +67,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <body><main>
 
 <h1>Food Truck Cafe</h1>
-<p class="sub">Your report for 14 November. 26.11.13 is live; 26.11.21 (build 28) is waiting for Apple's review; test build 29 is on TestFlight.</p>
+<p class="sub">Your report for 14 November. 26.11.13 is live; 26.11.21 (build 28) is waiting for Apple's review; test build 30 is on TestFlight; fixes from your 4:30 PM play are in Current, not in a build yet.</p>
 
 <nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#qa"><b>2</b>Q&amp;A</a><a href="#current"><b>3</b>Current</a><a href="#mvp"><b>4</b>MVP</a><a href="#backlog"><b>5</b>Backlog</a><a href="#analysis"><b>6</b>Analysis</a><a href="visuals.html" class="page">Visuals</a><span id="saved"></span></nav>
 
@@ -82,11 +82,20 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p><b>Test build 26.11.21 (30)</b> is on TestFlight, ready to install since 14 November, 13:27 PST.</p>
 <p>In it: the new star rule (check it in Current), your foaming sound (Pixabay number 1, cut to 1.3 seconds and quieter), pop, blender and coin at the middle volume, the working Remove Ads tab.</p>
 <p><b>At Apple:</b> 26.11.21 with build 28 is waiting for review. This weekend's release replaces it.</p>
-<p>In Q&amp;A: the truck button and the swipe.</p></div>
-<div class="who p2"><h3>Me</h3><p>Wait for your choice on how 3 stars becomes reachable (star card in Current), then measure it. The yoga lady brief goes to ChatGPT at 3:09 PM.</p></div>
+<p><b>New in Current, from your play of build 30 (no build made):</b> the hen's stars fixed, 1 star at more than half, 3D stars popping onto the receipt, the coffee machine upgrade, pour and cash sounds quieter. Each has a "Good to ship" box.</p>
+<p>Also in Current: the yoga lady's sitting poses from ChatGPT, two sheets to pick from.</p>
+<p>In Q&amp;A: your 1 star on day 1; the truck button and the swipe.</p></div>
+<div class="who p2"><h3>Me</h3><p>Build the kitchen swipe try-out you asked for (button stays, swipe added). Next build only on your word. Then: your choice on how 3 stars becomes reachable (star card).</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>You asked: day 1, one order missed, only 1 star. Do you have logs?</h3>
+<ul>
+<li><b>Logs:</b> the game records a day's stars and money, not each customer. Your phone's records after the day started (4:31 PM) have not reached Unity yet, so I cannot see that day's end.</li>
+<li><b>Found by replaying day 1:</b> a real fault in the stars under the hen. They were worked out from the customers so far only. First customer lost: no star. One lost among the first four: 1 star. Two stars came back only after four were served. Fixed, first card in Current.</li>
+<li><b>The day-end result was already right:</b> one lost of 8 or 9 customers ends on 2 stars. If your 1 star was on the receipt, the game counted two lost. A customer who leaves with part of the order counts as lost.</li>
+<li>The receipt can show the count ("Served 7 of 9") so you can check it yourself: box in the star card.</li>
+</ul></div>
 <div class="q"><h3>You asked: the truck button when something runs low, and what a swipe instead of the button would mean.</h3>
 <p style="margin:4px 0 6px"><b>Making the button remind you.</b> The game already knows when a food is at zero. Ideas, tick what you want:</p>
 <ul class="checks">
@@ -114,13 +123,73 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>New star rule, in build 30. Please check it, 14 November.</b> Stars come from customers served, not from money:</p>
+<p style="margin-top:0"><b>Stars under the hen during the day: fixed, 14 November.</b> They now show what the day will end on if everyone still to come is served. One customer lost early shows 2 stars at once, not 0 or 1. The day-end stars are unchanged.</p>
+<figure><img src="hen_stars_ba.jpg" alt="The hen after the first customer left: no stars before, two stars after"><figcaption>Day 1, the first customer made to leave. Before: no star. After: two.</figcaption></figure>
+<p style="margin:8px 0 4px">Replayed in the editor: 2 stars shown from the first loss to the end of the day, 1 star when a second customer was lost; shown, rule and saved agree.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.henstars.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.henstars.redo"> Not yet, I will say what</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Receipt stars: 3D, popping in one by one, 14 November.</b> Three sockets pressed into the paper; each earned star pops in with a small turn, a pop sound and a light tap.</p>
+<div class="two">
+<figure><img src="receipt_stars_ba.jpg" alt="Receipt stars before, flat, and after, puffy gold"><figcaption>Before and after.</figcaption></figure>
+<figure><img src="receipt_stars_pop.gif" alt="The three stars popping onto the receipt one after the other"><figcaption>The pop-in, filmed in the editor.</figcaption></figure>
+</div>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.star3d.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.star3d.hen"> Use the same 3D stars under the hen too</label></li>
+<li><label><input type="checkbox" data-id="cur.star3d.redo"> Not yet, I will say what</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Coffee machine upgrade: now always two cups, 14 November.</b> The upgrade did work, but only with an empty tray. With one cup still on the tray (it holds two) the machine brewed one, which is when you tap it. The shop card says "two cups per brew".</p>
+<p style="margin:8px 0 4px">Now it always brews two. If the tray has room for one, the second cup waits on the machine and moves to the tray the moment you serve a cup. No new brew while a cup waits.</p>
+<figure><img src="machine_wait.jpg" alt="The upgraded machine with a finished cup waiting under the wand and two cups on the tray"><figcaption>Tapped with one cup on the tray: two on the tray, the third waiting on the machine.</figcaption></figure>
+<p style="margin:8px 0 4px">Checked in the editor: empty tray gives two cups; one cup on the tray gives two plus one waiting; a tap while it waits does nothing; serving one cup brings the waiting one over.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.machine2.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.machine2.redo"> I want it another way, I will say what</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Coffee pour and order-complete cash sound: quieter, 14 November.</b> Both 6 dB down (my choice of amount). The cash sound now sits at the coin's level.</p>
+<div class="card tw"><table>
+<tr><th>Sound</th><th>Before</th><th>After</th></tr>
+<tr><td>Coffee pour</td><td><audio controls src="pour_before.mp3"></audio></td><td><audio controls src="pour_after.mp3"></audio></td></tr>
+<tr><td>Order complete</td><td><audio controls src="cash_before.mp3"></audio></td><td><audio controls src="cash_after.mp3"></audio></td></tr>
+</table></div>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.sfx2.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx2.more"> Lower still</label></li>
+<li><label><input type="checkbox" data-id="cur.sfx2.redo"> Not yet, I will say what</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Yoga lady sitting poses, ChatGPT, 14 November.</b> Five poses for the loop: hands on knees, palms together, arms up, bend right, bend left. ChatGPT drew two sheets. Nothing is in the game; no feature code is written.</p>
+<figure><img src="yoga_sit_1.jpg" alt="Sheet 1: the yoga lady sitting on her mat in five poses"><figcaption>Sheet 1. Hands flat on the knees. The mats differ in width (291 to 337 pixels).</figcaption></figure>
+<figure><img src="yoga_sit_2.jpg" alt="Sheet 2: the yoga lady sitting on her mat in five poses"><figcaption>Sheet 2. Meditation fingers on the knees. All five mats the same width and on the same line, so the frames line up without fixing.</figcaption></figure>
+<p>Both: her head is bigger and rounder than on her standing sprite, so she reads a little younger. Both sit on one ground line with the same seat height.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.yogasit.use2"> Use sheet 2 (my pick)</label></li>
+<li><label><input type="checkbox" data-id="cur.yogasit.use"> Use sheet 1</label></li>
+<li><label><input type="checkbox" data-id="cur.yogasit.redo"> Redo, I will say what</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>New star rule, in build 30 (the 1-star line changed after it). Please check it, 14 November.</b> Stars come from customers served, not from money:</p>
 <ul>
 <li><b>3 stars:</b> every customer of the day got their whole order.</li>
 <li><b>2 stars:</b> 90 % of them did, rounded to a whole customer, a half down (9 customers: 8; 10: 9; 15: 13).</li>
-<li><b>1 star:</b> 70 % (my gap-fill). Below that, none.</li>
+<li><b>1 star:</b> more than half of them did (your words, 14 November evening; it replaces my 70 %). Exactly half or fewer: none.</li>
 <li>A customer counts when the order closes: served whole, or gone (also when gone with part of the order).</li>
-<li>The three stars under the hen are lit when the day starts and go dark when customers leave; they can come back to two as you serve more, never to three.</li>
+<li>The three stars under the hen are lit when the day starts and show what the day will end on if everyone still to come is served (fixed today, first card).</li>
 </ul>
 <figure><img src="stars_rule.jpg" alt="Day start with three stars lit, and three day-end receipts with 2, 1 and 0 stars"><figcaption>Day 1 played in the editor, with customers made to leave on purpose. The receipts are the game's own.</figcaption></figure>
 <p style="margin:8px 0 4px"><b>What I checked:</b> the rule's numbers against a table for 1 to 19 customers; seven played days, where the stars shown, the rule and the stars saved for the day agreed every time.</p>
@@ -151,14 +220,13 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p style="margin:8px 0 4px">The day-end receipt does not say how many customers were served. Want a line there?</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.stars.line"> Add "Served 8 of 9" to the day-end receipt</label></li>
-<li><label><input type="checkbox" data-id="cur.stars.one70no"> 1 star at 70 % is not what I want</label></li>
 <li><label><input type="checkbox" data-id="cur.stars.ship"> The rule is right, remove this</label></li>
 <li><label><input type="checkbox" data-id="cur.stars.redo"> Not yet, I will say what</label></li>
 </ul>
 </div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Your words, 14 November: "we will do another release this weekend"; Remove Ads goes out then; new star rule: 3 stars = every customer served their whole order, 2 stars = 90 %.</p>
+<p class="sub" style="margin:0 0 8px">Your words, 14 November: "we will do another release this weekend"; Remove Ads goes out then; new star rule: 3 stars = every customer served their whole order, 2 stars = 90 %, 1 star = more than half.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Empty. Cleaned up on your word, 14 November; nothing was ticked.</p>

@@ -657,7 +657,8 @@ public class LevelManager : MonoBehaviour
         //    SessionManager.Instance.AddLevelScore(levelScore);
         SessionManager.Instance.OnLevelCompleted(currentLevelIndex);
 
-        // Stars for the map, and the one-time three-star bonus
+        // Stars for the map, and the one-time three-star bonus (the exact count of the day, no longer the running view)
+        if (scoreManager != null && scoreManager.starProgressBar != null) scoreManager.starProgressBar.CloseDay();
         var stars = scoreManager != null && scoreManager.starProgressBar != null ? scoreManager.starProgressBar.GetEarnedStarsCount() : 0;
         threeStarBonusPaid = SessionManager.Instance.RecordLevelStars(currentLevelIndex, stars, ThreeStarBonus);
         AnalyticsLog.DayFinished(currentLevelIndex, stars, levelScore);
@@ -742,7 +743,11 @@ public class LevelManager : MonoBehaviour
     }
 
     /// The bottom of the level-complete card shows the day's stars (owner, 13 October: no unlock counts, no bonus text).
-    /// Three star images under the money lines, earned ones in the star yellow, the rest grey.
+    /// Three sockets pressed into the paper; the earned stars pop into them one by one, puffy gold ones (owner,
+    /// 14 November 2026: "The stars on this panel is flat, I want to make it more 3d looking, and show an animation of
+    /// stars popping appearing one by one"). Art: Resources/UI/star3d_gold and star3d_empty (Store/ui/stars3d_2026-11-14).
+    private Coroutine starsPop;
+
     private void UpdateUnlockedItemsDisplay()
     {
         if (unlockedItemsText == null) return;
@@ -752,6 +757,7 @@ public class LevelManager : MonoBehaviour
         var row = host.Find("StarsRow");
         if (row == null)
         {
+            var gold = Resources.Load<Sprite>("UI/star3d_gold"); var empty = Resources.Load<Sprite>("UI/star3d_empty");
             row = new GameObject("StarsRow", typeof(RectTransform)).transform;
             row.SetParent(host, false);
             var rrt = (RectTransform)row;
@@ -759,22 +765,54 @@ public class LevelManager : MonoBehaviour
             rrt.anchoredPosition = Vector2.zero; rrt.sizeDelta = new Vector2(500f, 130f);
             for (var k = 0; k < 3; k++)
             {
+                // the painted stars keep a margin for their shadow, so the picture is larger than the flat star was
+                var size = k == 1 ? 166f : 142f;
                 var s = new GameObject("Star" + k, typeof(RectTransform), typeof(UnityEngine.UI.Image));
                 s.transform.SetParent(row, false);
                 var srt = (RectTransform)s.transform;
                 srt.anchorMin = srt.anchorMax = new Vector2(0.5f, 0.5f);
                 srt.anchoredPosition = new Vector2((k - 1) * 150f, k == 1 ? 10f : 0f);
-                srt.sizeDelta = new Vector2(k == 1 ? 130f : 110f, k == 1 ? 130f : 110f);
+                srt.sizeDelta = new Vector2(size, size);
                 var img = s.GetComponent<UnityEngine.UI.Image>();
-                img.sprite = MoneyFlipClock.SharedStarSprite(); img.raycastTarget = false; img.preserveAspect = true;
+                img.sprite = empty != null ? empty : MoneyFlipClock.SharedStarSprite(); img.raycastTarget = false; img.preserveAspect = true;
+                if (empty == null) img.color = new Color(0.8f, 0.76f, 0.7f);
+
+                var g = new GameObject("Gold", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+                g.transform.SetParent(s.transform, false);
+                var grt = (RectTransform)g.transform;
+                grt.anchorMin = Vector2.zero; grt.anchorMax = Vector2.one; grt.offsetMin = grt.offsetMax = Vector2.zero;
+                var gi = g.GetComponent<UnityEngine.UI.Image>();
+                gi.sprite = gold != null ? gold : MoneyFlipClock.SharedStarSprite(); gi.raycastTarget = false; gi.preserveAspect = true;
+                if (gold == null) gi.color = new Color(1f, 0.78f, 0.3f);
+                g.transform.localScale = Vector3.zero;   // waits for its pop
             }
         }
-        for (var k = 0; k < 3; k++)
-        {
-            var img = row.GetChild(k).GetComponent<UnityEngine.UI.Image>();
-            if (img != null) img.color = k < stars ? new Color(1f, 0.78f, 0.3f) : new Color(0.8f, 0.76f, 0.7f);
-        }
+        if (starsPop == null) starsPop = StartCoroutine(PopStars(row, stars));
         Debug.Log($"Level Complete: {stars} stars shown on the card");
+    }
+
+    /// The earned stars pop into their sockets one after the other: grow past full size, settle, with a small turn.
+    private IEnumerator PopStars(Transform row, int stars)
+    {
+        yield return new WaitForSeconds(0.45f);
+        var pop = Resources.Load<AudioClip>("Audio/pop");
+        for (var k = 0; k < stars && k < row.childCount; k++)
+        {
+            var g = row.GetChild(k).Find("Gold");
+            if (g == null) continue;
+            if (pop != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(pop);
+            Haptics.Tap();
+            const float grow = 0.2f, settle = 0.14f;
+            for (var t = 0f; t < grow + settle; t += Time.deltaTime)
+            {
+                var size = t < grow ? Mathf.SmoothStep(0f, 1.28f, t / grow) : Mathf.Lerp(1.28f, 1f, (t - grow) / settle);
+                g.localScale = Vector3.one * size;
+                g.localRotation = Quaternion.Euler(0f, 0f, -28f * (1f - Mathf.Clamp01(t / grow)));
+                yield return null;
+            }
+            g.localScale = Vector3.one; g.localRotation = Quaternion.identity;
+            yield return new WaitForSeconds(0.16f);
+        }
     }
 
     private void SetupLevelCompleteButtons()
