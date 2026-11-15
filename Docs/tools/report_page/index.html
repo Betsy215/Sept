@@ -67,7 +67,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <body><main>
 
 <h1>Food Truck Cafe</h1>
-<p class="sub">Your report for 14 November. 26.11.13 is live; 26.11.21 (build 28) is waiting for Apple's review; test build 31 is on TestFlight.</p>
+<p class="sub">Your report for 15 November. 26.11.13 is live; 26.11.21 (build 28) is in review at Apple since this morning; test build 31 is on TestFlight.</p>
 
 <nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#qa"><b>2</b>Q&amp;A</a><a href="#current"><b>3</b>Current</a><a href="#mvp"><b>4</b>MVP</a><a href="#backlog"><b>5</b>Backlog</a><a href="#analysis"><b>6</b>Analysis</a><a href="visuals.html" class="page">Visuals</a><span id="saved"></span></nav>
 
@@ -79,10 +79,10 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Build 26.11.21 (31)</b> is on TestFlight and you said it all looks good. Tomorrow: more test runs, then the release.</p>
-<p><b>For the release, I need your What's New words</b> (first card in Current).</p>
-<p><b>At Apple:</b> 26.11.21 with build 28 stays in review, untouched.</p></div>
-<div class="who p2"><h3>Me</h3><p>Nothing goes to Apple before your word. Fix what your test runs find tomorrow.</p></div>
+<p><b>Test build 26.11.21 (31)</b> on TestFlight: your test runs today.</p>
+<p><b>What's New words</b> for the release (Current).</p>
+<p><b>At Apple:</b> build 28 went from waiting to "In Review" this morning. Untouched.</p></div>
+<div class="who p2"><h3>Me</h3><p>Fix what your test runs find. Nothing goes to Apple before your word.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
@@ -91,7 +91,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>What's New for 26.11.21: draft for your words, 14 November.</b> Nothing is changed at Apple; the store still says "Bug fixes". It goes in with tomorrow's release, in the words you choose.</p>
+<p style="margin-top:0"><b>What's New for the next release: your words needed.</b> Nothing is changed at Apple; the store still says "Bug fixes". It goes in with the next release, in the words you choose.</p>
 <div class="grid">
 <div class="who p1"><h3>Draft A</h3>
 <p>- Hire the yoga lady in the star shop to calm customers<br>- Swipe to go to the kitchen<br>- Stars now come from customers served<br>- Remove Ads option<br>- Repainted customers and candy jar<br>- New coffee machine and order sounds<br>- Bug fixes</p></div>
@@ -106,44 +106,16 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 </div>
 
-<div class="card">
-<p style="margin-top:0"><b>Open: can every day reach 3 stars?</b> Measured this afternoon: not yet. Even a very fast automatic player served everyone on one day of twelve; orders wait 7 seconds and a coffee takes almost 6. The yoga lady's flowers will help and are not measured yet.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.stars.yoga"> Measure again with the yoga lady first (my pick now)</label></li>
-<li><label><input type="checkbox" data-id="cur.stars.patience"> Give orders more waiting time; show me the number first</label></li>
-<li><label><input type="checkbox" data-id="cur.stars.brew"> Make the coffee brew faster</label></li>
-<li><label><input type="checkbox" data-id="cur.stars.candy"> Leave it; 3 stars is meant to be hard</label></li>
-</ul>
-</div>
-
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
 <p class="sub" style="margin:0 0 8px">Your words, 14 November: "we will do another release this weekend"; Remove Ads goes out then; star rule: 3 stars = every customer served their whole order, 2 stars = 90 %, 1 star = more than half; no stars on the hen; the kitchen opens by swipe as well; the yoga lady is hired in the star shop for 15 stars (by the tree in chapter 1, on a float in chapter 2); order sound = Pixabay number 6. All in build 31.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
-<p class="sub" style="margin:0 0 8px">Empty. Cleaned up on your word, 14 November; nothing was ticked.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="bl.stars3"> Measure whether every day can reach 3 stars, now with the yoga lady (yesterday: not yet, without her)</label></li>
+</ul>
 
-<h2 id="analysis"><span class="n">6</span>Analysis, 9 to 13 November</h2>
-<p class="sub" style="margin:0 0 8px">Read 13 November, 15:00 PST. Days are UTC; the 13th is not over and its ad numbers are not in. Players and ads from Unity. App Store Connect is signed out in Chrome, so Apple's downloads and page views wait for your sign-in.</p>
-<div class="card tw"><table>
-<tr><th>Day</th><th class="n">New players</th><th class="n">Finished the tutorial</th><th class="n">Days finished</th><th class="n">Ad requests</th><th class="n">Ads shown</th><th class="n">Ad revenue</th></tr>
-<tr><td>Sun 9</td><td class="n">1</td><td class="n">1</td><td class="n">3</td><td class="n">0</td><td class="n">0</td><td class="n">$0</td></tr>
-<tr><td>Mon 10</td><td class="n">2</td><td class="n">2</td><td class="n">0</td><td class="n">9</td><td class="n">2</td><td class="n">under $0.01</td></tr>
-<tr><td>Tue 11</td><td class="n">1</td><td class="n">1</td><td class="n">1</td><td class="n">4</td><td class="n">1</td><td class="n">under $0.01</td></tr>
-<tr><td>Wed 12</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">2</td><td class="n">0</td><td class="n">$0</td></tr>
-<tr><td>Thu 13</td><td class="n">1</td><td class="n">0</td><td class="n">0</td><td class="n"></td><td class="n"></td><td class="n"></td></tr>
-<tr class="sum"><td>Five days</td><td class="n">5</td><td class="n">4</td><td class="n">4</td><td class="n">15</td><td class="n">3</td><td class="n">under $0.01</td></tr>
-<tr><td>Week before, 2 to 8 Nov</td><td class="n">6</td><td class="n">1</td><td class="n">0</td><td class="n">14</td><td class="n">3</td><td class="n">$0.05</td></tr>
-</table></div>
-<div class="card">
-<div class="ok"><span class="dot">●</span><span>19 players since 27 October, 5 of them in these five days. Still about one a day. Left out: Apple's two review runs and your test phone.</span></div>
-<div class="ok"><span class="dot">●</span><span>The tutorial is no longer where they stop: all 4 who came on the old version finished it, in about 35 seconds (the week before: 1 of 6).</span></div>
-<div class="ok"><span class="dot">●</span><span>They leave right after. Play lasts 1 to 5 minutes. One played days 1 to 3 in three and a half minutes (3, 3, 2 stars, bought the juice). One watched the daily treat ad and finished day 1 with 3 stars. Two started day 1 and nothing more is recorded. None came back the next day.</span></div>
-<div class="ok"><span class="dot">●</span><span>A day on the old version lasted 46 to 56 seconds. 26.11.13 has two more customers a day; its first real days will show whether that holds people longer.</span></div>
-<div class="ok"><span class="dot">●</span><span>26.11.13: one store install so far (12 Nov, 16:45 PST, US). Opened twice, left two seconds after "Tap the bread to serve it". Too early to read. The new tutorial itself works: your TestFlight run went through all 14 steps.</span></div>
-<div class="ok"><span class="dot">●</span><span>A hole in the numbers: Unity uploads once a minute, so the last minute of a player who never returns is lost. The two "started day 1" players may have finished it. Fixed in the code for the next build: it uploads at each day start, day end, purchase and when the app closes.</span></div>
-<div class="ok"><span class="dot">●</span><span>Your test play, left out of every count: 9 November, 18:43 to 18:52 PST, build 22, tutorial and days 1 to 3, day 4 started. No test play of builds 23 or 24 is recorded.</span></div>
-<div class="ok"><span class="dot">●</span><span>Ads: 3 shown, under one cent. The payout profile is set since 14 November.</span></div>
-</div>
+<h2 id="analysis"><span class="n">6</span>Analysis</h2>
+<p class="sub" style="margin:0 0 8px">Last read, 9 to 13 November: 19 players since 27 October, about one a day; they finish the tutorial and leave within 1 to 5 minutes. Next read after the release.</p>
 
 </main>
 <script>
