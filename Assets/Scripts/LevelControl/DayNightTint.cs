@@ -312,14 +312,33 @@ public class DayNightTint : MonoBehaviour
         // chapter 2 has no extra light of its own (owner, 10 November: "keep the fireflies, drop the lantern lights")
     }
 
+    // The truck's window light has three states (owner, 15 November 2026: "When the kitchen isn't making anything, I
+    // want the light to be off, when it is cooking something, give it a blinking light. At night, give it a warm
+    // yellow light"): off by day, a steady warm yellow at dusk and night, and blinking while the kitchen cooks (an
+    // oven baking, the blender or the kitchen's waffle machine running), by day and by night.
+    private bool kitchenCooking; private float cookingCheckAt;
+    private const float BlinkPerSecond = 1.4f;
+
+    private static bool KitchenIsCooking()
+    {
+        if (OvenKitchenBase.AnyBaking()) return true;
+        var blender = FindObjectOfType<BlenderAnim>(); if (blender != null && blender.IsBlending) return true;
+        var waffle = FindObjectOfType<WaffleAnim>(); return waffle != null && waffle.IsBaking;
+    }
+
     private void UpdateNightLights()
     {
         var k = stage <= 1f ? 0.6f * stage : 0.6f + 0.4f * (stage - 1f);   // dusk 0.6, night 1
         var t = Time.time;
+        if (Time.unscaledTime >= cookingCheckAt) { cookingCheckAt = Time.unscaledTime + 0.25f; kitchenCooking = KitchenIsCooking(); }
+        // the blink: on for half of each beat with soft edges, between almost dark and bright
+        var beat = (Time.unscaledTime * BlinkPerSecond) % 1f;
+        var blink = kitchenCooking ? Mathf.Lerp(0.12f, 0.95f, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(Mathf.Min(beat, 1f - beat) * 8f - 1f))) : 0f;
         for (var i = 0; i < truckLights.Count; i++)
         {
             if (truckLights[i] == null) continue;
-            var c = truckLights[i].color; c.a = k * (0.78f + 0.07f * Mathf.Sin(t * 5.3f + i)); truckLights[i].color = c;
+            var steady = k * (0.78f + 0.07f * Mathf.Sin(t * 5.3f + i));
+            var c = truckLights[i].color; c.a = kitchenCooking ? blink : steady; truckLights[i].color = c;
         }
         for (var i = 0; i < fireflies.Length; i++)
         {

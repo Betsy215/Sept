@@ -149,6 +149,14 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         return false;
     }
 
+    /// True while any oven is baking (the truck's window light blinks then; owner, 15 November 2026).
+    public static bool AnyBaking()
+    {
+        foreach (var kv in Recipes)
+            if (!string.IsNullOrEmpty(kv.Value) && BakeTimes.TryGetValue(kv.Value, out var t) && CooldownRegistry.IsOnCooldown(kv.Key, t)) return true;
+        return false;
+    }
+
     private void OnBakeComplete()
     {
         var key = GetCooldownKey();
