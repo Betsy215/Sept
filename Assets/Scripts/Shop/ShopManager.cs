@@ -788,7 +788,7 @@ public class ShopManager : MonoBehaviour
             // the price line in blue chalk, for a price in stars as well (owner, 14 November 2026: the star card "use the same layout as the coins tab")
             if (lines.Length > 0 && (lines[0].TrimStart().StartsWith("$") || TabOf(item) == ShopTab.Stars)) lines[0] = "<color=#9FD2FF>" + lines[0] + "</color>";
             var shown = DisplayName(item);                                                                    // the card's name on top (owner, 18 October: "why is it a big eater instead of chef")
-            popupItemInfo.text = (shown != null ? shown + "\n" : "") + string.Join("\n", lines);
+            popupItemInfo.text = TextStars.Mark((shown != null ? shown + "\n" : "") + string.Join("\n", lines));   // a star picture where the text says [*]
             popupItemInfo.color = Color.white;
             popupItemInfo.richText = true;
             popupItemInfo.fontSize = 70f; popupItemInfo.lineSpacing = -18f; popupItemInfo.alignment = TextAlignmentOptions.Center;   // one size, tighter lines (owner, 18 October)
@@ -825,11 +825,16 @@ public class ShopManager : MonoBehaviour
         {
             var buttonText = confirmPurchaseButton.GetComponentInChildren<TextMeshProUGUI>();
             if (buttonText != null)
-                buttonText.text = item.purchaseButtonText;
+            {
+                buttonText.text = TextStars.Mark(item.purchaseButtonText);
+            }
         }
 
         purchaseConfirmationPopup.transform.localScale = Vector3.one * PopupScale;   // a little smaller than the screen, room left and right (owner, 16 October)
         purchaseConfirmationPopup.SetActive(true);
+        // the star pictures in the texts, now that the popup is on and its letters are laid out (15 November 2026)
+        TextStars.Place(popupItemInfo);
+        if (confirmPurchaseButton != null) TextStars.Place(confirmPurchaseButton.GetComponentInChildren<TextMeshProUGUI>());
     }
 
     /// The name shown on the popup's first line (the card keys stay as they are; the two Upgrade cards differ by object name)
@@ -931,7 +936,7 @@ public class ShopManager : MonoBehaviour
         var card = go.GetComponent<ShopItemController>();
         card.itemName = StarPackCardName; card.itemType = ItemType.Decor; card.price = 0; card.isPurchased = false;
         card.upgradeFoodType = ""; card.specialNote = "";
-        card.popupInfoText = StarPack.PriceText + "\n" + StarPack.Stars + " stars for the star shop.";
+        card.popupInfoText = StarPack.PriceText + "\n" + StarPack.Stars + " " + TextStars.Token + " for the star shop.";   // the star picture, not the word (15 November)
         card.purchaseButtonText = "Buy";
         var icon = Resources.Load<Sprite>("UI/star_pack");
         var iconT = go.transform.Find("ItemIcon"); var img = iconT != null ? iconT.GetComponent<Image>() : null;
@@ -939,7 +944,7 @@ public class ShopManager : MonoBehaviour
         var priceT = go.transform.Find("PriceText"); var price = priceT != null ? priceT.GetComponent<TextMeshProUGUI>() : null;
         if (price != null) price.text = StarPack.PriceText;
         RemoveAds.Init();
-        if (!popupNames.ContainsKey(StarPackCardName)) popupNames[StarPackCardName] = StarPack.Stars + " stars";
+        if (!popupNames.ContainsKey(StarPackCardName)) popupNames[StarPackCardName] = StarPack.Stars + " " + TextStars.Token;
         starPackShown = StarPack.Available;
     }
 
@@ -957,8 +962,8 @@ public class ShopManager : MonoBehaviour
         var card = go.GetComponent<ShopItemController>();
         card.itemName = YogaHire.ItemName; card.itemType = ItemType.Decor; card.price = YogaHire.StarPrice; card.isPurchased = false;
         card.upgradeFoodType = ""; card.specialNote = "";
-        card.popupInfoText = YogaHire.StarPrice + " stars\nHire her to calm\ncustomers down";
-        card.purchaseButtonText = YogaHire.StarPrice + " stars";
+        card.popupInfoText = YogaHire.StarPrice + " " + TextStars.Token + "\nHire her to calm\ncustomers down";   // the star picture, not the word (15 November)
+        card.purchaseButtonText = YogaHire.StarPrice + " " + TextStars.Token;
         // her sitting, on a square picture with air under her like the coins tab's pictures, so the price keeps the
         // same distance from the picture as theirs (owner, 14 November 2026: "the icon and text too close")
         var icon = Resources.Load<Sprite>("Yoga/shop_icon");
@@ -1046,7 +1051,8 @@ public class ShopManager : MonoBehaviour
     private Image panelImage;
     private RectTransform panelRect;
     private float tabRowLeft, tabRowWidth; private bool dollarShown = true; private GameObject restoreButton;
-    private const float TabHeight = 86f;   // 104 touched the EARNED line above (review captures, 11 November)
+    private const float TabHeight = 86f;
+    private static readonly string[] TabIcons = { "tab_star", "tab_coin", "tab_dollar" };   // the tabs' pictures, in the order Stars, Coins, $   // 104 touched the EARNED line above (review captures, 11 November)
     private const float ScoreLift = 56f;   // the EARNED line still sat on the open tab's top edge (owner, 13 November: "add some space between earned text line and the shop panel"): half a letter height of air
     private RectTransform panelGroup;   // the panel and its tabs live in this one object; the slide-in moves it (owner, round 1: "make tab and panel a whole")
 
@@ -1100,6 +1106,17 @@ public class ShopManager : MonoBehaviour
             var lrt = lgo.GetComponent<RectTransform>(); lrt.anchorMin = Vector2.zero; lrt.anchorMax = Vector2.one; lrt.offsetMin = new Vector2(0f, overlap); lrt.offsetMax = Vector2.zero;
             var t = lgo.GetComponent<TextMeshProUGUI>(); t.text = labels[i]; t.fontSize = 44f; t.alignment = TextAlignmentOptions.Center;
             t.color = new Color(0.30f, 0.22f, 0.18f); t.fontStyle = FontStyles.Bold; if (font != null) t.font = font;
+            // a picture instead of the word (owner, 15 November 2026: "On the tab, use icon for coin, star and dollar, and
+            // unify their style"): Resources/UI/tab_star, tab_coin, tab_dollar, one painted set (Store/ui/shop_tab_icons_2026-11-15)
+            var icon = Resources.Load<Sprite>("UI/" + TabIcons[i]);
+            if (icon != null)
+            {
+                t.text = "";
+                var igo = new GameObject("Icon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)); igo.transform.SetParent(go.transform, false);
+                var irt = (RectTransform)igo.transform; irt.anchorMin = irt.anchorMax = new Vector2(0.5f, 0.5f); irt.pivot = new Vector2(0.5f, 0.5f);
+                irt.sizeDelta = new Vector2(tabH * 1.25f, tabH * 1.25f); irt.anchoredPosition = new Vector2(0f, overlap * 0.5f + tabH * 0.08f);   // a little taller than the tab: it sits up out of it
+                var iimg = igo.GetComponent<Image>(); iimg.sprite = icon; iimg.preserveAspect = true; iimg.raycastTarget = false;
+            }
             var tab = (ShopTab)i;
             go.GetComponent<Button>().onClick.AddListener(() => SetTab(tab));
             tabButtons.Add(go.GetComponent<Button>());
@@ -1160,6 +1177,8 @@ public class ShopManager : MonoBehaviour
             if (trt != null) trt.sizeDelta = new Vector2(trt.sizeDelta.x, (on ? TabHeight : TabHeight - 18f) + 1f);   // the open tab sticks out higher
             var lbl = tabButtons[i].GetComponentInChildren<TextMeshProUGUI>();
             if (lbl != null) lbl.alpha = on ? 1f : 0.6f;
+            var ico = tabButtons[i].transform.Find("Icon"); var icoImg = ico != null ? ico.GetComponent<Image>() : null;
+            if (icoImg != null) { icoImg.color = new Color(1f, 1f, 1f, on ? 1f : 0.6f); ico.localScale = Vector3.one * (on ? 1f : 0.86f); }   // the closed tabs a little paler and smaller
             if (panelRect != null)
             {
                 var t = tabButtons[i].transform;

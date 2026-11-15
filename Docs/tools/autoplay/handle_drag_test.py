@@ -23,9 +23,10 @@ DRAG = '''var cam = Camera.main; var es = UnityEngine.EventSystems.EventSystem.c
 var from = RectTransformUtility.WorldToScreenPoint(cam, rt.position); var to = RectTransformUtility.WorldToScreenPoint(cam, new Vector3(rt.position.x, TOYf, rt.position.z));
 ped.position = from; h.OnPointerDown(ped); h.OnBeginDrag(ped);
 for (var i = 1; i <= 8; i++) { ped.position = Vector2.Lerp(from, to, i / 8f); h.OnDrag(ped); }
+var redMid = h.GetComponent<UnityEngine.UI.Image>().color.g < 0.9f; var yMid = rt.position.y; HOLD
 h.OnEndDrag(ped); var s = SessionManager.Instance.GetCurrentSession();
-return "asked " + TOYf + " -> at " + rt.position.y.ToString("0.00") + " (saved table " + (s.handleTableSet ? s.handleTableY.ToString("0.00") : "none") + ", kitchen " + (s.handleKitchenSet ? s.handleKitchenY.ToString("0.00") : "none") + ")";'''
-def drag(find, y): return ex(find + DRAG.replace("TOY", repr(float(y))))
+return "asked " + TOYf + " -> while held at " + yMid.ToString("0.00") + (redMid ? " RED" : "") + ", let go at " + rt.position.y.ToString("0.00") + " (saved table " + (s.handleTableSet ? s.handleTableY.ToString("0.00") : "none") + ", kitchen " + (s.handleKitchenSet ? s.handleKitchenY.ToString("0.00") : "none") + ")";'''
+def drag(find, y, hold=""): return ex(find + DRAG.replace("TOY", repr(float(y))).replace("HOLD", hold))
 U.call("manage_editor", {"action": "stop"}); time.sleep(2)
 U.call("manage_editor", {"action": "play"}); time.sleep(9)
 print(ex(open("/tmp/ftc/setup_day1.cs").read()))
@@ -40,6 +41,10 @@ foreach (var d in UnityEngine.Object.FindObjectsOfType<DraggableFood>()) { if (!
   var m = typeof(DraggableFood).GetMethod("CheckOverlapAtPosition", F); var there = new Vector3(rt.position.x + 0.2f, rt.position.y, d.transform.position.z);
   sb.Append(d.name + " at the handle: overlap " + m.Invoke(d, new object[] { there }) + "; where it stands: overlap " + m.Invoke(d, new object[] { d.transform.position })); }
 return sb.ToString();'''))
+HOLDDRAG = DRAG.split("h.OnEndDrag(ped);")[0].replace("HOLD", "") + 'window.__ped = 0; return "held";'
+print("held over the coffee:", ex(H + HOLDDRAG.replace("TOY", "-3.95").replace("window.__ped = 0; ", "System.AppDomain.CurrentDomain.SetData(\"ped\", ped); ")))
+time.sleep(0.6); snap("red")
+print("let go:", ex(H + 'var ped = (UnityEngine.EventSystems.PointerEventData)System.AppDomain.CurrentDomain.GetData("ped"); h.OnEndDrag(ped); return "at " + rt.position.y.ToString("0.00") + " red " + (h.GetComponent<UnityEngine.UI.Image>().color.g < 0.9f);'))
 print("down:  ", drag(H, -9.0)); snap("bottom")
 print("free:  ", drag(H, -2.0))
 print(ex(open(A + "startday.cs").read())); time.sleep(5)

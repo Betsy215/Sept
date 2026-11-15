@@ -40,7 +40,11 @@ public class PullHandle : MonoBehaviour, IPointerDownHandler, IBeginDragHandler,
 
     private RectTransform rt, stick; private bool pulling; private int side = 1; private float unit = 1f;
     private Vector2 rest; private Vector3 restScale = Vector3.one; private bool hasRest;
-    private bool inKitchen, dragging, dragged, checkedAtStart; private float grabbedAt, heightAtGrab;
+    private bool inKitchen, dragging, dragged, checkedAtStart, red; private float grabbedAt, heightAtGrab, lastFreeY;
+    // Red over a food, like a dragged food (owner, 15 November 2026: "During arrangement, if the handle overlaps with
+    // item, nothing shows red, make it show red just like food items so player know why they can't move it there").
+    // The handle follows the finger, turns red where it may not stay, and goes back to its last free place when let go.
+    private static readonly Color Red = new Color(1f, 0.5f, 0.5f, 1f);
     private float savedWorldY = float.NaN;       // the player's own height; none: the game's
     private static PullHandle tableHandle;
     // It wiggles while the table is being arranged, like the food, to show it can be moved (owner, 15 November 2026:
@@ -218,12 +222,33 @@ public class PullHandle : MonoBehaviour, IPointerDownHandler, IBeginDragHandler,
     public void OnBeginDrag(PointerEventData e)
     {
         if (!MayMove()) return;
-        dragging = true; dragged = true; heightAtGrab = rt.position.y; grabbedAt = PointerWorldY(e);
+        dragging = true; dragged = true; heightAtGrab = rt.position.y; grabbedAt = PointerWorldY(e); lastFreeY = rt.anchoredPosition.y;
     }
 
-    public void OnDrag(PointerEventData e) { if (dragging) TryMoveTo(heightAtGrab + PointerWorldY(e) - grabbedAt); }
+    public void OnDrag(PointerEventData e)
+    {
+        if (!dragging) return;
+        Limits(out var lo, out var hi); var y = Mathf.Clamp(ToAnchored(heightAtGrab + PointerWorldY(e) - grabbedAt), lo, hi);
+        rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, y); hasRest = false; Follow();
+        var blocked = !inKitchen && OverlapsFood(y);
+        if (!blocked) lastFreeY = y;
+        Paint(blocked);
+    }
 
-    public void OnEndDrag(PointerEventData e) { if (!dragging) return; dragging = false; KeepHeight(); }
+    public void OnEndDrag(PointerEventData e)
+    {
+        if (!dragging) return; dragging = false;
+        if (red) { rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, lastFreeY); Follow(); Paint(false); }   // back to where it was free
+        KeepHeight();
+    }
+
+    private void Paint(bool on)
+    {
+        if (red == on) return; red = on;
+        var c = on ? Red : Color.white;
+        var img = rt.GetComponent<Image>(); if (img != null) img.color = c;
+        var wood = stick != null ? stick.GetComponent<Image>() : null; if (wood != null) wood.color = c;
+    }
 
     private float PointerWorldY(PointerEventData e)
     {

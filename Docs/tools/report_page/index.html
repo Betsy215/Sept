@@ -72,33 +72,84 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#qa"><b>2</b>Q&amp;A</a><a href="#current"><b>3</b>Current</a><a href="#mvp"><b>4</b>MVP</a><a href="#backlog"><b>5</b>Backlog</a><a href="#analysis"><b>6</b>Analysis</a><a href="visuals.html" class="page">Visuals</a><span id="saved"></span></nav>
 
 <h2 id="next"><span class="n">1</span>Next</h2>
-<p class="sub" style="margin:0 0 8px">Nothing open.</p>
+<div class="grid">
+<div class="who p1"><h3>You</h3>
+<p><b>Yoga lady's effect</b> (Current): pick one of four.</p>
+<p><b>Look and tick</b> (Current): cookie box, red handle, stars in the shop, tab icons.</p>
+<p><b>Say "build"</b> when you want a test build with these. None before your word.</p></div>
+<div class="who p2"><h3>Me</h3><p>26.11.22 and the 15 Stars are waiting for Apple's review; they go on sale by themselves.</p><p><b>Chapter 2 background:</b> the brief goes to ChatGPT at 3:53 PM; the result comes here.</p></div>
+</div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<p class="sub" style="margin:0 0 8px">Nothing open.</p>
+<div class="q"><h3>You asked: does the shop panel scroll by dragging, or only with the arrow buttons?</h3>
+<ul><li>Both. A finger drag scrolls the cards up and down; the arrow buttons do the same in steps.</li></ul></div>
+<div class="q"><h3>You asked: how do we keep the winter chapter hidden while regular releases go on?</h3>
+<ul>
+<li><b>A switch per chapter, off in store builds.</b> The game already counts its chapters (2 now); chapter 3 is built but the count stays 2 until the release that ships it. The secret chapter gets its own switch.</li>
+<li><b>Test builds can open it,</b> with a "Chapter 3 test" button like the "Chapter 2 test" one. App Store copies never have that button.</li>
+<li><b>Built in small steps on the main line,</b> each checked with the switch off (the store game unchanged) and on.</li>
+<li><b>Your plan is written down</b> (winter chapter 3 for mid-December; the star-unlocked Day of the Dead chapter; both built by the end of the year), so any later session starts from it.</li>
+</ul></div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Roll cake: ChatGPT's parts and how it would work, 15 November.</b> Not for today's release. No game code yet.</p>
-<figure><img src="rollcake_parts.jpg" alt="ChatGPT's sheet: a whole roll cake, one slice, a wooden board, a knife, and all of it together"><figcaption>ChatGPT's parts, from a brief with your plate as the camera and style reference.</figcaption></figure>
-<figure><img src="rollcake_states.jpg" alt="Six states built from the parts: whole roll, one slice cut, three cut, two served, roll finished, empty board"><figcaption>A mock I built from those parts (a picture only): every length of the roll comes from the one painting.</figcaption></figure>
+<p style="margin-top:0"><b>Yoga lady: an effect when she finishes a pose, four to pick from, 15 November.</b> In the game as A until you pick.</p>
+<div class="grid">
+<figure><img src="yoga_fx1.gif" alt="A: a warm golden glow swells behind her and fades"><figcaption><b>A, glow:</b> a warm golden glow swells behind her.</figcaption></figure>
+<figure><img src="yoga_fx2.gif" alt="B: little sparkles burst out from her"><figcaption><b>B, sparks:</b> little gold and white sparkles burst out.</figcaption></figure>
+<figure><img src="yoga_fx3.gif" alt="C: pink petals rise from her"><figcaption><b>C, petals:</b> the patience flower's pink petals rise from her.</figcaption></figure>
+<figure><img src="yoga_fx4.gif" alt="D: a golden rim shines around her shape"><figcaption><b>D, shine:</b> a golden rim shines around her.</figcaption></figure>
+</div>
 <ul>
-<li><b>On the table:</b> a board with the roll and the knife.</li>
-<li><b>Tap the roll:</b> the knife cuts one slice off its end, with a short cut animation; the slice lies on the board.</li>
-<li><b>Tap a cut slice:</b> it is served, like a cup at the coffee station. Customers order slices; uncut cake cannot be served.</li>
-<li><b>When the roll is gone:</b> an oven in the kitchen bakes a new one.</li>
-<li><b>My picks, yours to change:</b> 6 slices in a roll; 12 seconds to bake.</li>
-<li><b>I need from you:</b> the shop price, and which chapter it belongs to.</li>
+<li>Each lasts about a second, together with the flower pop. Slowed down here, one picture every tenth of a second.</li>
+<li><b>She is a quarter bigger</b> (your note), in both chapters; these films show the new size.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.roll.art"> Use this art, go on and build it</label></li>
-<li><label><input type="checkbox" data-id="cur.roll.redo"> Redo the art, I will say what</label></li>
+<li><label><input type="checkbox" data-id="cur.yogafx.a"> A</label></li>
+<li><label><input type="checkbox" data-id="cur.yogafx.b"> B</label></li>
+<li><label><input type="checkbox" data-id="cur.yogafx.c"> C</label></li>
+<li><label><input type="checkbox" data-id="cur.yogafx.d"> D</label></li>
+<li><label><input type="checkbox" data-id="cur.yogafx.mix"> A mix, I will say which</label></li>
 </ul>
 </div>
 
+<div class="card">
+<p style="margin-top:0"><b>Small fixes, 15 November.</b> In the game, in no build.</p>
+<div class="grid">
+<figure><img src="cookie_box.jpg" alt="The cookie plate with its old box in grey and its new box in red"><figcaption><b>Cookie box.</b> Grey: before, it ran past the plate at the bottom and the corners. Red: now, inside the plate.</figcaption></figure>
+<figure><img src="handle_red.jpg" alt="The handle dragged onto the coffee machine shows red"><figcaption><b>Handle over an item:</b> it turns red, like food. Let go there and it goes back to its last free spot.</figcaption></figure>
+</div>
+<figure><img src="shop_icons.jpg" alt="The shop tabs with a star, a gold coin and a green banknote; the yoga lady's card and the star pack's card with the star picture in place of the word stars"><figcaption><b>Shop.</b> Top: the tabs, a star, a gold coin and a green banknote, all painted from the game's star. Below: the star picture in place of the word "stars" on the yoga lady's card and the star pack's.</figcaption></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.fix15.ship"> All good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.fix15.redo"> Not yet, I will say what</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>The kitchen with everything bought, 15 November.</b> Every food, all three ovens, the coffee machine and ice cream at their top level.</p>
+<figure><img src="kitchen_full.jpg" alt="The chapter 1 kitchen and the chapter 2 kitchen with everything bought"><figcaption>Left: chapter 1. Right: chapter 2, with the blender and the coconut palm.</figcaption></figure>
+<ul>
+<li>The pull handle sits on the cake at its starting height; it can be dragged up or down.</li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Roll cake: the two pictures we keep, 15 November.</b> Not for a release yet; no game code.</p>
+<figure><img src="rollcake_two.jpg" alt="ChatGPT's whole roll cake and one slice"><figcaption>ChatGPT's whole roll and one slice. The board and the knife are dropped (your word: keep it simple).</figcaption></figure>
+</div>
+
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Nothing open.</p>
+<p class="sub" style="margin:0 0 8px">For the release after 26.11.22. Nothing here is in a build.</p>
+<div class="card">
+<ul>
+<li><b>Yoga lady:</b> a quarter bigger; an effect when she finishes a pose (your pick).</li>
+<li><b>Cookie plate:</b> its box fits the plate.</li>
+<li><b>Handle:</b> red over an item while arranging.</li>
+<li><b>Shop:</b> picture tabs; the star picture in the star cards' texts.</li>
+</ul>
+</div>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>

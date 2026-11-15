@@ -35,7 +35,8 @@ public class YogaHire : MonoBehaviour
     // of its 1920 (Store/yoga_front_layer_2026-11-15/make_front.py), laid over the same rows of the screen between her
     // and the customers. Picture over the same picture changes nothing where she is not, so it only shows with her.
     private const float FrontTopRow = 740f, FrontBottomRow = 1000f, PaintingRows = 1920f, InFront = 0.25f;
-    private const float ScaleChapter2 = 0.78f;
+    // Bigger on both (owner, 15 November 2026: "Make yoga lady (the one sits and do yoga) to be bigger"): a quarter more.
+    private const float ScaleChapter1 = 1.25f, ScaleChapter2 = 0.78f * 1.25f;
     private const float MatToCentre = 0.715f;   // from the mat's lower edge up to the picture's centre
     private const float Behind = 0.5f;          // z behind the customers (same layer and order: the farther one is drawn first)
     private const float BobHeight = 0.03f, BobTilt = 1.5f;
@@ -43,7 +44,7 @@ public class YogaHire : MonoBehaviour
     public static Vector3 SpotFor(int chapter)
     {
         var mat = chapter >= 2 ? MatChapter2 : MatChapter1;
-        return new Vector3(mat.x, mat.y + MatToCentre * (chapter >= 2 ? ScaleChapter2 : 1f), Behind);
+        return new Vector3(mat.x, mat.y + MatToCentre * (chapter >= 2 ? ScaleChapter2 : ScaleChapter1), Behind);
     }
 
     private LevelManager levelManager;
@@ -67,7 +68,7 @@ public class YogaHire : MonoBehaviour
         go.transform.position = SpotFor(chapter);
         var y = go.AddComponent<YogaHire>();
         y.levelManager = lm; y.orderSystem = os; y.onWater = chapter >= 2; y.home = go.transform.position;
-        if (y.onWater) go.transform.localScale = Vector3.one * ScaleChapter2;
+        go.transform.localScale = Vector3.one * (y.onWater ? ScaleChapter2 : ScaleChapter1);
     }
 
     /// The day's plan: how many poses each visit holds. At least DayShare of the day in all, each visit at least one
@@ -166,6 +167,7 @@ public class YogaHire : MonoBehaviour
             {
                 yield return Wait(PoseSeconds - (k < plan[v] - 1 ? Blend : 0f));
                 if (orderSystem != null) orderSystem.GiveFlowerToAll();   // the pose is done: a flower for everyone waiting
+                YogaGlow.Play(this, front);                                // and it shows on her (15 November 2026)
                 pose++;
                 if (Ending) break;
                 if (k < plan[v] - 1) yield return BlendTo(frames[pose % Poses]);
