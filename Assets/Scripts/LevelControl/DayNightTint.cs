@@ -286,6 +286,11 @@ public class DayNightTint : MonoBehaviour
         var trt = truck != null ? truck.GetComponent<RectTransform>() : null;
         if (trt != null)
         {
+            // the hatch's white window pane itself (the button's picture is decor/kit1_table.png, 419 x 406; its white
+            // window is x 124 to 166, y 137 to 224): dark while the light is off, warm when it is on (owner,
+            // 15 November 2026: "when truck is off, i want that white window to become dark color"); under the two glows
+            truckPane = MakeAnchoredImage(trt, "WindowPane", null, new Vector2(0.293f, 0.443f), new Vector2(0.402f, 0.666f));
+            truckPane.preserveAspect = false; truckPane.color = PaneDark;
             truckLights.Add(MakeAnchoredImage(trt, "WindowLight", StarSprite(), new Vector2(0.06f, 0.26f), new Vector2(0.70f, 0.70f)));
             truckLights.Add(MakeAnchoredImage(trt, "WindowLight", StarSprite(), new Vector2(0.66f, 0.42f), new Vector2(0.90f, 0.68f)));
             foreach (var l in truckLights) { l.preserveAspect = false; l.color = new Color(1f, 0.86f, 0.5f, 0f); }
@@ -317,6 +322,8 @@ public class DayNightTint : MonoBehaviour
     // yellow light"): off by day, a steady warm yellow at dusk and night, and blinking while the kitchen cooks (an
     // oven baking, the blender or the kitchen's waffle machine running), by day and by night.
     private bool kitchenCooking; private float cookingCheckAt;
+    private Image truckPane;
+    private static readonly Color PaneDark = new Color(0.17f, 0.15f, 0.18f, 0.93f), PaneLit = new Color(1f, 0.87f, 0.52f, 0.88f);
     private const float BlinkPerSecond = 1.4f;
 
     private static bool KitchenIsCooking()
@@ -340,6 +347,7 @@ public class DayNightTint : MonoBehaviour
             var steady = k * (0.78f + 0.07f * Mathf.Sin(t * 5.3f + i));
             var c = truckLights[i].color; c.a = kitchenCooking ? blink : steady; truckLights[i].color = c;
         }
+        if (truckPane != null) truckPane.color = Color.Lerp(PaneDark, PaneLit, kitchenCooking ? blink : Mathf.Clamp01(k / 0.6f));
         for (var i = 0; i < fireflies.Length; i++)
         {
             if (fireflies[i] == null) continue;
