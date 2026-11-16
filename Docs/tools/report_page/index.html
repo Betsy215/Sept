@@ -74,15 +74,10 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>App Store page</b> (Q&amp;A): what we can improve, tick what to do.</p>
-<p><b>Kitchen</b> (Current): the glow brush on the blender, and four ideas for the cake and choux step.</p>
-<p><b>Movable kitchen</b> (Q&amp;A): the analysis is in; the whisk must be cut out of the background first.</p>
-<p><b>Players yesterday</b> (Analysis): both who finished day 2 left right after it; 2 of 6 left in the kitchen part of the tutorial.</p>
-<p><b>Choux</b> (Current): platter C1, less tall, choux lower and closer together; ChatGPT's repaint of the four comes at 4:58 PM.</p>
-<p><b>App Store page</b> (Q&amp;A): Apple's asset page read in full; a universal picture, video and screenshot fixes wait on your ticks.</p>
-<p><b>Choux frames</b> (Q&amp;A): the third choux is fixed; the full frame still moves the choux.</p>
-<p><b>Say "build"</b> when you want a test build with these. None before your word.</p></div>
-<div class="who p2"><h3>Me</h3><p>Players since 26.11.21 (Analysis): day 1 is fixed; day 2 and the kitchen tutorial are where people stop.</p><p>26.11.22 and the 15 Stars are waiting for Apple's review; they go on sale by themselves.</p><p>ChatGPT's night beach is in the game (your tick), in no build. The kitchen board and stand stay as they are.</p></div>
+<p><b>Choux</b> (Current): tick the plate, and how the four choux sit on it.</p>
+<p><b>Kitchen</b> (Q&amp;A, Current): tick "Do 1 to 3" to start the moves; the glow brush and the four step ideas also wait.</p>
+<p><b>App Store page</b> (Q&amp;A): tick which improvements to make.</p></div>
+<div class="who p2"><h3>Me</h3><p><b>Choux:</b> ChatGPT's hand-drawn repaint of the four comes at 4:58 PM, onto the C1 plate.</p><p><b>Kitchen</b> and <b>App Store page:</b> waiting on your ticks.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
@@ -96,22 +91,6 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul><li>The brief asks for simple flat shapes, little detail, a soft dry brush grain, a few flat highlights, a few soft blotches on the crust instead of many crackles, and soft darker outlines.</li></ul>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.chouxangle.seen"> Seen, remove this</label></li>
-</ul></div>
-<div class="q"><h3>You asked: show me all the frames of choux (15 November)</h3>
-<p style="margin:6px 0">The choux board on the table has 5 frames, one per choux left. The kitchen ovens are shared, so choux has no frames of its own there.</p>
-<figure><img src="choux_frames.jpg" alt="The five choux board frames: empty, one, two, three and four choux with cream and blueberries"><figcaption>All five at the same size and position as in the game. File names in Assets/Images.</figcaption></figure>
-<ul>
-<li>Frames 1 to 3 add one choux at a time in the same spots.</li>
-<li><b>The full frame (4) puts all four in new places.</b> So when a player takes the first choux from a full board, the other three jump.</li>
-</ul>
-<p style="margin:10px 0 4px"><b>Fixed: the third choux sat on the board's raised left rim.</b> It is moved 80 pixels in, onto the flat top, in both frames that have it (3 and 4). Its own pixels; the spot it left shows the empty board's own wood, and the choux behind it is whole again (its bottom was under the leaf; taken from frame 2, where it is the same choux). In the game, in no build.</p>
-<figure><img src="choux_third.jpg" alt="Frames 3 and 4 before and after: the front-left choux moved off the rim onto the board"></figure>
-<p style="margin:6px 0">In frame 4 it now touches the front-right choux.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.chouxf.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="qa.chouxf.third"> The third choux fix is good</label></li>
-<li><label><input type="checkbox" data-id="qa.chouxf.fix"> Fix the full frame: keep frame 3's three choux and add the fourth</label></li>
-<li><label><input type="checkbox" data-id="qa.chouxf.keep"> Keep them as they are</label></li>
 </ul></div>
 <div class="q"><h3>You asked: what can we do on the App Store page itself, without marketing, so the game is found and downloaded more? (15 November)</h3>
 <p style="margin:6px 0"><b>How Apple ranks search:</b> text that matches the <b>name, subtitle, keywords and category</b>, and how people react: <b>downloads, ratings and reviews</b>. The description and promotional text do not count for search; they only help someone who opened the page decide.</p>
@@ -190,15 +169,6 @@ Store text, so only with your words; Apple reviews it with the next version.</li
 <li><label><input type="checkbox" data-id="qa.assets.shots"> 3: fix the screenshots (one caption style, busy kitchen, more of them)</label></li>
 <li><label><input type="checkbox" data-id="qa.assets.seen"> Seen, remove this</label></li>
 </ul></div>
-<div class="q"><h3>You asked: does the shop panel scroll by dragging, or only with the arrow buttons?</h3>
-<ul><li>Both. A finger drag scrolls the cards up and down; the arrow buttons do the same in steps.</li></ul></div>
-<div class="q"><h3>You asked: how do we keep the winter chapter hidden while regular releases go on?</h3>
-<ul>
-<li><b>A switch per chapter, off in store builds.</b> The game already counts its chapters (2 now); chapter 3 is built but the count stays 2 until the release that ships it. The secret chapter gets its own switch.</li>
-<li><b>Test builds can open it,</b> with a "Chapter 3 test" button like the "Chapter 2 test" one. App Store copies never have that button.</li>
-<li><b>Built in small steps on the main line,</b> each checked with the switch off (the store game unchanged) and on.</li>
-<li><b>Your plan is written down</b> (winter chapter 3 for mid-December; the star-unlocked Day of the Dead chapter; both built by the end of the year), so any later session starts from it.</li>
-</ul></div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 
@@ -215,7 +185,7 @@ Store text, so only with your words; Apple reviews it with the next version.</li
 
 
 <div class="card">
-<p style="margin-top:0"><b>Choux redraw: your platter (B) and four new choux by ChatGPT, 16 November.</b> Not in the game.</p>
+<p style="margin-top:0"><b>Choux redraw: the platter and four new choux by ChatGPT, 16 November.</b> Not in the game.</p>
 <figure><img src="choux_platter.jpg" alt="The empty platter: cream with a blue crayon band, a softly sunk centre and a hard grey-blue shadow; beside it on the real table"><figcaption>The empty platter, and on the real table.</figcaption></figure>
 <ul>
 <li><b>Painted the way your cookie plate is:</b> the same cream, no outline, a solid band with a slightly rough crayon edge (blue instead of green, same strength), a softly sunk centre, and the same hard grey-blue shadow, lower left. Sizes match the cookie plate on screen.</li>
@@ -283,85 +253,23 @@ Store text, so only with your words; Apple reviews it with the next version.</li
 </ul>
 </div>
 
-<div class="card">
-<p style="margin-top:0"><b>Roll cake: the two pictures we keep, 15 November.</b> Not for a release yet; no game code.</p>
-<figure><img src="rollcake_two.jpg" alt="ChatGPT's whole roll cake and one slice"><figcaption>ChatGPT's whole roll and one slice. The board and the knife are dropped (your word: keep it simple).</figcaption></figure>
-</div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
 <p class="sub" style="margin:0 0 8px">For the release after 26.11.22. Nothing here is in a build.</p>
 <div class="card">
-<p style="margin-top:0"><b>The three things for this release (your pick, 15 November):</b></p>
+<p style="margin-top:0"><b>The three things for the next release (your pick):</b></p>
 <ol>
 <li><b>Redraw the choux.</b> Platter C1 (less tall) is painted; ChatGPT drew four flavours (original, blueberry, strawberry, lemon).</li>
 <li><b>Redesign the kitchen flow.</b> The four ideas for an extra cake and choux step (Current) are a start; I will draw up the whole flow next.</li>
 <li><b>Improve the App Store page.</b> Your ticks on the Q&amp;A list choose which parts.</li>
 </ol>
 </div>
-<div class="card">
-<p style="margin-top:0"><b>Approved by you:</b></p>
-<ul>
-<li><b>Yoga lady</b> a quarter bigger; sparkles with a soft flash when she finishes a pose (B5).</li>
-<li><b>Cookie plate:</b> its box fits the plate.</li>
-<li><b>Handle:</b> red over an item while arranging.</li>
-<li><b>Shop:</b> taller picture tabs (star, coin, banknote); the star picture in the star cards' texts.</li>
-<li><b>Chapter 2 beach:</b> ChatGPT's repaint, day and night.</li>
-<li><b>Choux:</b> the third choux off the board's rim (until the redraw replaces it).</li>
-</ul>
-</div>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
 <h2 id="analysis"><span class="n">6</span>Analysis</h2>
-<div class="card">
-<p style="margin-top:0"><b>Players yesterday, 15 November, your time (Unity, store copies only, read 16 Nov 12:15 PM).</b> Left out: Apple's two review runs of 26.11.22. Your phone did not open the store copy.</p>
-<p style="margin:6px 0"><b>11 new players, 1 returning.</b> 6 on the new 26.11.21, 4 on 26.11.13, 1 on the old 26.10.26. Philippines 7; US, France, Indonesia, Hong Kong 1 each.</p>
-<p style="margin:10px 0 4px"><b>The 6 on 26.11.21</b> (the version that reports everything):</p>
-<table>
-<tr><th>Player</th><th>Opened</th><th>How far</th><th>What happened</th></tr>
-<tr><td>2cf8fb, PH</td><td>3:22 PM</td><td>Day 2 done, 3 stars twice</td><td>Skipped the ad, bought Juice and Yoga, closed 10 seconds after day 2. 4.5 minutes.</td></tr>
-<tr><td>8ce034, FR</td><td>4:53 PM</td><td>Day 2 done, 3 stars twice</td><td>Watched the ad, bought nothing with 873 coins, closed 20 seconds after day 2. 5 minutes.</td></tr>
-<tr><td>148833, PH</td><td>7:32 PM</td><td>Tutorial step 11 of 14</td><td>Stopped in the kitchen part.</td></tr>
-<tr><td>275556, ID</td><td>9:19 PM</td><td>Started day 1</td><td>Left mid-day. Came back at 2:45 AM today and finished it with 3 stars.</td></tr>
-<tr><td>a80d5c, PH</td><td>9:21 PM</td><td>Tutorial step 8</td><td>Stood in the kitchen 1:45 without tapping the oven, then closed.</td></tr>
-<tr><td>4c0785, HK</td><td>11:58 PM</td><td>Day 1 done, 3 stars</td><td>Watched 2 Daily Treats ads before playing, watched the between-days ad, bought Grandma, one more reward ad. 16 minutes.</td></tr>
-</table>
-<p style="margin:10px 0 4px"><b>What I read from it:</b></p>
-<ul>
-<li><b>The end of day 2 is the wall.</b> Both players who finished day 2 closed within 20 seconds. A between-days ad is due at that moment (the game shows one after every day). Nobody on 26.11.21 has started day 3 since it went on sale. The ad is my guess at the cause; the data cannot prove it.</li>
-<li><b>The kitchen part of the tutorial loses people:</b> 2 of 6 yesterday (steps 8 and 11). A third player stopped at step 8 this morning. Step 8 is "Tap the oven to bake more bread".</li>
-<li><b>Days are short and easy.</b> All 5 finished days got 3 stars. A day lasts 51 to 61 seconds, the tutorial about 30.</li>
-<li><b>Reward ads are liked.</b> The Hong Kong player watched 3 by choice and played the longest.</li>
-<li><b>Buys:</b> Juice 110, Yoga 220, Grandma 380.</li>
-</ul>
-<p style="margin:6px 0"><b>The other 6:</b> four on 26.11.13 (Philippines) show only an opening; that version loses the last minute, so it proves nothing. One US player on the old 26.10.26 left at tutorial step 3. One returning player (Netherlands) opened once and did not play. One more player's phone clock is a day off, so I cannot place them.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="an.nov15.adday3"> Try it: no between-days ad until day 3 is done</label></li>
-<li><label><input type="checkbox" data-id="an.nov15.step8"> Look into tutorial step 8 first</label></li>
-<li><label><input type="checkbox" data-id="an.nov15.seen"> Seen, remove this</label></li>
-</ul>
-</div>
-<div class="card">
-<p style="margin-top:0"><b>Players, 14 to 16 November (Unity, store copies only, read 16 Nov 17:20 UTC).</b> Left out: your phone (ec14c6) and Apple's three review runs (bd52f3 for 26.11.21; 9840a9 and 86d5a9 for 26.11.22, which is still waiting for review).</p>
-<p style="margin:6px 0"><b>New players: 26.</b> 14 on 26.11.13 (14 and 15 Nov), 11 on 26.11.21 since it went on sale on 15 Nov, 1 on the old 26.10.26. Mostly the Philippines (18); also the US, China, France, Hong Kong, Indonesia, Malaysia, Vietnam.</p>
-<table style="border-collapse:collapse;margin:8px 0;font-size:15px">
-<tr><th style="text-align:left;padding:3px 10px">How far they got</th><th style="padding:3px 10px">26.11.13 (14)</th><th style="padding:3px 10px">26.11.21 (11)</th></tr>
-<tr><td style="padding:3px 10px">Opened, nothing after</td><td style="text-align:center">8</td><td style="text-align:center">1</td></tr>
-<tr><td style="padding:3px 10px">Left during the tutorial</td><td style="text-align:center">1</td><td style="text-align:center">3</td></tr>
-<tr><td style="padding:3px 10px">Finished the tutorial</td><td style="text-align:center">5</td><td style="text-align:center">7</td></tr>
-<tr><td style="padding:3px 10px">Finished day 1</td><td style="text-align:center">2</td><td style="text-align:center">6</td></tr>
-<tr><td style="padding:3px 10px">Finished day 2</td><td style="text-align:center">1</td><td style="text-align:center">2</td></tr>
-</table>
-<ul>
-<li><b>The data fix works.</b> On 26.11.13, 8 of 14 seemed to open and leave. On 26.11.21 only 1 of 11 did. Most of the earlier "leavers" were the lost last minute, not real quits.</li>
-<li><b>Day 1 is no longer a wall.</b> On 26.11.21, everyone who started day 1 finished it, all with 3 stars. One player (Indonesia) left mid-day and came back 5 hours later to finish it.</li>
-<li><b>The new wall is day 2.</b> Nobody went past day 2. The two who finished it played 2 days in about 5 minutes and stopped. A day takes about 55 seconds.</li>
-<li><b>Two of the three tutorial leavers left in the kitchen part.</b> One sat on "Tap the oven to bake more bread" for 1 min 45 s, then closed the game. One rushed steps 1 to 11 in 22 seconds and stopped after "Beans are full again". The third left at step 5, 25 seconds after opening. This fits the kitchen-flow redesign.</li>
-<li><b>Shop and ads (26.11.21):</b> 3 coin buys (Juice, Yoga lady, Grandma). 3 between-day ads: 2 watched to the end, 1 skipped (before, every one was skipped). 1 bonus ad watched. Remove Ads and 15 Stars sales show in App Store Connect, not here.</li>
-<li>Seven players' games paused for a few seconds right after the first open. That is iOS's first-launch prompt, not a quit.</li>
-</ul>
-</div>
+<p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
 </main>
 <script>
