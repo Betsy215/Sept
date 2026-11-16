@@ -84,6 +84,23 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>You asked: what does the release number mean, and can the big build number go? (16 November)</h3>
+<ul>
+<li><b>Two numbers.</b> The <b>version</b> (26.11.22) is what players see. The <b>build</b> (35, 36) is Apple's counter for uploads; players never see it, TestFlight shows it in brackets.</li>
+<li><b>Today the version is the date I planned for,</b> not the real one: 26.11.21 went live on 15 November, and 26.11.22 was sent the same day. The build number has simply counted every upload since October.</li>
+<li><b>The build number cannot be removed</b> (Apple requires one), but it <b>can start again at 1 for every new version</b>.</li>
+</ul>
+<p style="margin:10px 0 4px"><b>What I suggest:</b></p>
+<ul>
+<li><b>Version = the day it goes to Apple</b>, as year.month.day. A release sent on 6 December is 26.12.06.</li>
+<li><b>Build = 1, 2, 3 inside that version.</b></li>
+<li>Test builds before that carry the planned date. If the day slips, the last build is exported once more with the real date; same game, new number.</li>
+<li>One limit: the version is fixed when a build is uploaded, and Apple's review takes a day or two. So it can match the day we submit, not the day Apple lets it out.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.version.date"> Yes: version = submit date, build starts at 1 each version</label></li>
+<li><label><input type="checkbox" data-id="qa.version.seen"> Seen, remove this</label></li>
+</ul></div>
 <div class="q"><h3>You asked: the long cabinet can hold two items? How does it work if I put only one? (16 November)</h3>
 <ul>
 <li><b>It has two places:</b> left and right. A piece dropped in jumps to the place nearer to where you let go. One piece alone stays on that side; it does not move to the middle.</li>
