@@ -99,6 +99,7 @@ public class GamePhaseManager : MonoBehaviour
         DebugLog("=== ARRANGEMENT PHASE STARTED ===");
 
         RefreshDraggableCache();
+        KitchenArrange.BeginDay();   // the kitchen is arranged in the same phase (16 November 2026)
 
         tutorialPanel.SetActive(true);
 
@@ -270,7 +271,8 @@ public class GamePhaseManager : MonoBehaviour
         if (doneButton == null) return;
 
         var hasOverlaps = AnyItemsOverlapping();
-        doneButton.interactable = !hasOverlaps;
+        // a red piece in the kitchen keeps the day from starting too (owner, 16 November 2026)
+        doneButton.interactable = !hasOverlaps && !KitchenArrange.AnyRed;
 
         if (hasOverlaps) DebugLog("Done button disabled - overlaps detected");
     }
@@ -294,7 +296,9 @@ public class GamePhaseManager : MonoBehaviour
         if (currentPhase == GamePhase.PLAYING) return;
 
         if (tutorialPanel != null) tutorialPanel.SetActive(false);
+        if (KitchenArrange.AnyRed && !SkipsArrangement) return;   // the button is off then; this covers a tap that slipped through
         if (SessionManager.Instance != null) SessionManager.Instance.UpdateFoodPositions(allFoodItems);
+        KitchenArrange.Commit();
         StartPlayPhase();
     }
 

@@ -65,6 +65,8 @@ public class SessionData
     // Stars handed out by the "Chapter 2 test" button of test builds (15 November 2026). Only for spending; a new game drops them.
     public int starsGranted;
     // Where the player put the pull handles on their edges (15 November 2026): world heights, used only when set.
+    // The kitchen's movable pieces (owner, 16 November 2026): each piece's foot as a share of the kitchen picture; null in older saves
+    public List<FoodItemPosition> kitchenPlaces;
     public float handleTableY, handleKitchenY;
     public bool handleTableSet, handleKitchenSet;
 
@@ -572,6 +574,23 @@ public class SessionManager : MonoBehaviour
         worldY = 0f; if (currentSession == null) return false;
         if (kitchen) { worldY = currentSession.handleKitchenY; return currentSession.handleKitchenSet; }
         worldY = currentSession.handleTableY; return currentSession.handleTableSet;
+    }
+
+    /// The kitchen pieces' places from the save (name to foot); null when none were ever kept.
+    public Dictionary<string, Vector2> GetKitchenPlaces()
+    {
+        if (currentSession == null || currentSession.kitchenPlaces == null || currentSession.kitchenPlaces.Count == 0) return null;
+        var d = new Dictionary<string, Vector2>();
+        foreach (var p in currentSession.kitchenPlaces) if (p != null && !string.IsNullOrEmpty(p.foodType)) d[p.foodType] = new Vector2(p.x, p.y);
+        return d;
+    }
+
+    public void SetKitchenPlaces(Dictionary<string, Vector2> places)
+    {
+        if (currentSession == null || places == null) return;
+        currentSession.kitchenPlaces = new List<SessionData.FoodItemPosition>();
+        foreach (var kv in places) currentSession.kitchenPlaces.Add(new SessionData.FoodItemPosition(kv.Key, new Vector3(kv.Value.x, kv.Value.y, 0f)));
+        SaveSession();
     }
 
     public void SetHandleHeight(bool kitchen, float worldY)

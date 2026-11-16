@@ -38,7 +38,7 @@ public static class KitchenBlender
         Transform bg = null;
         foreach (var canvas in Object.FindObjectsOfType<Canvas>())
             if (canvas.gameObject.scene.name == "KitchenScene") { bg = canvas.transform.Find("bg"); if (bg != null) break; }
-        if (bg == null || bg.Find("Blender") != null) return;
+        if (bg == null || bg.Find("Blender") != null || bg.Find("Arrange/Blender") != null) return;   // KitchenArrange moves it under "Arrange"
 
         var go = new GameObject("Blender", typeof(RectTransform), typeof(Image), typeof(BlenderAnim));
         go.transform.SetParent(bg, false); go.transform.SetAsLastSibling();      // over the window view, under the shelf items (they are elsewhere)

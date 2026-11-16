@@ -289,7 +289,7 @@ public class TutorialDirector : MonoBehaviour
                 Say("More kitchen upgrades available as you progress!");
                 var sections = new List<RectTransform>();
                 // Slots rather than the items: unpurchased items are inactive, their slots are always there
-                foreach (var name in new[] { "windowleft", "cableft", "cabright", "coffee", "tableleft", "tableright", "spot2", "spot3" })
+                foreach (var name in new[] { "windowleft", "cableft", "cabright", "coffee", "cutboard", "cake", "spot2", "spot3" })   // the board and the cake themselves: KitchenArrange moves them out of their old slots
                 {
                     if (name == "cabright" && SessionManager.IsHeldBack("Cookies")) continue;   // the Cookies plate's slot, not in this release
                     if (name == "coffee" && beansShown) continue;   // just taught; the bags are not an upgrade

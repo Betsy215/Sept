@@ -65,6 +65,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         KitchenWindow.Apply();           // chapter 2: the beach through the window (16 October)
         KitchenBlender.Apply();          // the blender as its own object, every chapter (17 October)
         KitchenWaffleMachine.Apply();    // chapter 2: the waffle machine that refills the cone holder (22 October)
+        KitchenArrange.Apply();          // the movable pieces at their places (16 November 2026); after the blender exists
 
         cooldownKey = "Oven:" + (transform.parent != null ? transform.parent.name + "/" : "") + gameObject.name;
         // The bake timer must outlive the kitchen scene, so it always runs on the persistent helper.
