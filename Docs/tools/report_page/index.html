@@ -75,8 +75,9 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>App Store page</b> (Q&amp;A): what we can improve, tick what to do.</p>
-<p><b>Kitchen</b> (Current): the blender glow, and four ideas for the cake and choux step.</p>
-<p><b>Choux frames</b> (Q&amp;A): the full frame moves the choux; fix or keep.</p>
+<p><b>Kitchen</b> (Current): the glow brush on the blender, and four ideas for the cake and choux step.</p>
+<p><b>Choux</b> (Current): the kitchen board at 40 degrees, a draft.</p>
+<p><b>Choux frames</b> (Q&amp;A): the third choux is fixed; the full frame still moves the choux.</p>
 <p><b>Say "build"</b> when you want a test build with these. None before your word.</p></div>
 <div class="who p2"><h3>Me</h3><p>26.11.22 and the 15 Stars are waiting for Apple's review; they go on sale by themselves.</p><p>ChatGPT's night beach is in the game (your tick), in no build. The kitchen board and stand stay as they are.</p></div>
 </div>
@@ -89,8 +90,12 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li>Frames 1 to 3 add one choux at a time in the same spots.</li>
 <li><b>The full frame (4) puts all four in new places.</b> So when a player takes the first choux from a full board, the other three jump.</li>
 </ul>
+<p style="margin:10px 0 4px"><b>Fixed: the third choux sat on the board's raised left rim.</b> It is moved 80 pixels in, onto the flat top, in both frames that have it (3 and 4). Its own pixels; the spot it left shows the empty board's own wood, and the choux behind it is whole again (its bottom was under the leaf; taken from frame 2, where it is the same choux). In the game, in no build.</p>
+<figure><img src="choux_third.jpg" alt="Frames 3 and 4 before and after: the front-left choux moved off the rim onto the board"></figure>
+<p style="margin:6px 0">In frame 4 it now touches the front-right choux.</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.chouxf.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="qa.chouxf.third"> The third choux fix is good</label></li>
 <li><label><input type="checkbox" data-id="qa.chouxf.fix"> Fix the full frame: keep frame 3's three choux and add the fourth</label></li>
 <li><label><input type="checkbox" data-id="qa.chouxf.keep"> Keep them as they are</label></li>
 </ul></div>
@@ -137,20 +142,35 @@ Store text, so only with your words; Apple reviews it with the next version.</li
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Kitchen: the "tap me" glow on the blender, made the way the coffee bags' is, 15 November.</b> In the game, in no build.</p>
-<figure><img src="blender_glow.jpg" alt="The chapter 2 kitchen: the coffee bags and the blender both with a soft white glow; on the right the blender mid-blend with its glow moving with it"><figcaption>Left: at rest. Right: while it blends; the glow shakes with it.</figcaption></figure>
+<p style="margin-top:0"><b>Kitchen: a glow brush copied from the coffee bags and the tree's apples, 15 November.</b> The blender's glow repainted with it; in the game, in no build.</p>
+<figure><img src="glow_brush.jpg" alt="The chapter 2 kitchen's shelf and blender: before, the blender's glow a wide soft blur; now a bright band hugging its outline like the bags'"><figcaption>Left: before. Right: now. The bags' own glow pulses, so it differs between the two snaps.</figcaption></figure>
 <ul>
-<li><b>The coffee bags, checked:</b> their glow is a soft white halo painted into their own picture. It does not pulse or change; it moves with the bags (a tap makes them pop).</li>
-<li><b>The blender now the same way:</b> the halo is part of the blender, so it moves and shakes with it. Same white, same soft fall-off.</li>
-<li>It is drawn stronger than the bags': the blender stands against the light wall, where the bags' strength hardly shows.</li>
-<li>Only in chapter 2, where the blender can be tapped.</li>
+<li><b>What the bags' and apples' glow is:</b> brightest right at the object's edge and the same width all round it, like a soft white brush run along the outline. Cool white, the same in both.</li>
+<li><b>Mine was the opposite:</b> nearly nothing at the edge, brightest a few pixels out, then a long fade. That reads as a blur.</li>
+<li><b>Its width follows the object's size:</b> the bags' band is 30 pixels, an apple's 14. The brush works it out for each object.</li>
+<li><b>The brush</b> (Docs/tools/glow_brush.py) paints this glow around any picture, as its own layer or baked into the picture. Re-painting the bags and apples with it gives back their own glow.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.kglow2.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.kglow2.redo"> Not yet, I will say what</label></li>
+<li><label><input type="checkbox" data-id="cur.gbrush.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.gbrush.stronger"> Good, but brighter on the light wall</label></li>
+<li><label><input type="checkbox" data-id="cur.gbrush.redo"> Not yet, I will say what</label></li>
 </ul>
 </div>
 
+<div class="card">
+<p style="margin-top:0"><b>Choux: the kitchen's fruit board at the table's 40 degrees, a draft, 15 November.</b> Not in the game.</p>
+<figure><img src="choux_board40.jpg" alt="Top row: the five table choux frames on the light board. Bottom row: the same five on the kitchen's dark board, flattened to 40 degrees"></figure>
+<ul>
+<li>The kitchen board with its fruit taken off, its top flattened to the table's 40 degrees, at the old board's size.</li>
+<li>It is shallower than the old board, so the choux are at 85 % to fit two rows. Their own pixels; each has a soft shadow.</li>
+<li>The kitchen board is a small picture (290 wide), scaled up here. If you like the look, ChatGPT or I can paint it again at full size.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.board40.use"> Use it</label></li>
+<li><label><input type="checkbox" data-id="cur.board40.repaint"> I like it; paint it again at full size</label></li>
+<li><label><input type="checkbox" data-id="cur.board40.keep"> Keep the light board</label></li>
+</ul>
+</div>
 <div class="card">
 <p style="margin-top:0"><b>Kitchen: an extra step for the strawberry cake and the choux, four ideas, 15 November.</b> Sketches on the real kitchen; nothing built.</p>
 <figure><img src="idea_a_top.jpg" alt="Idea A: a plain cake comes out onto the stand, a tap on the fruit board puts strawberries on, then it goes to the table"></figure>

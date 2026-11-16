@@ -13,7 +13,7 @@ public static class KitchenBlender
     // the owner's new blender (23 October 2026, Store/artkit/blender/owner_blender_layers.py): the same spot and height as the
     // cut-out's box, the width follows the new drawing's proportions (290 x 355 instead of 191 x 285)
     static readonly Vector2 Min = new Vector2(0.0296f, 0.5005f), Max = new Vector2(0.2453f, 0.649f);
-    const float GlowPad = 40f;   // Resources/Kitchen/blender_glow is blender.png with 40 px of room on every side (Store/kitchen_glow_2026-11-15)
+    const float GlowPad = 40f;   // Resources/Kitchen/blender_glow is blender.png with 40 px of room on every side, painted by Docs/tools/glow_brush.py
     static readonly Vector2 FluidMin = new Vector2(0.2034f, 0.3662f), FluidMax = new Vector2(0.7172f, 0.7549f); // the drink inside the jug (layout.json)
     static readonly Vector2 BladeMin = new Vector2(0.3241f, 0.6873f), BladeMax = new Vector2(0.5690f, 0.8592f); // the blending element the owner drew (layout.json)
     public static readonly Color Rest = new Color(1f, 1f, 1f, 0f);                                             // at rest the overlay is invisible: the owner's drink shows as drawn
