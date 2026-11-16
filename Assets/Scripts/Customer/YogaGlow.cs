@@ -16,7 +16,7 @@ using UnityEngine;
 ///   8 Burst + flash: the sparks of 2 with a quick soft flash behind her.
 public static class YogaGlow
 {
-    public static int Style = 2;   // the owner's pick so far: sparks (15 November 2026); 5 to 8 are its variants
+    public static int Style = 8;   // the owner's pick, 15 November 2026: B5 in the report, the sparks with a soft flash behind her
     private static Sprite glow, spark;
     private static readonly Color Gold = new Color(1f, 0.86f, 0.42f);
 
