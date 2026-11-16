@@ -13,6 +13,7 @@ public static class KitchenBlender
     // the owner's new blender (23 October 2026, Store/artkit/blender/owner_blender_layers.py): the same spot and height as the
     // cut-out's box, the width follows the new drawing's proportions (290 x 355 instead of 191 x 285)
     static readonly Vector2 Min = new Vector2(0.0296f, 0.5005f), Max = new Vector2(0.2453f, 0.649f);
+    const float GlowPad = 40f;   // Resources/Kitchen/blender_glow is blender.png with 40 px of room on every side (Store/kitchen_glow_2026-11-15)
     static readonly Vector2 FluidMin = new Vector2(0.2034f, 0.3662f), FluidMax = new Vector2(0.7172f, 0.7549f); // the drink inside the jug (layout.json)
     static readonly Vector2 BladeMin = new Vector2(0.3241f, 0.6873f), BladeMax = new Vector2(0.5690f, 0.8592f); // the blending element the owner drew (layout.json)
     public static readonly Color Rest = new Color(1f, 1f, 1f, 0f);                                             // at rest the overlay is invisible: the owner's drink shows as drawn
@@ -39,6 +40,16 @@ public static class KitchenBlender
             if (canvas.gameObject.scene.name == "KitchenScene") { bg = canvas.transform.Find("bg"); if (bg != null) break; }
         if (bg == null || bg.Find("Blender") != null) return;
 
+        // the "you can tap this" halo, the one painted around the coffee bags (owner, 15 November 2026: "add this glow
+        // effect to other items that is intractable, for now, it is just the blender"): only where the blender takes taps
+        var halo = ch2 ? Resources.Load<Sprite>("Kitchen/blender_glow") : null;
+        if (halo != null)
+        {
+            var hg = new GameObject("BlenderGlow", typeof(RectTransform), typeof(Image)); hg.transform.SetParent(bg, false); hg.transform.SetAsLastSibling();
+            var pad = new Vector2(GlowPad / body.rect.width * (Max.x - Min.x), GlowPad / body.rect.height * (Max.y - Min.y));
+            var hrt = (RectTransform)hg.transform; hrt.anchorMin = Min - pad; hrt.anchorMax = Max + pad; hrt.offsetMin = Vector2.zero; hrt.offsetMax = Vector2.zero;
+            var hi = hg.GetComponent<Image>(); hi.sprite = halo; hi.preserveAspect = false; hi.raycastTarget = false;
+        }
         var go = new GameObject("Blender", typeof(RectTransform), typeof(Image), typeof(BlenderAnim));
         go.transform.SetParent(bg, false); go.transform.SetAsLastSibling();      // over the window view, under the shelf items (they are elsewhere)
         var rt = (RectTransform)go.transform; rt.anchorMin = Min; rt.anchorMax = Max; rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
