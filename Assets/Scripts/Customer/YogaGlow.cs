@@ -9,9 +9,14 @@ using UnityEngine;
 ///   2 Sparks:  little four-point sparkles burst out from her heart and fade.
 ///   3 Petals:  the patience flower's own petals rise from her and drift up, like the flowers she gives.
 ///   4 Shine:   a soft golden outline grows around her shape and fades.
+/// The owner liked 2 (15 November 2026: "i like B for yoga lady effect, but give me a few more variants of B effect"):
+///   5 Rising sparks: sparkles float up from her like bubbles, twinkling.
+///   6 Star burst:    the game's own little stars burst out and spin.
+///   7 Twinkle halo:  sparkles twinkle on and off in a ring around her, without flying out.
+///   8 Burst + flash: the sparks of 2 with a quick soft flash behind her.
 public static class YogaGlow
 {
-    public static int Style = 1;
+    public static int Style = 2;   // the owner's pick so far: sparks (15 November 2026); 5 to 8 are its variants
     private static Sprite glow, spark;
     private static readonly Color Gold = new Color(1f, 0.86f, 0.42f);
 
@@ -23,6 +28,10 @@ public static class YogaGlow
             case 2: her.StartCoroutine(Sparks(her.transform)); break;
             case 3: her.StartCoroutine(Petals(her.transform)); break;
             case 4: her.StartCoroutine(Shine(her.transform, pose)); break;
+            case 5: her.StartCoroutine(RisingSparks(her.transform)); break;
+            case 6: her.StartCoroutine(StarBurst(her.transform)); break;
+            case 7: her.StartCoroutine(TwinkleHalo(her.transform)); break;
+            case 8: her.StartCoroutine(Glow(her.transform, 0.5f)); her.StartCoroutine(Sparks(her.transform)); break;
             default: her.StartCoroutine(Glow(her.transform)); break;
         }
     }
@@ -34,7 +43,7 @@ public static class YogaGlow
         return sr;
     }
 
-    private static IEnumerator Glow(Transform her)
+    private static IEnumerator Glow(Transform her, float strength = 1f)
     {
         var sr = Make(her, "YogaGlow", GlowSprite(), 0.004f);   // just behind her: the background is about 0.01 further
         sr.transform.localPosition += new Vector3(0f, 0.05f, 0f);
@@ -42,7 +51,7 @@ public static class YogaGlow
         {
             var k = t / 1.1f; var up = Mathf.Sin(Mathf.PI * Mathf.Min(1f, k * 1.4f));
             sr.transform.localScale = Vector3.one * (2.0f + 0.9f * k);
-            sr.color = new Color(1f, 0.82f, 0.3f, up);
+            sr.color = new Color(1f, 0.82f, 0.3f, up * strength);
             yield return null;
         }
         Object.Destroy(sr.gameObject);
@@ -67,6 +76,80 @@ public static class YogaGlow
                 parts[i].transform.localRotation = Quaternion.Euler(0f, 0f, spin[i] * k);
                 parts[i].transform.localScale = Vector3.one * (0.55f * Mathf.Sin(Mathf.PI * Mathf.Min(1f, k * 1.2f)) + 0.05f);
                 var c = i % 3 == 0 ? Color.white : Gold; parts[i].color = new Color(c.r, c.g, c.b, 1f - k * k);
+            }
+            yield return null;
+        }
+        foreach (var p in parts) Object.Destroy(p.gameObject);
+    }
+
+    private static IEnumerator RisingSparks(Transform her)
+    {
+        const int n = 10; var parts = new SpriteRenderer[n]; var start = new Vector3[n]; var delay = new float[n]; var sway = new float[n];
+        for (var i = 0; i < n; i++)
+        {
+            parts[i] = Make(her, "YogaSpark", SparkSprite(), -0.03f);
+            start[i] = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.35f, 0.2f), -0.03f); delay[i] = Random.Range(0f, 0.35f); sway[i] = Random.Range(0f, 6f);
+        }
+        for (var t = 0f; t < 1.4f; t += Time.deltaTime)
+        {
+            for (var i = 0; i < n; i++)
+            {
+                var k = Mathf.Clamp01((t - delay[i]) / 1.0f);
+                parts[i].transform.localPosition = start[i] + new Vector3(Mathf.Sin(sway[i] + k * 5f) * 0.06f, 0.85f * k, 0f);
+                var twinkle = 0.75f + 0.25f * Mathf.Sin((t + i) * 22f);
+                parts[i].transform.localScale = Vector3.one * 0.55f * Mathf.Sin(Mathf.PI * k) * twinkle;
+                var c = i % 3 == 0 ? Color.white : Gold; parts[i].color = new Color(c.r, c.g, c.b, k <= 0f ? 0f : 1f - k * k);
+            }
+            yield return null;
+        }
+        foreach (var p in parts) Object.Destroy(p.gameObject);
+    }
+
+    private static IEnumerator StarBurst(Transform her)
+    {
+        var star = Resources.Load<Sprite>("UI/tab_star"); if (star == null) star = SparkSprite();
+        const int n = 7; var parts = new SpriteRenderer[n]; var dirs = new Vector2[n]; var spin = new float[n];
+        for (var i = 0; i < n; i++)
+        {
+            parts[i] = Make(her, "YogaStar", star, -0.03f);
+            var a = (i / (float)n) * Mathf.PI * 2f + 0.3f + Random.Range(-0.2f, 0.2f);
+            dirs[i] = new Vector2(Mathf.Cos(a), Mathf.Sin(a) * 0.85f) * Random.Range(0.7f, 0.95f); spin[i] = Random.Range(120f, 260f) * (i % 2 == 0 ? 1 : -1);
+        }
+        var size = 0.2f / Mathf.Max(0.01f, star.bounds.size.x); var heart = new Vector3(0f, 0.15f, -0.03f);
+        for (var t = 0f; t < 1.1f; t += Time.deltaTime)
+        {
+            var k = t / 1.1f; var out_ = 1f - (1f - k) * (1f - k) * (1f - k);
+            for (var i = 0; i < n; i++)
+            {
+                parts[i].transform.localPosition = heart + (Vector3)(dirs[i] * out_);
+                parts[i].transform.localRotation = Quaternion.Euler(0f, 0f, spin[i] * k);
+                parts[i].transform.localScale = Vector3.one * size * (0.4f + 0.8f * Mathf.Sin(Mathf.PI * Mathf.Min(1f, k * 1.3f)));
+                parts[i].color = new Color(1f, 1f, 1f, 1f - k * k * k);
+            }
+            yield return null;
+        }
+        foreach (var p in parts) Object.Destroy(p.gameObject);
+    }
+
+    private static IEnumerator TwinkleHalo(Transform her)
+    {
+        const int n = 14; var parts = new SpriteRenderer[n]; var phase = new float[n]; var spots = new Vector3[n];
+        for (var i = 0; i < n; i++)
+        {
+            parts[i] = Make(her, "YogaTwinkle", SparkSprite(), -0.03f);
+            var a = (i / (float)n) * Mathf.PI * 2f; var r = Random.Range(0.55f, 0.75f);
+            spots[i] = new Vector3(Mathf.Cos(a) * r, 0.1f + Mathf.Sin(a) * r * 0.9f, -0.03f); phase[i] = Random.Range(0f, 1f);
+            parts[i].transform.localPosition = spots[i];
+        }
+        for (var t = 0f; t < 1.3f; t += Time.deltaTime)
+        {
+            var fade = Mathf.Sin(Mathf.PI * Mathf.Clamp01(t / 1.3f));
+            for (var i = 0; i < n; i++)
+            {
+                var tw = Mathf.Max(0f, Mathf.Sin((t * 3.2f + phase[i]) * Mathf.PI * 2f));
+                parts[i].transform.localScale = Vector3.one * 0.62f * tw;
+                parts[i].transform.localRotation = Quaternion.Euler(0f, 0f, 45f * tw);
+                var c = i % 2 == 0 ? Color.white : Gold; parts[i].color = new Color(c.r, c.g, c.b, fade);
             }
             yield return null;
         }

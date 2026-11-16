@@ -1,6 +1,6 @@
 """The yoga lady's pose-finish effect, every style (15 November 2026). Chapter 1 day 1 with her hired: waits until she
 shows, then for each style plays the effect and steps through it in game time (Time.timeScale 0 between frames), one
-screenshot per step. Frames /tmp/ftc/popframes/yg<style>_NN.png. Usage: yoga_glow_test.py [chapter]"""
+screenshot per step. Frames /tmp/ftc/popframes/yg<style>_NN.png. Usage: yoga_glow_test.py [chapter] [styles, e.g. 2,5,6]"""
 import sys, time, re
 sys.path.insert(0, "/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Docs/tools")
 import unity_mcp as U
@@ -26,7 +26,8 @@ for i in range(16):
 print("she shows:", r)
 ex('var y = UnityEngine.Object.FindObjectOfType<YogaHire>(); y.StopAllCoroutines(); return "held";')
 STEP = 0.1
-for style in (1, 2, 3, 4):
+STYLES = [int(x) for x in sys.argv[2].split(",")] if len(sys.argv) > 2 else [1, 2, 3, 4]
+for style in STYLES:
     ex('Time.timeScale = 1f; YogaGlow.Style = %d; var y = UnityEngine.Object.FindObjectOfType<YogaHire>(); YogaGlow.Play(y, y.transform.Find("Front").GetComponent<SpriteRenderer>()); Time.timeScale = 0f; return "play";' % style)
     for k in range(15):
         ex('ScreenCapture.CaptureScreenshot("/tmp/ftc/popframes/yg%d_%02d.png"); return "snap";' % (style, k)); time.sleep(0.9)

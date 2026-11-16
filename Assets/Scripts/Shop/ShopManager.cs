@@ -1051,9 +1051,11 @@ public class ShopManager : MonoBehaviour
     private Image panelImage;
     private RectTransform panelRect;
     private float tabRowLeft, tabRowWidth; private bool dollarShown = true; private GameObject restoreButton;
-    private const float TabHeight = 86f;
+    // 120 since 15 November 2026 (owner: "the tab itself needs to be taller so icons fits better"); the EARNED line is
+    // lifted by the same 34 (ScoreLift), so the gap the owner asked for on 13 November stays
+    private const float TabHeight = 120f;
     private static readonly string[] TabIcons = { "tab_star", "tab_coin", "tab_dollar" };   // the tabs' pictures, in the order Stars, Coins, $   // 104 touched the EARNED line above (review captures, 11 November)
-    private const float ScoreLift = 56f;   // the EARNED line still sat on the open tab's top edge (owner, 13 November: "add some space between earned text line and the shop panel"): half a letter height of air
+    private const float ScoreLift = 56f + 34f;   // the EARNED line still sat on the open tab's top edge (owner, 13 November: "add some space between earned text line and the shop panel"): half a letter height of air
     private RectTransform panelGroup;   // the panel and its tabs live in this one object; the slide-in moves it (owner, round 1: "make tab and panel a whole")
 
     private void EnsureTabs()
@@ -1114,7 +1116,7 @@ public class ShopManager : MonoBehaviour
                 t.text = "";
                 var igo = new GameObject("Icon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)); igo.transform.SetParent(go.transform, false);
                 var irt = (RectTransform)igo.transform; irt.anchorMin = irt.anchorMax = new Vector2(0.5f, 0.5f); irt.pivot = new Vector2(0.5f, 0.5f);
-                irt.sizeDelta = new Vector2(tabH * 1.25f, tabH * 1.25f); irt.anchoredPosition = new Vector2(0f, overlap * 0.5f + tabH * 0.08f);   // a little taller than the tab: it sits up out of it
+                irt.sizeDelta = new Vector2(tabH * 0.86f, tabH * 0.86f); irt.anchoredPosition = new Vector2(0f, overlap * 0.5f);   // inside the tab, with a little room around
                 var iimg = igo.GetComponent<Image>(); iimg.sprite = icon; iimg.preserveAspect = true; iimg.raycastTarget = false;
             }
             var tab = (ShopTab)i;
