@@ -75,13 +75,38 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>Test build 36</b> (TestFlight, version 26.11.29): arrange the kitchen in the morning; try a red piece and see Ready go off. The new choux plate is on the table.</p>
-<p><b>Kitchen</b> (Current): tick how the arrangement feels; the old places are back (say "build" for a new test build); the glow brush also waits.</p>
+<p><b>Kitchen</b> (Current): tick how the arrangement feels. The blender is back at its old place; say "build" for a new test build.</p>
+<p><b>iCloud:</b> blender_redraw_body, blender_redraw_glow (same canvas, lay one over the other) and coffee_bags_glow are in "FoodTruckCafe art".</p>
+<p><b>Cake</b> (Current): frames fixed; tick.</p>
 <p><b>Shadows</b> (Q&amp;A): the one shadow at 60 % is on the table items; the kitchen keeps its own.</p>
 <p><b>App Store page</b> (Q&amp;A): tick which improvements to make.</p></div>
 <div class="who p2"><h3>Me</h3><p><b>Choux:</b> ChatGPT's hand-drawn repaint of the four comes at 4:58 PM.</p><p><b>App Store page:</b> waiting on your ticks.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>You asked: the long cabinet can hold two items? How does it work if I put only one? (16 November)</h3>
+<ul>
+<li><b>It has two places:</b> left and right. A piece dropped in jumps to the place nearer to where you let go. One piece alone stays on that side; it does not move to the middle.</li>
+<li><b>A wide piece takes the whole cabinet:</b> the board, the baskets and the coffee bags are wider than half of it, so they sit in the middle, alone. A second piece beside them turns both red.</li>
+<li>So in practice two small pieces fit side by side (juice and whisk); anything bigger is one per cabinet. The shelf works the same way.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.cab.middle"> Change it: one piece alone sits in the middle</label></li>
+<li><label><input type="checkbox" data-id="qa.cab.seen"> Seen, remove this</label></li>
+</ul></div>
+<div class="q"><h3>You asked: check the info banners in App Store Connect (16 November)</h3>
+<p style="margin:6px 0">Three banners on the version page. None blocks 26.11.22, which is still in review.</p>
+<ul>
+<li><b>China mainland, security assessment:</b> Apple wants proof of a completed Security Assessment and a report. Existing apps have until 31 January 2027.</li>
+<li><b>China mainland, AI content declaration:</b> a declaration and filing about AI-generated content, same date.</li>
+<li><b>New ways to market apps:</b> the header and search pictures and the iPhone Duo slots; the same things as in the App Store page list below.</li>
+</ul>
+<p style="margin:6px 0">The App Compliance page also lists a China game approval number, required for games with in-app purchases; we have those now. As far as I know, the approval number needs a publisher in China; I have not read Apple's detail pages for the two new filings yet. If they cannot be done, the way out is to stop selling in China mainland before the date. That is an availability change, so it needs your yes; nothing is due before 31 January.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.china.remove"> Take the game off the China mainland store (I will ask again before doing it)</label></li>
+<li><label><input type="checkbox" data-id="qa.china.read"> Read Apple's detail pages and tell me what each filing takes</label></li>
+<li><label><input type="checkbox" data-id="qa.china.later"> Leave it for now</label></li>
+</ul></div>
 <div class="q"><h3>You asked: one shadow for every cloth, at 60 %, on all items; show me screenshots (16 November)</h3>
 <p style="margin:6px 0"><b>Done, in the project, in no build:</b> every table item's shadow is now near-black <span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(0,0,0,.25);background:rgb(20,16,24)"></span> 20, 16, 24, see-through at 60 %. Each shadow keeps its drawn shape; only its paint changed, so it is a darker shade of whatever lies under it.</p>
 <figure><img src="shadow_ch1.jpg" alt="The chapter 1 table before and after: the shadows of the baskets, juice, coffee station, plates and jar are now darker red on red and grey on white instead of grey-blue"></figure>
@@ -167,6 +192,20 @@ Store text, so only with your words; Apple reviews it with the next version.</li
 </ul></div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
+
+<div class="card">
+<p style="margin-top:0"><b>Cake frames fixed, 16 November.</b> In the project, in no build.</p>
+<figure><img src="cake_frames_fix.jpg" alt="The seven cake frames before and after: the last three are now the same size as the first four, and the two-slice frame shows two pieces instead of three"></figure>
+<ul>
+<li><b>Size:</b> the frames for 2 slices, 1 slice and empty were about a tenth bigger than the others, so the stand grew when the fourth slice was served. All seven match now.</li>
+<li><b>2 slices:</b> it showed the same three pieces as the 3-slice frame. The middle slice is taken out, with the empty plate's own pixels behind it.</li>
+<li><b>Still odd, from ChatGPT's drawing:</b> the strawberries go 6, 4, 3, 2, 1 instead of 6, 5, 4, 3, 2. Fixing that needs a redraw.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.cakefix.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.cakefix.redraw"> Ask ChatGPT to redraw the seven frames, one strawberry per slice</label></li>
+</ul>
+</div>
 
 <div class="card">
 <p style="margin-top:0"><b>Choux: the new plate and ChatGPT's four choux are in the game, test build 36, 16 November.</b></p>
