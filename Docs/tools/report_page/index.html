@@ -75,7 +75,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>Choux</b> (Current): tick the plate, and how the four choux sit on it.</p>
-<p><b>Kitchen</b> (Q&amp;A, Current): tick "Do 1 to 3" to start the moves; the glow brush and the four step ideas also wait.</p>
+<p><b>Kitchen</b> (Current): check the arrangement boxes and the cut-out whisk; the glow brush and the four step ideas also wait.</p>
 <p><b>App Store page</b> (Q&amp;A): tick which improvements to make.</p></div>
 <div class="who p2"><h3>Me</h3><p><b>Choux:</b> ChatGPT's hand-drawn repaint of the four comes at 4:58 PM, onto the C1 plate.</p><p><b>Kitchen</b> and <b>App Store page:</b> waiting on your ticks.</p></div>
 </div>
@@ -121,28 +121,6 @@ Store text, so only with your words; Apple reviews it with the next version.</li
 <li><label><input type="checkbox" data-id="qa.aso.duo"> 5: make iPhone Duo pictures</label></li>
 <li><label><input type="checkbox" data-id="qa.aso.cpp"> 6: make the ice cream custom page</label></li>
 <li><label><input type="checkbox" data-id="qa.aso.lang"> 7: add the UK and Australia English pages</label></li>
-</ul></div>
-<div class="q"><h3>You asked: how do we make things movable in the kitchen? (16 November)</h3>
-<p style="margin:6px 0"><b>Most of it is ready.</b> The kitchen is already an empty background with separate pieces on top, each placed by numbers. Moving a piece is a number change; nothing is redrawn.</p>
-<figure><img src="kitchen_pieces.jpg" alt="The kitchen with boxes: green around blender, board, baskets, cake, coffee bags and juice; blue around the three ovens; red around the whisk, the eggs and the jar, pump and hen on the shelf"><figcaption>Green: its own piece. Blue: its own piece, stays (ovens). Red: still painted into the background.</figcaption></figure>
-<p style="margin:10px 0 4px"><b>What is missing, in order:</b></p>
-<ol>
-<li><b>The whisk is painted into the background.</b> I cut it out as its own piece and fill the wood under it with the counter's own wood, as I did for the blender on 15 November. Same for the eggs and the jar, pump and hen, if you want those movable too.</li>
-<li><b>One list of positions.</b> Today positions sit in three places: the scene (cake, board, baskets, bags, juice), code (blender), and paint (whisk). I put them in one list, one line per piece. Nothing changes on screen.</li>
-<li><b>Then your four moves</b> are number changes: blender up, whisk left, board under the blender. That leaves about 350 pixels between board and cake; the board is 290 wide, so I set the gap to match. The baskets stand at the back of that gap today.</li>
-<li><b>Later, players arrange it themselves.</b> The table's drag code cannot be used as it is (table items are world objects, the kitchen is a flat picture), so the kitchen gets its own small version with the same feel: lift, wiggle, red when two overlap, saved per player like the table.</li>
-</ol>
-<p style="margin:10px 0 4px"><b>To decide when we build step 4:</b></p>
-<ul>
-<li><b>When to arrange.</b> In the kitchen a tap bakes, so dragging needs its own moment, for example the morning arrangement before the day starts.</li>
-<li><b>Where pieces may stand:</b> the counter top and the shelves, not over the ovens, the window or the mat.</li>
-<li><b>Which is in front</b> when two overlap: the one lower on the counter.</li>
-</ul>
-<p style="margin:6px 0"><b>Moving breaks nothing:</b> the glow, the blend animation and the timers belong to each piece and move with it; the tutorial arrow finds pieces by name.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.kmove.go"> Do 1 to 3: cut the whisk, one list, my four moves</label></li>
-<li><label><input type="checkbox" data-id="qa.kmove.shelf"> Cut the eggs and shelf items out too</label></li>
-<li><label><input type="checkbox" data-id="qa.kmove.seen"> Seen, remove this</label></li>
 </ul></div>
 <div class="q"><h3>You asked: have you read all of Apple's asset best practices page? (16 November)</h3>
 <p style="margin:6px 0">Not before today; on 15 November I had read Apple's search, product page, custom page and iPhone Duo pages. <b>Now read in full:</b> every section of the page, and its three size pages (creative assets; screenshots and video with every device section opened).</p>
@@ -207,6 +185,37 @@ Store text, so only with your words; Apple reviews it with the next version.</li
 
 
 <div class="card">
+<p style="margin-top:0"><b>Kitchen arrangement: your rules, drawn, 16 November.</b> A drawing only; nothing built.</p>
+<figure><img src="kitchen_boxes.jpg" alt="The kitchen with a yellow band over the counter top, green boxes on the blender, board, whisk, baskets and cake stand, and blue frames with arrow marks on the shelf and the three openings under the counter"><figcaption>Yellow: the table, free placing. Green: each item's box. Blue: cabinets, with their snap places.</figcaption></figure>
+<ul>
+<li><b>Table:</b> an item may stand anywhere with its foot on the yellow band. Two green boxes may not overlap: red, as on the game table. Outside its box an item may cover another.</li>
+<li><b>Whole item in the box:</b> blender, board. <b>Cake:</b> the stand only; the mat may be covered. <b>Baskets, whisk, bags, juice:</b> the middle.</li>
+<li><b>Cabinets:</b> an item dropped inside jumps to the nearest arrow. Shelf and big cabinet have 2 places, the small ones 1.</li>
+<li><b>Too big, red:</b> blender and cake in every cabinet; bags and baskets in the small ones. The board fits the shelf and the big one. Juice and whisk fit everywhere.</li>
+<li>Arranged in the morning, together with the game table. Only these seven items move; ovens stay.</li>
+</ul>
+<p style="margin:6px 0">You said three cabinets; I count four openings (shelf, big, two small).</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.kbox.good"> The boxes are right, build it</label></li>
+<li><label><input type="checkbox" data-id="cur.kbox.four"> Use all four cabinets</label></li>
+<li><label><input type="checkbox" data-id="cur.kbox.nobig"> Leave the big cabinet out</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Whisk: cut out as its own picture, 16 November.</b> Not in the game.</p>
+<figure><img src="kitchen_whisk.jpg" alt="Four views: the counter with the painted whisk, the counter without it, the cut-out whisk laid back on further right, and the whisk alone on a checked ground"></figure>
+<ul>
+<li>Its own pixels, nothing redrawn. The counter under it is filled with the wood beside it, each band carried across.</li>
+<li>One dark band has a small kink where the top of the loop was.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.whisk.good"> Good, put it in the game</label></li>
+<li><label><input type="checkbox" data-id="cur.whisk.kink"> Smooth the kink first</label></li>
+</ul>
+</div>
+
+<div class="card">
 <p style="margin-top:0"><b>Kitchen: a glow brush copied from the coffee bags and the tree's apples, 15 November.</b> The blender's glow repainted with it; in the game, in no build.</p>
 <figure><img src="glow_brush.jpg" alt="The chapter 2 kitchen's shelf and blender: before, the blender's glow a wide soft blur; now a bright band hugging its outline like the bags'"><figcaption>Left: before. Right: now. The bags' own glow pulses, so it differs between the two snaps.</figcaption></figure>
 <ul>
@@ -260,7 +269,7 @@ Store text, so only with your words; Apple reviews it with the next version.</li
 <p style="margin-top:0"><b>The three things for the next release (your pick):</b></p>
 <ol>
 <li><b>Redraw the choux.</b> Platter C1 (less tall) is painted; ChatGPT drew four flavours (original, blueberry, strawberry, lemon).</li>
-<li><b>Redesign the kitchen flow.</b> The four ideas for an extra cake and choux step (Current) are a start; I will draw up the whole flow next.</li>
+<li><b>Redesign the kitchen.</b> Seven items become arrangeable: free on the table, snapped in the cabinets (Current). Then your four moves, and the extra cake and choux step.</li>
 <li><b>Improve the App Store page.</b> Your ticks on the Q&amp;A list choose which parts.</li>
 </ol>
 </div>
