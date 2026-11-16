@@ -34,19 +34,26 @@ public static class KitchenArrange
     }
 
     // Places measured on the 1080 x 1920 kitchen picture (Store/redesign/kitchen_movable/boxes_map.py), then set so no
-    // two boxes touch on a phone (978 x 2120 canvas units) or a tablet (1247 x 1663). The owner's four moves of
-    // 16 November are in here: the blender up, the whisk to the left, the board under the blender, a free stretch
-    // of counter between board and cake.
+    // two boxes touch on a phone (978 x 2120 canvas units) or a tablet (1247 x 1663).
+    // Owner, 16 November 2026, after test build 36 (which had the blender moved up and the board under it): "since we
+    // made kitchen arrangable, no need to move the location of the items on table, move them back to default
+    // positions. for the whisk, the new location is good." So: blender, board, baskets and cake where the scene had
+    // them, the whisk at the left edge. The scene's own places let the board's box lie on the blender's and on the
+    // baskets' (they were drawn overlapping), which would start every kitchen red: the board stands about 30 px
+    // further right and lower than it did, the baskets about 35 px further right; nothing else differs.
     private static readonly Def[] Defs =
     {
-        new Def { name = "Blender",  foot = new Vector2(0.145f, 0.545f),  box = new Vector4(0.09f, 0.06f, 0.98f, 0.98f),   fit = new Vector4(0.09f, 0.06f, 0.98f, 0.98f), stretch = new Vector2(0.2157f, 0.1485f) },
-        new Def { name = "cutboard", foot = new Vector2(0.224f, 0.437f),  box = new Vector4(0.02f, 0.01f, 0.98f, 0.98f),   fit = new Vector4(0.02f, 0.01f, 0.98f, 0.98f) },
+        new Def { name = "Blender",  foot = new Vector2(0.145f, 0.5035f), box = new Vector4(0.09f, 0.06f, 0.98f, 0.98f),   fit = new Vector4(0.09f, 0.06f, 0.98f, 0.98f), stretch = new Vector2(0.2157f, 0.1485f) },
+        new Def { name = "cutboard", foot = new Vector2(0.385f, 0.428f),  box = new Vector4(0.02f, 0.01f, 0.98f, 0.98f),   fit = new Vector4(0.02f, 0.01f, 0.98f, 0.98f) },
         new Def { name = "whisk",    foot = new Vector2(0.0505f, 0.437f), box = new Vector4(0.20f, 0.20f, 0.80f, 0.95f),   fit = new Vector4(0.04f, 0.03f, 0.96f, 0.95f), size = new Vector2(98f, 128f) },
-        new Def { name = "basket",   foot = new Vector2(0.528f, 0.5177f), box = new Vector4(0.20f, 0.25f, 0.80f, 0.95f),   fit = new Vector4(0.01f, 0.03f, 0.98f, 0.95f) },
+        new Def { name = "basket",   foot = new Vector2(0.56f, 0.5177f),  box = new Vector4(0.20f, 0.25f, 0.80f, 0.95f),   fit = new Vector4(0.01f, 0.03f, 0.98f, 0.95f) },
         new Def { name = "cake",     foot = new Vector2(0.8078f, 0.451f), box = new Vector4(0.21f, 0.03f, 0.875f, 0.775f), fit = new Vector4(0.01f, 0.03f, 0.99f, 0.98f) },
         new Def { name = "coffee",   foot = new Vector2(0.2694f, 0.6859f),box = new Vector4(0.20f, 0.25f, 0.80f, 0.90f),   fit = new Vector4(0.07f, 0.10f, 0.92f, 0.90f) },
         new Def { name = "juice",    foot = new Vector2(0.1662f, 0.1469f),box = new Vector4(0.15f, 0.30f, 0.85f, 0.98f),   fit = new Vector4(0.13f, 0.07f, 0.87f, 0.98f) },
     };
+
+    /// Raised when the game's own places change: places kept under an older number are dropped once (2: 16 November 2026, the places above).
+    public const int LayoutVersion = 2;
 
     private const float TableLow = 0.425f, TableHigh = 0.55f;   // the counter's top, as shares of the picture's height
 
