@@ -76,6 +76,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="who p1"><h3>You</h3>
 <p><b>App Store page</b> (Q&amp;A): what we can improve, tick what to do.</p>
 <p><b>Kitchen</b> (Current): the glow brush on the blender, and four ideas for the cake and choux step.</p>
+<p><b>Movable kitchen</b> (Q&amp;A): the analysis is in; the whisk must be cut out of the background first.</p>
 <p><b>Choux</b> (Current): platter C1, less tall, choux lower and closer together; ChatGPT's repaint of the four comes at 4:58 PM.</p>
 <p><b>App Store page</b> (Q&amp;A): Apple's asset page read in full; a universal picture, video and screenshot fixes wait on your ticks.</p>
 <p><b>Choux frames</b> (Q&amp;A): the third choux is fixed; the full frame still moves the choux.</p>
@@ -140,6 +141,28 @@ Store text, so only with your words; Apple reviews it with the next version.</li
 <li><label><input type="checkbox" data-id="qa.aso.duo"> 5: make iPhone Duo pictures</label></li>
 <li><label><input type="checkbox" data-id="qa.aso.cpp"> 6: make the ice cream custom page</label></li>
 <li><label><input type="checkbox" data-id="qa.aso.lang"> 7: add the UK and Australia English pages</label></li>
+</ul></div>
+<div class="q"><h3>You asked: how do we make things movable in the kitchen? (16 November)</h3>
+<p style="margin:6px 0"><b>Most of it is ready.</b> The kitchen is already an empty background with separate pieces on top, each placed by numbers. Moving a piece is a number change; nothing is redrawn.</p>
+<figure><img src="kitchen_pieces.jpg" alt="The kitchen with boxes: green around blender, board, baskets, cake, coffee bags and juice; blue around the three ovens; red around the whisk, the eggs and the jar, pump and hen on the shelf"><figcaption>Green: its own piece. Blue: its own piece, stays (ovens). Red: still painted into the background.</figcaption></figure>
+<p style="margin:10px 0 4px"><b>What is missing, in order:</b></p>
+<ol>
+<li><b>The whisk is painted into the background.</b> I cut it out as its own piece and fill the wood under it with the counter's own wood, as I did for the blender on 15 November. Same for the eggs and the jar, pump and hen, if you want those movable too.</li>
+<li><b>One list of positions.</b> Today positions sit in three places: the scene (cake, board, baskets, bags, juice), code (blender), and paint (whisk). I put them in one list, one line per piece. Nothing changes on screen.</li>
+<li><b>Then your four moves</b> are number changes: blender up, whisk left, board under the blender. That leaves about 350 pixels between board and cake; the board is 290 wide, so I set the gap to match. The baskets stand at the back of that gap today.</li>
+<li><b>Later, players arrange it themselves.</b> The table's drag code cannot be used as it is (table items are world objects, the kitchen is a flat picture), so the kitchen gets its own small version with the same feel: lift, wiggle, red when two overlap, saved per player like the table.</li>
+</ol>
+<p style="margin:10px 0 4px"><b>To decide when we build step 4:</b></p>
+<ul>
+<li><b>When to arrange.</b> In the kitchen a tap bakes, so dragging needs its own moment, for example the morning arrangement before the day starts.</li>
+<li><b>Where pieces may stand:</b> the counter top and the shelves, not over the ovens, the window or the mat.</li>
+<li><b>Which is in front</b> when two overlap: the one lower on the counter.</li>
+</ul>
+<p style="margin:6px 0"><b>Moving breaks nothing:</b> the glow, the blend animation and the timers belong to each piece and move with it; the tutorial arrow finds pieces by name.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.kmove.go"> Do 1 to 3: cut the whisk, one list, my four moves</label></li>
+<li><label><input type="checkbox" data-id="qa.kmove.shelf"> Cut the eggs and shelf items out too</label></li>
+<li><label><input type="checkbox" data-id="qa.kmove.seen"> Seen, remove this</label></li>
 </ul></div>
 <div class="q"><h3>You asked: have you read all of Apple's asset best practices page? (16 November)</h3>
 <p style="margin:6px 0">Not before today; on 15 November I had read Apple's search, product page, custom page and iPhone Duo pages. <b>Now read in full:</b> every section of the page, and its three size pages (creative assets; screenshots and video with every device section opened).</p>
