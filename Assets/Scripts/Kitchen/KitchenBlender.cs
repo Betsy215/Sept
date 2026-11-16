@@ -40,20 +40,23 @@ public static class KitchenBlender
             if (canvas.gameObject.scene.name == "KitchenScene") { bg = canvas.transform.Find("bg"); if (bg != null) break; }
         if (bg == null || bg.Find("Blender") != null) return;
 
-        // the "you can tap this" halo, the one painted around the coffee bags (owner, 15 November 2026: "add this glow
-        // effect to other items that is intractable, for now, it is just the blender"): only where the blender takes taps
-        var halo = ch2 ? Resources.Load<Sprite>("Kitchen/blender_glow") : null;
-        if (halo != null)
-        {
-            var hg = new GameObject("BlenderGlow", typeof(RectTransform), typeof(Image)); hg.transform.SetParent(bg, false); hg.transform.SetAsLastSibling();
-            var pad = new Vector2(GlowPad / body.rect.width * (Max.x - Min.x), GlowPad / body.rect.height * (Max.y - Min.y));
-            var hrt = (RectTransform)hg.transform; hrt.anchorMin = Min - pad; hrt.anchorMax = Max + pad; hrt.offsetMin = Vector2.zero; hrt.offsetMax = Vector2.zero;
-            var hi = hg.GetComponent<Image>(); hi.sprite = halo; hi.preserveAspect = false; hi.raycastTarget = false;
-        }
         var go = new GameObject("Blender", typeof(RectTransform), typeof(Image), typeof(BlenderAnim));
         go.transform.SetParent(bg, false); go.transform.SetAsLastSibling();      // over the window view, under the shelf items (they are elsewhere)
         var rt = (RectTransform)go.transform; rt.anchorMin = Min; rt.anchorMax = Max; rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
         var img = go.GetComponent<Image>(); img.sprite = body; img.preserveAspect = false; img.raycastTarget = ch2;   // stretched exactly like the background it was cut from
+        // the "you can tap this" halo, made the way the coffee bags' is (owner, 15 November 2026: "add this glow effect to
+        // other items that is intractable, for now, it is just the blender"; "double check the glow effect on coffee bag,
+        // make blender the same way"). The bags' halo is painted into their own picture: no animation, it moves and pops
+        // with them. Here it is part of the blender too, its first child, so it shakes with the blend; it is clear inside
+        // the blender's shape, so lying over the body hides nothing. Only where the blender takes taps (chapter 2).
+        var halo = ch2 ? Resources.Load<Sprite>("Kitchen/blender_glow") : null;
+        if (halo != null)
+        {
+            var hg = new GameObject("Glow", typeof(RectTransform), typeof(Image)); hg.transform.SetParent(rt, false); hg.transform.SetAsFirstSibling();
+            var px = GlowPad / body.rect.width; var py = GlowPad / body.rect.height;
+            var hrt = (RectTransform)hg.transform; hrt.anchorMin = new Vector2(-px, -py); hrt.anchorMax = new Vector2(1f + px, 1f + py); hrt.offsetMin = Vector2.zero; hrt.offsetMax = Vector2.zero;
+            var hi = hg.GetComponent<Image>(); hi.sprite = halo; hi.preserveAspect = false; hi.raycastTarget = false;
+        }
         // the blending element the owner drew, its own layer so the blend can spin it (owner, 23 October: "that blending
         // thing turns on and swirls"); at rest it simply sits where it was drawn, in every chapter
         Image bladeImage = null;
