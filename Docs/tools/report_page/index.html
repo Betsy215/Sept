@@ -76,12 +76,24 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="who p1"><h3>You</h3>
 <p><b>App Store page</b> (Q&amp;A): what we can improve, tick what to do.</p>
 <p><b>Kitchen</b> (Current): the blender glow, and four ideas for the cake and choux step.</p>
-<p><b>Chapter 2 night beach</b> (Current): ChatGPT's night, tick it.</p>
+<p><b>Choux frames</b> (Q&amp;A): the full frame moves the choux; fix or keep.</p>
 <p><b>Say "build"</b> when you want a test build with these. None before your word.</p></div>
-<div class="who p2"><h3>Me</h3><p>26.11.22 and the 15 Stars are waiting for Apple's review; they go on sale by themselves.</p></div>
+<div class="who p2"><h3>Me</h3><p>26.11.22 and the 15 Stars are waiting for Apple's review; they go on sale by themselves.</p><p>ChatGPT's night beach is in the game (your tick), in no build. The kitchen board and stand stay as they are.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>You asked: show me all the frames of choux (15 November)</h3>
+<p style="margin:6px 0">The choux board on the table has 5 frames, one per choux left. The kitchen ovens are shared, so choux has no frames of its own there.</p>
+<figure><img src="choux_frames.jpg" alt="The five choux board frames: empty, one, two, three and four choux with cream and blueberries"><figcaption>All five at the same size and position as in the game. File names in Assets/Images.</figcaption></figure>
+<ul>
+<li>Frames 1 to 3 add one choux at a time in the same spots.</li>
+<li><b>The full frame (4) puts all four in new places.</b> So when a player takes the first choux from a full board, the other three jump.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.chouxf.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="qa.chouxf.fix"> Fix the full frame: keep frame 3's three choux and add the fourth</label></li>
+<li><label><input type="checkbox" data-id="qa.chouxf.keep"> Keep them as they are</label></li>
+</ul></div>
 <div class="q"><h3>You asked: what can we do on the App Store page itself, without marketing, so the game is found and downloaded more? (15 November)</h3>
 <p style="margin:6px 0"><b>How Apple ranks search:</b> text that matches the <b>name, subtitle, keywords and category</b>, and how people react: <b>downloads, ratings and reviews</b>. The description and promotional text do not count for search; they only help someone who opened the page decide.</p>
 <p style="margin:6px 0"><b>Where we stand today:</b> name "Food Truck Cafe"; subtitle "Bake, serve &amp; grow your cafe"; 99 of 100 keyword letters used; category Simulation and Casual; English only; <b>0 written reviews</b>, and the game never asks for a rating; no in-app events; no custom pages; no iPhone Duo pictures.</p>
@@ -111,19 +123,6 @@ Store text, so only with your words; Apple reviews it with the next version.</li
 <li><label><input type="checkbox" data-id="qa.aso.duo"> 5: make iPhone Duo pictures</label></li>
 <li><label><input type="checkbox" data-id="qa.aso.cpp"> 6: make the ice cream custom page</label></li>
 <li><label><input type="checkbox" data-id="qa.aso.lang"> 7: add the UK and Australia English pages</label></li>
-</ul></div>
-<div class="q"><h3>You asked: is the fruit board in the kitchen at 40 degrees?</h3>
-<ul>
-<li><b>No.</b> The board is drawn from almost straight above: the lemon's cut face is a full circle.</li>
-<li><b>The cake stand is the other way,</b> seen from low: the cake's top is less than half as tall as it is wide.</li>
-<li><b>The table look</b> (40 degrees): a round thing is about three quarters as tall as it is wide, like your heart plate.</li>
-<li>So the two don't match each other, nor the table. If either gets a new job (the cake and choux step), the cake or choux drawn on it should match its angle, or the board and stand get redrawn to one angle first.</li>
-</ul>
-<figure><img src="kitchen_angles.jpg" alt="The fruit board seen from above, the cake stand seen from low, and the table's heart plate at 40 degrees"></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.kangle.40"> Redraw both at the table's 40 degrees</label></li>
-<li><label><input type="checkbox" data-id="qa.kangle.stand"> Redraw the board to match the cake stand</label></li>
-<li><label><input type="checkbox" data-id="qa.kangle.keep"> Keep them as they are</label></li>
 </ul></div>
 <div class="q"><h3>You asked: does the shop panel scroll by dragging, or only with the arrow buttons?</h3>
 <ul><li>Both. A finger drag scrolls the cards up and down; the arrow buttons do the same in steps.</li></ul></div>
@@ -172,19 +171,6 @@ Store text, so only with your words; Apple reviews it with the next version.</li
 <li><label><input type="checkbox" data-id="cur.ksteps.c"> C</label></li>
 <li><label><input type="checkbox" data-id="cur.ksteps.d"> D</label></li>
 <li><label><input type="checkbox" data-id="cur.ksteps.more"> More ideas, I will say which way</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Chapter 2 beach at night, to match the new day, 15 November.</b> The new day is in the game (your tick); this night is not yet.</p>
-<figure><img src="beach_night.jpg" alt="The old night beach, the new day beach, and ChatGPT's new night beach"><figcaption>Left: the night in the game now. Middle: the new day, in the game. Right: ChatGPT's new night.</figcaption></figure>
-<ul>
-<li>The night fades in over the day at dusk, so its palms, plants and shells must sit where the day's do. ChatGPT's night keeps them in place, with the old night's moon, stars, moonlit path and blue sand.</li>
-<li>Until you tick, the old night stays; at dusk its palms would not line up with the new day's.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.beachnight.use"> Use it</label></li>
-<li><label><input type="checkbox" data-id="cur.beachnight.redo"> Redo it, I will say what</label></li>
 </ul>
 </div>
 
