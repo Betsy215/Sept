@@ -74,176 +74,75 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 36</b> (TestFlight, version 26.11.29): arrange the kitchen in the morning; try a red piece and see Ready go off. The new choux plate is on the table.</p>
-<p><b>Kitchen</b> (Current): tick how the arrangement feels. The blender is back at its old place; say "build" for a new test build.</p>
-<p><b>iCloud</b> ("FoodTruckCafe art"): every blender picture is there: blender, blender_blade, blender_fill, blender_swirl (the four layers the game uses), plus blender_redraw_body and blender_redraw_glow (same canvas, lay one over the other). Also coffee_bags_glow.</p>
-<p><b>Cake</b> (Current): frames fixed; tick.</p>
-<p><b>Coffee bags</b> (Current): your new glow is in the game; look at the screenshot.</p>
-<p><b>Choux repaint</b> (Current): two hand-drawn versions from ChatGPT; pick one.</p>
-<p><b>Shadows</b> (Q&amp;A): the one shadow at 60 % is on the table items; the kitchen keeps its own.</p>
-<p><b>App Store page</b> (Q&amp;A): tick which improvements to make.</p></div>
-<div class="who p2"><h3>Me</h3><p><b>Cake frames:</b> waiting to hear which part is still wrong.</p><p><b>App Store page:</b> waiting on your ticks.</p></div>
+<p><b>Say "build"</b> for a new test build: cake frames, blender back in place, the new table shadows, your coffee bag glow.</p>
+<p><b>Cake</b> (Current): the seven frames are rebuilt; tick.</p>
+<p><b>Kitchen</b> (Current): tick how the arrangement feels.</p>
+<p><b>App Store page</b> (Q&amp;A): one list of ten now; tick what to do.</p></div>
+<div class="who p2"><h3>Me</h3><p><b>Version numbers</b> (your tick): from the next version on, the version is the day we submit and builds start at 1.</p><p><b>26.11.22</b> is still in Apple's review.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>You asked: what does the release number mean, and can the big build number go? (16 November)</h3>
-<ul>
-<li><b>Two numbers.</b> The <b>version</b> (26.11.22) is what players see. The <b>build</b> (35, 36) is Apple's counter for uploads; players never see it, TestFlight shows it in brackets.</li>
-<li><b>Today the version is the date I planned for,</b> not the real one: 26.11.21 went live on 15 November, and 26.11.22 was sent the same day. The build number has simply counted every upload since October.</li>
-<li><b>The build number cannot be removed</b> (Apple requires one), but it <b>can start again at 1 for every new version</b>.</li>
-</ul>
-<p style="margin:10px 0 4px"><b>What I suggest:</b></p>
-<ul>
-<li><b>Version = the day it goes to Apple</b>, as year.month.day. A release sent on 6 December is 26.12.06.</li>
-<li><b>Build = 1, 2, 3 inside that version.</b></li>
-<li>Test builds before that carry the planned date. If the day slips, the last build is exported once more with the real date; same game, new number.</li>
-<li>One limit: the version is fixed when a build is uploaded, and Apple's review takes a day or two. So it can match the day we submit, not the day Apple lets it out.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.version.date"> Yes: version = submit date, build starts at 1 each version</label></li>
-<li><label><input type="checkbox" data-id="qa.version.seen"> Seen, remove this</label></li>
-</ul></div>
-<div class="q"><h3>You asked: the long cabinet can hold two items? How does it work if I put only one? (16 November)</h3>
-<ul>
-<li><b>It has two places:</b> left and right. A piece dropped in jumps to the place nearer to where you let go. One piece alone stays on that side; it does not move to the middle.</li>
-<li><b>A wide piece takes the whole cabinet:</b> the board, the baskets and the coffee bags are wider than half of it, so they sit in the middle, alone. A second piece beside them turns both red.</li>
-<li>So in practice two small pieces fit side by side (juice and whisk); anything bigger is one per cabinet. The shelf works the same way.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.cab.middle"> Change it: one piece alone sits in the middle</label></li>
-<li><label><input type="checkbox" data-id="qa.cab.seen"> Seen, remove this</label></li>
-</ul></div>
-<div class="q"><h3>You asked: check the info banners in App Store Connect (16 November)</h3>
-<p style="margin:6px 0">Three banners on the version page. None blocks 26.11.22, which is still in review.</p>
-<ul>
-<li><b>China mainland, security assessment:</b> Apple wants proof of a completed Security Assessment and a report. Existing apps have until 31 January 2027.</li>
-<li><b>China mainland, AI content declaration:</b> a declaration and filing about AI-generated content, same date.</li>
-<li><b>New ways to market apps:</b> the header and search pictures and the iPhone Duo slots; the same things as in the App Store page list below.</li>
-</ul>
-<p style="margin:6px 0">The App Compliance page also lists a China game approval number, required for games with in-app purchases; we have those now. As far as I know, the approval number needs a publisher in China; I have not read Apple's detail pages for the two new filings yet. If they cannot be done, the way out is to stop selling in China mainland before the date. That is an availability change, so it needs your yes; nothing is due before 31 January.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.china.remove"> Take the game off the China mainland store (I will ask again before doing it)</label></li>
-<li><label><input type="checkbox" data-id="qa.china.read"> Read Apple's detail pages and tell me what each filing takes</label></li>
-<li><label><input type="checkbox" data-id="qa.china.later"> Leave it for now</label></li>
-</ul></div>
-<div class="q"><h3>You asked: one shadow for every cloth, at 60 %, on all items; show me screenshots (16 November)</h3>
-<p style="margin:6px 0"><b>Done, in the project, in no build:</b> every table item's shadow is now near-black <span style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;border:1px solid rgba(0,0,0,.25);background:rgb(20,16,24)"></span> 20, 16, 24, see-through at 60 %. Each shadow keeps its drawn shape; only its paint changed, so it is a darker shade of whatever lies under it.</p>
-<figure><img src="shadow_ch1.jpg" alt="The chapter 1 table before and after: the shadows of the baskets, juice, coffee station, plates and jar are now darker red on red and grey on white instead of grey-blue"></figure>
-<figure><img src="shadow_ch2.jpg" alt="The chapter 2 table before and after: the shadows of the ice cream station, waffle machine, coconuts, baskets and plates are now a darker blue and a darker cream"></figure>
-<ul>
-<li><b>Changed:</b> apples, bread, coconuts, coffee machine and cups, cookies, juice, choux plate, ice cream station, waffle machine, bin, candy jar, both flower pots. About 90 pictures.</li>
-<li><b>Kitchen:</b> untouched, as you said. The cake cloth, the board and the juice bottle have their own painted shadows back.</li>
-<li><b>Not changed:</b> the cake stand's shadow on its own napkin (it is painted into the napkin's checks) and the hen's.</li>
-<li><b>How it was before:</b> the kitchen's shadows were solid paint you picked per surface (brown on the wood, grey in the cabinet); the table's were grey-blue paint, which stayed grey-blue on red.</li>
-<li>The old pictures are kept, so this can be undone in one step.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.shadow60.good"> Good, keep it</label></li>
-<li><label><input type="checkbox" data-id="qa.shadow60.lighter"> Lighter, 50 %</label></li>
-<li><label><input type="checkbox" data-id="qa.shadow60.rest"> Do the cake stand and the hen too</label></li>
-<li><label><input type="checkbox" data-id="qa.shadow60.undo"> Undo</label></li>
-</ul></div>
-<div class="q"><h3>You asked: what can we do on the App Store page itself, without marketing, so the game is found and downloaded more? (15 November)</h3>
-<p style="margin:6px 0"><b>How Apple ranks search:</b> text that matches the <b>name, subtitle, keywords and category</b>, and how people react: <b>downloads, ratings and reviews</b>. The description and promotional text do not count for search; they only help someone who opened the page decide.</p>
-<p style="margin:6px 0"><b>Where we stand today:</b> name "Food Truck Cafe"; subtitle "Bake, serve &amp; grow your cafe"; 99 of 100 keyword letters used; category Simulation and Casual; English only; <b>0 written reviews</b>, and the game never asks for a rating; no in-app events; no custom pages; no iPhone Duo pictures.</p>
-<p style="margin:10px 0 4px"><b>What I suggest, most useful first:</b></p>
+<div class="q"><h3>App Store page: what we can improve, without marketing (15 and 16 November)</h3>
+<p style="margin:6px 0"><b>Today:</b> name "Food Truck Cafe", subtitle "Bake, serve &amp; grow your cafe", English only, 0 written reviews, 6 of 10 screenshots, one video. Apple ranks search by name, subtitle, keywords and category, and by downloads and ratings. The description does not count for search.</p>
+
+<p style="margin:12px 0 4px"><b>A. To be found more</b></p>
 <ol>
-<li><b>Ask happy players for a rating.</b> Apple's own rating popup, shown at a good moment (after a 3-star day), at most 3 times a year as Apple allows. Ratings help the ranking and the page. A small code change; the biggest win for us.</li>
-<li><b>Better keywords and subtitle.</b> Apple: no word twice across name, subtitle and keywords; no plurals; no "game" or "app". Ours repeat nothing, but miss what the game now has: ice cream, waffles, the beach, coffee, barista. For example:
-<ul>
-<li>Subtitle <i>"Cozy bakery &amp; cooking tycoon"</i> (28 letters).</li>
-<li>Keywords <i>restaurant,kitchen,chef,coffee,barista,ice cream,dessert,cake,pastry,diner,cute,sweet,waffle,beach</i> (98).</li>
-</ul>
-Store text, so only with your words; Apple reviews it with the next version.</li>
-<li><b>An in-app event for the winter chapter</b> in mid-December. Events show on the product page, in search and on the Today tab, and they are free. It is the only "news" slot Apple gives that needs no ads.</li>
-<li><b>Update the description and promotional text.</b> They don't affect search, but they are what people read. The description still says "serve two customers at a time" and never mentions the beach, ice cream, chapters, the star shop or the yoga lady. The first sentence matters most. The promotional text (170 letters) can be changed at any time without a review; good for "New: ..." lines.</li>
-<li><b>iPhone Duo pictures.</b> Apple's iPhone Duo is on sale since 23 October. Duo pictures give the page a "made for iPhone Duo" badge, and from April 2027 every update must include them. They need captures at the Duo's sizes; a full Duo-ready build needs Xcode 27.1 (we have 26.3), and I still need to check that our Unity version supports it.</li>
-<li><b>A custom product page for ice cream,</b> tied to keywords such as "ice cream" and showing the beach pictures first. Apple now lets such pages show for their keywords in search.</li>
-<li><b>Extra English store languages</b> (UK, Australia) give more keyword fields. This is common practice among app makers; Apple does not document how much it helps.</li>
-<li><b>Later, with more visitors:</b> Apple's A/B test of icon and pictures. With today's few visits a test would take many weeks.</li>
+<li><b>Ask happy players for a rating.</b> Apple's own popup after a 3-star day, at most 3 times a year. A small code change; the biggest win.</li>
+<li><b>New subtitle and keywords.</b> Ours miss ice cream, waffles, the beach, coffee. For example: subtitle <i>"Cozy bakery &amp; cooking tycoon"</i>; keywords <i>restaurant,kitchen,chef,coffee,barista,ice cream,dessert,cake,pastry,diner,cute,sweet,waffle,beach</i>. Store text, so only with your words.</li>
+<li><b>UK and Australia English pages.</b> More keyword fields. Common practice; Apple does not say how much it helps.</li>
 </ol>
-<p style="margin:6px 0">Sources: <a href="https://developer.apple.com/app-store/search/">Apple: App Store search</a>, <a href="https://developer.apple.com/app-store/product-page/">Apple: Creating your product page</a>, <a href="https://developer.apple.com/news/?id=kkphp5qo">Apple: iPhone Duo</a>, <a href="https://developer.apple.com/app-store/custom-product-pages/">Apple: Custom product pages</a>.</p>
+
+<p style="margin:12px 0 4px"><b>B. To look better once found</b></p>
+<ol start="4">
+<li><b>A universal picture</b> (new with iOS 27). One wide picture for the top of the page and for search results, and what Apple needs to feature a game in its big spots. We have none. Goes up without a new version, through Apple's review.</li>
+<li><b>Video.</b> It ends on the night beach and jumps back to the forest; it opens on a customer waiting; the cover is the forest serve. Fix: open on a serve, loop smoothly, ice cream on the cover.</li>
+<li><b>Screenshots.</b> Captions sit in three different places; the kitchen has empty ovens; the shop shows dark locked shapes; 4 slots are unused.</li>
+<li><b>Description and promotional text.</b> Still says "serve two customers at a time"; no beach, ice cream, chapters or star shop. The promotional text can change at any time without review.</li>
+<li><b>iPhone Duo screenshots.</b> They give a "made for iPhone Duo" badge and become required in April 2027. Our video already fills the Duo slot.</li>
+</ol>
+<figure><img src="aso_video_frames.jpg" alt="The store video every two seconds: forest serve, kitchen, ice cream on the beach, waffle bowls, candy, night"><figcaption>The current video (25.7 s), one frame every 2 seconds.</figcaption></figure>
+
+<p style="margin:12px 0 4px"><b>C. News slots</b></p>
+<ol start="9">
+<li><b>An in-app event for the winter chapter</b> in mid-December. Free; shows on the page, in search and on the Today tab. Needs a 16:9 and a 9:16 picture.</li>
+<li><b>A custom page for ice cream,</b> tied to the keyword, with the beach pictures first.</li>
+</ol>
+
+<p style="margin:10px 0 4px"><b>Checked:</b> our pictures follow Apple's rules (no prices, links or awards; fit for 4+). <b>Later:</b> Apple's A/B test of icon and pictures, once there are more visitors.</p>
+<p style="margin:6px 0">Sources: Apple's pages on <a href="https://developer.apple.com/app-store/search/">search</a>, <a href="https://developer.apple.com/app-store/product-page/">the product page</a>, <a href="https://developer.apple.com/app-store/asset-best-practices/">asset best practices</a>, <a href="https://developer.apple.com/app-store/custom-product-pages/">custom pages</a>.</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="qa.aso.rating"> 1: add the rating popup</label></li>
 <li><label><input type="checkbox" data-id="qa.aso.words"> 2: use the suggested subtitle and keywords</label></li>
 <li><label><input type="checkbox" data-id="qa.aso.mywords"> 2: I will send my own subtitle and keywords</label></li>
-<li><label><input type="checkbox" data-id="qa.aso.event"> 3: plan an in-app event for the winter chapter</label></li>
-<li><label><input type="checkbox" data-id="qa.aso.desc"> 4: draft a new description and promotional text for me to edit</label></li>
-<li><label><input type="checkbox" data-id="qa.aso.duo"> 5: make iPhone Duo pictures</label></li>
-<li><label><input type="checkbox" data-id="qa.aso.cpp"> 6: make the ice cream custom page</label></li>
-<li><label><input type="checkbox" data-id="qa.aso.lang"> 7: add the UK and Australia English pages</label></li>
-</ul></div>
-<div class="q"><h3>You asked: have you read all of Apple's asset best practices page? (16 November)</h3>
-<p style="margin:6px 0">Not before today; on 15 November I had read Apple's search, product page, custom page and iPhone Duo pages. <b>Now read in full:</b> every section of the page, and its three size pages (creative assets; screenshots and video with every device section opened).</p>
-<p style="margin:10px 0 4px"><b>New from this page, not in my list above:</b></p>
-<ol>
-<li><b>Big pictures for the top of the page and for search (new with iOS 27).</b> A wide "header" picture opens the product page; a "search" picture can replace our video and screenshots in search results. One <b>universal picture</b> (5244 x 2950, PNG, the important part inside a 1402 x 962 centre box) can fill both. Apple says the universal picture is what it needs to show an app in its large featured spots on the App Store and Games tabs. <b>We have none.</b> It can go up any time through the Asset Library, without a new version (it still goes through Apple's review).</li>
-<li><b>Video</b> (the new one, going live with 26.11.22):
-<ul>
-<li>Apple: the loop must be smooth. Ours ends on the night beach and jumps back to the forest day.</li>
-<li>Apple: the first seconds must grab. Ours opens on one customer waiting; the first serve comes at about 3 seconds.</li>
-<li>The cover frame is at 5 seconds (forest serve). The ice cream beach would show the newest part of the game.</li>
-<li>The kitchen part (7 to 10 s) is still; nothing gets made.</li>
-</ul></li>
-<li><b>Screenshots:</b> we use 6 of 10. Apple asks for the game in use and one look across all of them. The captions sit at the top on 1 and 2, big at the bottom on 3, small at the bottom on 4 to 6. The kitchen shot has empty ovens. The shop shot shows dark silhouettes of locked items.</li>
-<li><b>Winter in-app event:</b> needs two pictures, a 16:9 card and a 9:16 page; the "New Season" badge fits. Apple: the art should not repeat the badge's words.</li>
-<li><b>Correction to item 5 above:</b> our video already counts for iPhone Duo (same 886 x 1920 file, uploaded to the Duo slot). Only Duo screenshots are missing.</li>
-</ol>
-<p style="margin:6px 0"><b>Apple's rules, checked:</b> no real prices, links, copyright sign, awards or other stores in our pictures; all fit a 4+ rating. The in-game coin amounts are fine.</p>
-<figure><img src="aso_video_frames.jpg" alt="The new store video every two seconds: forest serve, kitchen, ice cream on the beach, waffle bowls, candy, night"><figcaption>The new video (25.7 s), one frame every 2 seconds.</figcaption></figure>
-<p style="margin:6px 0">Source: <a href="https://developer.apple.com/app-store/asset-best-practices/">Apple: asset best practices</a>, <a href="https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications">creative asset sizes</a>.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.assets.universal"> 1: paint a universal picture</label></li>
-<li><label><input type="checkbox" data-id="qa.assets.video"> 2: fix the video (start on a serve, smooth loop, ice cream cover)</label></li>
-<li><label><input type="checkbox" data-id="qa.assets.shots"> 3: fix the screenshots (one caption style, busy kitchen, more of them)</label></li>
-<li><label><input type="checkbox" data-id="qa.assets.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="qa.aso.lang"> 3: add the UK and Australia pages</label></li>
+<li><label><input type="checkbox" data-id="qa.assets.universal"> 4: paint a universal picture</label></li>
+<li><label><input type="checkbox" data-id="qa.assets.video"> 5: fix the video</label></li>
+<li><label><input type="checkbox" data-id="qa.assets.shots"> 6: fix the screenshots</label></li>
+<li><label><input type="checkbox" data-id="qa.aso.desc"> 7: draft a new description for me to edit</label></li>
+<li><label><input type="checkbox" data-id="qa.aso.duo"> 8: make iPhone Duo screenshots</label></li>
+<li><label><input type="checkbox" data-id="qa.aso.event"> 9: plan the winter in-app event</label></li>
+<li><label><input type="checkbox" data-id="qa.aso.cpp"> 10: make the ice cream custom page</label></li>
 </ul></div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Choux repaint from ChatGPT: two versions, 16 November 5 PM.</b> Not in the game; the game still has the first set.</p>
-<figure><img src="choux_repaint.jpg" alt="The plate three times: the choux in the game now, repaint version 1 and repaint version 2; the repaints are flatter and simpler, with soft blotches on the crust instead of crackles"></figure>
-<figure><img src="choux_repaint_table.jpg" alt="Version 1 on the real chapter 1 table beside the cookies, juice, apples and cake"><figcaption>Version 1 on the real table.</figcaption></figure>
+<p style="margin-top:0"><b>Cake frames rebuilt, 16 November.</b> In the project, in no build.</p>
+<figure><img src="cake_frames_fix.jpg" alt="The seven cake frames before and after: after, the strawberries count 6, 5, 4, 3, 2, 1, none, on one unchanging stand, plate and napkin"></figure>
 <ul>
-<li><b>Style:</b> both are flatter and simpler, as asked: soft blotches on the crust, plain cream swirls, round berries. The lemon has no slice.</li>
-<li><b>Camera:</b> version 1 is close to the plate's angle (its cream ring measures about 0.7; the table's is 0.77). Version 2 is nearly side-on.</li>
-<li>ChatGPT made the two in one go and asks which is better; I did not answer it.</li>
+<li><b>Your four points:</b> 4 now has four slices; 3 and 2 have a strawberry on every slice; 1 sits on the right plate.</li>
+<li><b>How:</b> ChatGPT had drawn seven different cakes. Now every frame is the full cake with slices taken away, the back ones first, so each slice keeps its own strawberry and nothing but the cake changes between frames.</li>
+<li>The plate behind the missing slices is the empty frame's plate, fitted to this stand.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.repaint.v1"> Use version 1</label></li>
-<li><label><input type="checkbox" data-id="cur.repaint.v2"> Use version 2</label></li>
-<li><label><input type="checkbox" data-id="cur.repaint.keep"> Keep the ones in the game</label></li>
-<li><label><input type="checkbox" data-id="cur.repaint.again"> Ask again (I will say what to change)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Coffee bags: your new glow, in the game, 16 November.</b> In the project, in no build.</p>
-<figure><img src="bags_new_glow.jpg" alt="The kitchen with the coffee bags on the shelf, and a close view: the bags now have a solid pale outline with a soft halo around it"><figcaption>The chapter 1 kitchen, and the shelf close up.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.bagsglow.good"> Good, keep it</label></li>
-<li><label><input type="checkbox" data-id="cur.bagsglow.blender"> Give the blender the same glow</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Cake frames fixed, 16 November.</b> In the project, in no build.</p>
-<figure><img src="cake_frames_fix.jpg" alt="The seven cake frames before and after: the last three are now the same size as the first four, and the two-slice frame shows two pieces instead of three"></figure>
-<ul>
-<li><b>Size:</b> the frames for 2 slices, 1 slice and empty were about a tenth bigger than the others, so the stand grew when the fourth slice was served. All seven match now.</li>
-<li><b>2 slices:</b> it showed the same three pieces as the 3-slice frame. The middle slice is taken out, with the empty plate's own pixels behind it.</li>
-<li><b>Still odd, from ChatGPT's drawing:</b> the strawberries go 6, 4, 3, 2, 1 instead of 6, 5, 4, 3, 2. Fixing that needs a redraw.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.cakefix.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.cakefix.redraw"> Ask ChatGPT to redraw the seven frames, one strawberry per slice</label></li>
+<li><label><input type="checkbox" data-id="cur.cake2.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.cake2.wrong"> Still wrong (I will say where)</label></li>
 </ul>
 </div>
 
 <div class="card">
 <p style="margin-top:0"><b>Choux: the new plate and ChatGPT's four choux are in the game, test build 36, 16 November.</b></p>
-<figure><img src="choux_in_game.jpg" alt="The game table with the long cream and blue plate holding four choux, top left, beside the cake, juice, bread, cookies and coconuts"><figcaption>On the chapter 2 table. For now, as you said; the repaint replaces them later.</figcaption></figure>
+<figure><img src="choux_in_game.jpg" alt="The game table with the long cream and blue plate holding four choux, top left, beside the cake, juice, bread, cookies and coconuts"><figcaption>On the chapter 2 table. These stay: you kept them over ChatGPT's repaint.</figcaption></figure>
 <ul>
 <li>The choux leave from the right: lemon first, the original last.</li>
 <li>The order bubble, the menu sticker and the shop card still show the old choux.</li>
@@ -306,7 +205,7 @@ Store text, so only with your words; Apple reviews it with the next version.</li
 <div class="card">
 <p style="margin-top:0"><b>The three things for the next release (your pick):</b></p>
 <ol>
-<li><b>Redraw the choux.</b> The new plate with ChatGPT's four flavours is in test build 36; the hand-drawn repaint replaces them later.</li>
+<li><b>Redraw the choux.</b> Done: the new plate with ChatGPT's four flavours is in test build 36, and you kept them over the repaint.</li>
 <li><b>Redesign the kitchen.</b> Seven pieces are arrangeable in test build 36 (free on the table, snapped in the cabinets, red blocks the day). After it: the pieces back at their old places, whisk at the left edge.</li>
 <li><b>Improve the App Store page.</b> Your ticks on the Q&amp;A list choose which parts.</li>
 </ol>
