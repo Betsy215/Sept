@@ -74,7 +74,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Bug hunt</b> (Current): three fixes so far, more as I find them. No build until you say.</p>
+<p><b>Bug hunt</b> (Current): five fixes, each with a picture. Two questions in Q&amp;A. No build until you say.</p>
 <p><b>Say "build"</b> for a new test build: the cookie shop and book, the cookie start menu, cake frames, blender back in place, the new table shadows, your coffee bag glow.</p>
 <p><b>Cake</b> (Current): your three fixes are in (layers, frame 2, the corner shade). Tick: good, or still ask ChatGPT tomorrow.</p>
 <p><b>Shop in cookie style</b> (Current): built. Watch the eating clip, look at the book, tick.</p>
@@ -87,6 +87,24 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>The receipt sits over the next order bubble: change it? (bug hunt, 18 November)</h3>
+<p style="margin:6px 0">After a serve, the receipt ($ and tips) shows for about five seconds in the middle, between the two customers' places. When the next customer orders, the receipt and the new bubble are drawn through each other and neither reads well. The place is your pick of 13 October, so I left it.</p>
+<figure><img src="q_receipt.jpg" alt="Three captures from a day: the white receipt with the sale and tips lying over the next customer's order bubble, the bubble's foods mixed with the receipt's numbers"><figcaption>Three moments from a normal day (phone and iPhone SE).</figcaption></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.receipt.front"> Keep the place, always draw the receipt in front</label></li>
+<li><label><input type="checkbox" data-id="qa.receipt.short"> Keep the place, show it for 2 seconds instead of 5</label></li>
+<li><label><input type="checkbox" data-id="qa.receipt.head"> Show it over the served customer, rising away</label></li>
+<li><label><input type="checkbox" data-id="qa.receipt.keep"> Keep as it is</label></li>
+</ul>
+</div>
+<div class="q"><h3>iCloud "bugs" folder: may I clear it? (bug hunt, 18 November)</h3>
+<p style="margin:6px 0">Two screenshots from 23 October are still there (below). The blurred palm crown was repainted on 26 October; the receipt one I think is the question above. There is also a referral PDF that looks like it landed there by mistake; I would leave that alone.</p>
+<figure><img src="q_bugsfolder.jpg" style="max-height:340px" alt="The two old screenshots: the chapter 2 table with a receipt over the customer, and the kitchen window with a blurred palm crown"><figcaption>IMG_9758 and IMG_9759, 23 October.</figcaption></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.bugsfolder.clear"> Yes, delete the two screenshots (to the iCloud trash)</label></li>
+<li><label><input type="checkbox" data-id="qa.bugsfolder.keep"> Keep them</label></li>
+</ul>
+</div>
 <div class="q"><h3>Can we release a version just for China that does not break its rules? (17 November)</h3>
 <p style="margin:6px 0"><b>Short answer:</b> Apple allows one build per app for all countries, so not a separate build. But most of this needs no new build at all.</p>
 <ol>
@@ -158,6 +176,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <figure><img src="bug_ipad_tabs.jpg" alt="The top of the iPad shop: left, the EARNED line drawn over the three tabs; right, the line above the tabs with the star, coin and dollar icons visible"><figcaption>iPad. Left: before. Right: now.</figcaption></figure>
 
 <p style="margin:14px 0 4px"><b>3. Cookie book on iPad:</b> four columns held only 16 cookies, but you can own 18. It now adds a column when needed (right picture above).</p>
+
+<p style="margin:14px 0 4px"><b>4. Chapter 2 tutorial on iPad: the arrow covered the hint's words</b> ("TAP THE WAFFLE MACHINE TO BA↓E WAFFLE BOWLS"). The hint now moves up when the arrow would touch it. Phones are unchanged.</p>
+<figure><img src="bug_tut_banner.jpg" alt="The iPad chapter 2 tutorial: left, the yellow arrow drawn over the middle of the hint's words; right, the hint above the arrow, all words readable"><figcaption>iPad. Left: before. Right: now.</figcaption></figure>
+
+<p style="margin:14px 0 4px"><b>5. Star tab blank after buying the yoga lady.</b> Bought cards now leave the shop, so the tab was empty with no word. It now says "All yours! Find them in the cookie book" (my words, change them if you like). The same line shows on any tab you have bought out.</p>
+<figure><img src="bug_star_tab.jpg" alt="The star tab: left, the yoga lady card for 15 stars; middle and right, after buying her, the line All yours! Find them in the cookie book, on a phone and on an iPad"><figcaption>Left: before buying. Middle: after, phone. Right: after, iPad.</figcaption></figure>
+
+<p style="margin:14px 0 4px"><b>Checked and fine:</b> owned things stay out of the shop after closing and reopening the game; Daily Treats over midnight and clock changes; the start menu and the map on iPad and iPhone SE. Without ice cream there is no blender in the kitchen, as you asked on 15 November.</p>
 
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.hunt1.seen"> Seen, remove this</label></li>
