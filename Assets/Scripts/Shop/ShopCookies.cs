@@ -279,9 +279,19 @@ public static class ShopCookies
         var title = Label(page, "Title", "MY COOKIES", titleFont, 78f, new Vector2(0f, H / 2f - 90f), new Vector2(W - 60f, 110f));
         title.color = Ink;
 
-        const float infoH = 330f; const int columns = 4;
-        var cell = (W - 80f) / columns; var icon = cell * 0.86f;
-        var gridTop = H / 2f - 170f;
+        // as many columns as it takes for every owned cookie to fit above the description (18 can be owned; on an
+        // iPad four columns hold only 16)
+        const float infoH = 330f;
+        var gridTop = H / 2f - 170f; var gridBottom = -H / 2f + infoH + 60f;
+        var columns = 4; float cell;
+        while (true)
+        {
+            cell = (W - 80f) / columns;
+            var rows = Mathf.Max(1, Mathf.CeilToInt(owned.Count / (float)columns));
+            if (rows * cell <= gridTop - gridBottom || columns >= 7) break;
+            columns++;
+        }
+        var icon = cell * 0.86f;
         // the chosen thing: its cookie, its name and what it does, on the lower part of the page
         var chosen = Child(page, "Chosen", new Vector2(0.5f, 0.5f), new Vector2(230f, 230f), new Vector2(-W / 2f + 170f, -H / 2f + infoH / 2f + 30f));
         var chosenImg = chosen.gameObject.AddComponent<Image>(); chosenImg.preserveAspect = true; chosenImg.raycastTarget = false; chosenImg.enabled = false;

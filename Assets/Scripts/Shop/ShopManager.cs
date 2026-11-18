@@ -1143,6 +1143,37 @@ public class ShopManager : MonoBehaviour
     private const float ScoreLift = 56f + 34f;   // the EARNED line still sat on the open tab's top edge (owner, 13 November: "add some space between earned text line and the shop panel"): half a letter height of air
     private RectTransform panelGroup;   // the panel and its tabs live in this one object; the slide-in moves it (owner, round 1: "make tab and panel a whole")
 
+    /// On a squarer screen (iPad) the panel reaches higher and the EARNED line, lifted a fixed amount, lay on the tabs and
+    /// hid their star, coin and $ pictures (found 17 November 2026). Where they meet, the line goes up just enough to
+    /// clear them, as far as the screen's top allows, and only if that is not enough does it get a little smaller.
+    /// Where they do not meet (the phones), nothing changes.
+    private void FitScoreAboveTabs()
+    {
+        if (playerScoreText == null || tabButtons.Count == 0) return;
+        Canvas.ForceUpdateCanvases();
+        var corners = new Vector3[4];
+        ((RectTransform)tabButtons[(int)ShopTab.Coins].transform).GetWorldCorners(corners);   // the open tab, the tallest
+        var tabTop = corners[1].y;
+        var trt = playerScoreText.rectTransform;
+        playerScoreText.ForceMeshUpdate();
+        var b = playerScoreText.textBounds; if (b.size.y <= 0f) return;
+        var bottom = trt.TransformPoint(new Vector3(0f, b.min.y, 0f)).y; var top = trt.TransformPoint(new Vector3(0f, b.max.y, 0f)).y;
+        var h = top - bottom; var air = h * 0.3f;
+        var need = tabTop + air - bottom; if (need <= 0f) return;
+        var root = playerScoreText.canvas != null ? playerScoreText.canvas.rootCanvas.transform as RectTransform : null; if (root == null) return;
+        root.GetWorldCorners(corners);
+        var room = Mathf.Max(0f, corners[1].y - h * 0.25f - top);
+        var up = Mathf.Min(need, room);
+        trt.position += new Vector3(0f, up, 0f);
+        var left = need - up;
+        if (left > 0f)
+        {
+            // smaller about its middle: the bottom rises by half of what the height loses
+            var k = Mathf.Clamp(1f - 2f * left / h, 0.7f, 1f);
+            playerScoreText.fontSize *= k;
+        }
+    }
+
     private void EnsureTabs()
     {
         if (itemContainer == null || tabButtons.Count > 0) return;
@@ -1215,6 +1246,7 @@ public class ShopManager : MonoBehaviour
         tabNote = ngo.GetComponent<TextMeshProUGUI>(); tabNote.fontSize = 44f; tabNote.alignment = TextAlignmentOptions.Center;
         tabNote.color = new Color(0.30f, 0.22f, 0.18f, 0.85f); if (font != null) tabNote.font = font; tabNote.text = ""; ngo.SetActive(false);
         PaintTabs();
+        FitScoreAboveTabs();
     }
 
     private void SetTab(ShopTab tab)
