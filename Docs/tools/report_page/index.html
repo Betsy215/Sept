@@ -74,39 +74,16 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 2026.11.18 (0)</b> is on TestFlight: everything in build 37 plus the cookie buttons' push and crunches.</p>
-<p><b>Smoother menu</b> (60 frames a second), <b>cookie edges</b>, <b>blender base</b> (Current): done; tick to build and try on your phone.</p>
+<p><b>Cookie buttons' bottom layer</b> (Current): before and after; tick to apply.</p>
+<p><b>Your test run's other fixes</b> (Current): receipt, NEW labels, two Ready buttons, the hint only in the tutorial, the kitchen hint. Tick for a test build.</p>
+<p><b>Test build 2026.11.18 (1)</b> is on TestFlight: 60 pictures a second (smoother menu), the blender base. It was made before your test-run list.</p>
 <p><b>Kitchen glows</b> (Current): pick a "do this now" look.</p>
 <p><b>Players</b> (Analysis): nobody has reached day 3; a tick to try it without the ad before day 3.</p>
-<p><b>Apple</b> (Q&amp;A): no review message; the build email needs nothing now.</p>
 </div>
-<div class="who p2"><h3>Me</h3><p><b>Storage, 18 November:</b> your Mac had 6.8 GB free of 460 GB (the warning). Now 219 GB free. Deleted with your yes: Xcode's build cache (167 GB), old game builds (73 GB, kept today's build and the two store versions' archives), old editor screenshots and video frames (23 GB), old iPhone support files and simulators (29 GB), 12 merged work copies of the project (15 GB, all saved in git). Claude: old session logs and job folders of those copies. Kept: the Claude app's agent VM (11 GB, it needs it), all art, finished videos, store screenshots.</p><p><b>Version numbers:</b> the build's date with the full year (2026.11.18), builds from 0 each day.</p><p><b>26.11.22</b> waits in Apple's queue since 15 November (Q&amp;A).</p><p><b>ChatGPT</b>, after 18 November 20:21: the cake retouch, only if you tick it.</p></div>
+<div class="who p2"><h3>Me</h3><p><b>Storage, 18 November:</b> your Mac had 6.8 GB free of 460 GB (the warning). Now 219 GB free. Deleted with your yes: Xcode's build cache (167 GB), old game builds (73 GB, kept today's build and the two store versions' archives), old editor screenshots and video frames (23 GB), old iPhone support files and simulators (29 GB), 12 merged work copies of the project (15 GB, all saved in git). Claude: old session logs and job folders of those copies. Kept: the Claude app's agent VM (11 GB, it needs it), all art, finished videos, store screenshots.</p><p><b>Version numbers:</b> the build's date with the full year (2026.11.18), builds from 0 each day.</p><p><b>26.11.22</b> waits in Apple's queue since 15 November; no message from Apple. If nothing moves by Friday you can ask Apple for a faster review.</p><p><b>ChatGPT</b>, after 18 November 20:21: the cake retouch, only if you tick it.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>The feedback from Apple (18 November)</h3>
-<p style="margin:6px 0"><b>Short answer:</b> nothing to fix now.</p>
-<ul>
-<li>The only new message from Apple, by email at 9:53 this morning, is about test build 37: it uploaded fine. Apple adds that from April 2027 every upload must be built with Xcode 27. I will update Xcode before then.</li>
-<li>The 26.11.22 review: still "In Review", no message, nothing asked. "Sign-in required" is off, as it should be. The China notes on the page are the two questions answered under China below.</li>
-<li>If you saw a different message, tell me where (Mail or App Store Connect) and I will read it there.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.applefb.seen"> Seen</label></li>
-</ul>
-</div>
-<div class="q"><h3>Why is the App Store review taking so long this time? (18 November)</h3>
-<p style="margin:6px 0"><b>Short answer:</b> it is waiting in Apple's queue. Nobody at Apple has opened it yet, and nothing is wrong with it.</p>
-<ul>
-<li>26.11.22 and 15 Stars were sent together on 15 November, 15:00. Both still say "In Review". Apple has sent no message.</li>
-<li>Our player data shows every copy of 26.11.22 that has been played. There are only two: Apple's automatic checks, four minutes after sending. No reviewer has played it since. Last time a reviewer played within a day.</li>
-<li>The likely reason is 15 Stars. It is our first purchase that can be bought again and again, and Apple checks a first one of these by hand, which often takes longer.</li>
-<li>If nothing moves by Friday 20 November, you can ask Apple for a faster review (App Store Connect, Contact Us, "Request expedited review"). Only you can send it.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.review22.seen"> Seen</label></li>
-</ul>
-</div>
 <div class="q"><h3>Can we release a version just for China that does not break its rules? (17 November)</h3>
 <p style="margin:6px 0"><b>Short answer:</b> Apple allows one build per app for all countries, so not a separate build. But most of this needs no new build at all.</p>
 <ol>
@@ -125,24 +102,52 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Smoother menu, cleaned cookie edges and blender base, 18 November.</b> In the project, in no build yet.</p>
-<p style="margin:6px 0"><b>Why the menu looked laggy:</b> the game never asked for a frame rate, and on iPhone the default is 30 pictures a second. So the scrolling cookies and the truck moved in steps of about 10 pixels. The game now runs at 60 everywhere (the table, kitchen and shop get smoother too). The phone still drops to 30 by itself in Low Power Mode. You can only judge this on the phone, so it needs a test build.</p>
-<figure><img src="cookie_edges.jpg" alt="Every cookie button on dark blue. Left: pale grey fringes and blobs under many cookies, worst under the down arrow, the map arrows and the lock. Right: the same cookies with clean edges"><figcaption>On dark blue. Left: before, with the photo's grey backdrop and shadow stuck to the edges. Right: now.</figcaption></figure>
+<p style="margin-top:0"><b>Cookie buttons: the grey-white layer at the bottom, before and after, 18 November.</b> Not applied yet, as you asked.</p>
+<figure><img src="cookie_bottom.jpg" style="max-height:520px" alt="Six cookie buttons twice: with pale grey-white patches and a soft strip under each cookie, and cleaned so each cookie ends at its own baked edge"><figcaption>On dark blue and on the menu's mint. Upper row of each pair: your test build. Lower row: after.</figcaption></figure>
 <ul>
-<li>Every cookie: buttons, stars, coin, gift, map arrows, the lock. Only the leftover backdrop and shadow outside each cookie went; the icing was not touched.</li>
-<li>The lock's silver shackle is the same grey as the backdrop, so it was cut by the warm dough round it instead.</li>
-</ul>
-<figure><img src="blender_glow_fix.jpg" alt="The blender base. Left: a brown band between the dark outline and the white glow. Right: the outline goes straight into the glow"><figcaption>Blender base. Left: before. Right: now, in the game.</figcaption></figure>
-<ul>
-<li><b>The brown under the outline</b> was the wooden counter showing through a 4-pixel gap: the glow was painted for the base's old shape, and your new picture's bottom sits a little higher. The glow is repainted from your picture, so the gap is gone everywhere.</li>
+<li>The layer is the photo's pale backdrop and soft shadow that came along when the cookies were cut out.</li>
+<li>After: every cookie ends at its own baked edge. The icing and the cookie itself are untouched.</li>
+<li>It is the same for all 25 cookie pictures (buttons, stars, coin, gift, arrows, lock).</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.clean18.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.clean18.build"> Push a test build with these (to see the smoother menu)</label></li>
-<li><label><input type="checkbox" data-id="cur.clean18.more"> Still see edges (I will say where)</label></li>
+<li><label><input type="checkbox" data-id="cur.cbottom.apply"> Yes, apply it</label></li>
+<li><label><input type="checkbox" data-id="cur.cbottom.more"> Still see a layer (I will say where)</label></li>
+<li><label><input type="checkbox" data-id="cur.cbottom.shadow"> Too bare, give them a soft drawn shadow</label></li>
 </ul>
 </div>
 
+<div class="card">
+<p style="margin-top:0"><b>Your test run: the other fixes, 18 November.</b> In the project, in no build yet.</p>
+<p style="margin:10px 0 4px"><b>1. Receipt height.</b> Back up where it used to be: it rises to the old height, on the served customer's side.</p>
+<figure><img src="run_receipt.jpg" style="max-height:330px" alt="A receipt high over the chef's side of the screen, at the height it had before"><figcaption>In the game.</figcaption></figure>
+<p style="margin:14px 0 4px"><b>3. NEW on the book.</b> When a cookie is bought, the book gets a NEW label, and so does that cookie inside. Opening the book clears the book's label.</p>
+<figure><img src="run_book.jpg" style="max-height:460px" alt="The shop with a NEW label on the cookie book; the open book with NEW on the juice and the oven"><figcaption>Left: the book with NEW. Right: inside, the new ones marked, one of them shown first.</figcaption></figure>
+<p style="margin:14px 0 4px"><b>4, 5, 6 and the kitchen hint.</b></p>
+<figure><img src="run_arrange.jpg" style="max-height:640px" alt="The table being arranged with the hint card, the hand moving a bread basket, NEW on the pots, apples, juice and cake, and Ready. The kitchen with its own card, a hand moving a whisk, NEW on the cake, the juice and the third oven, and Ready on the rug"><figcaption>Left: the table. Right: the kitchen, after Ready on the table.</figcaption></figure>
+<ul>
+<li><b>4. NEW while arranging:</b> on everything bought since the last day, on the table and in the kitchen. Gone when the day starts.</li>
+<li><b>5. Two Ready buttons:</b> Ready on the table takes you to the kitchen, Ready in the kitchen starts the day. The other way round works too: kitchen first, then the table's Ready starts. In the kitchen the button sits on the rug.</li>
+<li><b>6. The "drag to arrange" card and hand:</b> only the first time a player arranges (the tutorial), never again after that. Old saves see it once, because the kitchen part is new.</li>
+<li><b>Kitchen hint:</b> the same card, "Drag to arrange your kitchen", with the hand moving a whisk.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.run18.build"> Good, push a test build</label></li>
+<li><label><input type="checkbox" data-id="cur.run18.change"> Changes (I will say what)</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Smoother menu and the blender's base, 18 November.</b> In test build 2026.11.18 (1), on TestFlight.</p>
+<figure><img src="blender_glow_fix.jpg" alt="The blender base. Left: a brown band between the dark outline and the white glow. Right: the outline goes straight into the glow"><figcaption>Blender base. Left: before. Right: now.</figcaption></figure>
+<ul>
+<li><b>Menu:</b> the game now runs at 60 pictures a second instead of 30, so the cookies and the truck move in steps half as big.</li>
+<li><b>Blender:</b> the brown under the outline was the counter showing through a small gap; the glow is repainted from your picture.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.smooth18.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.smooth18.still"> Menu still not smooth</label></li>
+</ul>
+</div>
 
 <div class="card">
 <p style="margin-top:0"><b>Cookie style everywhere: buttons, stars, Daily Treats, map, 18 November.</b> In test build 37. The app icon stays the painted truck (your tick).</p>
