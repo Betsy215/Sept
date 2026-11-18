@@ -717,6 +717,18 @@ public class ShopManager : MonoBehaviour
                 shown = SessionManager.Instance != null && SessionManager.Instance.OvensOwned >= 3 ? "Three ovens" : "Two ovens";
             list.Add(new ShopCookies.Entry { cookie = cookie, name = shown, info = info });
         }
+        // What the player owns from the start has no shop card (owner, 18 November 2026: "add bread and coffee to the
+        // book"); they open the book, before everything bought
+        var session = SessionManager.Instance != null && SessionManager.Instance.HasActiveSession() ? SessionManager.Instance.GetCurrentSession() : null;
+        var starters = new[] { ("Coffee", "Coffee", "Brewed in your coffee machine"), ("Bread", "Bread", "Fresh from your oven") };
+        foreach (var (key, name, info) in starters)
+        {
+            if (session != null && !session.purchasedFoodItems.Contains(key)) continue;
+            var hasCard = false; foreach (var c in cards) if (c != null && c.itemType == ItemType.Food && c.itemName == key) hasCard = true;
+            if (hasCard) continue;
+            var cookie = Resources.Load<Sprite>("Cookies/" + key); if (cookie == null) continue;
+            list.Insert(0, new ShopCookies.Entry { cookie = cookie, name = name, info = info });
+        }
         return list;
     }
 
