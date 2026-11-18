@@ -76,13 +76,30 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="who p1"><h3>You</h3>
 <p><b>Say "build"</b> for a new test build: cake frames, blender back in place, the new table shadows, your coffee bag glow.</p>
 <p><b>Cake</b> (Current): your three fixes are in (layers, frame 2, the corner shade). Tick: good, or still ask ChatGPT tomorrow.</p>
-<p><b>Customer cookies</b> (Current): two drafts, Gemini's and mine. Tick a look, and tell me where the cookies go in the game.</p>
+<p><b>Start menu cookies</b> (Current): in the game, with a capture. Tick: ship, fewer, bigger, or other items.</p>
+<p><b>China</b> (Q&amp;A): the answer and four choices.</p>
 <p><b>Kitchen</b> (Current): tick how the arrangement feels.</p>
 <p><b>App Store page</b> (Q&amp;A): one list of ten now; tick what to do.</p><p><b>iCloud</b> ("FoodTruckCafe art"), the blender: 5 stills as the game shows it (blender_frame_1_rest, 2_vanilla, 3_strawberry, 4_chocolate, 5_mint), the 4 layers the game uses (blender, blender_blade, blender_fill, blender_swirl), and blender_redraw_body with blender_redraw_glow for your redraw.</p></div>
-<div class="who p2"><h3>Me</h3><p><b>Version numbers</b> (your tick): from the next version on, the version is the day we submit and builds start at 1.</p><p><b>26.11.22</b> is in Apple's review since 15 November; I looked in App Store Connect, Apple has sent no message. Nothing to do but wait.</p><p><b>ChatGPT</b>, after 18 November 20:21: the customer cookies, and the cake retouch if you tick it.</p></div>
+<div class="who p2"><h3>Me</h3><p><b>Version numbers</b> (your tick): from the next version on, the version is the day we submit and builds start at 1.</p><p><b>26.11.22</b> is in Apple's review since 15 November; I looked in App Store Connect, Apple has sent no message. Nothing to do but wait.</p><p><b>ChatGPT</b>, after 18 November 20:21: the cake retouch, only if you tick it.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>Can we release a version just for China that does not break its rules? (17 November)</h3>
+<p style="margin:6px 0"><b>Short answer:</b> Apple allows one build per app for all countries, so not a separate build. But most of this needs no new build at all.</p>
+<ol>
+<li><b>The two "Missing Info" banners are only questions.</b> Security Assessment asks whether the app has encrypted messaging or hands out AI-made content. AI Generated Content asks whether the app offers AI services (chatbots, picture or voice generation). Our game does neither, so both answers are No. I opened both forms and saved nothing; they are your declarations.</li>
+<li><b>The real rule is about purchases.</b> Apple: a paid game, or a game with in-app purchases, needs a Chinese government approval number, which takes a Chinese business licence. Since Remove Ads and 15 Stars, Apple marks our China listing "missing game registration number".</li>
+<li><b>The way round, same build:</b> each purchase has its own list of countries. Switch both purchases off for China mainland, and the game there is free with ads only. I would also hide the two buy buttons where the store offers nothing. I cannot promise Apple then clears its mark; Chinese law strictly wants approval for every game, Apple enforces it for paid ones.</li>
+<li><b>ICP filing number:</b> Apple asks it of "some apps" and only offers a field for it. It also needs a Chinese entity. Nothing to do unless Apple asks.</li>
+</ol>
+<p style="margin:6px 0">China today: the game is on the store there, both purchases too. Deadline on the banners: 31 January 2027.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.china2.no"> Answer No to both banners for me</label></li>
+<li><label><input type="checkbox" data-id="qa.china2.iapoff"> Switch both purchases off in China and hide the buttons there</label></li>
+<li><label><input type="checkbox" data-id="qa.china2.leave"> Take the game off the China store</label></li>
+<li><label><input type="checkbox" data-id="qa.china2.later"> Later</label></li>
+</ul>
+</div>
 <div class="q"><h3>App Store page: what we can improve, without marketing (15 and 16 November)</h3>
 <p style="margin:6px 0"><b>Today:</b> name "Food Truck Cafe", subtitle "Bake, serve &amp; grow your cafe", English only, 0 written reviews, 6 of 10 screenshots, one video. Apple ranks search by name, subtitle, keywords and category, and by downloads and ratings. The description does not count for search.</p>
 
@@ -147,19 +164,18 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Customer cookies: two drafts, 17 November.</b> Iced biscuits with our seven customers' heads. Drafts only, nothing in the game.</p>
-<figure><img src="cookies_gemini.jpg" alt="Seven iced biscuits by Gemini, each the head of a customer: girl, boy, kid, grandma, chef, yoga, businessman, piped icing on golden biscuits"><figcaption>Gemini, from a sheet of our customers' heads. It looks like a photo of real cookies.</figcaption></figure>
-<p style="margin:6px 0"></p>
-<figure><img src="cookies_mine.jpg" alt="Seven biscuits painted by Claude: each customer's own painted head as flat icing on a golden biscuit cut round the head"><figcaption>Mine: each customer's own painted head as the icing, on a biscuit cut round it.</figcaption></figure>
+<p style="margin-top:0"><b>Start menu: cookies instead of the ice creams, 17 November.</b> In the project, in no build.</p>
+<figure><img src="menu_cookies.jpg" alt="Two captures of the start menu: the mint background now scrolls with iced cookies of the seven customers and eight game items instead of ice cream cones; right, the same behind the Daily Treats board"><figcaption>The start menu in the game. Right: behind the Daily Treats board.</figcaption></figure>
 <ul>
-<li><b>ChatGPT</b> draws its version after 18 November, 20:21 (out of pictures today).</li>
-<li>The cookies that gave you the idea: <a href="https://slaythespire.wiki.gg/wiki/Slay_the_Spire_2:Yummy_Cookie#Gallery" target="_blank" rel="noopener">Slay the Spire 2, Yummy Cookie</a> (a relic from the Ancient Tezcatara, not a boss). I cannot copy another studio's art into this page.</li>
+<li><b>Gemini's look</b>, as you picked. Seven customers, and eight things from the game that I picked: the truck, the strawberry cake, the coffee cup, the apple, the braided bread, the hen, the coconut, the star.</li>
+<li>Same mint ground and clouds, same slow scroll. Fifteen cookies per picture; the ice creams were six.</li>
 </ul>
+<figure><img src="cookies_items.jpg" style="max-height:340px" alt="Eight iced cookies by Gemini: food truck, strawberry cake on a stand, coffee cup, apple, braided bread, hen, coconut drink, star"><figcaption>The eight game cookies, as Gemini drew them.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.hcookie.gemini"> Gemini's look</label></li>
-<li><label><input type="checkbox" data-id="cur.hcookie.mine"> Claude's look</label></li>
-<li><label><input type="checkbox" data-id="cur.hcookie.gpt"> Wait for ChatGPT's</label></li>
-<li><label><input type="checkbox" data-id="cur.hcookie.paint"> I will paint them myself; send the outlines to iCloud</label></li>
+<li><label><input type="checkbox" data-id="cur.mcookie.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.mcookie.fewer"> Fewer cookies, as sparse as the ice creams</label></li>
+<li><label><input type="checkbox" data-id="cur.mcookie.bigger"> Bigger cookies</label></li>
+<li><label><input type="checkbox" data-id="cur.mcookie.items"> Other game items (I will say which)</label></li>
 </ul>
 </div>
 
