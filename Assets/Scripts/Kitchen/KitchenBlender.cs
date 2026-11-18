@@ -98,8 +98,8 @@ public static class KitchenBlender
 public class BlenderAnim : MonoBehaviour, IPointerClickHandler
 {
     public Image contents, swirl, blade, marks, buttonGlow; public RectTransform body; public Sprite[] churn;
-    public static float ChurnFps = 18f;   // the ice's pictures per second (one turn per 12)
-    public static float BladeTurnsPerSecond = 2.5f;   // the blending element spins about its vertical axis (seen as a width squeeze and flip)
+    public static float ChurnFps = 12f;   // the ice's pictures per second, one turn per 12 (owner, 18 November 2026: "slower"; was 18)
+    public static float BladeTurnsPerSecond = 1.6f;   // slower (owner, 18 November 2026: "slower"; was 2.5)   // the blending element spins about its vertical axis (seen as a width squeeze and flip)
 
     /// The blade seen turning: its width follows the cosine of the turn, flipping as it passes edge-on
     private void Spin(float amount)
@@ -109,7 +109,7 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         var sx = Mathf.Lerp(1f, c, amount); if (Mathf.Abs(sx) < 0.08f) sx = sx < 0f ? -0.08f : 0.08f;
         blade.rectTransform.localScale = new Vector3(sx, 1f, 1f);
     }
-    public static float StepSeconds = 0.7f;      // per flavour; a test recipe can slow it down for captures
+    public static float StepSeconds = 1.1f;      // per flavour (owner, 18 November 2026: "slower"; was 0.7); a test recipe can slow it down for captures
     public bool IsBlending { get; private set; }
     private Vector2 restPos;
 

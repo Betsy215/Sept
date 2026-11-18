@@ -246,6 +246,12 @@ public class SimpleScorePopup : MonoBehaviour
             {
                 // the parent's pivot to its centre, where a new RectTransform's anchors are
                 var r = parentRect.rect; local -= new Vector2(r.center.x, r.center.y);
+                // the two places mirror each other about the screen's middle (owner, 18 November 2026: "position them
+                // symmetrically on the left and right. don't go too much towards the edge"): the served side picks the
+                // place, the bubble's height is kept; the receipt (300 wide at its full 1.2 size) stays 60 inside the edge
+                var half = r.width / 2f; var receiptHalf = 150f * popup.endScale;
+                var side = Mathf.Min(half * 0.36f, half - receiptHalf - 60f);
+                local.x = Mathf.Sign(local.x == 0f ? 1f : local.x) * Mathf.Max(0f, side);
                 rectTransform.anchoredPosition = local;
                 popup.moveUpDistance = RiseOverCustomer; popup.stayDuration = StayOverCustomer;
             }
