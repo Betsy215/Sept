@@ -280,6 +280,7 @@ public class AudioManager : MonoBehaviour
     // SFX convenience methods
     public void PlayButtonClick()
     {
+        if (Time.unscaledTime - CookiePress.LastCrunchAt < 0.5f) return;   // a cookie button already crunched for this tap
         PlaySFX(buttonClickSFX);
     }
 
