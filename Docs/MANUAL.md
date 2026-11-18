@@ -232,6 +232,18 @@ plain `python3` has no numpy.
   `Assets/Images/icecream`, writes the rects, the collider and the scale into GameSceneOne; `icecream_upgrade_card.py` added the
   shop card. Blockout parts and painter: `Store/chapter2/icecream_station/row/`.
 
+- **Cookie style (17 November 2026, owner's pick: Gemini's iced cookies):** the single cookies live in
+  `Store/cookies_2026-11-17/cut` (39, cut from Gemini's sheets by `cut_gemini.py`; briefs in `prompts.md`).
+  **Start menu:** the scrolling background `Assets/Images/IMG_0452.png` (1890 x 1730, built by `menu_tile.py`, thirty
+  different cookies; RawImage uvRect 1 x 2 on `scrolling bg`, scrolled upward by `ScrollingBg`) and the menu truck
+  `Assets/Images/truck_cookie.png` (the map keeps `truck.png`).
+  **Shop:** `Assets/Scripts/Shop/ShopCookies.cs` and `Resources/Cookies/<card object name>.png`: every card shows its
+  cookie (`Dress`), a bought cookie is eaten in five bites with `crunch_1..3.wav` (`Eat`, about two seconds), owned
+  things leave the shop (`ShopManager.IsOwned` / `LeavesShop`; the candies and the star pack stay; the oven card stays
+  until three ovens) and are listed in the book (`CookieBookButton` above the up arrow, page "MY COOKIES": a grid of
+  cookies, a tap shows the name and the card's text). A new shop card needs a cookie picture of its object name, or it
+  keeps its drawing and flies to the way out as before.
+
 ## 7. Driving the Unity editor
 
 - Open: `open -a /Applications/Unity/Hub/Editor/2022.3.50f1/Unity.app --args -projectPath <repo>`. The MCP for Unity

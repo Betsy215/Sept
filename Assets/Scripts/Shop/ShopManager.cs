@@ -40,6 +40,7 @@ public class ShopManager : MonoBehaviour
         if (playerScoreText != null)
             playerScoreOriginalColor = playerScoreText.color;
 
+        ShopCookies.Reset();
         SetupButtonListeners();
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayShopMusic();

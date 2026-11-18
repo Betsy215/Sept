@@ -43,6 +43,9 @@ public static class ShopCookies
 
     public static bool Eating { get; private set; }
 
+    /// Called when the shop opens: an eating cut short by leaving the shop must not leave its flag behind.
+    public static void Reset() { Eating = false; bookPanel = null; bookButton = null; }
+
     /// The bought cookie, big in the middle of the screen, eaten in five bites: each bite takes a scalloped piece out
     /// of the picture itself, with a crunch, a little shake and crumbs. Taps are held off while it runs (about two seconds).
     public static void Eat(MonoBehaviour host, RectTransform root, Sprite cookie, System.Action done)
