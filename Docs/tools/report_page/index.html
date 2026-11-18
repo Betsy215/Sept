@@ -74,37 +74,16 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Bug hunt</b> (Current): five fixes, each with a picture. Two questions in Q&amp;A. No build until you say.</p>
-<p><b>Say "build"</b> for a new test build: the cookie shop and book, the cookie start menu, cake frames, blender back in place, the new table shadows, your coffee bag glow.</p>
-<p><b>Cake</b> (Current): your three fixes are in (layers, frame 2, the corner shade). Tick: good, or still ask ChatGPT tomorrow.</p>
-<p><b>Shop in cookie style</b> (Current): built. Watch the eating clip, look at the book, tick.</p>
-<p><b>Start menu</b> (Current): thirty different cookies and the cookie truck, with a moving clip. Tick.</p>
-<p><b>Cookie style elsewhere</b> (Current): a sample of the buttons and a list to tick.</p>
-<p><b>China</b> (Q&amp;A): the answer and four choices.</p>
-<p><b>Kitchen</b> (Current): tick how the arrangement feels.</p>
-<p><b>App Store page</b> (Q&amp;A): one list of ten now; tick what to do.</p><p><b>iCloud</b> ("FoodTruckCafe art"), the blender: 5 stills as the game shows it (blender_frame_1_rest, 2_vanilla, 3_strawberry, 4_chocolate, 5_mint), the 4 layers the game uses (blender, blender_blade, blender_fill, blender_swirl), and blender_redraw_body with blender_redraw_glow for your redraw.</p></div>
+<p><b>Blender</b> (Current): the redone animation with your frosty picture. Tick.</p>
+<p><b>Choux, receipt, book</b> (Current): done as you ticked.</p>
+<p><b>Glow brush</b> (Current): waiting for your words on what to change.</p>
+<p><b>China</b> (Q&amp;A): four choices, when you are ready.</p>
+<p><b>Say "build"</b> when you want a test build. Everything since build 36 is in the project.</p>
+</div>
 <div class="who p2"><h3>Me</h3><p><b>Version numbers</b> (your tick): from the next version on, the version is the day we submit and builds start at 1.</p><p><b>26.11.22</b> is in Apple's review since 15 November; I looked in App Store Connect, Apple has sent no message. Nothing to do but wait.</p><p><b>ChatGPT</b>, after 18 November 20:21: the cake retouch, only if you tick it.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>The receipt sits over the next order bubble: change it? (bug hunt, 18 November)</h3>
-<p style="margin:6px 0">After a serve, the receipt ($ and tips) shows for about five seconds in the middle, between the two customers' places. When the next customer orders, the receipt and the new bubble are drawn through each other and neither reads well. The place is your pick of 13 October, so I left it.</p>
-<figure><img src="q_receipt.jpg" alt="Three captures from a day: the white receipt with the sale and tips lying over the next customer's order bubble, the bubble's foods mixed with the receipt's numbers"><figcaption>Three moments from a normal day (phone and iPhone SE).</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.receipt.front"> Keep the place, always draw the receipt in front</label></li>
-<li><label><input type="checkbox" data-id="qa.receipt.short"> Keep the place, show it for 2 seconds instead of 5</label></li>
-<li><label><input type="checkbox" data-id="qa.receipt.head"> Show it over the served customer, rising away</label></li>
-<li><label><input type="checkbox" data-id="qa.receipt.keep"> Keep as it is</label></li>
-</ul>
-</div>
-<div class="q"><h3>iCloud "bugs" folder: may I clear it? (bug hunt, 18 November)</h3>
-<p style="margin:6px 0">Two screenshots from 23 October are still there (below). The blurred palm crown was repainted on 26 October; the receipt one I think is the question above. There is also a referral PDF that looks like it landed there by mistake; I would leave that alone.</p>
-<figure><img src="q_bugsfolder.jpg" style="max-height:340px" alt="The two old screenshots: the chapter 2 table with a receipt over the customer, and the kitchen window with a blurred palm crown"><figcaption>IMG_9758 and IMG_9759, 23 October.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.bugsfolder.clear"> Yes, delete the two screenshots (to the iCloud trash)</label></li>
-<li><label><input type="checkbox" data-id="qa.bugsfolder.keep"> Keep them</label></li>
-</ul>
-</div>
 <div class="q"><h3>Can we release a version just for China that does not break its rules? (17 November)</h3>
 <p style="margin:6px 0"><b>Short answer:</b> Apple allows one build per app for all countries, so not a separate build. But most of this needs no new build at all.</p>
 <ol>
@@ -164,32 +143,42 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul></div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
-
-<div class="card" id="bughunt">
-<p style="margin-top:0"><b>Bug hunt, night of 17 November.</b> Fixed in the project, in no build. Nothing sent to Apple.</p>
-<p style="margin:10px 0 4px"><b>What I played:</b> all 12 days of chapter 1 and all 12 of chapter 2 with the test driver (no errors, no crashes), the tutorial from a new game, the shop on three screen sizes, and the iPad table and kitchen. TestFlight has no crash reports.</p>
-
-<p style="margin:14px 0 4px"><b>1. The third oven could never be bought</b> (in the game on the App Store too). After the second oven the oven card turned "owned" for good. Now it stays until you have three.</p>
-<figure><img src="bug_oven_book.jpg" alt="Left: the shop after buying the second oven, the oven card still on sale at 500. Right: the cookie book on an iPad with sixteen owned cookies in five columns"><figcaption>Left: after the second oven, the card is still there. Right: the book on iPad.</figcaption></figure>
-
-<p style="margin:14px 0 4px"><b>2. iPad shop: the EARNED line hid the tabs.</b> The star, coin and $ tabs were under the words. Now the line sits above them, a little smaller on iPad only. Phones are unchanged.</p>
-<figure><img src="bug_ipad_tabs.jpg" alt="The top of the iPad shop: left, the EARNED line drawn over the three tabs; right, the line above the tabs with the star, coin and dollar icons visible"><figcaption>iPad. Left: before. Right: now.</figcaption></figure>
-
-<p style="margin:14px 0 4px"><b>3. Cookie book on iPad:</b> four columns held only 16 cookies, but you can own 18. It now adds a column when needed (right picture above).</p>
-
-<p style="margin:14px 0 4px"><b>4. Chapter 2 tutorial on iPad: the arrow covered the hint's words</b> ("TAP THE WAFFLE MACHINE TO BA↓E WAFFLE BOWLS"). The hint now moves up when the arrow would touch it. Phones are unchanged.</p>
-<figure><img src="bug_tut_banner.jpg" alt="The iPad chapter 2 tutorial: left, the yellow arrow drawn over the middle of the hint's words; right, the hint above the arrow, all words readable"><figcaption>iPad. Left: before. Right: now.</figcaption></figure>
-
-<p style="margin:14px 0 4px"><b>5. Star tab blank after buying the yoga lady.</b> Bought cards now leave the shop, so the tab was empty with no word. It now says "All yours! Find them in the cookie book" (my words, change them if you like). The same line shows on any tab you have bought out.</p>
-<figure><img src="bug_star_tab.jpg" alt="The star tab: left, the yoga lady card for 15 stars; middle and right, after buying her, the line All yours! Find them in the cookie book, on a phone and on an iPad"><figcaption>Left: before buying. Middle: after, phone. Right: after, iPad.</figcaption></figure>
-
-<p style="margin:14px 0 4px"><b>Checked and fine:</b> owned things stay out of the shop after closing and reopening the game; Daily Treats over midnight and clock changes; the start menu and the map on iPad and iPhone SE. Without ice cream there is no blender in the kitchen, as you asked on 15 November.</p>
-
+<div class="card">
+<p style="margin-top:0"><b>Blender: your frosty picture, the animation redone, 18 November.</b> In the project, in no build.</p>
+<div class="two">
+<figure><img src="blender_ice.gif" alt="The blender in the chapter 2 kitchen: at rest your picture with the frosty blue ice; on a tap the ice turns pink, chocolate and mint while it swirls, the blade spins, the snowflake button glows, then it settles back to the frosty ice"><figcaption>In the game (chapter 2 kitchen), recorded.</figcaption></figure>
+</div>
+<figure><img src="blender_ice_steps.jpg" alt="Nine steps of the blend side by side: rest, the ice turning vanilla, strawberry, chocolate and mint, then rest again"><figcaption>The blend step by step.</figcaption></figure>
+<ul>
+<li><b>At rest</b> it is your picture, pixel for pixel. The blade reaches into the ice as you drew it.</li>
+<li><b>The ice</b> is your own frost texture, carried round the shaft. It climbs the glass walls the way a vortex does and turns through the four flavours. Little ice chips go round with it, bright in front and faint behind.</li>
+<li><b>The blade</b> spins on its own axis. I painted it out of the glass behind it, so no second blade shows while it turns.</li>
+<li><b>The measuring marks</b> stay still on the glass, in front of the turning ice.</li>
+<li><b>The snowflake button</b> glows ice-blue while the motor runs.</li>
+</ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.hunt1.seen"> Seen, remove this</label></li>
-<li><label><input type="checkbox" data-id="cur.hunt1.wrong"> Something here is wrong (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.blend18.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.blend18.slower"> Slower</label></li>
+<li><label><input type="checkbox" data-id="cur.blend18.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
+
+<div class="card">
+<p style="margin-top:0"><b>Your ticks of this morning, done, 18 November.</b> In the project, in no build.</p>
+<p style="margin:10px 0 4px"><b>Choux order: one of the four new choux at random.</b></p>
+<figure><img src="choux_orders.jpg" style="max-height:300px" alt="Two order bubbles from a day: one with a strawberry choux and a blueberry choux, the other with the original cream choux and a strawberry choux"><figcaption>Two orders from a day.</figcaption></figure>
+<p style="margin:14px 0 4px"><b>Receipt: over the served customer, rising away.</b> It shows where their bubble was and is gone in about two and a half seconds.</p>
+<figure><img src="receipt_rise.gif" style="max-height:300px" alt="The receipt with the sale and tips appearing where the served customer's bubble was, rising and fading"><figcaption>In the game.</figcaption></figure>
+<p style="margin:14px 0 4px"><b>Bread and coffee in the cookie book.</b> They open the book; the "extra cup" card now shows a stack of plates, the cup is coffee's.</p>
+<figure><img src="book_starters.jpg" style="max-height:340px" alt="The shop with the plate-stack card at 380; the cookie book of a new game with bread, coffee and apple; the book with everything owned"><figcaption>The shop; the book in a new game; the book with everything.</figcaption></figure>
+<p style="margin:14px 0 4px"><b>Bugs folder:</b> the two screenshots are in the iCloud trash. The PDF is still there.</p>
+<p style="margin:14px 0 4px"><b>Cookie style everywhere</b> (buttons, stars, Daily Treats, map circles, app icon): Gemini has drawn all the pieces; I am fitting them into the game now. Next on this page.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.ticks18.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.ticks18.wrong"> Something is wrong (I will say what)</label></li>
+</ul>
+</div>
+
 
 <div class="card">
 <p style="margin-top:0"><b>Cake: your three fixes, 17 November, 20:50.</b> In the project, in no build.</p>
@@ -207,61 +196,6 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="cur.cake5.good"> Good, no need for ChatGPT</label></li>
 <li><label><input type="checkbox" data-id="cur.cake5.gpt"> Still ask ChatGPT tomorrow</label></li>
 <li><label><input type="checkbox" data-id="cur.cake5.wrong"> Still wrong (I will say where)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Shop in cookie style: built, 17 November, 22:00.</b> In the project, in no build. Tried in the editor with real purchases.</p>
-<div class="two">
-<figure><img src="shop_eat.gif" alt="A bought cookie, the chef, in the middle of the dimmed shop: bites come out of it one after another with flying crumbs until it is gone"><figcaption>Buying: the cookie is eaten in five bites, each with a crunch and crumbs.</figcaption></figure>
-<figure><img src="shop_cookies.jpg" alt="Three captures: the shop with every card as an iced cookie and a book cookie above the arrows; the buy board with the juice cookie; the book open with the owned cookies in a grid and the chosen one's name and text below"><figcaption>The shop; the buy board; the book with what you own.</figcaption></figure>
-</div>
-<ul>
-<li><b>Cards:</b> every shop thing is its cookie (Gemini's): the four customers, the foods, the machine, cup, ovens, pots, candies, ice cream, Remove Ads, the star pack.</li>
-<li><b>Buying:</b> the cookie comes up big and is eaten bite by bite, with three crunch sounds I made. About two seconds.</li>
-<li><b>After:</b> the card leaves the shop and the others close up. The candies and the star pack stay, they can be bought again.</li>
-<li><b>The book</b> sits above the arrows on every tab. It shows what you own as cookies; a tap shows the name and what it does. Its title "MY COOKIES" is my placeholder.</li>
-<li><b>A bug found on the way:</b> after the second oven the oven card turned "owned", so the third oven could never be bought. Fixed: it stays until you have three.</li>
-<li><b>Not done:</b> bread and coffee (owned from the start, no shop card) are not in the book. A full play-through with the test driver is not run yet.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.shopc.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.shopc.slower"> Eating: slower, more bites</label></li>
-<li><label><input type="checkbox" data-id="cur.shopc.sound"> Crunch sound: redo</label></li>
-<li><label><input type="checkbox" data-id="cur.shopc.book"> Book: changes (I will say what)</label></li>
-<li><label><input type="checkbox" data-id="cur.shopc.defaults"> Add bread and coffee to the book</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Start menu: thirty different cookies and the cookie truck, 17 November, 21:40.</b> In the project, in no build.</p>
-<div class="two">
-<figure><img src="menu_cookies.gif" alt="The start menu moving: the cookies drift upward exactly as the ice creams did, and the big truck cookie drives across from left to right"><figcaption>Moving, as in the game: same upward drift as the ice creams.</figcaption></figure>
-<figure><img src="menu_cookies.jpg" alt="Two captures of the start menu with thirty different iced cookies on the mint background; in the second the big red truck cookie crosses below the buttons"><figcaption>Two moments. Right: the truck cookie driving through.</figcaption></figure>
-</div>
-<ul>
-<li><b>No repeats across the screen:</b> thirty different cookies now (your seven customers and twenty-three game things), in Gemini's look. The background picture is twice as wide; it moves exactly as before.</li>
-<li><b>The big truck</b> that drives from left to right is a cookie too. Its little chalkboards carry made-up letters, as piped icing does.</li>
-<li>The first version (fifteen cookies) is approved by your "ship it"; these two changes are on top of it.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.mcookie2.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.mcookie2.fewer"> Fewer cookies</label></li>
-<li><label><input type="checkbox" data-id="cur.mcookie2.bigger"> Bigger cookies</label></li>
-<li><label><input type="checkbox" data-id="cur.mcookie2.truck"> Truck: redo (I will say what)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Cookie style elsewhere: the buttons, a sample, 17 November.</b> A picture only, nothing in the game.</p>
-<figure><img src="cookies_buttons.jpg" style="max-height:340px" alt="Gemini's sample of the game's buttons as iced cookies: CONTINUE, NEW, COLLECT, READY as long yellow cookies and gear, home, arrow, replay as square yellow cookies"><figcaption>Gemini's sample of our buttons as cookies.</figcaption></figure>
-<p style="margin:6px 0">Where the style would fit, besides the shop you asked for:</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.cstyle.buttons"> The buttons (Continue, New, Collect, Ready, gear, home, arrows)</label></li>
-<li><label><input type="checkbox" data-id="cur.cstyle.stars"> The day-end stars and the map's stars, as star cookies</label></li>
-<li><label><input type="checkbox" data-id="cur.cstyle.treats"> Daily Treats: the coins and the gift as cookies</label></li>
-<li><label><input type="checkbox" data-id="cur.cstyle.map"> The map's day circles, as round numbered cookies</label></li>
-<li><label><input type="checkbox" data-id="cur.cstyle.icon"> The app icon: the truck cookie</label></li>
 </ul>
 </div>
 
