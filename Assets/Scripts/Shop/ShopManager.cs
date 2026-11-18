@@ -54,8 +54,10 @@ public class ShopManager : MonoBehaviour
         EnsureStarPackCard();    // 15 stars for money (owner, 15 November 2026)
         EnsureStarYogaCard();    // the star shop's first card: the yoga lady (owner, 14 November 2026)
         EvenOutCharacterIcons();
+        foreach (var card in GetAllShopItems()) ShopCookies.Dress(card);   // the cards' pictures as iced cookies (owner, 17 November 2026)
         EnsureTabs();            // Stars | Coins | $ (owner, 10 November 2026); Coins is the default
         LayoutCards();
+        EnsureCookieBook();      // owned things live in a book that is always in the shop (owner, 17 November 2026)
         ShopFlourish.BeginVisit(); ShopFlourish.ApplyTags(GetAllShopItems());   // NEW tags on cards first open this visit (owner, 9 November 2026)
         EnsureRestoreButton();
         if (itemScrollRect != null) itemScrollRect.onValueChanged.AddListener(_ => UpdateScrollButtons());   // a finger drag updates the lock too
@@ -117,6 +119,7 @@ public class ShopManager : MonoBehaviour
             if (shopItem != null)
             {
                 if (IsHeldBackCard(shopItem)) { shopItem.gameObject.SetActive(false); continue; }   // Cookies wait for the next release
+                if (LeavesShop(shopItem)) { shopItem.gameObject.SetActive(false); continue; }       // owned: in the book, not in the shop (17 November)
                 if (TabOf(shopItem) != currentTab) { shopItem.gameObject.SetActive(false); continue; }   // other tabs stay hidden (10 November)
                 shopItem.gameObject.SetActive(true);
                 if (shopItem.itemName == RemoveAdsCardName)
@@ -178,7 +181,7 @@ public class ShopManager : MonoBehaviour
             ShowPurchaseSuccessFeedback("Opening the App Store...");
             RemoveAds.Buy((ok, msg) =>
             {
-                if (ok) { item.MarkAsPurchased(); if (AudioManager.Instance != null) AudioManager.Instance.PlayPurchaseSound(); }
+                if (ok) { item.MarkAsPurchased(); if (AudioManager.Instance != null) AudioManager.Instance.PlayPurchaseSound(); EatBought(item); }
                 if (!string.IsNullOrEmpty(msg)) { if (ok) ShowPurchaseSuccessFeedback(msg); else ShowPurchaseFailedFeedback(msg); }
             });
             return false;   // no coins change hands
@@ -223,8 +226,7 @@ public class ShopManager : MonoBehaviour
             UpdateScoreDisplay();
             item.MarkAsPurchased();
             if (AudioManager.Instance != null) AudioManager.Instance.PlayPurchaseSound();
-            var wayOut = GameObject.Find("NextLevelButton");
-            ShopFlourish.Fly(this, popupItemIcon, wayOut != null ? wayOut.transform as RectTransform : null);
+            EatBought(item);
             RefreshShopDisplay();
             if (purchaseConfirmationPopup != null) purchaseConfirmationPopup.SetActive(false);
             ShowPurchaseSuccessFeedback($"Purchased {DisplayName(item)}!");
@@ -276,11 +278,12 @@ public class ShopManager : MonoBehaviour
         UpdateScoreDisplay();
 
         // Mark as purchased in UI; the candies stay on sale (owner, 26 October 2026)
-        if (!(item.itemType == ItemType.Decor && item.itemName == "Candies")) item.MarkAsPurchased();
+        // (the oven card sells twice: after the second oven it stays on sale for the third; it used to be marked owned
+        // at once, so the third oven could never be bought)
+        if (!(item.itemType == ItemType.Decor && item.itemName == "Candies") && !OvenStillSells(item)) item.MarkAsPurchased();
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayPurchaseSound();
-        var nextButton = GameObject.Find("NextLevelButton");   // the bought item flies to the way to the table (owner, 9 November 2026)
-        ShopFlourish.Fly(this, popupItemIcon, nextButton != null ? nextButton.transform as RectTransform : null);
+        EatBought(item);   // eaten as a cookie (owner, 17 November 2026); before, the picture flew to the way to the table
 
         // Refresh all items to update affordability
         RefreshShopDisplay();
@@ -375,7 +378,7 @@ public class ShopManager : MonoBehaviour
             {
                 var currentLevel = SessionManager.Instance.GetFoodUpgradeLevel(shopItem.upgradeFoodType);
                 var maxed = !SessionManager.Instance.CanUpgradeFood(shopItem.upgradeFoodType);
-                if (currentLevel > 1 || maxed) // was upgraded at least once, or at max level
+                if (shopItem.upgradeFoodType == "Oven" ? maxed : (currentLevel > 1 || maxed)) // upgraded once, or at max level; the oven card sells twice
                     shopItem.MarkAsPurchased();
             }
     }
@@ -601,14 +604,16 @@ public class ShopManager : MonoBehaviour
     /// items from cheap to expensive", "shrink the content so more items fit"). Each card's visual centre (icon and
     /// texts) goes on its grid slot, whatever the card's own rectangle. The content box is sized to the rows so the
     /// arrows and a finger drag share the same bounds.
-    private void LayoutCards()
+    private void LayoutCards(bool keepScroll = false)
     {
         if (itemContainer == null) return;
         var cont = itemContainer.GetComponent<RectTransform>(); if (cont == null) return;
+        var scrolledTo = cont.anchoredPosition.y;
         var cards = new List<ShopItemController>();
         foreach (var c in GetAllShopItems())
         {
             if (c == null || IsHeldBackCard(c)) continue;
+            if (LeavesShop(c)) { c.gameObject.SetActive(false); continue; }     // owned things are in the book (17 November)
             var onTab = TabOf(c) == currentTab;
             c.gameObject.SetActive(onTab);                                      // only the current tab's cards show
             if (onTab) cards.Add(c);
@@ -650,7 +655,85 @@ public class ShopManager : MonoBehaviour
         var span = Mathf.Max(0f, (contentH - viewH) / 2f);
         topBoundary = -span; bottomBoundary = span;
         scrollAmount = rowPitch;
-        cont.anchoredPosition = new Vector2(cont.anchoredPosition.x, topBoundary);
+        // after a purchase the cards close up where the player was looking; a fresh layout starts at the top
+        cont.anchoredPosition = new Vector2(cont.anchoredPosition.x, keepScroll ? Mathf.Clamp(scrolledTo, topBoundary, bottomBoundary) : topBoundary);
+    }
+
+    // --- Owned things leave the shop for the book (owner, 17 November 2026) ------------------------------------------
+
+    /// Whether the player has what a card sells, read from the save itself (not from the card's own flag, which is only
+    /// set once the card has been shown).
+    private static bool IsOwned(ShopItemController c)
+    {
+        if (c == null) return false;
+        if (c.itemName == RemoveAdsCardName) return RemoveAds.Owned;
+        if (c.itemName == StarPackCardName) return false;                       // can always be bought again
+        var s = SessionManager.Instance; if (s == null || !s.HasActiveSession()) return false;
+        if (TabOf(c) == ShopTab.Stars) return s.OwnsStarItem(c.itemName);
+        var data = s.GetCurrentSession();
+        switch (c.itemType)
+        {
+            case ItemType.Food: return data.purchasedFoodItems.Contains(c.itemName);
+            case ItemType.Character: return data.purchasedCharacters.Contains(c.itemName);
+            case ItemType.Decor: return c.itemName != "Candies" && s.IsDecorPurchased(c.itemName);   // the candies stay on sale
+            case ItemType.Upgrade: return s.GetFoodUpgradeLevel(c.upgradeFoodType) > 1 || !s.CanUpgradeFood(c.upgradeFoodType);
+        }
+        return false;
+    }
+
+    /// The oven card sells the second and then the third oven: it stays in the shop until all three are owned.
+    private static bool OvenStillSells(ShopItemController c) =>
+        c != null && c.itemType == ItemType.Upgrade && c.upgradeFoodType == "Oven" && SessionManager.Instance != null && SessionManager.Instance.CanUpgradeFood("Oven");
+
+    private static bool LeavesShop(ShopItemController c) => IsOwned(c) && !OvenStillSells(c);
+
+    private void EnsureCookieBook()
+    {
+        if (scrollUpButton == null) return;
+        var chalk = Resources.Load<TMP_FontAsset>("Fonts & Materials/GloriaHallelujah SDF");
+        ShopCookies.EnsureBookButton(scrollUpButton.transform as RectTransform, () => !IsPurchasePopupOpen, OwnedEntries,
+            playerScoreText != null ? playerScoreText.font : null, chalk, panelImage);
+    }
+
+    /// What the book shows: every owned thing as its cookie, cheapest first, with its name and what it does.
+    private List<ShopCookies.Entry> OwnedEntries()
+    {
+        var list = new List<ShopCookies.Entry>();
+        var cards = new List<ShopItemController>(GetAllShopItems());
+        cards.Sort((a, b) => a.price != b.price ? a.price.CompareTo(b.price) : string.CompareOrdinal(a.itemName, b.itemName));
+        foreach (var c in cards)
+        {
+            if (c == null || !IsOwned(c)) continue;
+            var cookie = ShopCookies.For(c);
+            if (cookie == null) { var icon = c.transform.Find("ItemIcon"); var img = icon != null ? icon.GetComponent<Image>() : null; cookie = img != null ? img.sprite : null; }
+            if (cookie == null) continue;
+            var lines = new List<string>((c.popupInfoText ?? "").Split('\n'));
+            if (lines.Count > 0) lines.RemoveAt(0);                              // without the price line
+            var info = string.Join(" ", lines).Trim();
+            if (!string.IsNullOrWhiteSpace(c.specialNote)) info += "\n" + c.specialNote.Trim();
+            var shown = DisplayName(c);
+            if (c.itemType == ItemType.Upgrade && c.upgradeFoodType == "Oven")
+                shown = SessionManager.Instance != null && SessionManager.Instance.OvensOwned >= 3 ? "Three ovens" : "Two ovens";
+            list.Add(new ShopCookies.Entry { cookie = cookie, name = shown, info = info });
+        }
+        return list;
+    }
+
+    /// The bought thing is eaten as a cookie, bite by bite; meanwhile its card has left and the others have closed up,
+    /// and at the end the book's button hops (owner, 17 November 2026). A card without a cookie picture flies to the
+    /// way out as before.
+    private void EatBought(ShopItemController item)
+    {
+        var cookie = ShopCookies.For(item);
+        var root = popupItemIcon != null && popupItemIcon.canvas != null ? popupItemIcon.canvas.rootCanvas.transform as RectTransform : null;
+        if (cookie == null || root == null)
+        {
+            var wayOut = GameObject.Find("NextLevelButton");
+            ShopFlourish.Fly(this, popupItemIcon, wayOut != null ? wayOut.transform as RectTransform : null);
+            return;
+        }
+        LayoutCards(true); RefreshShopDisplay(); UpdateScrollButtons();
+        ShopCookies.Eat(this, root, cookie, () => ShopCookies.BumpBook(this));
     }
 
     /// The box around everything a card draws (icon, price, name), in the container's space
@@ -772,6 +855,7 @@ public class ShopManager : MonoBehaviour
         if (popupItemIcon != null && iconImage != null)
         {
             popupItemIcon.sprite = iconImage.sprite;
+            popupItemIcon.preserveAspect = true;   // the cookies are not all square (17 November)
 
             var iconRect = iconTransform.GetComponent<RectTransform>();
             if (iconRect != null)

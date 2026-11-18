@@ -74,14 +74,15 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Say "build"</b> for a new test build: cake frames, blender back in place, the new table shadows, your coffee bag glow.</p>
+<p><b>Say "build"</b> for a new test build: the cookie shop and book, the cookie start menu, cake frames, blender back in place, the new table shadows, your coffee bag glow.</p>
 <p><b>Cake</b> (Current): your three fixes are in (layers, frame 2, the corner shade). Tick: good, or still ask ChatGPT tomorrow.</p>
+<p><b>Shop in cookie style</b> (Current): built. Watch the eating clip, look at the book, tick.</p>
 <p><b>Start menu</b> (Current): thirty different cookies and the cookie truck, with a moving clip. Tick.</p>
 <p><b>Cookie style elsewhere</b> (Current): a sample of the buttons and a list to tick.</p>
 <p><b>China</b> (Q&amp;A): the answer and four choices.</p>
 <p><b>Kitchen</b> (Current): tick how the arrangement feels.</p>
 <p><b>App Store page</b> (Q&amp;A): one list of ten now; tick what to do.</p><p><b>iCloud</b> ("FoodTruckCafe art"), the blender: 5 stills as the game shows it (blender_frame_1_rest, 2_vanilla, 3_strawberry, 4_chocolate, 5_mint), the 4 layers the game uses (blender, blender_blade, blender_fill, blender_swirl), and blender_redraw_body with blender_redraw_glow for your redraw.</p></div>
-<div class="who p2"><h3>Me</h3><p><b>Version numbers</b> (your tick): from the next version on, the version is the day we submit and builds start at 1.</p><p><b>26.11.22</b> is in Apple's review since 15 November; I looked in App Store Connect, Apple has sent no message. Nothing to do but wait.</p><p><b>ChatGPT</b>, after 18 November 20:21: the cake retouch, only if you tick it.</p><p><b>Shop in cookie style</b> (your ask of 21:20): cookie pictures on the cards, a cookie eaten bite by bite with a crunch when you buy, bought things moved into a book that is always in the shop. I am building it now.</p></div>
+<div class="who p2"><h3>Me</h3><p><b>Version numbers</b> (your tick): from the next version on, the version is the day we submit and builds start at 1.</p><p><b>26.11.22</b> is in Apple's review since 15 November; I looked in App Store Connect, Apple has sent no message. Nothing to do but wait.</p><p><b>ChatGPT</b>, after 18 November 20:21: the cake retouch, only if you tick it.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
@@ -161,6 +162,29 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="cur.cake5.good"> Good, no need for ChatGPT</label></li>
 <li><label><input type="checkbox" data-id="cur.cake5.gpt"> Still ask ChatGPT tomorrow</label></li>
 <li><label><input type="checkbox" data-id="cur.cake5.wrong"> Still wrong (I will say where)</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Shop in cookie style: built, 17 November, 22:00.</b> In the project, in no build. Tried in the editor with real purchases.</p>
+<div class="two">
+<figure><img src="shop_eat.gif" alt="A bought cookie, the chef, in the middle of the dimmed shop: bites come out of it one after another with flying crumbs until it is gone"><figcaption>Buying: the cookie is eaten in five bites, each with a crunch and crumbs.</figcaption></figure>
+<figure><img src="shop_cookies.jpg" alt="Three captures: the shop with every card as an iced cookie and a book cookie above the arrows; the buy board with the juice cookie; the book open with the owned cookies in a grid and the chosen one's name and text below"><figcaption>The shop; the buy board; the book with what you own.</figcaption></figure>
+</div>
+<ul>
+<li><b>Cards:</b> every shop thing is its cookie (Gemini's): the four customers, the foods, the machine, cup, ovens, pots, candies, ice cream, Remove Ads, the star pack.</li>
+<li><b>Buying:</b> the cookie comes up big and is eaten bite by bite, with three crunch sounds I made. About two seconds.</li>
+<li><b>After:</b> the card leaves the shop and the others close up. The candies and the star pack stay, they can be bought again.</li>
+<li><b>The book</b> sits above the arrows on every tab. It shows what you own as cookies; a tap shows the name and what it does. Its title "MY COOKIES" is my placeholder.</li>
+<li><b>A bug found on the way:</b> after the second oven the oven card turned "owned", so the third oven could never be bought. Fixed: it stays until you have three.</li>
+<li><b>Not done:</b> bread and coffee (owned from the start, no shop card) are not in the book. A full play-through with the test driver is not run yet.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.shopc.ship"> Good to ship</label></li>
+<li><label><input type="checkbox" data-id="cur.shopc.slower"> Eating: slower, more bites</label></li>
+<li><label><input type="checkbox" data-id="cur.shopc.sound"> Crunch sound: redo</label></li>
+<li><label><input type="checkbox" data-id="cur.shopc.book"> Book: changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.shopc.defaults"> Add bread and coffee to the book</label></li>
 </ul>
 </div>
 
