@@ -619,6 +619,11 @@ public class OrderSystem : MonoBehaviour
         PatienceMeter.Hide(order);
         order.active = false;
 
+        // The receipt shows where this customer's bubble was and rises away (owner, 18 November 2026: "show it over the
+        // served customer, rising away"); before, it sat in the middle and lay over the next customer's bubble
+        var bubbleRoot = slots != null && order.slot >= 0 && order.slot < slots.Length ? slots[order.slot].root : null;
+        if (bubbleRoot != null) SimpleScorePopup.NextAtScreen = SimpleScorePopup.ScreenPointOf(bubbleRoot);
+
         // Award completion bonus: the tip from this order's time left, points and customer
         if (scoreManager != null)
             scoreManager.AwardOrderCompletionBonus(order.timer, order.basePoints, order.tipMultiplier);

@@ -36,6 +36,21 @@ public class SimpleScorePopup : MonoBehaviour
     // Static reference to track current popup
     private static SimpleScorePopup currentPopup;
 
+    /// Where the next receipt goes, on screen: the served customer's bubble (set by OrderSystem.CompleteOrder just before
+    /// the points are awarded; used once). Unset: the old place in the middle.
+    public static Vector2? NextAtScreen;
+    // Over the served customer it rises further and leaves sooner, so it is gone before the next customer orders there
+    private const float RiseOverCustomer = 240f, StayOverCustomer = 1.1f;
+
+    public static Vector2 ScreenPointOf(Transform t)
+    {
+        var canvas = t.GetComponentInParent<Canvas>();
+        Camera cam = null;
+        if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay) cam = canvas.rootCanvas.worldCamera;
+        else if (canvas == null) cam = Camera.main;
+        return RectTransformUtility.WorldToScreenPoint(cam, t.position);
+    }
+
     private void Awake()
     {
         // Don't try to find text component here - it will be assigned manually
@@ -223,6 +238,19 @@ public class SimpleScorePopup : MonoBehaviour
             Random.Range(-popup.randomRange / 2f, popup.randomRange / 2f),
             Random.Range(-50f, 50f)
         );
+        if (NextAtScreen.HasValue && parent is RectTransform parentRect)
+        {
+            var canvas = parentRect.GetComponentInParent<Canvas>();
+            var cam = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.rootCanvas.worldCamera : null;
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, NextAtScreen.Value, cam, out var local))
+            {
+                // the parent's pivot to its centre, where a new RectTransform's anchors are
+                var r = parentRect.rect; local -= new Vector2(r.center.x, r.center.y);
+                rectTransform.anchoredPosition = local;
+                popup.moveUpDistance = RiseOverCustomer; popup.stayDuration = StayOverCustomer;
+            }
+        }
+        NextAtScreen = null;
 
         // Create BACKGROUND child (separate GameObject)
         if (backgroundSprite != null)
