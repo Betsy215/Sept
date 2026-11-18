@@ -74,11 +74,10 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
+<p><b>Release check</b> (Current, first card): tested, five small fixes made; What's New draft.</p>
+<p><b>Your art review:</b> sprites, the strawberry cake, the cookie buttons (cleaned a fourth time; tick to apply).</p>
+<p><b>Then:</b> say "build" and "submit" when you are happy.</p>
 <p><b>Glows</b> (Current): in the game as you picked them.</p>
-<p><b>Cookie buttons</b> (Current): cleaned again with smooth edges; tick to apply.</p>
-<p><b>China</b> (Q&amp;A): the game is off the China mainland store, nothing else changed.</p>
-<p><b>Blender's bottom line</b> and <b>your test run's fixes</b> (Current): done. No test build until you say.</p>
-<p><b>Players</b> (Analysis): nobody has reached day 3; a tick to try it without the ad before day 3.</p>
 </div>
 <div class="who p2"><h3>Me</h3><p><b>Storage, 18 November:</b> your Mac had 6.8 GB free of 460 GB (the warning). Now 219 GB free. Deleted with your yes: Xcode's build cache (167 GB), old game builds (73 GB, kept today's build and the two store versions' archives), old editor screenshots and video frames (23 GB), old iPhone support files and simulators (29 GB), 12 merged work copies of the project (15 GB, all saved in git). Claude: old session logs and job folders of those copies. Kept: the Claude app's agent VM (11 GB, it needs it), all art, finished videos, store screenshots.</p><p><b>Version numbers:</b> the build's date with the full year (2026.11.18), builds from 0 each day.</p><p><b>26.11.22</b> with 15 Stars: approved 18 November 12:13 PST, releasing automatically.</p><p><b>ChatGPT</b>, after 18 November 20:21: the cake retouch, only if you tick it.</p></div>
 </div>
@@ -97,13 +96,52 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
+<div class="card" id="release-check">
+<p style="margin-top:0"><b>Release check for today's version, 18 November.</b> Everything except the art you are reviewing. Nothing built or sent to Apple.</p>
+<p style="margin:8px 0 4px"><b>What is in it</b> (since 26.11.22):</p>
+<ul>
+<li>Cookie style: start menu with thirty cookies and the cookie truck, cookie buttons with a firm press and three crunches, stars, Daily Treats, map circles and arrows.</li>
+<li>Shop: cookie cards, a bought thing is eaten bite by bite, then kept in the cookie book (with NEW on the book).</li>
+<li>Kitchen arrangement: seven movable pieces, a Ready in the kitchen too, the day starts after both.</li>
+<li>NEW labels with the white glow and stars on things just bought; gold shine on Ready and the map's red circle; a soft glow on what can be tapped in the kitchen.</li>
+<li>New blender (your frosty picture), the four choux in orders, cake slices, receipts over the served customer.</li>
+<li>60 pictures a second, the arrange hint only the first time.</li>
+</ul>
+<p style="margin:12px 0 4px"><b>Tested</b></p>
+<ul>
+<li>Chapter 1, a new game: tutorial, then all 16 days and the shop after each. No errors.</li>
+<li>Chapter 2, eight days with everything bought: no errors. The test player got stuck on ice creams with the same flavour twice; that was my test script (it checked one scoop instead of two), not the game. With it fixed, a chapter 2 day scored 2,233 with 3 stars, every ice cream served.</li>
+<li>The arrangement on iPhone and iPad: hint on the table and in the kitchen, Ready twice, NEW labels and glows, then play.</li>
+<li>A second reader went through all the code changed since 26.11.22. Nothing blocking; five small things, all fixed and tested: the new glow did not show in the kitchen, Ready came back 12 points low after a kitchen visit, Ready in the kitchen sat on the iPhone's home bar, a search ran every frame in the kitchen, buying candies put an empty NEW on the book.</li>
+</ul>
+<p style="margin:12px 0 4px"><b>Worth knowing</b></p>
+<ul>
+<li>The tip "The faster you serve, the more tips you earn!" no longer shows on alternate days: it lived in the same card as the drag hint, which is now for the first arrangement only. Say if you want it back on its own.</li>
+<li>The store screenshots still show the old buttons. They can stay; or I make new ones from the game after your art review.</li>
+<li>Privacy and age rating: nothing new collected, nothing to change. China mainland is off.</li>
+</ul>
+<p style="margin:12px 0 4px"><b>What's New</b>, a draft for your words:</p>
+<p style="margin:4px 0 4px 18px;white-space:pre-line">Everything is a cookie: new cookie buttons, start menu and shop.
+Your purchases go into a cookie book.
+Arrange your kitchen, not just your table.
+New blender, new choux flavours, a new cake.
+Smoother animations.</p>
+<p style="margin:12px 0 4px"><b>Left for you:</b> your art review (sprites, the strawberry cake, the cookie buttons' tick), the What's New words, then "build" and "submit". After your yes: build 2026.11.18 (2), version 2026.11.18 in App Store Connect with your words, submit.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.rel18.whatsnew"> Use this What's New as it is</label></li>
+<li><label><input type="checkbox" data-id="cur.rel18.tipback"> Bring the "faster you serve" tip back</label></li>
+<li><label><input type="checkbox" data-id="cur.rel18.shots"> Make new store screenshots</label></li>
+</ul>
+</div>
+
 <div class="card">
-<p style="margin-top:0"><b>Cookie buttons: cleaned again, smoothly, 18 November.</b> Not applied yet; tick and I put them in.</p>
+<p style="margin-top:0"><b>Cookie buttons: cleaned a fourth time, 18 November.</b> Not applied yet; tick and I put them in.</p>
 <figure><img src="cookie_bottom.jpg" style="max-height:520px" alt="Six cookie buttons twice: with pale patches and strips under each, and with a smooth clean outline"><figcaption>On dark blue and on the menu's mint. Upper row of each pair: your test build. Lower row: the new clean.</figcaption></figure>
 <figure><img src="cookie_edge_zoom.jpg" style="max-height:330px" alt="Continue, gear and star cookies enlarged: smooth outlines with no pale rim or leftover"><figcaption>Close up.</figcaption></figure>
 <figure><img src="cookie_edge_all.jpg" style="max-height:600px" alt="Every cookie button, star, coin, gift, arrow and lock on dark blue, each with a clean smooth edge"><figcaption>All of them.</figcaption></figure>
 <ul>
-<li>A different method this time: instead of removing leftover pixels one by one, each cookie gets one smooth outline drawn just inside its own edge. So the edge is a clean curve and nothing pale is left round it.</li>
+<li>Each cookie gets one smooth outline drawn just inside its own edge, so nothing pale is left round it.</li>
+<li><b>New this time</b> (you said some still needed it): the square and bar cookies and the coin get their outline as one clean curved shape, which takes out the dents, bites and flat cuts (audio, the tick, the cross, Ready, New). The stars, the arrow, the gift and the lock are smoothed harder. Where the outline was filled out, the dough is blended in from round it, so no streaks.</li>
 <li>Gone: the grey-white backdrop, the soft shadow, and the dark line where the cookie touched the table.</li>
 <li>I did these here, not with Gemini: Gemini would repaint the cookies, and they would no longer be the ones you picked.</li>
 </ul>
