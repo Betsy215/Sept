@@ -94,19 +94,27 @@ public class CookiePress : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         pressed = false; moving = false; amount = 0f; Write();
     }
 
-    /// Adds the press to every cookie button on screen; looks again twice a second for buttons made later.
+    /// Adds the press to every cookie button on screen: at once when a scene loads, then once a second for buttons
+    /// made later. Only buttons are looked at (not every picture), so the look costs next to nothing.
     class Runner : MonoBehaviour
     {
         float next;
-        void Start() { Clip(Kind.Tap); }
+        readonly List<GameObject> found = new List<GameObject>();
+        void Start() { Clip(Kind.Tap); UnityEngine.SceneManagement.SceneManager.sceneLoaded += (s, m) => next = 0f; }
         void Update()
         {
             if (Time.unscaledTime < next) return;
-            next = Time.unscaledTime + 0.5f;
-            foreach (var img in FindObjectsOfType<Image>())
+            next = Time.unscaledTime + 1f;
+            found.Clear();
+            foreach (var s in FindObjectsOfType<Selectable>()) found.Add(s.gameObject);
+            foreach (var b in FindObjectsOfType<PauseButton>()) found.Add(b.gameObject);
+            foreach (var b in FindObjectsOfType<ClickContinue>()) found.Add(b.gameObject);
+            foreach (var b in FindObjectsOfType<ClickPlay>()) found.Add(b.gameObject);
+            foreach (var b in FindObjectsOfType<SettingButton>()) found.Add(b.gameObject);
+            foreach (var go in found)
             {
-                if (img.sprite == null || !CookieSprites.TryGetValue(img.sprite.name, out var k)) continue;
-                var go = img.gameObject;
+                var img = go.GetComponent<Image>();
+                if (img == null || img.sprite == null || !CookieSprites.TryGetValue(img.sprite.name, out var k)) continue;
                 if (go.GetComponent<CookiePress>() != null) continue;
                 var pause = go.GetComponent<PauseButton>(); var cont = go.GetComponent<ClickContinue>(); var play = go.GetComponent<ClickPlay>();
                 if (go.GetComponent<Selectable>() == null && pause == null && cont == null && play == null && go.GetComponent<SettingButton>() == null) continue;

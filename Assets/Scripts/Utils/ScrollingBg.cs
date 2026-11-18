@@ -15,6 +15,8 @@ public class ScrollingBg : MonoBehaviour
 
         // Unscaled: the menu background must keep moving even if a paused timeScale leaked in.
         var uv = _image.uvRect;
-        _image.uvRect = new Rect(uv.position + new Vector2(_x, _y) * Time.unscaledDeltaTime, uv.size);
+        var p = uv.position + new Vector2(_x, _y) * Time.unscaledDeltaTime;
+        p = new Vector2(Mathf.Repeat(p.x, 1f), Mathf.Repeat(p.y, 1f));   // the picture repeats every 1 in uv: stay small, stay precise
+        _image.uvRect = new Rect(p, uv.size);
     }
 }
