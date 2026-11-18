@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3546954105101328632}
   - component: {fileID: 539095363064680935}
+  - component: {fileID: 1056964568340186286}
   m_Layer: 0
   m_Name: Choux
   m_TagString: Untagged
@@ -73,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: de236a7a017c44c879856fbb06568942, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 658fbf3adf2144fdba22df08b5f02f67, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -84,3 +85,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1056964568340186286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8878342301148696013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 151a3b7155e1496d82830e9a644b0051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites:
+  - {fileID: 21300000, guid: 658fbf3adf2144fdba22df08b5f02f67, type: 3}
+  - {fileID: 21300000, guid: 451bed5bd978945ccb19b765c16c8bc2, type: 3}
+  - {fileID: 21300000, guid: 8e7ce0742ad7f4d76908448e07faec65, type: 3}
+  - {fileID: 21300000, guid: d5c9b24fecd9246b291aafc7e5bd5f0d, type: 3}
