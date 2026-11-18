@@ -733,7 +733,7 @@ public class ShopManager : MonoBehaviour
             ShopFlourish.Fly(this, popupItemIcon, wayOut != null ? wayOut.transform as RectTransform : null);
             return;
         }
-        LayoutCards(true); RefreshShopDisplay(); UpdateScrollButtons();
+        LayoutCards(true); RefreshShopDisplay(); UpdateScrollButtons(); RefreshTabNote();
         ShopCookies.Eat(this, root, cookie, () => ShopCookies.BumpBook(this));
     }
 
@@ -1304,12 +1304,25 @@ public class ShopManager : MonoBehaviour
                 if (on) t.SetSiblingIndex(panelRect.GetSiblingIndex() + 1); else t.SetSiblingIndex(Mathf.Max(0, panelRect.GetSiblingIndex() - 1));
             }
         }
-        if (tabNote != null)
+        RefreshTabNote();
+    }
+
+    /// The line on an empty tab. Bought cards leave the shop for the book (17 November 2026), so a tab can be empty
+    /// because everything on it is owned: then the line says where they went, not that the shop "opens soon".
+    private void RefreshTabNote()
+    {
+        if (tabNote == null) return;
+        bool any = false, owned = false;
+        foreach (var c in GetAllShopItems())
         {
-            var any = false;
-            foreach (var c in GetAllShopItems()) if (c != null && !IsHeldBackCard(c) && TabOf(c) == currentTab) { any = true; break; }
-            tabNote.text = currentTab == ShopTab.Stars ? "The star shop opens soon" : "";
-            tabNote.gameObject.SetActive(!any && tabNote.text.Length > 0);
+            if (c == null || IsHeldBackCard(c) || TabOf(c) != currentTab) continue;
+            if (LeavesShop(c)) owned = true; else { any = true; break; }
         }
+        tabNote.text = owned ? "All yours! Find them in the cookie book" : currentTab == ShopTab.Stars ? "The star shop opens soon" : "";
+        // over the card columns, clear of the book and the arrows on the right; two lines when it is long
+        var nrt = tabNote.rectTransform;
+        if (panelRect != null) { nrt.sizeDelta = new Vector2(panelRect.rect.width * 0.62f, 200f); nrt.anchoredPosition = new Vector2(panelRect.anchoredPosition.x - panelRect.rect.width * 0.12f, nrt.anchoredPosition.y); }
+        tabNote.enableWordWrapping = true;
+        tabNote.gameObject.SetActive(!any && tabNote.text.Length > 0);
     }
 }
