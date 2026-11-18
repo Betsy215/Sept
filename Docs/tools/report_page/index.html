@@ -75,7 +75,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>Test build 2026.11.18 (0)</b> is on TestFlight: everything in build 37 plus the cookie buttons' push and crunches.</p>
-<p><b>Cookie edges and blender base</b> (Current): cleaned; tick to ship or to build.</p>
+<p><b>Smoother menu</b> (60 frames a second), <b>cookie edges</b>, <b>blender base</b> (Current): done; tick to build and try on your phone.</p>
 <p><b>Kitchen glows</b> (Current): pick a "do this now" look.</p>
 <p><b>Players</b> (Analysis): nobody has reached day 3; a tick to try it without the ad before day 3.</p>
 <p><b>Apple</b> (Q&amp;A): no review message; the build email needs nothing now.</p>
@@ -125,7 +125,8 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Cleaned: the cookie edges and the blender's base, 18 November.</b> In the project, in no build yet.</p>
+<p style="margin-top:0"><b>Smoother menu, cleaned cookie edges and blender base, 18 November.</b> In the project, in no build yet.</p>
+<p style="margin:6px 0"><b>Why the menu looked laggy:</b> the game never asked for a frame rate, and on iPhone the default is 30 pictures a second. So the scrolling cookies and the truck moved in steps of about 10 pixels. The game now runs at 60 everywhere (the table, kitchen and shop get smoother too). The phone still drops to 30 by itself in Low Power Mode. You can only judge this on the phone, so it needs a test build.</p>
 <figure><img src="cookie_edges.jpg" alt="Every cookie button on dark blue. Left: pale grey fringes and blobs under many cookies, worst under the down arrow, the map arrows and the lock. Right: the same cookies with clean edges"><figcaption>On dark blue. Left: before, with the photo's grey backdrop and shadow stuck to the edges. Right: now.</figcaption></figure>
 <ul>
 <li>Every cookie: buttons, stars, coin, gift, map arrows, the lock. Only the leftover backdrop and shadow outside each cookie went; the icing was not touched.</li>
@@ -137,7 +138,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.clean18.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.clean18.build"> Push a test build with these</label></li>
+<li><label><input type="checkbox" data-id="cur.clean18.build"> Push a test build with these (to see the smoother menu)</label></li>
 <li><label><input type="checkbox" data-id="cur.clean18.more"> Still see edges (I will say where)</label></li>
 </ul>
 </div>
