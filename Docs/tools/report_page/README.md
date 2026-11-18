@@ -6,7 +6,7 @@ The owner's report is the HTML artifact https://claude.ai/artifact/VeYt7HSLpyotQ
 numbered circle headings, sticky section bar). The Claude Doc 726347e1-dd8c-42fd-917b-be80474ff9ae
 is history only.
 
-## Fixed structure: seven sections (never add, rename, remove or reorder a section unless the owner asks)
+## Fixed structure: eight sections (never add, rename, remove or reorder a section unless the owner asks)
 
 1. **Next**: You / Me cards. The owner reads this first; rewrite both at the start and the end of a batch.
    My questions to the owner go in You, with check boxes.
@@ -21,6 +21,9 @@ is history only.
    marketing. i am not sure what to do on this yet but we would need to continue working on this ... keep this section
    always there"): the App Store page, ratings, keywords, screenshots, video, in-app events, custom pages, anything that
    brings players. Cards with check lists like Current. Always present, even when it holds only "Nothing open".
+8. **C chapter** (owner, 18 November 2026: "Put a section on report for c chapter (Christmas chapter), I will call it c
+   chapter for short"): the Christmas chapter's plan, starting from the owner's ideas (pink cloth and white snow, winter
+   clothes, cookies, hot drinks). Always present while the chapter is being made.
 Visuals (`visuals.html`): real captures of the live build in the Claude Doc's order
 (Store page, Menu and maps, Chapter 1 day, Chapter 2 tutorial, Chapter 2 day, Chapter change, Screen sizes).
 

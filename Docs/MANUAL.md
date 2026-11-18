@@ -50,7 +50,7 @@ store page and marketing before more content. Re-read the numbers in November.
    The structure is fixed (owner, 9 November: "the report had fixed sections ... stop keep changing it"):
    **Next** (You / Me), **Q&A** (the owner's questions, newest first), **Current** (today's work, newest first),
    **MVP**, **Backlog**, **Analysis** (store and ads numbers only), **Marketing** (since 18 November 2026: the App
-   Store page, ratings, keywords, events; always there), plus the **Visuals** page of real captures.
+   Store page, ratings, keywords, events; always there), **C chapter** (since 18 November 2026: the Christmas chapter's plan), plus the **Visuals** page of real captures.
    Never add, rename, remove or reorder a section unless the owner asks.
    Every Q&A and Current entry ends with check boxes ("Seen, remove this", then the choices); they are the
    owner's action buttons and are saved in the page's db (doc `ticks/state`). Every session that touches the
