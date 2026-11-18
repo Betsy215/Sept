@@ -26,11 +26,12 @@ public class KitchenGlowRunner : MonoBehaviour
 {
     private struct Entry { public Image image; public Transform glow; public System.Func<bool> usable; }
     private readonly System.Collections.Generic.List<Entry> entries = new System.Collections.Generic.List<Entry>();
-    private bool built;
+    private bool built, arranging;
 
     private System.Collections.IEnumerator Start()
     {
         yield return null;   // the blender, the arranged pieces and the ovens' owned / locked state are set by now
+        arranging = KitchenArrange.Arranging();   // fixed for this visit: arranging ends only through the kitchen's Ready, which closes the kitchen
         foreach (var t in GetComponentsInChildren<Transform>(true))
         {
             var img = t.GetComponent<Image>(); if (img == null || img.sprite == null) continue;
@@ -45,6 +46,7 @@ public class KitchenGlowRunner : MonoBehaviour
             else if (t.GetComponent<CoconutInKitchen>() != null) { var c = t.GetComponent<CoconutInKitchen>(); usable = () => CoconutInKitchen.Count > 0 && c.GetComponent<Image>().enabled; }
             else if (t.GetComponent<WaffleAnim>() != null) { var w = t.GetComponent<WaffleAnim>(); usable = () => w != null && !w.IsBaking; }
             if (usable == null) continue;
+            if (t.Find("GlowFxStars") != null) continue;   // a newly bought thing: it shows the "new" glow while arranging, not this one
             GlowFx.Default(img);
             var glow = t.Find("GlowFx"); if (glow == null) continue;
             var old = t.Find("Glow"); if (old != null && old != glow) old.gameObject.SetActive(false);   // the blender's painted halo of 15 November: replaced
@@ -56,7 +58,6 @@ public class KitchenGlowRunner : MonoBehaviour
     private void Update()
     {
         if (!built) return;
-        var arranging = KitchenArrange.Arranging();
         foreach (var e in entries)
             if (e.glow != null) e.glow.gameObject.SetActive(!arranging && e.image != null && e.image.isActiveAndEnabled && e.usable());
     }

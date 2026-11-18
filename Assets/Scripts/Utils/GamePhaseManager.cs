@@ -98,6 +98,8 @@ public class GamePhaseManager : MonoBehaviour
             refillSystem = FindObjectOfType<RefillSystem>();
 
         doneButton.onClick.AddListener(OnDoneButtonClicked);
+        // Ready's place on the table, kept before any tap (a press moves it down for a moment)
+        doneButtonHome = ((RectTransform)doneButton.transform).anchoredPosition; doneButtonHomeKept = true;
 
         // Start in arrangement phase
         StartArrangementPhase();
@@ -185,7 +187,13 @@ public class GamePhaseManager : MonoBehaviour
             var rt = (RectTransform)doneButton.transform;
             if (!doneButtonHomeKept) { doneButtonHome = rt.anchoredPosition; doneButtonHomeKept = true; }
             var canvas = arrangmentUI != null ? arrangmentUI.transform as RectTransform : null;
-            rt.anchoredPosition = open && canvas != null ? new Vector2(0f, -canvas.rect.height / 2f + rt.rect.height / 2f + 110f) : doneButtonHome;
+            if (open && canvas != null)
+            {
+                // on the rug: its own height (the button is drawn at scale 2) and the phone's home-bar strip above the bottom edge
+                var safeBottom = Screen.height > 0 ? Screen.safeArea.yMin / Screen.height * canvas.rect.height : 0f;
+                rt.anchoredPosition = new Vector2(0f, -canvas.rect.height / 2f + safeBottom + rt.rect.height * Mathf.Abs(rt.localScale.y) / 2f + 60f);
+            }
+            else rt.anchoredPosition = doneButtonHome;
         }
         if (currentPhase == GamePhase.ARRANGEMENT) { ShowHint(true); UpdateDoneButtonState(); }
     }
@@ -248,7 +256,8 @@ public class GamePhaseManager : MonoBehaviour
         arrangmentUI.gameObject.SetActive(false);
         ShowHint(false);
         NewTag.ClearWorld(); GlowFx.ClearWorld();
-        if (SessionManager.Instance != null) SessionManager.Instance.ClearNewToArrange();   // seen: not new tomorrow
+        // seen: not new tomorrow. The demos (both tutorials) skip the arrangement, so what is new waits for the next one.
+        if (SessionManager.Instance != null && FindObjectOfType<TutorialDirector>() == null) SessionManager.Instance.ClearNewToArrange();
     }
 
     /// <summary>

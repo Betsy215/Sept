@@ -743,7 +743,8 @@ public class ShopManager : MonoBehaviour
 
     private void EatBought(ShopItemController item)
     {
-        if (SessionManager.Instance != null) SessionManager.Instance.NoteNew(KeyOf(item));   // "NEW" on the book and in the next arrangement
+        // "NEW" on the book and in the next arrangement; not for refills that are never owned (the candies)
+        if (SessionManager.Instance != null && IsOwned(item)) SessionManager.Instance.NoteNew(KeyOf(item));
         var cookie = ShopCookies.For(item);
         var root = popupItemIcon != null && popupItemIcon.canvas != null ? popupItemIcon.canvas.rootCanvas.transform as RectTransform : null;
         if (cookie == null || root == null)
