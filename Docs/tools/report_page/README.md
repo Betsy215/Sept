@@ -6,7 +6,7 @@ The owner's report is the HTML artifact https://claude.ai/artifact/VeYt7HSLpyotQ
 numbered circle headings, sticky section bar). The Claude Doc 726347e1-dd8c-42fd-917b-be80474ff9ae
 is history only.
 
-## Fixed structure (never add, rename, remove or reorder a section unless the owner asks)
+## Fixed structure: seven sections (never add, rename, remove or reorder a section unless the owner asks)
 
 1. **Next**: You / Me cards. The owner reads this first; rewrite both at the start and the end of a batch.
    My questions to the owner go in You, with check boxes.
@@ -17,6 +17,10 @@ is history only.
 4. **MVP**: the next release's ordered list.
 5. **Backlog**: one check list; items leave only when the owner says so.
 6. **Analysis**: store and ads numbers only (App Store Connect, Unity Ads), UTC; each refresh replaces the last.
+7. **Marketing** (owner, 18 November 2026: "move the app store page section to it's own section in the report, call it
+   marketing. i am not sure what to do on this yet but we would need to continue working on this ... keep this section
+   always there"): the App Store page, ratings, keywords, screenshots, video, in-app events, custom pages, anything that
+   brings players. Cards with check lists like Current. Always present, even when it holds only "Nothing open".
 Visuals (`visuals.html`): real captures of the live build in the Claude Doc's order
 (Store page, Menu and maps, Chapter 1 day, Chapter 2 tutorial, Chapter 2 day, Chapter change, Screen sizes).
 
