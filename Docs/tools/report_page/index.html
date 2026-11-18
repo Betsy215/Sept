@@ -74,52 +74,25 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
+<p><b>Glows</b> (Current): in the game as you picked them.</p>
 <p><b>Cookie buttons</b> (Current): cleaned again with smooth edges; tick to apply.</p>
-<p><b>China ads</b> (Q&amp;A): very likely blocked; a tick to switch purchases off for China only.</p>
-<p><b>Blender's bottom line</b> (Current): smoother.</p>
-<p><b>Your test run's fixes</b> (Current): tick for a test build.</p>
-<p><b>Kitchen glows</b> (Current): pick a "do this now" look.</p>
+<p><b>China</b> (Q&amp;A): the game is off the China mainland store, nothing else changed.</p>
+<p><b>Blender's bottom line</b> and <b>your test run's fixes</b> (Current): done. No test build until you say.</p>
 <p><b>Players</b> (Analysis): nobody has reached day 3; a tick to try it without the ad before day 3.</p>
 </div>
 <div class="who p2"><h3>Me</h3><p><b>Storage, 18 November:</b> your Mac had 6.8 GB free of 460 GB (the warning). Now 219 GB free. Deleted with your yes: Xcode's build cache (167 GB), old game builds (73 GB, kept today's build and the two store versions' archives), old editor screenshots and video frames (23 GB), old iPhone support files and simulators (29 GB), 12 merged work copies of the project (15 GB, all saved in git). Claude: old session logs and job folders of those copies. Kept: the Claude app's agent VM (11 GB, it needs it), all art, finished videos, store screenshots.</p><p><b>Version numbers:</b> the build's date with the full year (2026.11.18), builds from 0 each day.</p><p><b>26.11.22</b> waits in Apple's queue since 15 November; no message from Apple. If nothing moves by Friday you can ask Apple for a faster review.</p><p><b>ChatGPT</b>, after 18 November 20:21: the cake retouch, only if you tick it.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>Does China block the ads too? (18 November)</h3>
-<p style="margin:6px 0"><b>Short answer:</b> very likely yes. Our ads do not seem to reach players in mainland China at all.</p>
+<div class="q"><h3>China mainland: the game is off that store now (18 November)</h3>
 <ul>
-<li><b>Our own numbers:</b> 3 players in China finished 6 days and saw 0 ads. Everywhere else players see about one ad per finished day (Philippines 14 ads for 12 days, US 12 for 19, Hong Kong 4 for 1). Three players is few, but it matches your friend.</li>
-<li><b>Why:</b> a developer in China posted a phone log where the phone cannot connect to Unity's ad server at all. Unity's own pages do not say either way, so I cannot call it certain.</li>
-<li><b>What a player there sees:</b> the game plays normally, with no ads between days. "Get 50 coins" and the Daily Treats ad stay grey, because no ad ever loads. Nothing breaks.</li>
-<li><b>Fixing it</b> would need a Chinese ad network and a Chinese company. Not worth it for us now.</li>
-</ul>
-<p style="margin:10px 0 4px"><b>Switching purchases off for China, safely:</b></p>
-<ul>
-<li>Each purchase (Remove Ads, 15 Stars) has its own list of countries in App Store Connect. Taking "China mainland" off that list changes nothing in any other country.</li>
-<li>No new build is needed, and it can be switched back on any time.</li>
-<li>It touches only the two purchases, not the game: the game stays on the China store, free.</li>
-<li>One caution: 15 Stars is in Apple's review right now. I would change it only after that review ends, so the review is not disturbed. Remove Ads can be changed now.</li>
+<li>Done as you chose: Food Truck Cafe is "Not Available" in China mainland. Apple says the store shows it within 24 hours.</li>
+<li>Every other country is unchanged: 174 countries, Hong Kong, Macau and Taiwan included.</li>
+<li>People in China who already have the game keep it. No new build was needed, and it can be switched back on any time (Pricing and Availability).</li>
+<li>Why it made sense: ads did not load there (3 players, 6 days, 0 ads), and purchases would need a Chinese game approval number. Apple's two China warnings and the missing-approval mark should go with it.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="qa.chinaads.iapoff"> Yes, switch both purchases off for China mainland only</label></li>
-<li><label><input type="checkbox" data-id="qa.chinaads.hide"> Also hide the grey ad buttons where no ad can load</label></li>
-<li><label><input type="checkbox" data-id="qa.chinaads.later"> Later</label></li>
-</ul>
-</div>
-<div class="q"><h3>Can we release a version just for China that does not break its rules? (17 November)</h3>
-<p style="margin:6px 0"><b>Short answer:</b> Apple allows one build per app for all countries, so not a separate build. But most of this needs no new build at all.</p>
-<ol>
-<li><b>The two "Missing Info" banners are only questions.</b> Security Assessment asks whether the app has encrypted messaging or hands out AI-made content. AI Generated Content asks whether the app offers AI services (chatbots, picture or voice generation). Our game does neither, so both answers are No. I opened both forms and saved nothing; they are your declarations.</li>
-<li><b>The real rule is about purchases.</b> Apple: a paid game, or a game with in-app purchases, needs a Chinese government approval number, which takes a Chinese business licence. Since Remove Ads and 15 Stars, Apple marks our China listing "missing game registration number".</li>
-<li><b>The way round, same build:</b> each purchase has its own list of countries. Switch both purchases off for China mainland, and the game there is free with ads only. I would also hide the two buy buttons where the store offers nothing. I cannot promise Apple then clears its mark; Chinese law strictly wants approval for every game, Apple enforces it for paid ones.</li>
-<li><b>ICP filing number:</b> Apple asks it of "some apps" and only offers a field for it. It also needs a Chinese entity. Nothing to do unless Apple asks.</li>
-</ol>
-<p style="margin:6px 0">China today: the game is on the store there, both purchases too. Deadline on the banners: 31 January 2027.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.china2.no"> Answer No to both banners for me</label></li>
-<li><label><input type="checkbox" data-id="qa.china2.iapoff"> Switch both purchases off in China and hide the buttons there</label></li>
-<li><label><input type="checkbox" data-id="qa.china2.leave"> Take the game off the China store</label></li>
-<li><label><input type="checkbox" data-id="qa.china2.later"> Later</label></li>
+<li><label><input type="checkbox" data-id="qa.chinaoff.seen"> Seen</label></li>
 </ul>
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
@@ -230,31 +203,17 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Kitchen glows: one look for each state, 18 November.</b> Drafts on the real kitchen, nothing in the game yet.</p>
-<p style="margin:6px 0">Your example: the sponge is out of the oven and fruit comes next. So the fruit board says <b>do this now</b>, and everything else only says <b>you can tap</b>.</p>
-<p style="margin:12px 0 4px"><b>1. You can tap.</b> Today's cool white glow round the edge (the bags' and the blender's), breathing slowly, every 2 seconds.</p>
-<figure><img src="glow_A.gif" style="max-height:330px" alt="The counter: every item has a soft white glow that slowly brightens and fades"><figcaption>You can tap: blender, baskets, board, whisk, cake.</figcaption></figure>
-<p style="margin:12px 0 4px"><b>2. Do this now.</b> Three choices. Each has to beat the white glows at a glance.</p>
-<figure><img src="glow_B1.gif" style="max-height:330px" alt="The fruit board with a thick gold glow pulsing, hopping up and down; the other items with the calm white glow"><figcaption>A: gold, beating every second; the board hops every 2 seconds.</figcaption></figure>
-<figure><img src="glow_B2.gif" style="max-height:330px" alt="The fruit board with a strong white glow, growing a little and back, with small star sparkles round it"><figcaption>B: bright white, the board breathes bigger, sparkles twinkle round it.</figcaption></figure>
-<figure><img src="glow_B3.gif" style="max-height:330px" alt="The fruit board with a gold glow and a white shine band passing over it"><figcaption>C: gold, with a shine sweeping across the board.</figcaption></figure>
-<p style="margin:12px 0 4px"><b>3. Busy</b> (my addition): no glow while an item works; a small timer fills on it, so players know to wait. Here the oven bakes.</p>
-<figure><img src="glow_C.gif" style="max-height:330px" alt="The middle oven with a small round timer in its corner filling with orange"><figcaption>Busy: the oven's timer fills, no glow.</figcaption></figure>
-<p style="margin:12px 0 4px"><b>Other states you may want:</b></p>
+<p style="margin-top:0"><b>Glows in the game, as you picked them, 18 November.</b> In the project, in no build yet.</p>
+<figure><img src="glows_ingame.jpg" alt="Four screens: the table being arranged with white glows and stars round the new items and a gold shining Ready; the kitchen being arranged with the same on its new things and Ready; the kitchen during play with a soft still white glow on the ovens and the juice; the map with a gold shine on today's red circle"><figcaption>Table arranging, kitchen arranging, kitchen during play, map.</figcaption></figure>
 <ul>
-<li><b>Ready:</b> the oven or blender is done and something must be taken out. I would use "do this now" for it.</li>
-<li><b>Empty:</b> coffee bags or scoops run out. "Do this now" only if an order is waiting for it; otherwise nothing.</li>
-<li><b>Not bought yet:</b> no glow, as today.</li>
-<li><b>One rule:</b> only one "do this now" at a time, or players don't know where to look.</li>
+<li><b>Default (kitchen, during play):</b> B's white glow held still at its middle, no stars, on everything you can tap: ovens, blender, juice, coconuts, waffle machine. It goes off while a thing is busy (an oven baking), locked, or being arranged. The coffee bags and the apples keep the glow painted into their own pictures.</li>
+<li><b>B, new things:</b> white glow and twinkling stars beside the NEW label, on the table and in the kitchen, while arranging. The thing itself does not move.</li>
+<li><b>C, Ready and the map:</b> gold glow with a shine sweeping across, on both Ready buttons and on the map's red circle. Off while Ready cannot be pressed.</li>
+<li><b>A, next action:</b> made (gold, beating, no hop) and waiting for your rules on what counts as "next".</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.gstate.a_good"> 1 "You can tap" is good</label></li>
-<li><label><input type="checkbox" data-id="cur.gstate.b1"> 2A gold and hop</label></li>
-<li><label><input type="checkbox" data-id="cur.gstate.b2"> 2B white and sparkles</label></li>
-<li><label><input type="checkbox" data-id="cur.gstate.b3"> 2C gold and shine</label></li>
-<li><label><input type="checkbox" data-id="cur.gstate.busy"> Yes to 3, the busy timer</label></li>
-<li><label><input type="checkbox" data-id="cur.gstate.gemini"> Ask Gemini for more looks</label></li>
-<li><label><input type="checkbox" data-id="cur.gstate.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.glowgame.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.glowgame.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
