@@ -76,7 +76,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="who p1"><h3>You</h3>
 <p><b>Test build 37</b> is on TestFlight: the cookie shop and book, cookie buttons and start menu, the new blender, receipts, choux orders, cake frames, the iPad fixes. App icon unchanged.</p>
 <p><b>Kitchen glows</b> (Current): pick a "do this now" look.</p>
-<p><b>Cookie buttons</b> (Current): the press and bounce, and six crunch sounds to pick from.</p>
+<p><b>Cookie buttons</b> (Current): firm push, your three crunches by kind of action.</p>
 <p><b>Players</b> (Analysis): nobody has reached day 3; a tick to try it without the ad before day 3.</p>
 <p><b>Apple</b> (Q&amp;A): no review message; the build email needs nothing now.</p>
 </div>
@@ -125,30 +125,22 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Cookie buttons: pressed down, then a bounce, 18 November.</b> In the project, in no build.</p>
-<figure><img src="cookie_press.gif" style="max-height:330px" alt="Continue, pause and tick cookies: each squashes flat when pressed and springs back past its size, then settles"><figcaption>The same spring as in the game, played on three buttons.</figcaption></figure>
+<p style="margin-top:0"><b>Cookie buttons: pushed down, then up, with a crunch, 18 November.</b> In the project, in no build.</p>
+<figure><img src="cookie_press_firm.gif" style="max-height:330px" alt="Continue, pause and tick cookies: each sinks a little and shrinks slightly when pressed, then rises back to its place without bouncing"><figcaption>The same numbers as in the game.</figcaption></figure>
 <ul>
-<li>Every cookie button on every screen, also the ones the map, Daily Treats and the menu book make.</li>
-<li><b>Press:</b> the cookie gets a little wider and flatter at once. <b>Release:</b> it springs back up past its size and settles in about half a second.</li>
-<li><b>Crunch:</b> the one you pick plays on the press and replaces the old clicks. Six free sounds, each cut to about a tenth of a second; all are free to use in the game with no credit needed.</li>
+<li><b>Firm, no bounce:</b> pressed, the cookie sinks a little (6 % of its height) and gets 5 % smaller at once. Released, it rises back to its place in about a fifth of a second and stops there.</li>
+<li><b>Your three crunches, by kind of action:</b>
+<ul>
+<li><b>2, dry snap</b> for going on: Continue, New, Ready, Play, Done, Collect, the tick, Next, Get 50 coins. <audio controls preload="none" src="crunch/crunch_2_cracker_snap.mp3"></audio></li>
+<li><b>6, nibble</b> for going back or saying no: the cross, Cancel, Home, Replay. <audio controls preload="none" src="crunch/crunch_6_cookie_nibble.mp3"></audio></li>
+<li><b>1, light bite</b> for small controls: gear, pause, sound, music, the arrows, the map's day circles. <audio controls preload="none" src="crunch/crunch_1_crisp_bite.mp3"></audio></li>
+</ul></li>
+<li>The old press clicks are gone from these buttons, so each tap makes one sound.</li>
 </ul>
-<p style="margin:6px 0"><b>1</b> light, bright single bite<br><audio controls preload="none" src="crunch/crunch_1_crisp_bite.mp3"></audio></p>
-<p style="margin:6px 0"><b>2</b> dry cracker snap<br><audio controls preload="none" src="crunch/crunch_2_cracker_snap.mp3"></audio></p>
-<p style="margin:6px 0"><b>3</b> compact cookie crunch, a bit cartoon-like<br><audio controls preload="none" src="crunch/crunch_3_cookie_crunch.mp3"></audio></p>
-<p style="margin:6px 0"><b>4</b> softer, lower biscuit bite<br><audio controls preload="none" src="crunch/crunch_4_biscuit_bite.mp3"></audio></p>
-<p style="margin:6px 0"><b>5</b> crumbly, grainy, a little longer<br><audio controls preload="none" src="crunch/crunch_5_crumbly_graham.mp3"></audio></p>
-<p style="margin:6px 0"><b>6</b> quick three-crackle nibble<br><audio controls preload="none" src="crunch/crunch_6_cookie_nibble.mp3"></audio></p>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.press.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.press.more"> More bounce</label></li>
-<li><label><input type="checkbox" data-id="cur.press.less"> Less bounce</label></li>
-<li><label><input type="checkbox" data-id="cur.press.snd1"> Crunch 1</label></li>
-<li><label><input type="checkbox" data-id="cur.press.snd2"> Crunch 2</label></li>
-<li><label><input type="checkbox" data-id="cur.press.snd3"> Crunch 3</label></li>
-<li><label><input type="checkbox" data-id="cur.press.snd4"> Crunch 4</label></li>
-<li><label><input type="checkbox" data-id="cur.press.snd5"> Crunch 5</label></li>
-<li><label><input type="checkbox" data-id="cur.press.snd6"> Crunch 6</label></li>
-<li><label><input type="checkbox" data-id="cur.press.sndmore"> None of these, find more</label></li>
+<li><label><input type="checkbox" data-id="cur.press2.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.press2.deeper"> Push deeper</label></li>
+<li><label><input type="checkbox" data-id="cur.press2.swap"> Swap the sounds round (I will say how)</label></li>
 </ul>
 </div>
 

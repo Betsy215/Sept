@@ -3,97 +3,115 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-/// Cookie buttons press down and spring back (owner, 18 November 2026: "When pressed, cookie is pressed down, when
-/// release, it bounce back", with a very short crunch on the press). Nothing is wired in scenes: a runner finds every
+/// Cookie buttons are pushed down and rise back, like a firm cookie (owner, 18 November 2026: "it gets pushed down and
+/// rise back", no bounce), with a very short crunch on the press. Nothing is wired in scenes: a runner finds every
 /// button whose picture is one of the cookie pictures (Store/cookies_2026-11-17/install_ui.py) and adds this to it,
 /// also buttons made later in code (map, Daily Treats, menu book).
-/// The squash multiplies whatever scale the button already has, so buttons that animate their own scale (the map's
-/// day circles) keep doing so. Unscaled time: it works in the pause menu too.
+/// Three crunches (owner picked 1, 2 and 6 of Store/audio/button_crunch_2026-11-18, "use them for different kind of
+/// actions"): a dry snap for going on, a nibble for going back or saying no, a light bite for small controls.
+/// The push is laid on top of whatever scale and place the button already has, so buttons that move or animate
+/// themselves (the pause button, the map's day circles) keep doing so. Unscaled time: it works in the pause menu too.
 public class CookiePress : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
 {
-    public static readonly HashSet<string> CookieSprites = new HashSet<string> {
-        "setting 1", "pause 1", "audio", "music 1", "home", "replay", "next 1", "up 1", "down 1", "yes", "no",
-        "continue", "new", "collect", "ready", "coinsbutton", "btn_done", "btn_play", "btn_cancel",
-        "day_done", "day_today", "arrow_right", "arrow_left",
+    enum Kind { Tap, Go, Back }
+    static readonly Dictionary<string, Kind> CookieSprites = new Dictionary<string, Kind> {
+        { "continue", Kind.Go }, { "new", Kind.Go }, { "ready", Kind.Go }, { "btn_play", Kind.Go }, { "btn_done", Kind.Go },
+        { "collect", Kind.Go }, { "yes", Kind.Go }, { "next 1", Kind.Go }, { "coinsbutton", Kind.Go },
+        { "no", Kind.Back }, { "btn_cancel", Kind.Back }, { "home", Kind.Back }, { "replay", Kind.Back },
+        { "setting 1", Kind.Tap }, { "pause 1", Kind.Tap }, { "audio", Kind.Tap }, { "music 1", Kind.Tap },
+        { "up 1", Kind.Tap }, { "down 1", Kind.Tap }, { "arrow_right", Kind.Tap }, { "arrow_left", Kind.Tap },
+        { "day_done", Kind.Tap }, { "day_today", Kind.Tap },
     };
-    static readonly Vector2 Pressed = new Vector2(1.06f, 0.88f);   // wider and lower: pushed into the table
-    const float PressStiffness = 1400f, PressDamping = 60f;        // down fast, no wobble
-    const float ReleaseStiffness = 420f, ReleaseDamping = 12f;     // back up past its size once or twice, then still
+    const float Shrink = 0.05f;      // pushed in: 5 % smaller
+    const float Sink = 0.06f;        // and lower by 6 % of its height
+    const float PressRate = 45f, ReleaseRate = 16f;   // down at once; up smoothly in about a fifth of a second, never past its place
 
     public static float LastCrunchAt = -10f;
-    static AudioClip crunch; static bool crunchLoaded;
-    public static AudioClip Crunch { get { if (!crunchLoaded) { crunch = Resources.Load<AudioClip>("UI/button_crunch"); crunchLoaded = true; } return crunch; } }
+    static readonly AudioClip[] clips = new AudioClip[3]; static bool clipsLoaded;
+    static AudioClip Clip(Kind k)
+    {
+        if (!clipsLoaded)
+        {
+            clipsLoaded = true;
+            clips[(int)Kind.Tap] = Resources.Load<AudioClip>("UI/button_crunch_tap");
+            clips[(int)Kind.Go] = Resources.Load<AudioClip>("UI/button_crunch_go");
+            clips[(int)Kind.Back] = Resources.Load<AudioClip>("UI/button_crunch_back");
+        }
+        return clips[(int)k];
+    }
 
-    Vector2 value = Vector2.one, velocity, target = Vector2.one;
-    float stiffness = ReleaseStiffness, damping = ReleaseDamping;
+    Kind kind;
+    float amount, target;
     bool pressed, moving;
-    Vector3 baseScale, lastWritten;
+    Vector3 baseScale, lastScale, basePos, lastPos;
     Selectable selectable;
+    RectTransform rt;
 
-    void Awake() { selectable = GetComponent<Selectable>(); }
+    void Awake() { selectable = GetComponent<Selectable>(); rt = transform as RectTransform; }
 
     public void OnPointerDown(PointerEventData e)
     {
         if (selectable != null && !selectable.IsInteractable()) return;
-        pressed = true; target = Pressed; stiffness = PressStiffness; damping = PressDamping; Begin();
-        if (Crunch != null && AudioManager.Instance != null) { LastCrunchAt = Time.unscaledTime; AudioManager.Instance.PlaySFX(Crunch); }
+        pressed = true; target = 1f; Begin();
+        var clip = Clip(kind);
+        if (clip != null && AudioManager.Instance != null) { LastCrunchAt = Time.unscaledTime; AudioManager.Instance.PlaySFX(clip); }
     }
     public void OnPointerUp(PointerEventData e) { Release(); }
     public void OnPointerExit(PointerEventData e) { if (pressed) Release(); }
 
-    void Release()
-    {
-        if (!pressed) return;
-        pressed = false; target = Vector2.one; stiffness = ReleaseStiffness; damping = ReleaseDamping;
-    }
+    void Release() { if (!pressed) return; pressed = false; target = 0f; }
 
     void Begin()
     {
         if (moving) return;
-        moving = true; baseScale = transform.localScale; lastWritten = baseScale; value = Vector2.one; velocity = Vector2.zero;
+        moving = true; amount = 0f;
+        baseScale = lastScale = transform.localScale; basePos = lastPos = transform.localPosition;
     }
 
     void LateUpdate()
     {
         if (!moving) return;
-        var dt = Mathf.Min(Time.unscaledDeltaTime, 1f / 30f);
-        var a = (target - value) * stiffness - velocity * damping;
-        velocity += a * dt; value += velocity * dt;
-        if (!pressed && (value - Vector2.one).sqrMagnitude < 1e-6f && velocity.sqrMagnitude < 1e-4f) { value = Vector2.one; moving = false; }
+        var rate = pressed ? PressRate : ReleaseRate;
+        amount += (target - amount) * (1f - Mathf.Exp(-rate * Time.unscaledDeltaTime));
+        if (!pressed && amount < 0.002f) { amount = 0f; moving = false; }
         Write();
     }
 
     void Write()
     {
         var t = transform;
-        if (t.localScale != lastWritten) baseScale = t.localScale;      // someone else set the scale this frame: build on it
-        var s = new Vector3(baseScale.x * value.x, baseScale.y * value.y, baseScale.z);
-        t.localScale = s; lastWritten = s;
+        if (t.localScale != lastScale) baseScale = t.localScale;            // someone else set it this frame: build on it
+        if (t.localPosition != lastPos) basePos = t.localPosition;
+        var k = 1f - Shrink * amount;
+        var h = rt != null ? rt.rect.height * baseScale.y : 0f;
+        t.localScale = lastScale = new Vector3(baseScale.x * k, baseScale.y * k, baseScale.z);
+        t.localPosition = lastPos = basePos + Vector3.down * (h * Sink * amount);
     }
 
     void OnDisable()
     {
         if (!moving) return;
-        pressed = false; moving = false; value = Vector2.one; velocity = Vector2.zero; Write();
+        pressed = false; moving = false; amount = 0f; Write();
     }
 
     /// Adds the press to every cookie button on screen; looks again twice a second for buttons made later.
     class Runner : MonoBehaviour
     {
         float next;
+        void Start() { Clip(Kind.Tap); }
         void Update()
         {
             if (Time.unscaledTime < next) return;
             next = Time.unscaledTime + 0.5f;
             foreach (var img in FindObjectsOfType<Image>())
             {
-                if (img.sprite == null || !CookieSprites.Contains(img.sprite.name)) continue;
+                if (img.sprite == null || !CookieSprites.TryGetValue(img.sprite.name, out var k)) continue;
                 var go = img.gameObject;
                 if (go.GetComponent<CookiePress>() != null) continue;
                 var pause = go.GetComponent<PauseButton>(); var cont = go.GetComponent<ClickContinue>(); var play = go.GetComponent<ClickPlay>();
                 if (go.GetComponent<Selectable>() == null && pause == null && cont == null && play == null && go.GetComponent<SettingButton>() == null) continue;
-                go.AddComponent<CookiePress>();
-                if (Crunch == null) continue;                    // the crunch replaces their old press clicks
+                go.AddComponent<CookiePress>().kind = k;
+                if (Clip(k) == null) continue;                    // the crunch replaces their old press clicks
                 if (pause != null) { pause._compressClip = null; pause._uncompressClip = null; }
                 if (cont != null) { cont._compressClip = null; cont._uncompressClip = null; }
                 if (play != null) { play._compressClip = null; play._uncompressClip = null; }
