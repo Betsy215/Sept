@@ -41,6 +41,20 @@ public class GamePhaseManager : MonoBehaviour
     private GamePhase currentPhase = GamePhase.ARRANGEMENT;
     private bool firstDaySkipped;   // day 1 goes straight into play once per scene load (owner, 31 October 2026)
 
+    // Two Ready buttons (owner, 18 November 2026: "have a ready button in both kitchen and game scene, after one
+    // button is clicked, go to the other scene, only start game when both ready is clicked"). One button, shown on
+    // both: on the table it answers for the table, in the kitchen (moved down onto the rug) for the kitchen.
+    private bool tableReady, kitchenReady, inKitchen;
+    private Vector2 doneButtonHome; private bool doneButtonHomeKept;
+    private ArrangeHintAnim kitchenHint;
+    private const string TableHint = "Drag to arrange your table", KitchenHint = "Drag to arrange your kitchen";
+
+    /// The arrangement's hint (the card and the hand moving an item) belongs to the tutorial only (owner, 18 November
+    /// 2026: "show it only during tutorial, remove it for game play, don't check it every time"): shown through the
+    /// first arrangement a save meets, on the table and in the kitchen, then never again.
+    public bool HintDue => SessionManager.Instance != null && SessionManager.Instance.ArrangeTutorialDue && !SkipsArrangement
+                           && currentPhase == GamePhase.ARRANGEMENT && FindObjectOfType<TutorialDirector>() == null;
+
     /// Day 1 comes pre-arranged: no drag, no Ready; the arrangement is taught on day 2 (owner, 31 October 2026).
     /// The tutorial day (level 0 while the tutorial is due) keeps its own flow.
     public bool SkipsArrangement => SessionManager.Instance != null && SessionManager.Instance.GetCurrentLevelIndex() == 0
@@ -100,11 +114,9 @@ public class GamePhaseManager : MonoBehaviour
 
         RefreshDraggableCache();
         KitchenArrange.BeginDay();   // the kitchen is arranged in the same phase (16 November 2026)
+        tableReady = false; kitchenReady = false;
 
-        tutorialPanel.SetActive(true);
-
-        // Set level-specific tutorial text with rotation
-        SetTutorialMessageForCurrentLevel();
+        ShowHint(true);
 
         LoadSavedFoodPositions();
         FixedStation.Place(tableLayer, allFoodItems);   // the chapter's fixed food on its station, bottom left (owner, 16 October)
@@ -115,6 +127,7 @@ public class GamePhaseManager : MonoBehaviour
 
         // Initial button state check
         StartCoroutine(DelayedButtonStateUpdate());
+        StartCoroutine(TagNewThings());
 
         if (refillSystem != null)
             refillSystem.NotifyPhaseChange(currentPhase);
@@ -131,33 +144,68 @@ public class GamePhaseManager : MonoBehaviour
         OnDoneButtonClicked();
     }
 
-    /// <summary>
-    /// Sets the tutorial message based on current level with rotation
-    /// </summary>
-    private void SetTutorialMessageForCurrentLevel()
+    /// The hint's card, words and moving hand: on while the tutorial's arrangement wants them (and `show`: the menu
+    /// book hides them while it is open). In the kitchen the words name the kitchen and the hand moves a kitchen thing.
+    public void ShowHint(bool show)
     {
-        if (tutorialText == null || levelTutorialMessages.Length == 0)
+        var on = show && HintDue;
+        if (kitchenHint != null && !(on && inKitchen)) { Destroy(kitchenHint.gameObject); kitchenHint = null; }
+        if (tutorialPanel != null) tutorialPanel.SetActive(on);
+        if (tutorialText != null) tutorialText.gameObject.SetActive(on);
+        var card = arrangmentUI != null ? arrangmentUI.transform.Find("HintCard") : null;
+        if (card != null) card.gameObject.SetActive(on);
+        if (!on) return;
+        if (tutorialText != null)
         {
-            DebugLog("Tutorial text component or messages not configured");
-            return;
+            tutorialText.text = inKitchen ? KitchenHint : TableHint;
+            // Hints: dark brown letters with no rim (owner, 16 October: one text style per purpose)
+            tutorialText.color = new Color(0.28f, 0.15f, 0.055f);
+            var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) tutorialText.fontSharedMaterial = plain;
         }
+        // The table's moving hand is the panel's own clip. The kitchen covers that canvas, so in the kitchen the same
+        // move plays on the arranging canvas, under the card, with a kitchen thing (the whisk).
+        if (inKitchen && kitchenHint == null && arrangmentUI != null)
+        {
+            var handT = tutorialPanel != null ? tutorialPanel.transform.Find("AnimationContainer/Hand") : null;
+            var cardRt = card as RectTransform;
+            var at = cardRt != null ? cardRt.anchoredPosition + new Vector2(0f, -cardRt.rect.height / 2f - 110f) : new Vector2(0f, 300f);
+            kitchenHint = ArrangeHintAnim.Make((RectTransform)arrangmentUI.transform, at, Resources.Load<Sprite>("Kitchen/whisk"), handT != null ? handT.GetComponent<Image>() : null);
+        }
+    }
 
-        var currentLevel = GetCurrentLevel();
+    /// The kitchen opened or closed while arranging (KitchenArrangeRunner): the Ready button goes down onto the
+    /// kitchen's rug, clear of the counter, and answers for the kitchen; the hint names the kitchen.
+    public void KitchenShown(bool open)
+    {
+        if (this == null) return;
+        inKitchen = open;
+        if (doneButton != null)
+        {
+            var rt = (RectTransform)doneButton.transform;
+            if (!doneButtonHomeKept) { doneButtonHome = rt.anchoredPosition; doneButtonHomeKept = true; }
+            var canvas = arrangmentUI != null ? arrangmentUI.transform as RectTransform : null;
+            rt.anchoredPosition = open && canvas != null ? new Vector2(0f, -canvas.rect.height / 2f + rt.rect.height / 2f + 110f) : doneButtonHome;
+        }
+        if (currentPhase == GamePhase.ARRANGEMENT) { ShowHint(true); UpdateDoneButtonState(); }
+    }
 
-        // Calculate message index with rotation based on array length (non-negative modulo)
-        var count = levelTutorialMessages.Length;
-        // Day 1 has no arrangement (owner, 31 October 2026), so the rotation starts on day 2 with "Drag to arrange table"
-        var messageIndex = ((currentLevel - 2) % count + count) % count;
-
-        // Get the message and format it with the current level number
-        var tutorialMessage = string.Format(levelTutorialMessages[messageIndex], currentLevel);
-
-        tutorialText.text = tutorialMessage;
-        // Hints: dark brown letters with no rim (owner, 16 October: one text style per purpose)
-        tutorialText.color = new Color(0.28f, 0.15f, 0.055f);
-        var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) tutorialText.fontSharedMaterial = plain;
-
-        DebugLog($"Set tutorial message for Level {currentLevel} (Message Index: {messageIndex}): {tutorialMessage}");
+    /// "NEW" on what was bought since the last day (owner, 18 November 2026), a moment after the load, when every
+    /// thing on the table has been switched on or off.
+    private IEnumerator TagNewThings()
+    {
+        yield return new WaitForSeconds(0.25f);
+        NewTag.ClearWorld();
+        var sm = SessionManager.Instance;
+        if (sm == null || currentPhase != GamePhase.ARRANGEMENT || SkipsArrangement) yield break;
+        if (allFoodItems != null)
+            foreach (var item in allFoodItems)
+                if (item != null && item.gameObject.activeInHierarchy && (sm.IsNewToArrange("Food:" + item.GetFoodType()) || sm.IsNewToArrange("Upgrade:" + item.GetFoodType())))
+                    NewTag.OnWorld(item.transform);
+        foreach (var decor in FindObjectsOfType<DecorGate>())
+            if (decor != null && sm.IsNewToArrange("Decor:" + decor.decorName)) NewTag.OnWorld(decor.transform);
+        if (sm.IsNewToArrange("Upgrade:CoffeeMachine") || sm.IsNewToArrange("Upgrade:Coffee"))
+            foreach (var machine in FindObjectsOfType<CoffeeMachine>())
+                if (machine != null && machine.gameObject.activeInHierarchy) NewTag.OnWorld(machine.transform);
     }
 
     /// <summary>
@@ -197,6 +245,9 @@ public class GamePhaseManager : MonoBehaviour
         EnableGameplaySystems();
 
         arrangmentUI.gameObject.SetActive(false);
+        ShowHint(false);
+        NewTag.ClearWorld();
+        if (SessionManager.Instance != null) SessionManager.Instance.ClearNewToArrange();   // seen: not new tomorrow
     }
 
     /// <summary>
@@ -271,8 +322,9 @@ public class GamePhaseManager : MonoBehaviour
         if (doneButton == null) return;
 
         var hasOverlaps = AnyItemsOverlapping();
-        // a red piece in the kitchen keeps the day from starting too (owner, 16 November 2026)
-        doneButton.interactable = !hasOverlaps && !KitchenArrange.AnyRed;
+        // each Ready answers for what is on screen: the table's for overlaps on the table, the kitchen's for a red
+        // piece there (a red kitchen still keeps the day from starting: the table's Ready then leads into the kitchen)
+        doneButton.interactable = inKitchen ? !KitchenArrange.AnyRed : !hasOverlaps;
 
         if (hasOverlaps) DebugLog("Done button disabled - overlaps detected");
     }
@@ -295,8 +347,30 @@ public class GamePhaseManager : MonoBehaviour
         // A second tap in the same frame (or a double-wired button) must not start play twice
         if (currentPhase == GamePhase.PLAYING) return;
 
+        // Day 1 and the demos go straight into play. Otherwise both Ready buttons are needed: the first one tapped
+        // leads to the other place, the second starts the day.
+        var direct = SkipsArrangement || FindObjectOfType<TutorialDirector>() != null;
+        var kitchen = KitchenSceneManager.Instance;
+        if (!direct && kitchen != null)
+        {
+            if (kitchen.IsKitchenOpen)
+            {
+                if (KitchenArrange.AnyRed) return;
+                kitchenReady = true;
+                kitchen.CloseKitchen();
+                if (!tableReady || AnyItemsOverlapping()) { tableReady = false; return; }
+            }
+            else
+            {
+                if (AnyItemsOverlapping()) return;
+                tableReady = true;
+                if (!kitchenReady || KitchenArrange.AnyRed) { kitchen.OpenKitchen(); return; }
+            }
+        }
+
+        if (!direct && SessionManager.Instance != null && SessionManager.Instance.ArrangeTutorialDue) SessionManager.Instance.MarkArrangeTutorialSeen();
         if (tutorialPanel != null) tutorialPanel.SetActive(false);
-        if (KitchenArrange.AnyRed && !SkipsArrangement) return;   // the button is off then; this covers a tap that slipped through
+        if (KitchenArrange.AnyRed && !SkipsArrangement) return;   // covers a tap that slipped through
         if (SessionManager.Instance != null) SessionManager.Instance.UpdateFoodPositions(allFoodItems);
         KitchenArrange.Commit();
         StartPlayPhase();

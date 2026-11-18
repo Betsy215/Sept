@@ -149,7 +149,27 @@ public static class KitchenArrange
         }
         Sort();
         if (Arranging())
+        {
             foreach (var p in pieces) KitchenGrab.Attach(p.rt, p.def.name);
+            TagNew(bg);
+        }
+    }
+
+    /// "NEW" on what was bought since the last day (owner, 18 November 2026): the food's own thing in the kitchen
+    /// (juice, apples, cake, the choux board ...), the blender with the ice cream, a newly bought oven.
+    private static void TagNew(Transform bg)
+    {
+        var sm = SessionManager.Instance; if (sm == null || !sm.HasActiveSession()) return;
+        foreach (var gate in bg.GetComponentsInChildren<KitchenFoodGate>(true))
+        {
+            var food = gate.associatedFoodType != null ? gate.associatedFoodType.Trim() : "";
+            if (gate.keepVisible || food == "" || !sm.IsNewToArrange("Food:" + food) || !sm.IsFoodItemActive(food)) continue;
+            NewTag.OnUI(gate.transform as RectTransform);
+        }
+        if (sm.IsNewToArrange("Food:IceCream") || sm.IsNewToArrange("Upgrade:IceCream")) { var blender = Find("Blender"); if (blender != null && blender.rt != null && blender.rt.gameObject.activeInHierarchy) NewTag.OnUI(blender.rt); }
+        if (sm.IsNewToArrange("Upgrade:Oven"))
+            foreach (var t in bg.GetComponentsInChildren<Transform>(true))
+                if (t.name == "spot" + sm.OvensOwned && t.childCount > 0) { NewTag.OnUI(t.GetChild(0) as RectTransform); break; }
     }
 
     private static void Place(Piece p, Vector2 foot)
@@ -332,20 +352,18 @@ public static class KitchenArrange
 /// Lives in the kitchen scene with the pieces: the first check and the wiggle.
 public class KitchenArrangeRunner : MonoBehaviour
 {
-    // While the kitchen is being arranged, the table's own arranging things (the Ready button, the hint banner, the
-    // small menu) are drawn over the kitchen: they are put away until the kitchen closes, so nothing lies on the
-    // counter and the day cannot be started from in here with a piece still in the hand.
-    private readonly List<GameObject> putAway = new List<GameObject>();
+    // While the kitchen is being arranged, the table's own arranging things are drawn over the kitchen. The small
+    // menu is put away until the kitchen closes. The Ready button stays (owner, 18 November 2026: a Ready in the
+    // kitchen too), moved down onto the rug so nothing lies on the counter; the hint shows only in the tutorial.
     private Canvas menu;
+    private GamePhaseManager phases;
 
     private IEnumerator Start()
     {
         if (KitchenArrange.Arranging())
         {
-            var phases = FindObjectOfType<GamePhaseManager>();
-            if (phases != null)
-                foreach (var g in new[] { phases.arrangmentUI, phases.tutorialPanel })
-                    if (g != null && g.activeSelf) { g.SetActive(false); putAway.Add(g); }
+            phases = FindObjectOfType<GamePhaseManager>();
+            if (phases != null) phases.KitchenShown(true);
             var book = GameObject.Find("MenuBookCanvas"); var c = book != null ? book.GetComponent<Canvas>() : null;
             if (c != null && c.enabled) { c.enabled = false; menu = c; }
         }
@@ -355,7 +373,7 @@ public class KitchenArrangeRunner : MonoBehaviour
 
     private void OnDestroy()
     {
-        foreach (var g in putAway) if (g != null) g.SetActive(true);
+        if (phases != null) phases.KitchenShown(false);
         if (menu != null) menu.enabled = true;
     }
 

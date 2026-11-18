@@ -23,6 +23,12 @@ public class SessionData
     // True once the player has watched (or skipped past) the Level 0 tutorial for this game
     public bool tutorialSeen;
     public bool tutorial2Seen;                 // the chapter 2 first-day tutorial (26 October 2026; old saves: false)
+    // The first arrangement's hint: the hand moving an item, on the table and in the kitchen (owner, 18 November 2026:
+    // "only for tutorial, handle the same way as other things in tutorial"). Old saves: false, so they see it once.
+    public bool arrangeTutorialSeen;
+    // "NEW" labels (owner, 18 November 2026). Keys are "Food:Juice", "Decor:PotFlowers", "Upgrade:Oven" ... (ShopManager.KeyOf).
+    public List<string> newThings;             // bought since the last day started: labelled in the arrangement, table and kitchen
+    public List<string> newInBook;             // bought since the cookie book was last opened: labelled on the book and inside it
     // JsonUtility cannot serialize a Dictionary, so upgrade levels are mirrored
     // into two parallel lists around every save and load (see Sync methods).
     [NonSerialized] public Dictionary<string, int> foodUpgradeLevels;
@@ -807,6 +813,25 @@ public class SessionManager : MonoBehaviour
     }
 
     public void MarkTutorial2Seen() { if (currentSession == null) return; currentSession.tutorial2Seen = true; SaveSession(); }
+
+    public bool ArrangeTutorialDue => currentSession != null && currentSession.isActive && !currentSession.arrangeTutorialSeen;
+    public void MarkArrangeTutorialSeen() { if (currentSession == null || currentSession.arrangeTutorialSeen) return; currentSession.arrangeTutorialSeen = true; SaveSession(); }
+
+    /// Something was just bought: new on the cookie book, and new in the next arrangement.
+    public void NoteNew(string key)
+    {
+        if (currentSession == null || string.IsNullOrEmpty(key)) return;
+        if (currentSession.newThings == null) currentSession.newThings = new List<string>();
+        if (currentSession.newInBook == null) currentSession.newInBook = new List<string>();
+        if (!currentSession.newThings.Contains(key)) currentSession.newThings.Add(key);
+        if (!currentSession.newInBook.Contains(key)) currentSession.newInBook.Add(key);
+        SaveSession();
+    }
+    public bool IsNewToArrange(string key) => currentSession != null && currentSession.newThings != null && currentSession.newThings.Contains(key);
+    public void ClearNewToArrange() { if (currentSession == null || currentSession.newThings == null || currentSession.newThings.Count == 0) return; currentSession.newThings.Clear(); SaveSession(); }
+    public bool IsNewInBook(string key) => currentSession != null && currentSession.newInBook != null && currentSession.newInBook.Contains(key);
+    public bool AnyNewInBook => currentSession != null && currentSession.newInBook != null && currentSession.newInBook.Count > 0;
+    public void ClearNewInBook() { if (currentSession == null || currentSession.newInBook == null || currentSession.newInBook.Count == 0) return; currentSession.newInBook.Clear(); SaveSession(); }
 
     /// The candy jar (owner, 26 October 2026): a shop purchase adds three (the jar holds nine, CandyJar.Full); a tap on the jar uses one
     public int Candies => currentSession != null ? currentSession.candies : 0;

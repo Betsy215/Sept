@@ -212,7 +212,7 @@ public static class ShopCookies
 
     // ---------------------------------------------------------------- the book of owned things -----------------
 
-    public struct Entry { public Sprite cookie; public string name; public string info; }
+    public struct Entry { public Sprite cookie; public string name; public string info; public string key; }
 
     private static RectTransform bookButton;
     private static GameObject bookPanel;
@@ -236,6 +236,14 @@ public static class ShopCookies
             OpenBook(rt.GetComponentInParent<Canvas>().rootCanvas.transform as RectTransform, owned(), titleFont, textFont, panelLook);
         });
         bookButton = rt;
+        RefreshBookTag();
+    }
+
+    /// "NEW" on the book while something bought has not been looked at in it (owner, 18 November 2026).
+    public static void RefreshBookTag()
+    {
+        if (bookButton == null) return;
+        if (SessionManager.Instance != null && SessionManager.Instance.AnyNewInBook) NewTag.OnUI(bookButton); else NewTag.Remove(bookButton);
     }
 
     /// A small hop of the book's button: the thing just eaten went in there.
@@ -302,7 +310,7 @@ public static class ShopCookies
         var rule = Child(page, "Rule", new Vector2(0.5f, 0.5f), new Vector2(W - 120f, 4f), new Vector2(0f, -H / 2f + infoH + 40f));
         var ruleImg = rule.gameObject.AddComponent<Image>(); ruleImg.color = new Color(Ink.r, Ink.g, Ink.b, 0.25f); ruleImg.raycastTarget = false;
 
-        var cells = new List<RectTransform>();
+        var cells = new List<RectTransform>(); var newest = owned.Count - 1;
         for (var i = 0; i < owned.Count; i++)
         {
             var e = owned[i];
@@ -311,6 +319,7 @@ public static class ShopCookies
             var ci = c.gameObject.AddComponent<Image>(); ci.sprite = e.cookie; ci.preserveAspect = true;
             var cb = c.gameObject.AddComponent<Button>(); cb.transition = Selectable.Transition.None;
             cells.Add(c);
+            if (SessionManager.Instance != null && SessionManager.Instance.IsNewInBook(e.key)) { NewTag.OnUI(c); newest = i; }
             cb.onClick.AddListener(() =>
             {
                 if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
@@ -330,7 +339,10 @@ public static class ShopCookies
             var xi = x.gameObject.AddComponent<Image>(); xi.sprite = cross; xi.preserveAspect = true;
             x.gameObject.AddComponent<Button>().onClick.AddListener(CloseBook);
         }
-        if (owned.Count > 0) cells[owned.Count - 1].GetComponent<Button>().onClick.Invoke();   // the newest is shown first
+        if (owned.Count > 0) cells[newest].GetComponent<Button>().onClick.Invoke();   // a new one is shown first
+        // looked at: the labels stay on this open page, the book's own label goes
+        if (SessionManager.Instance != null) SessionManager.Instance.ClearNewInBook();
+        RefreshBookTag();
     }
 
     public static void CloseBook()

@@ -40,7 +40,7 @@ public class SimpleScorePopup : MonoBehaviour
     /// the points are awarded; used once). Unset: the old place in the middle.
     public static Vector2? NextAtScreen;
     // Over the served customer it rises further and leaves sooner, so it is gone before the next customer orders there
-    private const float RiseOverCustomer = 240f, StayOverCustomer = 1.1f;
+    private const float RiseOverCustomer = 140f, StayOverCustomer = 1.1f;
 
     public static Vector2 ScreenPointOf(Transform t)
     {
@@ -248,10 +248,14 @@ public class SimpleScorePopup : MonoBehaviour
                 var r = parentRect.rect; local -= new Vector2(r.center.x, r.center.y);
                 // the two places mirror each other about the screen's middle (owner, 18 November 2026: "position them
                 // symmetrically on the left and right. don't go too much towards the edge"): the served side picks the
-                // place, the bubble's height is kept; the receipt (300 wide at its full 1.2 size) stays 60 inside the edge
+                // place; the receipt (300 wide at its full 1.2 size) stays 60 inside the edge
                 var half = r.width / 2f; var receiptHalf = 150f * popup.endScale;
                 var side = Mathf.Min(half * 0.36f, half - receiptHalf - 60f);
                 local.x = Mathf.Sign(local.x == 0f ? 1f : local.x) * Mathf.Max(0f, side);
+                // the height it always had (owner, 18 November 2026, after a test run: "the receipt is too low, use the
+                // previous height"): it ends where the old receipt ended (620), starting a little under it so the rise shows.
+                // At the bubble's own height it began 150 to 300 lower than that.
+                local.y = popup.defaultSpawnPosition.y - 40f;
                 rectTransform.anchoredPosition = local;
                 popup.moveUpDistance = RiseOverCustomer; popup.stayDuration = StayOverCustomer;
             }

@@ -240,11 +240,7 @@ public class MenuBook : MonoBehaviour
     /// The arrangement's "Drag to arrange" card would sit over the paper's top: hidden while the menu is open.
     private void ShowArrangeHint(bool show)
     {
-        if (phaseManager == null) return;
-        if (phaseManager.tutorialPanel != null) phaseManager.tutorialPanel.SetActive(show);
-        if (phaseManager.tutorialText != null) phaseManager.tutorialText.gameObject.SetActive(show);
-        var card = phaseManager.arrangmentUI != null ? phaseManager.arrangmentUI.transform.Find("HintCard") : null;
-        if (card != null) card.gameObject.SetActive(show);
+        if (phaseManager != null) phaseManager.ShowHint(show);   // the hint itself is the tutorial's only (18 November 2026)
     }
 
     /// Switch a food without the motion (tests). False when the rules refused.

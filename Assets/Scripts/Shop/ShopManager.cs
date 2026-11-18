@@ -715,7 +715,7 @@ public class ShopManager : MonoBehaviour
             var shown = DisplayName(c);
             if (c.itemType == ItemType.Upgrade && c.upgradeFoodType == "Oven")
                 shown = SessionManager.Instance != null && SessionManager.Instance.OvensOwned >= 3 ? "Three ovens" : "Two ovens";
-            list.Add(new ShopCookies.Entry { cookie = cookie, name = shown, info = info });
+            list.Add(new ShopCookies.Entry { cookie = cookie, name = shown, info = info, key = KeyOf(c) });
         }
         // What the player owns from the start has no shop card (owner, 18 November 2026: "add bread and coffee to the
         // book"); they open the book, before everything bought
@@ -735,18 +735,26 @@ public class ShopManager : MonoBehaviour
     /// The bought thing is eaten as a cookie, bite by bite; meanwhile its card has left and the others have closed up,
     /// and at the end the book's button hops (owner, 17 November 2026). A card without a cookie picture flies to the
     /// way out as before.
+    /// What a bought thing is called in the save's "new" lists: "Food:Juice", "Decor:PotFlowers", "Upgrade:Oven" ...
+    public static string KeyOf(ShopItemController c)
+    {
+        return c == null ? "" : c.itemType + ":" + (c.itemType == ItemType.Upgrade ? c.upgradeFoodType : c.itemName);
+    }
+
     private void EatBought(ShopItemController item)
     {
+        if (SessionManager.Instance != null) SessionManager.Instance.NoteNew(KeyOf(item));   // "NEW" on the book and in the next arrangement
         var cookie = ShopCookies.For(item);
         var root = popupItemIcon != null && popupItemIcon.canvas != null ? popupItemIcon.canvas.rootCanvas.transform as RectTransform : null;
         if (cookie == null || root == null)
         {
             var wayOut = GameObject.Find("NextLevelButton");
             ShopFlourish.Fly(this, popupItemIcon, wayOut != null ? wayOut.transform as RectTransform : null);
+            ShopCookies.RefreshBookTag();
             return;
         }
         LayoutCards(true); RefreshShopDisplay(); UpdateScrollButtons(); RefreshTabNote();
-        ShopCookies.Eat(this, root, cookie, () => ShopCookies.BumpBook(this));
+        ShopCookies.Eat(this, root, cookie, () => { ShopCookies.BumpBook(this); ShopCookies.RefreshBookTag(); });
     }
 
     /// The box around everything a card draws (icon, price, name), in the container's space
