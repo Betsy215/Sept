@@ -155,6 +155,7 @@ public class TutorialDirector : MonoBehaviour
     private Image blocker;
     private TextMeshProUGUI caption;
     private RectTransform captionBox;
+    private const float CaptionY = -1110f;
     private RectTransform hand;
     private Vector2 handBase;
     private Sprite arrowSprite;
@@ -513,6 +514,7 @@ public class TutorialDirector : MonoBehaviour
     {
         AnalyticsLog.TutorialStep(++saidCount, text);
         caption.text = text;
+        captionBox.anchoredPosition = new Vector2(0f, CaptionY);                      // its own place; PointAtScreen moves it if the arrow would cover it
         captionBox.gameObject.SetActive(true);                                       // shown again after the chapter 2 demo hides it at the table
         caption.gameObject.SetActive(true);
         // The card grows for a second line (owner, 12 October: two lines did not sit well on the one-line card)
@@ -611,9 +613,25 @@ public class TutorialDirector : MonoBehaviour
         // from just above it and never covers the item
         handBase = local + new Vector2(0f, 60f);
         hand.anchoredPosition = handBase;
+        KeepCaptionClearOf(handBase);
         if (pulse != null) StopCoroutine(pulse);
         pulse = StartCoroutine(Pulse());
         yield return null;
+    }
+
+    /// The banner has a fixed place and the arrow goes where its target is: on an iPad the chapter 2 waffle machine lies
+    /// right under the banner, and the arrow was drawn over its words ("TAP THE WAFFLE MACHINE TO BA_E WAFFLE BOWLS",
+    /// found 17 November 2026). Where the arrow, bobbing included, would touch the banner, the banner goes up to clear it.
+    private void KeepCaptionClearOf(Vector2 arrowFoot)
+    {
+        if (captionBox == null || canvasRect == null || !captionBox.gameObject.activeSelf) return;
+        var top = canvasRect.rect.yMax;
+        var boxTop = top + captionBox.anchoredPosition.y; var boxBottom = boxTop - captionBox.sizeDelta.y;
+        var arrowTop = arrowFoot.y + hand.sizeDelta.y + 28f;                        // its height and the bob
+        if (arrowFoot.y >= boxTop || arrowTop <= boxBottom) return;                  // no overlap: the banner stays put
+        var newBottom = arrowTop + 24f;
+        var y = newBottom + captionBox.sizeDelta.y - top;
+        captionBox.anchoredPosition = new Vector2(0f, Mathf.Min(y, -260f));        // never under the settings and pause buttons
     }
 
     private IEnumerator Pulse()
@@ -671,7 +689,7 @@ public class TutorialDirector : MonoBehaviour
         captionBox.anchorMin = new Vector2(0.5f, 1f);
         captionBox.anchorMax = new Vector2(0.5f, 1f);
         captionBox.pivot = new Vector2(0.5f, 1f);
-        captionBox.anchoredPosition = new Vector2(0f, -1110f); // over the table, below the order bubble and customer
+        captionBox.anchoredPosition = new Vector2(0f, CaptionY); // over the table, below the order bubble and customer
         captionBox.sizeDelta = new Vector2(1000f, 200f);
         caption = NewText("Caption", captionBox, font, 64f, new Color(0.28f, 0.15f, 0.055f));   // hints: dark brown, no rim (owner, 16 October)
         var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) caption.fontSharedMaterial = plain;
