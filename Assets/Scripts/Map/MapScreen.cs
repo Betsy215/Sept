@@ -135,7 +135,7 @@ public class MapScreen : MonoBehaviour
             var dot = NewImage("Day" + (i + 1), canvasRect, Load(isToday ? "day_today" : played ? "day_done" : "day_locked"));
             if (played && dayStars >= 3) dot.color = new Color(1f, 0.98f, 0.9f);
             Place(dot.rectTransform, pos, new Vector2(size, size));
-            if (isToday) dot.gameObject.AddComponent<MapTodayBounce>();   // today's circle bounces (owner, 13 October)
+            if (isToday) { dot.gameObject.AddComponent<MapTodayBounce>(); GlowFx.Shine(dot); }   // today's circle bounces (owner, 13 October) and shines (C, 18 November 2026)
             var label = NewText("Number", dot.rectTransform, (first + i + 1).ToString(), isToday ? 38f : 30f,
                 isToday ? new Color(1f, 0.98f, 0.92f) : played ? new Color(0.43f, 0.24f, 0.08f) : new Color(0.47f, 0.43f, 0.39f));
             Stretch(label.rectTransform);

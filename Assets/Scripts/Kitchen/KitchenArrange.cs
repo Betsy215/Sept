@@ -164,12 +164,12 @@ public static class KitchenArrange
         {
             var food = gate.associatedFoodType != null ? gate.associatedFoodType.Trim() : "";
             if (gate.keepVisible || food == "" || !sm.IsNewToArrange("Food:" + food) || !sm.IsFoodItemActive(food)) continue;
-            NewTag.OnUI(gate.transform as RectTransform);
+            NewTag.OnUI(gate.transform as RectTransform); GlowFx.New(gate.GetComponent<Image>());
         }
-        if (sm.IsNewToArrange("Food:IceCream") || sm.IsNewToArrange("Upgrade:IceCream")) { var blender = Find("Blender"); if (blender != null && blender.rt != null && blender.rt.gameObject.activeInHierarchy) NewTag.OnUI(blender.rt); }
+        if (sm.IsNewToArrange("Food:IceCream") || sm.IsNewToArrange("Upgrade:IceCream")) { var blender = Find("Blender"); if (blender != null && blender.rt != null && blender.rt.gameObject.activeInHierarchy) { NewTag.OnUI(blender.rt); GlowFx.New(blender.image); } }
         if (sm.IsNewToArrange("Upgrade:Oven"))
             foreach (var t in bg.GetComponentsInChildren<Transform>(true))
-                if (t.name == "spot" + sm.OvensOwned && t.childCount > 0) { NewTag.OnUI(t.GetChild(0) as RectTransform); break; }
+                if (t.name == "spot" + sm.OvensOwned && t.childCount > 0) { NewTag.OnUI(t.GetChild(0) as RectTransform); GlowFx.New(t.GetChild(0).GetComponent<Image>()); break; }
     }
 
     private static void Place(Piece p, Vector2 foot)

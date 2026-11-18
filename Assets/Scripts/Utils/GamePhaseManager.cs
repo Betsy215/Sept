@@ -127,6 +127,7 @@ public class GamePhaseManager : MonoBehaviour
 
         // Initial button state check
         StartCoroutine(DelayedButtonStateUpdate());
+        if (doneButton != null) GlowFx.Shine(doneButton.GetComponent<Image>());   // C on Ready, table and kitchen (owner, 18 November 2026); off while Ready is off
         StartCoroutine(TagNewThings());
 
         if (refillSystem != null)
@@ -194,18 +195,18 @@ public class GamePhaseManager : MonoBehaviour
     private IEnumerator TagNewThings()
     {
         yield return new WaitForSeconds(0.25f);
-        NewTag.ClearWorld();
+        NewTag.ClearWorld(); GlowFx.ClearWorld();
         var sm = SessionManager.Instance;
         if (sm == null || currentPhase != GamePhase.ARRANGEMENT || SkipsArrangement) yield break;
         if (allFoodItems != null)
             foreach (var item in allFoodItems)
                 if (item != null && item.gameObject.activeInHierarchy && (sm.IsNewToArrange("Food:" + item.GetFoodType()) || sm.IsNewToArrange("Upgrade:" + item.GetFoodType())))
-                    NewTag.OnWorld(item.transform);
+                { NewTag.OnWorld(item.transform); GlowFx.NewWorld(item.transform); }   // B: the white glow and stars (owner, 18 November 2026)
         foreach (var decor in FindObjectsOfType<DecorGate>())
-            if (decor != null && sm.IsNewToArrange("Decor:" + decor.decorName)) NewTag.OnWorld(decor.transform);
+            if (decor != null && sm.IsNewToArrange("Decor:" + decor.decorName)) { NewTag.OnWorld(decor.transform); GlowFx.NewWorld(decor.transform); }
         if (sm.IsNewToArrange("Upgrade:CoffeeMachine") || sm.IsNewToArrange("Upgrade:Coffee"))
             foreach (var machine in FindObjectsOfType<CoffeeMachine>())
-                if (machine != null && machine.gameObject.activeInHierarchy) NewTag.OnWorld(machine.transform);
+                if (machine != null && machine.gameObject.activeInHierarchy) { NewTag.OnWorld(machine.transform); GlowFx.NewWorld(machine.transform); }
     }
 
     /// <summary>
@@ -246,7 +247,7 @@ public class GamePhaseManager : MonoBehaviour
 
         arrangmentUI.gameObject.SetActive(false);
         ShowHint(false);
-        NewTag.ClearWorld();
+        NewTag.ClearWorld(); GlowFx.ClearWorld();
         if (SessionManager.Instance != null) SessionManager.Instance.ClearNewToArrange();   // seen: not new tomorrow
     }
 
