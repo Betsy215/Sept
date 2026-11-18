@@ -67,7 +67,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <body><main>
 
 <h1>Food Truck Cafe</h1>
-<p class="sub">Your report for 15 November. 26.11.22 (build 35) and the 15 Stars purchase are waiting for Apple's review; they go on sale by themselves once approved.</p>
+<p class="sub">Your report for 17 November. 26.11.22 (build 35) and the 15 Stars purchase are in Apple's review, no message from Apple; they go on sale by themselves once approved.</p>
 
 <nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#qa"><b>2</b>Q&amp;A</a><a href="#current"><b>3</b>Current</a><a href="#mvp"><b>4</b>MVP</a><a href="#backlog"><b>5</b>Backlog</a><a href="#analysis"><b>6</b>Analysis</a><a href="visuals.html" class="page">Visuals</a><span id="saved"></span></nav>
 
@@ -75,10 +75,11 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>Say "build"</b> for a new test build: cake frames, blender back in place, the new table shadows, your coffee bag glow.</p>
-<p><b>Cake</b> (Current): the seven frames are rebuilt; tick.</p>
+<p><b>Cake</b> (Current): your way of taking slices is back, with the counts fixed; tick.</p>
+<p><b>Character cookies</b> (Current): the five cookies are open in your Chrome; tick if you want shapes of our customers.</p>
 <p><b>Kitchen</b> (Current): tick how the arrangement feels.</p>
 <p><b>App Store page</b> (Q&amp;A): one list of ten now; tick what to do.</p><p><b>iCloud</b> ("FoodTruckCafe art"), the blender: 5 stills as the game shows it (blender_frame_1_rest, 2_vanilla, 3_strawberry, 4_chocolate, 5_mint), the 4 layers the game uses (blender, blender_blade, blender_fill, blender_swirl), and blender_redraw_body with blender_redraw_glow for your redraw.</p></div>
-<div class="who p2"><h3>Me</h3><p><b>Version numbers</b> (your tick): from the next version on, the version is the day we submit and builds start at 1.</p><p><b>26.11.22</b> is still in Apple's review.</p></div>
+<div class="who p2"><h3>Me</h3><p><b>Version numbers</b> (your tick): from the next version on, the version is the day we submit and builds start at 1.</p><p><b>26.11.22</b> is in Apple's review since 15 November; I looked in App Store Connect, Apple has sent no message. Nothing to do but wait.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
@@ -127,16 +128,29 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="current"><span class="n">3</span>Current</h2>
 
 <div class="card">
-<p style="margin-top:0"><b>Cake frames rebuilt, 16 November.</b> In the project, in no build.</p>
-<figure><img src="cake_frames_fix.jpg" alt="The seven cake frames before and after: after, the strawberries count 6, 5, 4, 3, 2, 1, none, on one unchanging stand, plate and napkin"></figure>
+<p style="margin-top:0"><b>Cake frames: your way of taking slices, counts fixed, 17 November.</b> In the project, in no build.</p>
+<figure><img src="cake_frames_fix.jpg" alt="Two rows of seven cake frames. Top, the frames before: the cake opens at the front but shows 6, 4, 3, 3, 2, 1, 0 slices. Bottom, now: the same opening at the front with 6, 5, 4, 3, 2, 1, 0 slices, a strawberry on each"><figcaption>Top: before. Bottom: now.</figcaption></figure>
 <ul>
-<li><b>Your four points:</b> 4 now has four slices; 3 and 2 have a strawberry on every slice; 1 sits on the right plate.</li>
-<li><b>How:</b> ChatGPT had drawn seven different cakes. Now every frame is the full cake with slices taken away, the back ones first, so each slice keeps its own strawberry and nothing but the cake changes between frames.</li>
-<li>The plate behind the missing slices is the empty frame's plate, fitted to this stand.</li>
+<li><b>Kept:</b> the cake opens at the front and shows its cut faces; then left and right stand apart; one slice at the end.</li>
+<li><b>Fixed:</b> 5, 4, 3, 2, 1 show exactly that many slices, a strawberry on each (5 had only four slices too). One stand, plate and napkin in all seven.</li>
+<li>The cut faces are ChatGPT's own, fitted onto the full cake.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.cake2.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.cake2.wrong"> Still wrong (I will say where)</label></li>
+<li><label><input type="checkbox" data-id="cur.cake3.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.cake3.wrong"> Still wrong (I will say where)</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Character cookies in Slay the Spire 2, 17 November.</b> <a href="https://slaythespire.wiki.gg/wiki/Slay_the_Spire_2:Yummy_Cookie#Gallery" target="_blank" rel="noopener">The five cookies (wiki gallery)</a>, open in your Chrome now.</p>
+<ul>
+<li><b>What it is:</b> the relic "Yummy Cookie" (upgrade 4 cards). Not from a boss: Tezcatara, one of the Ancients, offers it at the start of Act 2.</li>
+<li><b>The five:</b> Ironclad, a brown angular biscuit with a yellow piped square; Silent, a green hood with a white skull mask; Regent, an orange four-point star; Necrobinder, a blue flame with a white skull; Defect, a plain biscuit with a blue orb and rainbow sprinkles.</li>
+<li><b>Why they read at once:</b> one bold outline per character (hood, star, flame), not the whole figure; flat icing in the character's one colour with a pale baked edge all round; one or two piped details; no drawn outline.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.cookie.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.cookie.shapes"> Draft biscuit outlines of our customers for me to paint over</label></li>
 </ul>
 </div>
 
