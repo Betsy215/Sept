@@ -15,7 +15,10 @@ public static class KitchenBlender
     static readonly Vector2 Min = new Vector2(0.0296f, 0.5005f), Max = new Vector2(0.2453f, 0.649f);
     const float GlowPad = 40f;   // Resources/Kitchen/blender_glow is blender.png with 40 px of room on every side, painted by Docs/tools/glow_brush.py
     static readonly Vector2 FluidMin = new Vector2(0.2034f, 0.3662f), FluidMax = new Vector2(0.7172f, 0.7549f); // the drink inside the jug (layout.json)
-    static readonly Vector2 BladeMin = new Vector2(0.3241f, 0.6873f), BladeMax = new Vector2(0.5690f, 0.8592f); // the blending element the owner drew (layout.json)
+    // the blade from the owner's rest picture of 18 November 2026 (Store/redesign/blender_2026-11-18/build_layers.py): a box
+    // centred on the shaft (x 128..147 of 290), so the squeeze turns it about its own axis; its foot reaches into the ice
+    static readonly Vector2 BladeMin = new Vector2(0.31724f, 0.63944f), BladeMax = new Vector2(0.63103f, 0.87042f);
+    public const int ChurnFrames = 12;   // Resources/Kitchen/blender_churn_00..11: the ice turning, one turn per loop
     public static readonly Color Rest = new Color(1f, 1f, 1f, 0f);                                             // at rest the overlay is invisible: the owner's drink shows as drawn
     public static readonly Color[] Flavours =
     {
@@ -69,29 +72,33 @@ public static class KitchenBlender
         }
         if (!ch2) return;                                                                 // chapter 1: the picture alone
 
-        var fill = new GameObject("Contents", typeof(RectTransform), typeof(Image)); fill.transform.SetParent(rt, false);
-        var frt = (RectTransform)fill.transform; frt.anchorMin = Vector2.zero; frt.anchorMax = Vector2.one; frt.offsetMin = Vector2.zero; frt.offsetMax = Vector2.zero;
-        var fi = fill.GetComponent<Image>(); fi.sprite = Resources.Load<Sprite>("Kitchen/blender_fill"); fi.preserveAspect = false; fi.raycastTarget = false; fi.color = Rest;
+        // the ice while blending (owner, 18 November 2026: "redo the animation of blender ... pay attention to the
+        // details"): twelve pictures of the owner's own frost carried round the shaft, the surface climbing the glass,
+        // ice chips going round; near white, so each flavour tints it and the frost's grain shows through
+        var churn = new Sprite[ChurnFrames];
+        for (var i = 0; i < ChurnFrames; i++) churn[i] = Resources.Load<Sprite>("Kitchen/blender_churn_" + i.ToString("00"));
+        Image Full(string name, Sprite sprite)
+        {
+            var g = new GameObject(name, typeof(RectTransform), typeof(Image)); g.transform.SetParent(rt, false);
+            var r = (RectTransform)g.transform; r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one; r.offsetMin = Vector2.zero; r.offsetMax = Vector2.zero;
+            var im = g.GetComponent<Image>(); im.sprite = sprite; im.preserveAspect = false; im.raycastTarget = false; im.color = Rest;
+            return im;
+        }
+        var fi = Full("Contents", churn[0] != null ? churn[0] : Resources.Load<Sprite>("Kitchen/blender_fill"));
+        if (bladeImage != null) bladeImage.transform.SetAsLastSibling();                 // the blade turns inside the ice, in front of it
+        var marks = Full("Marks", Resources.Load<Sprite>("Kitchen/blender_scale"));       // the measuring marks printed on the glass, in front of all
+        var button = Full("ButtonGlow", Resources.Load<Sprite>("Kitchen/blender_button_glow"));   // the snowflake button lights while the motor runs
 
-        // the drawn body is fitted by height inside the box (preserveAspect), so the jar's box is taken from the fitted rect
-        var padX = 0f;                                                                      // no fitting: the picture fills its box like the background
-        var jarMin = new Vector2(padX + FluidMin.x * (1f - 2f * padX), FluidMin.y); var jarMax = new Vector2(padX + FluidMax.x * (1f - 2f * padX), FluidMax.y);
-        var mask = new GameObject("JarMask", typeof(RectTransform), typeof(RectMask2D)); mask.transform.SetParent(rt, false);
-        var mrt = (RectTransform)mask.transform; mrt.anchorMin = jarMin; mrt.anchorMax = jarMax; mrt.offsetMin = Vector2.zero; mrt.offsetMax = Vector2.zero;
-        var swirl = new GameObject("Swirl", typeof(RectTransform), typeof(Image)); swirl.transform.SetParent(mrt, false);
-        var srt = (RectTransform)swirl.transform; srt.anchorMin = new Vector2(0.5f, 0.5f); srt.anchorMax = new Vector2(0.5f, 0.5f);
-        var side = Mathf.Max(mrt.rect.width, mrt.rect.height) * 1.15f; srt.sizeDelta = new Vector2(side, side); srt.anchoredPosition = Vector2.zero;
-        var si = swirl.GetComponent<Image>(); si.sprite = Resources.Load<Sprite>("Kitchen/blender_swirl"); si.preserveAspect = true; si.raycastTarget = false; si.color = new Color(1f, 1f, 1f, 0f);
-
-        var anim = go.GetComponent<BlenderAnim>(); anim.contents = fi; anim.swirl = si; anim.body = rt; anim.blade = bladeImage;
-        if (bladeImage != null) bladeImage.transform.SetAsLastSibling();                 // the blade turns in front of the tinted drink and the swirl
+        var anim = go.GetComponent<BlenderAnim>(); anim.contents = fi; anim.body = rt; anim.blade = bladeImage;
+        anim.churn = churn; anim.marks = marks; anim.buttonGlow = button;
     }
 }
 
 /// The blend: a shake, the swirl turning, the drink's colour stepping through the four flavours, then the rest colour again.
 public class BlenderAnim : MonoBehaviour, IPointerClickHandler
 {
-    public Image contents, swirl, blade; public RectTransform body;
+    public Image contents, swirl, blade, marks, buttonGlow; public RectTransform body; public Sprite[] churn;
+    public static float ChurnFps = 18f;   // the ice's pictures per second (one turn per 12)
     public static float BladeTurnsPerSecond = 2.5f;   // the blending element spins about its vertical axis (seen as a width squeeze and flip)
 
     /// The blade seen turning: its width follows the cosine of the turn, flipping as it passes edge-on
@@ -142,7 +149,7 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
                 t += Time.unscaledDeltaTime;
                 var k = Mathf.Clamp01(t / (StepSeconds * 0.35f));                        // a quick crossfade, then the colour holds
                 if (contents != null) contents.color = Color.Lerp(from, flavours[i], k);
-                Churn(1f); Spin(1f);
+                Turn(i == 0 ? k : 1f); Spin(1f);
                 Shake(rt, 1f);
                 if (swirl != null) { swirl.color = new Color(1f, 1f, 1f, 0.55f); swirl.rectTransform.Rotate(0f, 0f, -540f * Time.unscaledDeltaTime); }
                 yield return null;
@@ -154,16 +161,33 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         while (s < 0.6f)
         {
             s += Time.unscaledDeltaTime; var k = Mathf.Clamp01(s / 0.6f);
-            Shake(rt, 1f - k); Churn(1f - k); Spin(1f - k);
+            Shake(rt, 1f - k); Turn(1f - k); Spin(1f - k);
             if (swirl != null) { swirl.color = new Color(1f, 1f, 1f, 0.55f * (1f - k)); swirl.rectTransform.Rotate(0f, 0f, -540f * (1f - k) * Time.unscaledDeltaTime); }
             if (contents != null) contents.color = new Color(from.r, from.g, from.b, 1f - k);           // the last flavour fades out to the drawn drink
             yield return null;
         }
         rt.anchoredPosition = restPos; rt.localRotation = Quaternion.identity;
         if (contents != null) { contents.color = KitchenBlender.Rest; contents.rectTransform.localScale = Vector3.one; contents.rectTransform.anchoredPosition = Vector2.zero; }
+        SetAlpha(marks, 0f); SetAlpha(buttonGlow, 0f); turned = 0f;
         if (swirl != null) swirl.color = new Color(1f, 1f, 1f, 0f);
         if (blade != null) blade.rectTransform.localScale = Vector3.one;
         IsBlending = false;
+    }
+
+    private float turned;
+    private static void SetAlpha(Image im, float a) { if (im == null) return; var c = im.color; c.a = a; im.color = c; }
+
+    /// The ice turns (its pictures in a loop), the marks on the glass show over it as it shows, the button glows
+    private void Turn(float amount)
+    {
+        turned += Time.unscaledDeltaTime * ChurnFps * Mathf.Max(0.25f, amount);
+        if (churn != null && churn.Length > 0 && contents != null)
+        {
+            var s = churn[(int)turned % churn.Length]; if (s != null) contents.sprite = s;
+        }
+        var shown = contents != null ? contents.color.a : 0f;
+        SetAlpha(marks, shown);
+        SetAlpha(buttonGlow, amount * (0.7f + 0.3f * Mathf.Sin(Time.unscaledTime * 9f)));
     }
 
     /// The swirl churns: a quick pulse in height and a sway, as the blades push it round
@@ -188,6 +212,7 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         if (contents != null) contents.color = KitchenBlender.Rest;
         if (swirl != null) swirl.color = new Color(1f, 1f, 1f, 0f);
         if (blade != null) blade.rectTransform.localScale = Vector3.one;
+        SetAlpha(marks, 0f); SetAlpha(buttonGlow, 0f);
         IsBlending = false;
     }
 }
