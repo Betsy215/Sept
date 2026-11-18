@@ -74,16 +74,27 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 37</b> is on its way to TestFlight: the cookie shop and book, cookie start menu and buttons, the new blender, receipts, choux orders, cake frames, the iPad fixes.</p>
-<p><b>Cookie style everywhere</b> (Current): tick, and say if you want the old app icon.</p>
-<p><b>C chapter</b> (new section 8): your ideas are in.</p>
-<p><b>Glow brush</b> (Current): waiting for your words.</p>
-<p><b>China</b> (Q&amp;A) and <b>Marketing</b> (section 7): when you are ready.</p>
+<p><b>Test build 37</b> is on TestFlight: the cookie shop and book, cookie buttons and start menu, the new blender, receipts, choux orders, cake frames, the iPad fixes. App icon unchanged.</p>
+<p><b>Kitchen glows</b> (Current): pick a "do this now" look.</p>
+<p><b>Cookie buttons</b> (Current): the press and bounce; crunch sounds to listen to are coming.</p>
+<p><b>Players</b> (Analysis): nobody has reached day 3; a tick to try it without the ad before day 3.</p>
+<p><b>Apple</b> (Q&amp;A): no review message; the build email needs nothing now.</p>
 </div>
-<div class="who p2"><h3>Me</h3><p><b>Version numbers</b> (your tick): from the next version on, the version is the day we submit and builds start at 1.</p><p><b>26.11.22</b> is in Apple's review since 15 November; I looked in App Store Connect, Apple has sent no message. Nothing to do but wait.</p><p><b>ChatGPT</b>, after 18 November 20:21: the cake retouch, only if you tick it.</p></div>
+<div class="who p2"><h3>Me</h3><p><b>Version numbers</b> (your tick): from the next version on, the version is the day we submit and builds start at 1.</p><p><b>26.11.22</b> waits in Apple's queue since 15 November (Q&amp;A).</p><p><b>ChatGPT</b>, after 18 November 20:21: the cake retouch, only if you tick it.</p></div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>The feedback from Apple (18 November)</h3>
+<p style="margin:6px 0"><b>Short answer:</b> nothing to fix now.</p>
+<ul>
+<li>The only new message from Apple, by email at 9:53 this morning, is about test build 37: it uploaded fine. Apple adds that from April 2027 every upload must be built with Xcode 27. I will update Xcode before then.</li>
+<li>The 26.11.22 review: still "In Review", no message, nothing asked. "Sign-in required" is off, as it should be. The China notes on the page are the two questions answered under China below.</li>
+<li>If you saw a different message, tell me where (Mail or App Store Connect) and I will read it there.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.applefb.seen"> Seen</label></li>
+</ul>
+</div>
 <div class="q"><h3>Why is the App Store review taking so long this time? (18 November)</h3>
 <p style="margin:6px 0"><b>Short answer:</b> it is waiting in Apple's queue. Nobody at Apple has opened it yet, and nothing is wrong with it.</p>
 <ul>
@@ -114,6 +125,21 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
+<p style="margin-top:0"><b>Cookie buttons: pressed down, then a bounce, 18 November.</b> In the project, in no build.</p>
+<figure><img src="cookie_press.gif" style="max-height:330px" alt="Continue, pause and tick cookies: each squashes flat when pressed and springs back past its size, then settles"><figcaption>The same spring as in the game, played on three buttons.</figcaption></figure>
+<ul>
+<li>Every cookie button on every screen, also the ones the map, Daily Treats and the menu book make.</li>
+<li><b>Press:</b> the cookie gets a little wider and flatter at once. <b>Release:</b> it springs back up past its size and settles in about half a second.</li>
+<li><b>Crunch:</b> I am collecting free crunch sounds now; they come here to listen to. The one you pick plays on the press and replaces the old clicks.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.press.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.press.more"> More bounce</label></li>
+<li><label><input type="checkbox" data-id="cur.press.less"> Less bounce</label></li>
+</ul>
+</div>
+
+<div class="card">
 <p style="margin-top:0"><b>Cookie style everywhere: buttons, stars, Daily Treats, map, 18 November.</b> In test build 37. The app icon stays the painted truck (your tick).</p>
 <figure><img src="cookie_ui.jpg" alt="Eight game screens with the new cookie pieces: the start menu's Continue and New and gear, the Daily Treats board with cookie coins, a gift cookie and Collect, the map with cookie arrows and day circles, the menu book's Done, the chapter 2 table's gear and pause, the day's finish card with three cookie stars and replay and next, the shop popup with the cross and tick cookies, the chapter 2 map"><figcaption>In the game: menu, Daily Treats, map, menu book, table, day end, shop, chapter 2 map.</figcaption></figure>
 <ul>
@@ -138,7 +164,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Cake: your three fixes, 17 November, 20:50.</b> In the project, in no build.</p>
+<p style="margin-top:0"><b>Cake: your three fixes, 17 November, 20:50.</b> In test build 37.</p>
 <figure><img src="cake_three_fixes.jpg" alt="Frame 2 before and after: the pale hard-edged wedge on the plate is gone and the cut face has crisp layers. Frame 6 before and after: the shade at the corner of the last slice is gone"><figcaption>Frame 2 before, after. Frame 6 before, after.</figcaption></figure>
 <ul>
 <li><b>1, the layers:</b> the cut faces are ChatGPT's original ones again (from the old frames), a little crisper.</li>
@@ -157,18 +183,31 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Kitchen: a glow brush copied from the coffee bags and the tree's apples, 15 November.</b> The blender's glow repainted with it; in the game, in no build.</p>
-<figure><img src="glow_brush.jpg" alt="The chapter 2 kitchen's shelf and blender: before, the blender's glow a wide soft blur; now a bright band hugging its outline like the bags'"><figcaption>Left: before. Right: now. The bags' own glow pulses, so it differs between the two snaps.</figcaption></figure>
+<p style="margin-top:0"><b>Kitchen glows: one look for each state, 18 November.</b> Drafts on the real kitchen, nothing in the game yet.</p>
+<p style="margin:6px 0">Your example: the sponge is out of the oven and fruit comes next. So the fruit board says <b>do this now</b>, and everything else only says <b>you can tap</b>.</p>
+<p style="margin:12px 0 4px"><b>1. You can tap.</b> Today's cool white glow round the edge (the bags' and the blender's), breathing slowly, every 2 seconds.</p>
+<figure><img src="glow_A.gif" style="max-height:330px" alt="The counter: every item has a soft white glow that slowly brightens and fades"><figcaption>You can tap: blender, baskets, board, whisk, cake.</figcaption></figure>
+<p style="margin:12px 0 4px"><b>2. Do this now.</b> Three choices. Each has to beat the white glows at a glance.</p>
+<figure><img src="glow_B1.gif" style="max-height:330px" alt="The fruit board with a thick gold glow pulsing, hopping up and down; the other items with the calm white glow"><figcaption>A: gold, beating every second; the board hops every 2 seconds.</figcaption></figure>
+<figure><img src="glow_B2.gif" style="max-height:330px" alt="The fruit board with a strong white glow, growing a little and back, with small star sparkles round it"><figcaption>B: bright white, the board breathes bigger, sparkles twinkle round it.</figcaption></figure>
+<figure><img src="glow_B3.gif" style="max-height:330px" alt="The fruit board with a gold glow and a white shine band passing over it"><figcaption>C: gold, with a shine sweeping across the board.</figcaption></figure>
+<p style="margin:12px 0 4px"><b>3. Busy</b> (my addition): no glow while an item works; a small timer fills on it, so players know to wait. Here the oven bakes.</p>
+<figure><img src="glow_C.gif" style="max-height:330px" alt="The middle oven with a small round timer in its corner filling with orange"><figcaption>Busy: the oven's timer fills, no glow.</figcaption></figure>
+<p style="margin:12px 0 4px"><b>Other states you may want:</b></p>
 <ul>
-<li><b>What the bags' and apples' glow is:</b> brightest right at the object's edge and the same width all round it, like a soft white brush run along the outline. Cool white, the same in both.</li>
-<li><b>Mine was the opposite:</b> nearly nothing at the edge, brightest a few pixels out, then a long fade. That reads as a blur.</li>
-<li><b>Its width follows the object's size:</b> the bags' band is 30 pixels, an apple's 14. The brush works it out for each object.</li>
-<li><b>The brush</b> (Docs/tools/glow_brush.py) paints this glow around any picture, as its own layer or baked into the picture. Re-painting the bags and apples with it gives back their own glow.</li>
+<li><b>Ready:</b> the oven or blender is done and something must be taken out. I would use "do this now" for it.</li>
+<li><b>Empty:</b> coffee bags or scoops run out. "Do this now" only if an order is waiting for it; otherwise nothing.</li>
+<li><b>Not bought yet:</b> no glow, as today.</li>
+<li><b>One rule:</b> only one "do this now" at a time, or players don't know where to look.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.gbrush.ship"> Good to ship</label></li>
-<li><label><input type="checkbox" data-id="cur.gbrush.stronger"> Good, but brighter on the light wall</label></li>
-<li><label><input type="checkbox" data-id="cur.gbrush.redo"> Not yet, I will say what</label></li>
+<li><label><input type="checkbox" data-id="cur.gstate.a_good"> 1 "You can tap" is good</label></li>
+<li><label><input type="checkbox" data-id="cur.gstate.b1"> 2A gold and hop</label></li>
+<li><label><input type="checkbox" data-id="cur.gstate.b2"> 2B white and sparkles</label></li>
+<li><label><input type="checkbox" data-id="cur.gstate.b3"> 2C gold and shine</label></li>
+<li><label><input type="checkbox" data-id="cur.gstate.busy"> Yes to 3, the busy timer</label></li>
+<li><label><input type="checkbox" data-id="cur.gstate.gemini"> Ask Gemini for more looks</label></li>
+<li><label><input type="checkbox" data-id="cur.gstate.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
