@@ -74,9 +74,10 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Cookie buttons' bottom layer</b> (Current): before and after; tick to apply.</p>
-<p><b>Your test run's other fixes</b> (Current): receipt, NEW labels, two Ready buttons, the hint only in the tutorial, the kitchen hint. Tick for a test build.</p>
-<p><b>Test build 2026.11.18 (1)</b> is on TestFlight: 60 pictures a second (smoother menu), the blender base. It was made before your test-run list.</p>
+<p><b>Cookie buttons</b> (Current): cleaned again with smooth edges; tick to apply.</p>
+<p><b>China ads</b> (Q&amp;A): very likely blocked; a tick to switch purchases off for China only.</p>
+<p><b>Blender's bottom line</b> (Current): smoother.</p>
+<p><b>Your test run's fixes</b> (Current): tick for a test build.</p>
 <p><b>Kitchen glows</b> (Current): pick a "do this now" look.</p>
 <p><b>Players</b> (Analysis): nobody has reached day 3; a tick to try it without the ad before day 3.</p>
 </div>
@@ -84,6 +85,27 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>Does China block the ads too? (18 November)</h3>
+<p style="margin:6px 0"><b>Short answer:</b> very likely yes. Our ads do not seem to reach players in mainland China at all.</p>
+<ul>
+<li><b>Our own numbers:</b> 3 players in China finished 6 days and saw 0 ads. Everywhere else players see about one ad per finished day (Philippines 14 ads for 12 days, US 12 for 19, Hong Kong 4 for 1). Three players is few, but it matches your friend.</li>
+<li><b>Why:</b> a developer in China posted a phone log where the phone cannot connect to Unity's ad server at all. Unity's own pages do not say either way, so I cannot call it certain.</li>
+<li><b>What a player there sees:</b> the game plays normally, with no ads between days. "Get 50 coins" and the Daily Treats ad stay grey, because no ad ever loads. Nothing breaks.</li>
+<li><b>Fixing it</b> would need a Chinese ad network and a Chinese company. Not worth it for us now.</li>
+</ul>
+<p style="margin:10px 0 4px"><b>Switching purchases off for China, safely:</b></p>
+<ul>
+<li>Each purchase (Remove Ads, 15 Stars) has its own list of countries in App Store Connect. Taking "China mainland" off that list changes nothing in any other country.</li>
+<li>No new build is needed, and it can be switched back on any time.</li>
+<li>It touches only the two purchases, not the game: the game stays on the China store, free.</li>
+<li>One caution: 15 Stars is in Apple's review right now. I would change it only after that review ends, so the review is not disturbed. Remove Ads can be changed now.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.chinaads.iapoff"> Yes, switch both purchases off for China mainland only</label></li>
+<li><label><input type="checkbox" data-id="qa.chinaads.hide"> Also hide the grey ad buttons where no ad can load</label></li>
+<li><label><input type="checkbox" data-id="qa.chinaads.later"> Later</label></li>
+</ul>
+</div>
 <div class="q"><h3>Can we release a version just for China that does not break its rules? (17 November)</h3>
 <p style="margin:6px 0"><b>Short answer:</b> Apple allows one build per app for all countries, so not a separate build. But most of this needs no new build at all.</p>
 <ol>
@@ -102,17 +124,32 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Cookie buttons: the grey-white layer at the bottom, before and after, 18 November.</b> Not applied yet, as you asked.</p>
-<figure><img src="cookie_bottom.jpg" style="max-height:520px" alt="Six cookie buttons twice: with pale grey-white patches and a soft strip under each cookie, and cleaned so each cookie ends at its own baked edge"><figcaption>On dark blue and on the menu's mint. Upper row of each pair: your test build. Lower row: after.</figcaption></figure>
+<p style="margin-top:0"><b>Cookie buttons: cleaned again, smoothly, 18 November.</b> Not applied yet; tick and I put them in.</p>
+<figure><img src="cookie_bottom.jpg" style="max-height:520px" alt="Six cookie buttons twice: with pale patches and strips under each, and with a smooth clean outline"><figcaption>On dark blue and on the menu's mint. Upper row of each pair: your test build. Lower row: the new clean.</figcaption></figure>
+<figure><img src="cookie_edge_zoom.jpg" style="max-height:330px" alt="Continue, gear and star cookies enlarged: smooth outlines with no pale rim or leftover"><figcaption>Close up.</figcaption></figure>
+<figure><img src="cookie_edge_all.jpg" style="max-height:600px" alt="Every cookie button, star, coin, gift, arrow and lock on dark blue, each with a clean smooth edge"><figcaption>All of them.</figcaption></figure>
 <ul>
-<li>The layer is the photo's pale backdrop and soft shadow that came along when the cookies were cut out.</li>
-<li>After: every cookie ends at its own baked edge. The icing and the cookie itself are untouched.</li>
-<li>It is the same for all 25 cookie pictures (buttons, stars, coin, gift, arrows, lock).</li>
+<li>A different method this time: instead of removing leftover pixels one by one, each cookie gets one smooth outline drawn just inside its own edge. So the edge is a clean curve and nothing pale is left round it.</li>
+<li>Gone: the grey-white backdrop, the soft shadow, and the dark line where the cookie touched the table.</li>
+<li>I did these here, not with Gemini: Gemini would repaint the cookies, and they would no longer be the ones you picked.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.cbottom.apply"> Yes, apply it</label></li>
-<li><label><input type="checkbox" data-id="cur.cbottom.more"> Still see a layer (I will say where)</label></li>
-<li><label><input type="checkbox" data-id="cur.cbottom.shadow"> Too bare, give them a soft drawn shadow</label></li>
+<li><label><input type="checkbox" data-id="cur.cedge3.apply"> Yes, apply it</label></li>
+<li><label><input type="checkbox" data-id="cur.cedge3.more"> Still not clean (I will say where)</label></li>
+<li><label><input type="checkbox" data-id="cur.cedge3.gemini"> Try Gemini anyway</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Blender: the bottom line, smoother, 18 November.</b> In the project, in no build yet.</p>
+<figure><img src="blender_line.jpg" style="max-height:330px" alt="The dark line under the blender base: before with small steps and a bump on its lower edge, after as one smooth curve"><figcaption>The base's bottom right, enlarged. Above: before. Below: now.</figcaption></figure>
+<ul>
+<li>The lower edge of the dark line was drawn in small hard steps. It is now the same edge as one smooth, soft curve.</li>
+<li>Only that edge changed; the line's upper side and everything above it are your pixels. The glow is repainted to fit.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.bline.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.bline.more"> Smoother still (I will say where)</label></li>
 </ul>
 </div>
 
