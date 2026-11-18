@@ -311,7 +311,7 @@ plain `python3` has no numpy.
 
 ## 9. Store and release
 
-- **Build:** bump `bundleVersion` / `buildNumber: iPhone:` in `ProjectSettings/ProjectSettings.asset`; close the editor;
+- **Build:** version = build day as YYYY.MM.DD, build 0, 1, 2 within the day (see ios-testing-and-release.md); bump `bundleVersion` / `buildNumber: iPhone:` in `ProjectSettings/ProjectSettings.asset`; close the editor;
   `Unity -batchmode -quit -projectPath . -buildTarget iOS -executeMethod CommandLineBuild.iOS -exportPath
   ../Builds/iOS-<v>-<b> -logFile ../Builds/export-<v>-<b>.log` (about 4 minutes); archive with xcodebuild
   (`ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO`, about 10 minutes), upload with `-exportArchive` and

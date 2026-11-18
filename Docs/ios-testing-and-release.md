@@ -126,6 +126,7 @@ iPad screenshots are required because the project supports iPad. If you only eve
 
 The whole TestFlight path runs from the terminal and the Unity editor link; only the store submission waits for the owner's go.
 
+1. **Version rule** (owner, 18 November 2026: "reset the version with date and build ... each day reset build to 0"): the version is the day of the build written YYYY.MM.DD (2026.11.18), the build counts 0, 1, 2 within that day and starts again at 0 the next day. The four-digit year is needed: Apple refuses an upload whose version is below the last approved one, and the old YY.MM.DD versions (26.11.21 live) would sort above a two-digit-year date. Never go back to YY.MM.DD.
 1. **Bump**: `ProjectSettings/ProjectSettings.asset`, `bundleVersion` for the version and `buildNumber: iPhone:` for the build. Ask Unity to refresh (MCP `refresh_unity`) and confirm with `PlayerSettings.iOS.buildNumber` through `execute_code`.
 2. **Export**: MCP `manage_build` with target `ios` to `Desktop/Sept/Builds/iOS-<version>-<build>` (a new folder per build; an incremental export takes about 20 s, a fresh one a few minutes). Play mode must be off. Do not run git checkouts while it runs. After a long export the MCP status call can time out for a minute; the Editor.log line "Build Finished, Result: Success." is the real signal.
 3. **Verify** before archiving: `PlistBuddy -c "Print :CFBundleVersion" Info.plist` and `grep -l <NewClassName> Il2CppOutputProject/Source/il2cppOutput/Assembly-CSharp*.cpp` for a class added in this build.
