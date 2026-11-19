@@ -288,18 +288,14 @@ public static class ShopCookies
         var title = Label(page, "Title", "MY COOKIES", titleFont, 78f, new Vector2(0f, H / 2f - 90f), new Vector2(W - 60f, 110f));
         title.color = Ink;
 
-        // as many columns as it takes for every owned cookie to fit above the description (18 can be owned; on an
-        // iPad four columns hold only 16)
-        const float infoH = 330f;
-        var gridTop = H / 2f - 170f; var gridBottom = -H / 2f + infoH + 60f;
-        var columns = 4; float cell;
-        while (true)
-        {
-            cell = (W - 80f) / columns;
-            var rows = Mathf.Max(1, Mathf.CeilToInt(owned.Count / (float)columns));
-            if (rows * cell <= gridTop - gridBottom || columns >= 7) break;
-            columns++;
-        }
+        // four cookies in a row, and as many rows as fit above the description; a full page is followed by another, turned
+        // like a book's with the arrows under the grid (owner, 19 November 2026: "put four cookies in a row, we will
+        // have a page flip effect when a page is full, and a next arrow to click on to flip the page. So it's like a book")
+        const float infoH = 330f; const float arrowRow = 110f; const int columns = 4;
+        var gridTop = H / 2f - 170f; var gridBottom = -H / 2f + infoH + 60f + arrowRow;
+        var cell = (W - 80f) / columns;
+        var rowsPerPage = Mathf.Max(1, Mathf.FloorToInt((gridTop - gridBottom) / cell)); var perPage = rowsPerPage * columns;
+        var pageCount = Mathf.Max(1, Mathf.CeilToInt(owned.Count / (float)perPage));
         var icon = cell * 0.86f;
         // the chosen thing: its cookie, its name and what it does, on the lower part of the page
         var chosen = Child(page, "Chosen", new Vector2(0.5f, 0.5f), new Vector2(230f, 230f), new Vector2(-W / 2f + 170f, -H / 2f + infoH / 2f + 30f));
@@ -312,11 +308,14 @@ public static class ShopCookies
         var ruleImg = rule.gameObject.AddComponent<Image>(); ruleImg.color = new Color(Ink.r, Ink.g, Ink.b, 0.25f); ruleImg.raycastTarget = false;
 
         var cells = new List<RectTransform>(); var newest = owned.Count - 1;
+        var leaves = new List<RectTransform>();
+        for (var k = 0; k < pageCount; k++) { var leaf = Child(page, "Leaf" + k, new Vector2(0.5f, 0.5f), new Vector2(W, H), Vector2.zero); leaf.gameObject.SetActive(false); leaves.Add(leaf); }
         for (var i = 0; i < owned.Count; i++)
         {
             var e = owned[i];
-            var pos = new Vector2(-W / 2f + 40f + cell * (i % columns + 0.5f), gridTop - cell * (i / columns + 0.5f));
-            var c = Child(page, "Owned" + i, new Vector2(0.5f, 0.5f), new Vector2(icon, icon), pos);
+            var onPage = i / perPage; var slot = i % perPage;
+            var pos = new Vector2(-W / 2f + 40f + cell * (slot % columns + 0.5f), gridTop - cell * (slot / columns + 0.5f));
+            var c = Child(leaves[onPage], "Owned" + i, new Vector2(0.5f, 0.5f), new Vector2(icon, icon), pos);
             var ci = c.gameObject.AddComponent<Image>(); ci.sprite = e.cookie; ci.preserveAspect = true;
             var cb = c.gameObject.AddComponent<Button>(); cb.transition = Selectable.Transition.None;
             cells.Add(c);
@@ -342,6 +341,22 @@ public static class ShopCookies
             var x = Child(page, "Close", new Vector2(0.5f, 0.5f), new Vector2(96f, 96f), new Vector2(W / 2f - 76f, H / 2f - 82f));
             var xi = x.gameObject.AddComponent<Image>(); xi.sprite = cross; xi.preserveAspect = true;
             x.gameObject.AddComponent<Button>().onClick.AddListener(CloseBook);
+        }
+        // the pages: the one with the newest cookie first; arrows and "1 / 2" under the grid when there is more than one
+        var turner = go.AddComponent<BookTurner>();
+        turner.Set(page, leaves, owned.Count > 0 ? newest / perPage : 0, new Rect(-W / 2f + 20f, gridBottom, W - 40f, gridTop - gridBottom), pageImg.color);
+        if (pageCount > 1)
+        {
+            var arrowY = gridBottom - arrowRow / 2f + 6f;
+            const float ArrowW = 230f, ArrowH = 150f;   // the map arrow's picture has wide margins
+            var count = Label(page, "PageCount", "", titleFont, 58f, new Vector2(0f, arrowY), new Vector2(240f, 70f)); count.color = new Color(Ink.r, Ink.g, Ink.b, 0.7f);
+            var next = Child(page, "NextPage", new Vector2(0.5f, 0.5f), new Vector2(ArrowW, ArrowH), new Vector2(W / 2f - 150f, arrowY));
+            var ni = next.gameObject.AddComponent<Image>(); ni.sprite = Resources.Load<Sprite>("Map/arrow_right"); ni.preserveAspect = true;
+            var prev = Child(page, "PrevPage", new Vector2(0.5f, 0.5f), new Vector2(ArrowW, ArrowH), new Vector2(-W / 2f + 150f, arrowY));
+            var pi = prev.gameObject.AddComponent<Image>(); pi.sprite = Resources.Load<Sprite>("Map/arrow_left"); pi.preserveAspect = true;
+            var nb = next.gameObject.AddComponent<Button>(); nb.transition = Selectable.Transition.None; nb.onClick.AddListener(() => turner.Turn(1));
+            var pb = prev.gameObject.AddComponent<Button>(); pb.transition = Selectable.Transition.None; pb.onClick.AddListener(() => turner.Turn(-1));
+            turner.Controls(count, next.gameObject, prev.gameObject);
         }
         if (owned.Count > 0) cells[newest].GetComponent<Button>().onClick.Invoke();   // a new one is shown first
         // looked at: the labels stay on this open page, the book's own label goes
@@ -374,3 +389,69 @@ public static class ShopCookies
         return t;
     }
 }
+
+/// The cookie book's pages: one leaf of cookies shown at a time; a turn lifts the leaf at its left edge like a page
+/// and the next one lies under it (back: the earlier leaf comes down over the page). Unscaled time.
+public class BookTurner : MonoBehaviour
+{
+    private RectTransform page; private List<RectTransform> leaves; private int current; private Rect grid; private Color paper;
+    private TextMeshProUGUI count; private GameObject next, prev; private bool turning;
+    private const float Seconds = 0.38f;
+
+    public void Set(RectTransform bookPage, List<RectTransform> all, int first, Rect gridArea, Color paperColour)
+    {
+        page = bookPage; leaves = all; grid = gridArea; paper = new Color(paperColour.r, paperColour.g, paperColour.b, 1f);
+        current = Mathf.Clamp(first, 0, leaves.Count - 1);
+        for (var i = 0; i < leaves.Count; i++) leaves[i].gameObject.SetActive(i == current);
+    }
+
+    public void Controls(TextMeshProUGUI pageCount, GameObject nextArrow, GameObject prevArrow) { count = pageCount; next = nextArrow; prev = prevArrow; Show(); }
+
+    private void Show()
+    {
+        if (count != null) count.text = (current + 1) + " / " + leaves.Count;
+        if (next != null) next.SetActive(current < leaves.Count - 1);
+        if (prev != null) prev.SetActive(current > 0);
+    }
+
+    public void Turn(int by)
+    {
+        var to = current + by;
+        if (turning || to < 0 || to >= leaves.Count) return;
+        StartCoroutine(Flip(to, by > 0));
+    }
+
+    private IEnumerator Flip(int to, bool forward)
+    {
+        turning = true;
+        // the sheet that turns: paper over the grid's area, hinged on its left edge, carrying one leaf's cookies
+        var sheetGo = new GameObject("TurningSheet", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        var sheet = (RectTransform)sheetGo.transform; sheet.SetParent(page, false);
+        sheet.anchorMin = sheet.anchorMax = new Vector2(0.5f, 0.5f); sheet.pivot = new Vector2(0f, 0.5f);
+        sheet.sizeDelta = grid.size; sheet.anchoredPosition = new Vector2(grid.xMin, grid.center.y);
+        var sheetImg = sheetGo.GetComponent<Image>(); sheetImg.color = paper; sheetImg.raycastTarget = true;   // no taps through a turning page
+        var carried = leaves[forward ? current : to];
+        var under = leaves[forward ? to : current];
+        under.gameObject.SetActive(true); carried.gameObject.SetActive(true);
+        sheet.SetSiblingIndex(under.GetSiblingIndex() + 1);
+        carried.SetParent(sheet, true);
+        var shadeGo = new GameObject("Shade", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        var shade = (RectTransform)shadeGo.transform; shade.SetParent(sheet, false); shade.anchorMin = Vector2.zero; shade.anchorMax = Vector2.one; shade.offsetMin = shade.offsetMax = Vector2.zero;
+        var shadeImg = shadeGo.GetComponent<Image>(); shadeImg.raycastTarget = false;
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
+        for (var t = 0f; t < Seconds; t += Time.unscaledDeltaTime)
+        {
+            var k = Mathf.SmoothStep(0f, 1f, t / Seconds); var open = forward ? 1f - k : k;      // how much of the sheet lies flat
+            sheet.localScale = new Vector3(Mathf.Max(0.001f, open), 1f, 1f);
+            shadeImg.color = new Color(0.25f, 0.15f, 0.08f, 0.38f * (1f - open));
+            yield return null;
+        }
+        carried.SetParent(page, true); carried.localScale = Vector3.one; carried.anchoredPosition = Vector2.zero;
+        carried.SetSiblingIndex(under.GetSiblingIndex());
+        Destroy(sheetGo);
+        current = to;
+        for (var i = 0; i < leaves.Count; i++) leaves[i].gameObject.SetActive(i == current);
+        Show(); turning = false;
+    }
+}
+
