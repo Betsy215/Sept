@@ -4,6 +4,7 @@ Never run `create` or `submit` without the owner's explicit yes in the same conv
 python3 -I asc_release.py <version> status            what exists for that version (and the newest builds)
 python3 -I asc_release.py <version> create            create the version (MANUAL release), copy every text of the live version, set WHATS_NEW
 python3 -I asc_release.py <version> build <n>         attach TestFlight build <n> of that version (must be VALID)
+python3 -I asc_release.py <version> whatsnew <file>  set the version's What's New to the text in <file> (the owner's words)
 python3 -I asc_release.py <version> submit            create the review submission with the version and submit it
 python3 -I asc_release.py <version> release           release an approved version (PENDING_DEVELOPER_RELEASE) to the store
 
@@ -16,7 +17,8 @@ APP = "6755611355"
 TOKEN = subprocess.run(["python3", "-I", os.path.join(os.path.dirname(os.path.abspath(__file__)), "asc_token.py")],
                        capture_output=True, text=True).stdout.strip().splitlines()[-1]
 
-WHATS_NEW = "Hire new staff.\nNew sound effects.\nRemove ads feature.\nNew swipe gesture and pulling handle for kitchen."   # 26.11.22: the owner's words of 15 November 2026 ("What's new for today's release"). 26.11.21 was "Bug fixes"; 26.11.13: "- Tune balance\n- Night decorations\n- Added star as a currency in shop\n- Sprites tune"
+WHATS_NEW = "Everything is a cookie: new cookie buttons, start menu and shop.\nYour purchases go into a cookie book.\nArrange your kitchen, not just your table.\nNew blender, new choux flavours, a new cake.\nSmoother animations."   # 2026.11.18: a DRAFT held until the owner sends their words (18 November 2026), then set with `whatsnew <file>`
+WHATS_NEW_2611_22 = "Hire new staff.\nNew sound effects.\nRemove ads feature.\nNew swipe gesture and pulling handle for kitchen."   # 26.11.22: the owner's words of 15 November 2026 ("What's new for today's release"). 26.11.21 was "Bug fixes"; 26.11.13: "- Tune balance\n- Night decorations\n- Added star as a currency in shop\n- Sprites tune"
 DESCRIPTION_EDITS = {}  # {"old words": "new words"}; filled only on the owner's tick, e.g. the "two customers" line
 
 
@@ -114,6 +116,13 @@ if __name__ == "__main__":
         if not chosen: raise SystemExit(f"build {n} of {v} not VALID: {builds_of(v)}")
         api("PATCH", f"/appStoreVersions/{ver['id']}/relationships/build", {"data": {"type": "builds", "id": chosen[0][3]}})
         print("attached build", n, chosen[0][3])
+
+    elif what == "whatsnew":
+        if not ver: raise SystemExit(f"{v} does not exist")
+        text = open(sys.argv[3]).read().strip()
+        loc = localization(ver["id"])
+        api("PATCH", f"/appStoreVersionLocalizations/{loc['id']}", {"data": {"type": "appStoreVersionLocalizations", "id": loc["id"], "attributes": {"whatsNew": text}}})
+        print("whatsNew set:", text.replace("\n", " / "))
 
     elif what == "submit":
         if not ver: raise SystemExit(f"{v} does not exist")
