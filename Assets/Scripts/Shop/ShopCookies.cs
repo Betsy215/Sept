@@ -410,13 +410,17 @@ public static class ShopCookies
     }
 }
 
-/// The cookie book's pages: one leaf of cookies shown at a time; a turn lifts the leaf at its left edge like a page
-/// and the next one lies under it (back: the earlier leaf comes down over the page). Unscaled time.
+/// The cookie book's pages: one leaf of cookies shown at a time. A turn is a sheet of the book's own paper, hinged at
+/// the spine, that carries the leaving leaf: it swings over with its free edge lifting towards the reader (a little
+/// taller there), darker along that edge like a bent page, a bright rim on the edge itself, and a soft shadow thrown on
+/// the page under it; the next leaf lies ready below (owner, 19 November 2026: "change the page flip animation, it looks
+/// bad. It can be simple but needs to look good"). Back: the earlier leaf swings down over the page. Unscaled time.
 public class BookTurner : MonoBehaviour
 {
     private RectTransform page; private List<RectTransform> leaves; private int current; private Rect grid; private Color paper;
     private TextMeshProUGUI count; private GameObject next, prev; private bool turning;
-    private const float Seconds = 0.38f;
+    private const float Seconds = 0.55f;
+    private static Sprite rampSprite;
 
     public void Set(RectTransform bookPage, List<RectTransform> all, int first, Rect gridArea, Color paperColour)
     {
@@ -441,37 +445,98 @@ public class BookTurner : MonoBehaviour
         StartCoroutine(Flip(to, by > 0));
     }
 
+    /// White, clear at the left and solid at the right: tinted for the page's shade and for the shadow it throws.
+    private static Sprite Ramp
+    {
+        get
+        {
+            if (rampSprite != null) return rampSprite;
+            const int n = 64; var t = new Texture2D(n, 2, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+            var px = new Color32[n * 2];
+            for (var x = 0; x < n; x++) { var a = (byte)(255f * Mathf.Pow(x / (n - 1f), 1.6f)); px[x] = px[n + x] = new Color32(255, 255, 255, a); }
+            t.SetPixels32(px); t.Apply(false);
+            return rampSprite = Sprite.Create(t, new Rect(0, 0, n, 2), new Vector2(0.5f, 0.5f), 100f);
+        }
+    }
+
+    private static Image Layer(string name, RectTransform parent, Sprite sprite)
+    {
+        var go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        var rt = (RectTransform)go.transform; rt.SetParent(parent, false);
+        var img = go.GetComponent<Image>(); img.sprite = sprite; img.raycastTarget = false;
+        return img;
+    }
+
     private IEnumerator Flip(int to, bool forward)
     {
         turning = true;
-        // the sheet that turns: paper over the grid's area, hinged on its left edge, carrying one leaf's cookies
-        var sheetGo = new GameObject("TurningSheet", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        var sheet = (RectTransform)sheetGo.transform; sheet.SetParent(page, false);
+        var carried = leaves[forward ? current : to];     // the leaf on the turning sheet
+        var under = leaves[forward ? to : current];       // the leaf that lies flat
+        under.gameObject.SetActive(true); carried.gameObject.SetActive(true);
+
+        // the shadow the sheet throws on the page under it, just past its free edge
+        var cast = Layer("TurnShadow", page, Ramp); var castRt = cast.rectTransform;
+        castRt.anchorMin = castRt.anchorMax = new Vector2(0.5f, 0.5f); castRt.pivot = new Vector2(0f, 0.5f); castRt.localScale = new Vector3(-1f, 1f, 1f);   // dark at the sheet's edge, fading away to the right
+        castRt.SetSiblingIndex(under.GetSiblingIndex() + 1);
+
+        // the sheet: the book's paper over the grid's area, hinged on its left edge
+        var paperSprite = Resources.Load<Sprite>("Cookies/book_paper");
+        var sheetImg = Layer("TurningSheet", page, paperSprite); var sheet = sheetImg.rectTransform;
         sheet.anchorMin = sheet.anchorMax = new Vector2(0.5f, 0.5f); sheet.pivot = new Vector2(0f, 0.5f);
         sheet.sizeDelta = grid.size; sheet.anchoredPosition = new Vector2(grid.xMin, grid.center.y);
-        var sheetImg = sheetGo.GetComponent<Image>(); sheetImg.color = paper; sheetImg.raycastTarget = true;   // no taps through a turning page
-        var carried = leaves[forward ? current : to];
-        var under = leaves[forward ? to : current];
-        under.gameObject.SetActive(true); carried.gameObject.SetActive(true);
-        sheet.SetSiblingIndex(under.GetSiblingIndex() + 1);
+        sheetImg.color = paperSprite != null ? Color.white : paper; sheetImg.raycastTarget = true;   // no taps through a turning page
+        var bend = sheet.gameObject.AddComponent<PageBend>();
+        sheet.SetSiblingIndex(castRt.GetSiblingIndex() + 1);
         carried.SetParent(sheet, true);
-        var shadeGo = new GameObject("Shade", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        var shade = (RectTransform)shadeGo.transform; shade.SetParent(sheet, false); shade.anchorMin = Vector2.zero; shade.anchorMax = Vector2.one; shade.offsetMin = shade.offsetMax = Vector2.zero;
-        var shadeImg = shadeGo.GetComponent<Image>(); shadeImg.raycastTarget = false;
-        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
-        for (var t = 0f; t < Seconds; t += Time.unscaledDeltaTime)
+        var shade = Layer("Shade", sheet, Ramp); var shadeRt = shade.rectTransform;
+        shadeRt.anchorMin = Vector2.zero; shadeRt.anchorMax = Vector2.one; shadeRt.offsetMin = shadeRt.offsetMax = Vector2.zero;
+        var shadeBend = shade.gameObject.AddComponent<PageBend>();
+        var rim = Layer("Rim", sheet, null); var rimRt = rim.rectTransform;
+        rimRt.anchorMin = new Vector2(1f, 0f); rimRt.anchorMax = new Vector2(1f, 1f); rimRt.pivot = new Vector2(1f, 0.5f); rimRt.sizeDelta = new Vector2(10f, 0f); rimRt.anchoredPosition = Vector2.zero;
+
+        var clip = Resources.Load<AudioClip>("UI/page_flip"); if (clip == null) clip = Resources.Load<AudioClip>("Audio/paper_flip");
+        if (AudioManager.Instance != null) { if (clip != null) AudioManager.Instance.PlaySFX(clip); else AudioManager.Instance.PlayButtonClick(); }
+
+        for (var t = 0f; t < Seconds; t += Mathf.Min(Time.unscaledDeltaTime, 0.05f))   // a hitch never skips the turn
         {
-            var k = Mathf.SmoothStep(0f, 1f, t / Seconds); var open = forward ? 1f - k : k;      // how much of the sheet lies flat
-            sheet.localScale = new Vector3(Mathf.Max(0.001f, open), 1f, 1f);
-            shadeImg.color = new Color(0.25f, 0.15f, 0.08f, 0.38f * (1f - open));
+            var k = Mathf.SmoothStep(0f, 1f, t / Seconds); if (!forward) k = 1f - k;     // 0: flat on the page, 1: standing on its edge at the spine
+            var flat = Mathf.Cos(k * Mathf.PI * 0.5f);                                   // the sheet's width as seen from above
+            var up = Mathf.Sin(k * Mathf.PI);                                            // how far it is off the page: most half way
+            sheet.localScale = new Vector3(Mathf.Max(0.001f, flat), 1f, 1f);
+            bend.Lift = shadeBend.Lift = 0.07f * Mathf.Sin(k * Mathf.PI * 0.5f);          // the free edge comes towards the reader
+            shade.color = new Color(0.30f, 0.18f, 0.08f, 0.5f * Mathf.Sin(k * Mathf.PI * 0.5f));   // none while it lies flat
+            rim.color = new Color(1f, 1f, 1f, 0.75f * up);
+            castRt.sizeDelta = new Vector2(30f + 150f * up, grid.height * (1f + 0.10f * up));
+            castRt.anchoredPosition = new Vector2(grid.xMin + grid.width * flat + castRt.sizeDelta.x, grid.center.y);
+            cast.color = new Color(0.25f, 0.14f, 0.06f, 0.34f * up);
             yield return null;
         }
         carried.SetParent(page, true); carried.localScale = Vector3.one; carried.anchoredPosition = Vector2.zero;
         carried.SetSiblingIndex(under.GetSiblingIndex());
-        Destroy(sheetGo);
+        Destroy(sheet.gameObject); Destroy(cast.gameObject);
         current = to;
         for (var i = 0; i < leaves.Count; i++) leaves[i].gameObject.SetActive(i == current);
         Show(); turning = false;
     }
 }
 
+/// A picture whose right edge is drawn taller (Lift as a share of its height): the look of a page's free edge
+/// coming towards the reader while it turns.
+public class PageBend : BaseMeshEffect
+{
+    private float lift;
+    public float Lift { get { return lift; } set { if (Mathf.Approximately(lift, value)) return; lift = value; if (graphic != null) graphic.SetVerticesDirty(); } }
+
+    public override void ModifyMesh(VertexHelper vh)
+    {
+        if (!IsActive() || lift == 0f || vh.currentVertCount == 0) return;
+        var r = graphic.rectTransform.rect; var v = new UIVertex();
+        for (var i = 0; i < vh.currentVertCount; i++)
+        {
+            vh.PopulateUIVertex(ref v, i);
+            var across = r.width > 0f ? Mathf.InverseLerp(r.xMin, r.xMax, v.position.x) : 0f;
+            v.position.y = r.center.y + (v.position.y - r.center.y) * (1f + lift * 2f * across);
+            vh.SetUIVertex(v, i);
+        }
+    }
+}
