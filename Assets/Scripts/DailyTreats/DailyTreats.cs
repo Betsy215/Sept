@@ -124,7 +124,7 @@ public class DailyTreats : MonoBehaviour
     {
         // the buttons a little smaller and higher (owner, 19 November: "make the buttons slightly smaller, leave some space
         // between button and the bottom dot line")
-        RewardY = -160f; RewardScale = 0.66f; ButtonY = -272f; ButtonScale = 0.68f; ClosePos = new Vector2(322f, 229f);
+        RewardY = -146f; RewardScale = 0.66f; ButtonY = -272f; ButtonScale = 0.68f; ClosePos = new Vector2(322f, 229f);
         AmountTint = new Color(0.90f, 0.56f, 0.24f);   // the cream "+50" letters, orange on the pale card
         var board = NewImage("Board", canvasRect, paper, Color.white);
         Place(board.rectTransform, 0f, 0f, 890f, 890f);
