@@ -13,8 +13,8 @@ public static class ShopGlass
 {
     public const float BarHeight = 112f;  // the tab row's height in the group's units (0.8 of that on screen)
     private const float CornerPx = 75f;   // the pieces' corner height in pixels (their top and bottom border)
-    private const float Haze = 0.30f;     // how much of the blurred background is laid over the sharp one
-    private const float Veil = 0.05f;     // white in the glass
+    private const float Haze = 0.45f;     // how much of the blurred background is laid over the sharp one
+    private const float Veil = 0.14f;     // white in the glass
 
     private static Sprite Piece(string name) => Resources.Load<Sprite>("UI/" + name);
     public static bool Ready => Piece("glass_fill") != null && Piece("glass_rim") != null;
