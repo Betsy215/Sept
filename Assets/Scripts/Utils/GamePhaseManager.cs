@@ -49,11 +49,12 @@ public class GamePhaseManager : MonoBehaviour
     private ArrangeHintAnim kitchenHint;
     private const string TableHint = "Drag to arrange your table", KitchenHint = "Drag to arrange your kitchen";
 
-    /// The arrangement's hint (the card and the hand moving an item) belongs to the tutorial only (owner, 18 November
-    /// 2026: "show it only during tutorial, remove it for game play, don't check it every time"): shown through the
-    /// first arrangement a save meets, on the table and in the kitchen, then never again.
-    public bool HintDue => SessionManager.Instance != null && SessionManager.Instance.ArrangeTutorialDue && !SkipsArrangement
-                           && currentPhase == GamePhase.ARRANGEMENT && FindObjectOfType<TutorialDirector>() == null;
+    /// The arrangement's hint (the card and the hand moving an item) is never shown while arranging any more (owner, 19
+    /// November 2026: "drag to arrange your kitchen banner is in the way, it covers up the kitchen ... don't show this
+    /// during arrangement mode, don't show this in game scene neither, only shows these banner and animation in
+    /// tutorial"): the chapter 1 tutorial demonstrates both drags (TutorialDirector.DragDemo). 18 November it showed on a
+    /// save's first arrangement.
+    public bool HintDue => false;
 
     /// Day 1 comes pre-arranged: no drag, no Ready; the arrangement is taught on day 2 (owner, 31 October 2026).
     /// The tutorial day (level 0 while the tutorial is due) keeps its own flow.
@@ -212,7 +213,8 @@ public class GamePhaseManager : MonoBehaviour
                 { NewTag.OnWorld(item.transform); GlowFx.NewWorld(item.transform); }   // B: the white glow and stars (owner, 18 November 2026)
         foreach (var decor in FindObjectsOfType<DecorGate>())
             if (decor != null && sm.IsNewToArrange("Decor:" + decor.decorName)) { NewTag.OnWorld(decor.transform); GlowFx.NewWorld(decor.transform); }
-        if (sm.IsNewToArrange("Upgrade:CoffeeMachine") || sm.IsNewToArrange("Upgrade:Coffee"))
+        // only its own upgrade: the cups' upgrade (Upgrade:Coffee) marks the cups, not the machine (owner, 19 November 2026)
+        if (sm.IsNewToArrange("Upgrade:CoffeeMachine"))
             foreach (var machine in FindObjectsOfType<CoffeeMachine>())
                 if (machine != null && machine.gameObject.activeInHierarchy) { NewTag.OnWorld(machine.transform); GlowFx.NewWorld(machine.transform); }
     }

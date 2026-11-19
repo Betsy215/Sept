@@ -323,7 +323,10 @@ public static class ShopCookies
             if (SessionManager.Instance != null && SessionManager.Instance.IsNewInBook(e.key)) { NewTag.OnUI(c); newest = i; }
             cb.onClick.AddListener(() =>
             {
-                if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonClick();
+                // a crunch, one of the owner's three, as for the cookie being eaten (owner, 19 November 2026: "add crunch
+                // sound effect when i click on icon in my cookies book")
+                var crunch = Resources.Load<AudioClip>(BiteCrunches[UnityEngine.Random.Range(0, BiteCrunches.Length)]);
+                if (AudioManager.Instance != null) { if (crunch != null) AudioManager.Instance.PlaySFX(crunch); else AudioManager.Instance.PlayButtonClick(); }
                 foreach (var other in cells) if (other != null) other.localScale = Vector3.one;
                 c.localScale = Vector3.one * 1.14f;
                 chosenImg.sprite = e.cookie; chosenImg.enabled = true; name.text = TextStars.Mark(e.name ?? ""); info.text = TextStars.Mark(e.info ?? "");

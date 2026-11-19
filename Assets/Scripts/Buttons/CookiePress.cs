@@ -16,7 +16,7 @@ public class CookiePress : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     enum Kind { Tap, Go, Back }
     static readonly Dictionary<string, Kind> CookieSprites = new Dictionary<string, Kind> {
         { "continue", Kind.Go }, { "new", Kind.Go }, { "ready", Kind.Go }, { "btn_play", Kind.Go }, { "btn_done", Kind.Go },
-        { "collect", Kind.Go }, { "yes", Kind.Go }, { "next 1", Kind.Go }, { "coinsbutton", Kind.Go },
+        { "collect", Kind.Go }, { "yes", Kind.Go }, { "btn_onemore", Kind.Go }, { "next 1", Kind.Go }, { "coinsbutton", Kind.Go },
         { "no", Kind.Back }, { "btn_cancel", Kind.Back }, { "home", Kind.Back }, { "replay", Kind.Back },
         { "setting 1", Kind.Tap }, { "pause 1", Kind.Tap }, { "audio", Kind.Tap }, { "music 1", Kind.Tap },
         { "up 1", Kind.Tap }, { "down 1", Kind.Tap }, { "arrow_right", Kind.Tap }, { "arrow_left", Kind.Tap },

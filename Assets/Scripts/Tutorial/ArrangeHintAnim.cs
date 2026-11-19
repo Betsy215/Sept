@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class ArrangeHintAnim : MonoBehaviour
 {
     private RectTransform item, hand;
+    private float started;   // the move starts at its beginning when made
     // drag.anim's keys: time, the item's place, the hand's place (scaled up from the clip's 100-unit food)
     private static readonly float[] T = { 0f, 0.5167f, 1f, 2.0167f, 4f };
     private static readonly Vector2[] ItemAt = { new Vector2(-150f, 0f), new Vector2(-150f, 0f), new Vector2(7.6f, 34.9f), new Vector2(103.6f, 34.9f), new Vector2(103.6f, 34.9f) };
@@ -19,7 +20,7 @@ public class ArrangeHintAnim : MonoBehaviour
         var go = new GameObject("KitchenHintAnim", typeof(RectTransform), typeof(ArrangeHintAnim));
         go.layer = parent.gameObject.layer;
         var rt = (RectTransform)go.transform; rt.SetParent(parent, false); rt.anchoredPosition = at; rt.sizeDelta = new Vector2(600f, 100f);
-        var a = go.GetComponent<ArrangeHintAnim>();
+        var a = go.GetComponent<ArrangeHintAnim>(); a.started = Time.unscaledTime;
         a.item = Picture(rt, "Item", itemSprite, new Vector2(100f, 100f) * Scale);
         a.hand = Picture(rt, "Hand", handLook != null ? handLook.sprite : null, (handLook != null ? handLook.rectTransform.rect.size : new Vector2(100f, 150f)) * Scale);
         if (handLook != null) { a.hand.pivot = handLook.rectTransform.pivot; a.hand.localRotation = handLook.rectTransform.localRotation; }
@@ -38,7 +39,7 @@ public class ArrangeHintAnim : MonoBehaviour
 
     private void Update()
     {
-        var t = Mathf.Repeat(Time.unscaledTime, 4f);
+        var t = Mathf.Repeat(Time.unscaledTime - started, 4f);
         var i = 0; while (i < T.Length - 2 && t >= T[i + 1]) i++;
         var k = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(T[i], T[i + 1], t));
         if (item != null) item.anchoredPosition = Vector2.Lerp(ItemAt[i], ItemAt[i + 1], k) * Scale;

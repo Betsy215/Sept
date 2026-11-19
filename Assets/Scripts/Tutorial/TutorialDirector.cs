@@ -236,6 +236,11 @@ public class TutorialDirector : MonoBehaviour
             yield return new WaitForSeconds(2.5f);
         }
 
+        // Arranging is taught here, as a moving demo (owner, 19 November 2026: "only shows these banner and animation in
+        // tutorial. add animation to demo it in tutorial, moving things"); the arrangement phase itself shows no hint
+        var breadLook = bread != null ? bread.GetComponentInChildren<SpriteRenderer>() : null;
+        yield return DragDemo("Drag to arrange your table", breadLook != null ? breadLook.sprite : null);
+
         var kitchenButton = GameObject.Find("KitchenButton");
         if (kitchenButton != null && KitchenSceneManager.Instance != null)
         {
@@ -306,6 +311,8 @@ public class TutorialDirector : MonoBehaviour
                 Say("Ding! Fresh bread");
                 yield return new WaitForSeconds(2f);
             }
+
+            yield return DragDemo("Drag to arrange your kitchen", Resources.Load<Sprite>("Kitchen/whisk"));
 
             HideHand();
             Say("Swipe back to serve");
@@ -509,6 +516,25 @@ public class TutorialDirector : MonoBehaviour
     #region Pointer and captions
 
     private int saidCount;
+
+    /// A caption and a hand moving a thing across the screen and putting it down: how arranging works. One full move
+    /// (4 s, the arrangement hint's own clip), on the tutorial's canvas, which is drawn over the kitchen too.
+    private IEnumerator DragDemo(string text, Sprite thing)
+    {
+        if (thing == null) yield break;
+        HideHand();
+        Say(text);
+        Image handLook = null;
+        if (phaseManager != null && phaseManager.tutorialPanel != null)
+        {
+            var h = phaseManager.tutorialPanel.transform.Find("AnimationContainer/Hand");
+            if (h != null) handLook = h.GetComponent<Image>();
+        }
+        var demo = ArrangeHintAnim.Make(canvasRect, new Vector2(-90f, -500f), thing, handLook);   // under the caption card, in the open
+        demo.transform.localScale = Vector3.one * 1.5f;
+        yield return new WaitForSeconds(4.4f);
+        if (demo != null) Destroy(demo.gameObject);
+    }
 
     private void Say(string text)
     {

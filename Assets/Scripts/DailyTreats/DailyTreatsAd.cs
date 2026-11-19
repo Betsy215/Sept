@@ -29,6 +29,7 @@ public class DailyTreatsAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     private Image dailyReward;                    // the +50 picture, replaced by the ad reward
 
     private static Sprite Load(string name) => Resources.Load<Sprite>("DailyTreats/" + name);
+    private const string WordsOff = "ONE MORE TREAT";
 
     /// Builds the ad button and the reward pieces on the Daily Treats canvas; call once the daily reward has popped.
     public void Begin(RectTransform canvas, Image coinAndAmountToHide, Image sparklesImage, Sprite buttonSprite,
@@ -45,12 +46,16 @@ public class DailyTreatsAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
         var a = new GameObject("AdAmount", typeof(RectTransform)); a.transform.SetParent(canvasRect, false);
         amount = (RectTransform)a.transform; Place(amount, 60f, -190f, 400f, 180f); a.SetActive(false);
 
-        // The button: the blank felt with the words on it (no extra layer behind the letters, owner)
-        var blank = Load("button_blank"); button = NewImage("OneMoreTreat", blank != null ? blank : buttonSprite, Color.white);
-        Place(button.rectTransform, 16f, -431f, 548f, 305f);
+        // The button: a cookie with the words iced on it (owner, 19 November 2026: "change one more treat button to cookie
+        // style"; Gemini, Store/cookies_2026-11-17/gemini/gemini_onemore_B.png); before, the blank felt with the words on it
+        var cookie = Load("btn_onemore"); var blank = Load("button_blank");
+        button = NewImage("OneMoreTreat", cookie != null ? cookie : blank != null ? blank : buttonSprite, Color.white);
+        if (cookie != null) Place(button.rectTransform, 16f, -431f, 548f, 548f * cookie.rect.height / cookie.rect.width);
+        else Place(button.rectTransform, 16f, -431f, 548f, 305f);
         button.raycastTarget = true;
         label = NewText("Label", button.rectTransform, font, 58f, new Color(0.8f, 0.47f, 0.16f));
-        label.text = "ONE MORE TREAT"; Place(label.rectTransform, -8f, -4f, 520f, 90f);   // the words alone, centred (owner, 16 October: no "watch an ad")
+        Place(label.rectTransform, -8f, -4f, 520f, 90f);
+        label.text = cookie != null ? "" : WordsOff;   // the cookie carries its own words
         var b = button.gameObject.AddComponent<Button>(); b.transition = Selectable.Transition.None; b.onClick.AddListener(OnTap);
 
         // A small cross at the board's top right corner
@@ -85,11 +90,12 @@ public class DailyTreatsAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     private IEnumerator TapThenShow()
     {
         showing = true;
-        yield return Pop(button.transform, 1f, 0.9f, 0.1f);
-        yield return Pop(button.transform, 0.9f, 1f, 0.14f);
+        if (string.IsNullOrEmpty(label.text)) yield return null;   // the cookie: CookiePress pushes it down and plays the crunch
+        else { yield return Pop(button.transform, 1f, 0.9f, 0.1f); yield return Pop(button.transform, 0.9f, 1f, 0.14f); }
         var waited = 0f;
-        while (!adReady && waited < 8f) { Preload(); label.text = "LOADING..."; yield return new WaitForSecondsRealtime(0.5f); waited += 0.5f; }
-        label.text = "ONE MORE TREAT";
+        var iced = string.IsNullOrEmpty(label.text);   // the cookie: paler while the ad loads instead of new words on it
+        while (!adReady && waited < 8f) { Preload(); if (iced) button.color = new Color(1f, 1f, 1f, 0.6f); else label.text = "LOADING..."; yield return new WaitForSecondsRealtime(0.5f); waited += 0.5f; }
+        if (iced) button.color = Color.white; else label.text = WordsOff;
         if (!adReady) { showing = false; yield return Fade(button, 0.4f); onClose?.Invoke(); yield break; }
         adReady = false;
         if (Application.isEditor) { yield return new WaitForSecondsRealtime(1f); OnUnityAdsShowComplete(AdUnitId, UnityAdsShowCompletionState.COMPLETED); yield break; }
