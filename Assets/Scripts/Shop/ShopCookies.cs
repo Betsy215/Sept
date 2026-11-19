@@ -55,6 +55,7 @@ public static class ShopCookies
     }
 
     private static readonly float[] BiteAngles = { 40f, 330f, 250f, 150f };   // round the cookie, from the upper right
+    private static readonly string[] BiteCrunches = { "UI/button_crunch_go", "UI/button_crunch_tap", "UI/button_crunch_back" };
 
     private static IEnumerator EatRoutine(MonoBehaviour host, RectTransform root, Sprite cookie, System.Action done)
     {
@@ -92,7 +93,7 @@ public static class ShopCookies
             if (last) { at = Centroid(px, w, h); crumb = Sample(px, w, h, at); for (var i = 0; i < px.Length; i++) px[i].a = 0; }
             else at = Bite(px, w, h, BiteAngles[b], out crumb);
             tex.SetPixels32(px); tex.Apply(false);
-            var clip = Resources.Load<AudioClip>("Cookies/crunch_" + (1 + b % 3));
+            var clip = Resources.Load<AudioClip>(BiteCrunches[b % BiteCrunches.Length]);   // the owner's three button crunches (18 Nov 2026)
             if (clip != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(clip);
             host.StartCoroutine(Crumbs(rt, crt, at, crumb, last ? 12 : 7, rng));
             for (var t = 0f; t < 0.14f; t += Time.unscaledDeltaTime)
