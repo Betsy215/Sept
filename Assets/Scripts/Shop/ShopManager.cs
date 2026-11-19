@@ -54,6 +54,7 @@ public class ShopManager : MonoBehaviour
         EnsureRemoveAdsCard();   // the one-time Remove Ads card (owner, 9 November 2026)
         EnsureStarPackCard();    // 15 stars for money (owner, 15 November 2026)
         EnsureStarYogaCard();    // the star shop's first card: the yoga lady (owner, 14 November 2026)
+        EnsureCoinStarCard();    // one star for 999 coins (owner, 19 November 2026)
         EvenOutCharacterIcons();
         foreach (var card in GetAllShopItems()) ShopCookies.Dress(card);   // the cards' pictures as iced cookies (owner, 17 November 2026)
         EnsureTabs();            // Stars | Coins | $ (owner, 10 November 2026); Coins is the default
@@ -260,6 +261,8 @@ public class ShopManager : MonoBehaviour
             purchaseSuccess = session.UpgradeFood(item.upgradeFoodType);
         else if (item.itemType == ItemType.Decor && item.itemName == "Candies")
             purchaseSuccess = session.BuyCandies();                  // the jar's refill, bought again whenever it is not full (owner, 26 October 2026)
+        else if (item.itemName == CoinStarCardName)
+            purchaseSuccess = session.BuyStarWithCoins();            // a star for the star shop, bought again any time (owner, 19 November 2026)
         else if (item.itemType == ItemType.Decor)
             purchaseSuccess = session.PurchaseDecor(item.itemName);
 
@@ -281,7 +284,7 @@ public class ShopManager : MonoBehaviour
         // Mark as purchased in UI; the candies stay on sale (owner, 26 October 2026)
         // (the oven card sells twice: after the second oven it stays on sale for the third; it used to be marked owned
         // at once, so the third oven could never be bought)
-        if (!(item.itemType == ItemType.Decor && item.itemName == "Candies") && !OvenStillSells(item)) item.MarkAsPurchased();
+        if (!(item.itemType == ItemType.Decor && item.itemName == "Candies") && item.itemName != CoinStarCardName && !OvenStillSells(item)) item.MarkAsPurchased();
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayPurchaseSound();
         EatBought(item);   // eaten as a cookie (owner, 17 November 2026); before, the picture flew to the way to the table
@@ -366,6 +369,10 @@ public class ShopManager : MonoBehaviour
             else if (shopItem.itemType == ItemType.Character && purchasedCharacters.Contains(shopItem.itemName))
             {
                 shopItem.MarkAsPurchased();
+            }
+            else if (shopItem.itemName == CoinStarCardName)
+            {
+                // always on sale: a star can be bought again and again
             }
             else if (shopItem.itemType == ItemType.Decor && shopItem.itemName == "Candies")
             {
@@ -668,7 +675,7 @@ public class ShopManager : MonoBehaviour
     {
         if (c == null) return false;
         if (c.itemName == RemoveAdsCardName) return RemoveAds.Owned;
-        if (c.itemName == StarPackCardName) return false;                       // can always be bought again
+        if (c.itemName == StarPackCardName || c.itemName == CoinStarCardName) return false;   // can always be bought again
         var s = SessionManager.Instance; if (s == null || !s.HasActiveSession()) return false;
         if (TabOf(c) == ShopTab.Stars) return s.OwnsStarItem(c.itemName);
         var data = s.GetCurrentSession();
@@ -1052,6 +1059,33 @@ public class ShopManager : MonoBehaviour
         RemoveAds.Init();
         if (!popupNames.ContainsKey(StarPackCardName)) popupNames[StarPackCardName] = StarPack.Stars + " " + TextStars.Token;
         starPackShown = StarPack.Available;
+    }
+
+    // --- A star for coins (owner, 19 November 2026: "player can buy 1 star in shop using 1000 coin", then "actually, use
+    // 999 coin"): a card on the coins tab, cloned like the others, bought as often as the coins allow. ---------------
+    public const string CoinStarCardName = "CoinStar";   // not "Star...": names that start so belong to the star tab
+    public const int CoinStarPrice = 999;
+
+    private void EnsureCoinStarCard()
+    {
+        if (itemContainer == null) return;
+        foreach (var c in GetAllShopItems()) if (c != null && c.itemName == CoinStarCardName) return;
+        ShopItemController template = null;
+        foreach (var c in GetAllShopItems()) if (c != null && c.itemName == "Candies") { template = c; break; }
+        if (template == null) return;
+        var go = Instantiate(template.gameObject, template.transform.parent);
+        go.name = CoinStarCardName; go.SetActive(true);
+        var card = go.GetComponent<ShopItemController>();
+        card.itemName = CoinStarCardName; card.itemType = ItemType.Decor; card.price = CoinStarPrice; card.isPurchased = false;
+        card.upgradeFoodType = ""; card.specialNote = "";
+        card.popupInfoText = "$ " + CoinStarPrice + "\n1 " + TextStars.Token + " for the star shop.";
+        card.purchaseButtonText = "$ " + CoinStarPrice;
+        var icon = Resources.Load<Sprite>("Cookies/" + CoinStarCardName);
+        var iconT = go.transform.Find("ItemIcon"); var img = iconT != null ? iconT.GetComponent<Image>() : null;
+        if (img != null && icon != null) img.sprite = icon;
+        var priceT = go.transform.Find("PriceText"); var price = priceT != null ? priceT.GetComponent<TextMeshProUGUI>() : null;
+        if (price != null) price.text = "$ " + CoinStarPrice;
+        if (!popupNames.ContainsKey(CoinStarCardName)) popupNames[CoinStarCardName] = "1 " + TextStars.Token;
     }
 
     // --- The star shop's first card (owner, 14 November 2026): the yoga lady, 15 stars, "hire her to calm customers

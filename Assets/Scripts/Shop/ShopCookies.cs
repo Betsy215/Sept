@@ -282,29 +282,48 @@ public static class ShopCookies
         float W = Mathf.Min(960f, root.rect.width - 80f), H = Mathf.Min(1560f, root.rect.height - 240f);
         var page = Child(rt, "Page", new Vector2(0.5f, 0.5f), new Vector2(W, H), Vector2.zero);
         var pageImg = page.gameObject.AddComponent<Image>();
-        if (panelLook != null) { pageImg.sprite = panelLook.sprite; pageImg.type = panelLook.type; pageImg.pixelsPerUnitMultiplier = panelLook.pixelsPerUnitMultiplier; }
-        pageImg.color = new Color(1f, 0.97f, 0.89f, 0.98f);   // the shop panel's cream, nearly solid so the cookies read
+        // The open book (owner, 19 November 2026: "use 5 for cookies book": a red book bound on the left, a cream page,
+        // the page block's edges at the right and bottom; Store/ui/paper_panels_2026-11-19/book_5_game.png, 960 x 1560).
+        // Everything keeps clear of the spine and the page's edges ("the icons are too close to the left and right
+        // edge. need more space. close icon need some space around it too"). Without the picture: the shop panel's cream.
+        var bookLook = Resources.Load<Sprite>("Cookies/book_page");
+        float left, right, top, bottom;   // the room for cookies and words, in the page's own space
+        if (bookLook != null)
+        {
+            pageImg.sprite = bookLook; pageImg.type = Image.Type.Simple; pageImg.color = Color.white;
+            float kx = W / 960f, ky = H / 1560f;
+            left = -W / 2f + (104f + 64f) * kx; right = W / 2f - (56f + 64f) * kx; top = H / 2f - 48f * ky; bottom = -H / 2f + 66f * ky;
+        }
+        else
+        {
+            if (panelLook != null) { pageImg.sprite = panelLook.sprite; pageImg.type = panelLook.type; pageImg.pixelsPerUnitMultiplier = panelLook.pixelsPerUnitMultiplier; }
+            pageImg.color = new Color(1f, 0.97f, 0.89f, 0.98f);   // the shop panel's cream, nearly solid so the cookies read
+            left = -W / 2f + 40f; right = W / 2f - 40f; top = H / 2f; bottom = -H / 2f;
+        }
+        float wide = right - left, middle = (left + right) / 2f;
 
-        var title = Label(page, "Title", "MY COOKIES", titleFont, 78f, new Vector2(0f, H / 2f - 90f), new Vector2(W - 60f, 110f));
+        var title = Label(page, "Title", "MY COOKIES", titleFont, 78f, new Vector2(middle, top - 96f), new Vector2(wide, 110f));
         title.color = Ink;
 
         // four cookies in a row, and as many rows as fit above the description; a full page is followed by another, turned
         // like a book's with the arrows under the grid (owner, 19 November 2026: "put four cookies in a row, we will
         // have a page flip effect when a page is full, and a next arrow to click on to flip the page. So it's like a book")
         const float infoH = 330f; const float arrowRow = 110f; const int columns = 4;
-        var gridTop = H / 2f - 170f; var gridBottom = -H / 2f + infoH + 60f + arrowRow;
-        var cell = (W - 80f) / columns;
-        var rowsPerPage = Mathf.Max(1, Mathf.FloorToInt((gridTop - gridBottom) / cell)); var perPage = rowsPerPage * columns;
+        var gridTop = top - 176f; var gridBottom = bottom + infoH + 60f + arrowRow;
+        var cell = wide / columns; var rowPitch = Mathf.Max(cell, 190f);
+        var rowsPerPage = Mathf.Max(1, Mathf.FloorToInt((gridTop - gridBottom) / rowPitch)); var perPage = rowsPerPage * columns;
+        rowPitch = Mathf.Min((gridTop - gridBottom) / rowsPerPage, cell * 1.3f);   // the rows share the height, not further apart than looks right
         var pageCount = Mathf.Max(1, Mathf.CeilToInt(owned.Count / (float)perPage));
-        var icon = cell * 0.86f;
+        var icon = Mathf.Min(cell, rowPitch) * 0.88f;
         // the chosen thing: its cookie, its name and what it does, on the lower part of the page
-        var chosen = Child(page, "Chosen", new Vector2(0.5f, 0.5f), new Vector2(230f, 230f), new Vector2(-W / 2f + 170f, -H / 2f + infoH / 2f + 30f));
+        var chosen = Child(page, "Chosen", new Vector2(0.5f, 0.5f), new Vector2(200f, 200f), new Vector2(left + 100f, bottom + infoH / 2f + 20f));
         var chosenImg = chosen.gameObject.AddComponent<Image>(); chosenImg.preserveAspect = true; chosenImg.raycastTarget = false; chosenImg.enabled = false;
-        var name = Label(page, "Name", "", titleFont, 60f, new Vector2(140f, -H / 2f + infoH - 40f), new Vector2(W - 360f, 90f));
+        float textLeft = left + 226f, textWide = right - textLeft;
+        var name = Label(page, "Name", "", titleFont, 58f, new Vector2(textLeft + textWide / 2f, bottom + infoH - 30f), new Vector2(textWide, 90f));
         name.color = Ink; name.alignment = TextAlignmentOptions.Left;
-        var info = Label(page, "Info", "", textFont != null ? textFont : titleFont, 50f, new Vector2(140f, -H / 2f + infoH / 2f - 30f), new Vector2(W - 360f, 200f));
+        var info = Label(page, "Info", "", textFont != null ? textFont : titleFont, bookLook != null ? 44f : 50f, new Vector2(textLeft + textWide / 2f, bottom + infoH / 2f - 20f), new Vector2(textWide, 210f));   // three lines fit above the page's edge
         info.color = Ink; info.alignment = TextAlignmentOptions.TopLeft; info.enableWordWrapping = true; info.lineSpacing = -14f;
-        var rule = Child(page, "Rule", new Vector2(0.5f, 0.5f), new Vector2(W - 120f, 4f), new Vector2(0f, -H / 2f + infoH + 40f));
+        var rule = Child(page, "Rule", new Vector2(0.5f, 0.5f), new Vector2(wide, 4f), new Vector2(middle, bottom + infoH + 40f));
         var ruleImg = rule.gameObject.AddComponent<Image>(); ruleImg.color = new Color(Ink.r, Ink.g, Ink.b, 0.25f); ruleImg.raycastTarget = false;
 
         var cells = new List<RectTransform>(); var newest = owned.Count - 1;
@@ -314,7 +333,7 @@ public static class ShopCookies
         {
             var e = owned[i];
             var onPage = i / perPage; var slot = i % perPage;
-            var pos = new Vector2(-W / 2f + 40f + cell * (slot % columns + 0.5f), gridTop - cell * (slot / columns + 0.5f));
+            var pos = new Vector2(left + cell * (slot % columns + 0.5f), gridTop - rowPitch * (slot / columns + 0.5f));
             var c = Child(leaves[onPage], "Owned" + i, new Vector2(0.5f, 0.5f), new Vector2(icon, icon), pos);
             var ci = c.gameObject.AddComponent<Image>(); ci.sprite = e.cookie; ci.preserveAspect = true;
             var cb = c.gameObject.AddComponent<Button>(); cb.transition = Selectable.Transition.None;
@@ -338,21 +357,22 @@ public static class ShopCookies
         var cross = Resources.Load<Sprite>("UI/cross");
         if (cross != null)
         {
-            var x = Child(page, "Close", new Vector2(0.5f, 0.5f), new Vector2(96f, 96f), new Vector2(W / 2f - 76f, H / 2f - 82f));
+            var x = Child(page, "Close", new Vector2(0.5f, 0.5f), new Vector2(96f, 96f), bookLook != null ? new Vector2(right - 30f, top - 92f) : new Vector2(W / 2f - 76f, H / 2f - 82f));   // on the page, with room round it
             var xi = x.gameObject.AddComponent<Image>(); xi.sprite = cross; xi.preserveAspect = true;
             x.gameObject.AddComponent<Button>().onClick.AddListener(CloseBook);
         }
         // the pages: the one with the newest cookie first; arrows and "1 / 2" under the grid when there is more than one
         var turner = go.AddComponent<BookTurner>();
-        turner.Set(page, leaves, owned.Count > 0 ? newest / perPage : 0, new Rect(-W / 2f + 20f, gridBottom, W - 40f, gridTop - gridBottom), pageImg.color);
+        turner.Set(page, leaves, owned.Count > 0 ? newest / perPage : 0, new Rect(left - 24f, gridBottom, wide + 48f, gridTop - gridBottom),
+                   bookLook != null ? new Color(1f, 0.976f, 0.925f, 1f) : pageImg.color);   // the turning sheet in the page's own paper
         if (pageCount > 1)
         {
             var arrowY = gridBottom - arrowRow / 2f + 6f;
             const float ArrowW = 230f, ArrowH = 150f;   // the map arrow's picture has wide margins
-            var count = Label(page, "PageCount", "", titleFont, 58f, new Vector2(0f, arrowY), new Vector2(240f, 70f)); count.color = new Color(Ink.r, Ink.g, Ink.b, 0.7f);
-            var next = Child(page, "NextPage", new Vector2(0.5f, 0.5f), new Vector2(ArrowW, ArrowH), new Vector2(W / 2f - 150f, arrowY));
+            var count = Label(page, "PageCount", "", titleFont, 58f, new Vector2(middle, arrowY), new Vector2(240f, 70f)); count.color = new Color(Ink.r, Ink.g, Ink.b, 0.7f);
+            var next = Child(page, "NextPage", new Vector2(0.5f, 0.5f), new Vector2(ArrowW, ArrowH), new Vector2(right - 80f, arrowY));
             var ni = next.gameObject.AddComponent<Image>(); ni.sprite = Resources.Load<Sprite>("Map/arrow_right"); ni.preserveAspect = true;
-            var prev = Child(page, "PrevPage", new Vector2(0.5f, 0.5f), new Vector2(ArrowW, ArrowH), new Vector2(-W / 2f + 150f, arrowY));
+            var prev = Child(page, "PrevPage", new Vector2(0.5f, 0.5f), new Vector2(ArrowW, ArrowH), new Vector2(left + 80f, arrowY));
             var pi = prev.gameObject.AddComponent<Image>(); pi.sprite = Resources.Load<Sprite>("Map/arrow_left"); pi.preserveAspect = true;
             var nb = next.gameObject.AddComponent<Button>(); nb.transition = Selectable.Transition.None; nb.onClick.AddListener(() => turner.Turn(1));
             var pb = prev.gameObject.AddComponent<Button>(); pb.transition = Selectable.Transition.None; pb.onClick.AddListener(() => turner.Turn(-1));

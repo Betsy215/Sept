@@ -70,6 +70,9 @@ public class SessionData
     public int starsBought;
     // Stars handed out by the "Chapter 2 test" button of test builds (15 November 2026). Only for spending; a new game drops them.
     public int starsGranted;
+    // Stars bought with coins in the shop (owner, 19 November 2026: "allow conversion between coins to star ... use 999
+    // coin"). Only for spending, like the others; coins belong to one game, so a new game drops them.
+    public int starsFromCoins;
     // Where the player put the pull handles on their edges (15 November 2026): world heights, used only when set.
     // The kitchen's movable pieces (owner, 16 November 2026): each piece's foot as a share of the kitchen picture; null in older saves
     public List<FoodItemPosition> kitchenPlaces;
@@ -574,7 +577,16 @@ public class SessionManager : MonoBehaviour
     }
 
     /// Stars left to spend in the star shop: earned minus spent.
-    public int StarsAvailable => Mathf.Max(0, GetTotalStars() + (currentSession != null ? currentSession.starsBought + currentSession.starsGranted : 0) - (currentSession != null ? currentSession.starsSpent : 0));
+    public int StarsAvailable => Mathf.Max(0, GetTotalStars() + (currentSession != null ? currentSession.starsBought + currentSession.starsGranted + currentSession.starsFromCoins : 0) - (currentSession != null ? currentSession.starsSpent : 0));
+
+    /// One star for the star shop, paid in coins by the shop (which takes the coins first).
+    public bool BuyStarWithCoins()
+    {
+        if (currentSession == null) return false;
+        currentSession.starsFromCoins += 1;
+        SaveSession();
+        return true;
+    }
 
     public bool TryGetHandleHeight(bool kitchen, out float worldY)
     {
