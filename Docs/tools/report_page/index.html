@@ -74,7 +74,8 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Glows</b> (Current, first card): the default glow on the coffee bags and apples, none on the ovens. Say if it goes in a test build.</p>
+<p><b>Glows</b> (Current, first card): toned down, smooth outline on the coffee bags, none on the ovens.</p>
+<p><b>Your test:</b> the Play button fixed (second card). Keep sending; the next test build takes them all.</p>
 <p><b>Test build 2026.11.18 (2)</b> is in TestFlight: the cleaned cookie buttons and the shop's new crunches.</p>
 <p><b>Release:</b> the What's New words, then "build" and "submit".</p>
 </div>
@@ -89,12 +90,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
 <p style="margin-top:0"><b>Glows: the default glow on the coffee bags and apples, none on the ovens, 18 November evening.</b> In the project, not in a build yet.</p>
-<figure><img src="kitchen_glow_zoom.jpg" style="max-height:300px" alt="The coffee bags and the apples on the tree, each with the same soft still white glow"><figcaption>Coffee bags and apples, close up.</figcaption></figure>
+<figure><img src="glow_tuned.jpg" style="max-height:520px" alt="Above: the coffee bags and apples with their old painted glow. Below: the bags with a smooth outline and a fainter, narrower white glow, the apples the same"><figcaption>Above: your test build (the painted glow). Below: now, toned down.</figcaption></figure>
 <figure><img src="kitchen_default_glow.jpg" style="max-height:640px" alt="The chapter 1 kitchen with glows on the coffee bags, apples and juice; the chapter 2 kitchen with glows on the coffee bags, blender, coconuts and juice; no glow on the ovens"><figcaption>During play. Left: chapter 1. Right: chapter 2.</figcaption></figure>
 <ul>
 <li><b>Default</b> (your pick: B's white glow held at its middle, no stars) on everything you tap in the kitchen: coffee bags, apples, blender, juice, coconuts, waffle machine.</li>
 <li><b>Coffee bags and apples:</b> the glow painted into their pictures is taken out; they now have the same glow as the rest. The apples' glow follows as apples are picked, and goes when none are left.</li>
 <li><b>Ovens:</b> no glow.</li>
+<li><b>Toned down</b> (you said too much): narrower, softer and fainter, on everything with the default glow.</li>
+<li><b>The bags' outline:</b> their dry-brush edge, which the old glow hid, is now one smooth line; the grey seam between the two bags is warm brown.</li>
 </ul>
 <p style="margin:14px 0 4px"><b>B, new things</b> (while arranging): white glow with twinkling stars beside NEW. <b>C</b>: the gold shine sweeping over Ready.</p>
 <figure><img src="glow_new_ready.gif" style="max-height:420px" alt="The table being arranged: NEW things with white glows and twinkling stars, Ready with a gold shine sweeping across"><figcaption>The table, arranging.</figcaption></figure>
@@ -105,6 +108,19 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="cur.glow19.good"> Good</label></li>
 <li><label><input type="checkbox" data-id="cur.glow19.build"> Good, push a test build</label></li>
 <li><label><input type="checkbox" data-id="cur.glow19.change"> Changes (I will say what)</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Your test of build 2026.11.18 (2): fixes.</b> In the project, not in a build yet.</p>
+<p style="margin:10px 0 4px"><b>The Play button on the day board.</b> It sank too far and stayed lower after the press. Now: pushed down, then back exactly to its place.</p>
+<figure><img src="play_press.jpg" style="max-height:190px" alt="The Play cookie at rest, pushed in and slightly lower, then back at the same place"><figcaption>At rest, pressed, released.</figcaption></figure>
+<ul>
+<li>The cause was in the press shared by all cookie buttons: a tiny rounding when the button's place is read back was taken for "something else moved the button", so its pressed place became its new home. It showed where the numbers are large, like the day board; the fix covers every button.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.test19.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.test19.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
