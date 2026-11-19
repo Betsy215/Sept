@@ -228,11 +228,12 @@ public static class GlowFx
 
     /// The kitchen's default (owner, 18 November 2026: "pick a glow state in B, a middle state, but without the stars,
     /// default glow is the static glow for actionable items in kitchen"): B's white glow, still, at the middle of its beat.
+    public static float DefaultWidth = 1.3f, DefaultStrength = 1.4f, DefaultAlpha = 0.45f;   // the owner picks among drafts (18 Nov night)
     public static void Default(Image owner)
     {
         if (!Usable(owner)) return;
-        // toned down twice the same evening ("the glow is too much", "tune down the default glow even more")
-        var p = UiGlow(owner, WhiteColour, 1.1f, 1.2f, 0.35f, 0.35f); p.gate = null;
+        // tuned the same night: down twice ("the glow is too much", "even more"), then a little up ("tune up the glow")
+        var p = UiGlow(owner, WhiteColour, DefaultWidth, DefaultStrength, DefaultAlpha, DefaultAlpha); p.gate = null;
     }
 
     /// A: gold, beating once a second. For the next thing to act on.
