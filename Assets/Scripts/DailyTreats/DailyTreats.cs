@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Daily Treats: the first time the game is opened each day, a popup on the main menu gives +50 coins.
-/// Five days in a row also gives a +100 surprise on day 5, then the row starts again. Missing a day
+/// Four days in a row also gives a +100 surprise on the last day, then the row starts again (four since 19 November
+/// 2026, owner: "Change the day streak to 4 days instead of 5 so we have one less sticker"). Missing a day
 /// resets the row to day 1. Uses the phone's local date; a clock moved back gives nothing.
 /// The coins wait (PlayerPrefs) and are paid when the player taps Continue or starts a New game.
 /// Layout follows the approved mock (Store/artkit/checkin2.py) on a 1080x1920 canvas; the pieces are
@@ -15,18 +16,19 @@ using UnityEngine.UI;
 public class DailyTreats : MonoBehaviour
 {
     public const string LastKey = "ftc.daily.last";       // yyyy-MM-dd of the last collect
-    public const string StreakKey = "ftc.daily.streak";   // days collected in the current row, 1..5
+    public const string StreakKey = "ftc.daily.streak";   // days collected in the current row, 1..RowDays
     public const string PendingKey = "ftc.daily.pending"; // coins collected with no game running
 
     public const int DailyCoins = 50;
-    public const int Day5Bonus = 100;
+    public const int RowDays = 4;       // the row's length; its last day gives the gift
+    public const int Day5Bonus = 100;   // the last day's surprise (the name is from the five-day row)
 
     public Sprite boardSprite;   // Assets/Images/board.png
     public Sprite collectSprite; // Assets/Images/collect.png
     public Sprite starSprite;    // Assets/Images/star 1.png
 
     private GameObject root;
-    private int dayToday;        // 1..5
+    private int dayToday;        // 1..RowDays
     private bool collecting;
 
     private DateTime dueDate;    // the local date the popup opened on
@@ -47,7 +49,7 @@ public class DailyTreats : MonoBehaviour
         return s != null && s.isActive && (s.tutorialSeen || s.levelsCompleted >= 1);
     }
 
-    /// <summary>True when today's treat has not been collected; day is the row day (1..5) it would be.</summary>
+    /// <summary>True when today's treat has not been collected; day is the row day (1..RowDays) it would be.</summary>
     public static bool DueDay(out int day)
     {
         day = 1;
@@ -57,7 +59,7 @@ public class DailyTreats : MonoBehaviour
         {
             if (lastDate >= today) return false; // already collected today, or the clock was moved back
             var streak = PlayerPrefs.GetInt(StreakKey, 0);
-            if (lastDate == today.AddDays(-1) && streak >= 1 && streak < 5) day = streak + 1;
+            if (lastDate == today.AddDays(-1) && streak >= 1 && streak < RowDays) day = streak + 1;
         }
         return true;
     }
@@ -75,7 +77,7 @@ public class DailyTreats : MonoBehaviour
     {
         if (root != null) Destroy(root);
         collecting = false;
-        dayToday = Mathf.Clamp(day, 1, 5);
+        dayToday = Mathf.Clamp(day, 1, RowDays);
         Show(dayToday);
     }
 
@@ -114,69 +116,74 @@ public class DailyTreats : MonoBehaviour
     /// 2 with their changes: "Remove that red sticker, only keep the texts, style the text like the stamp card ... Change
     /// the shape of this card to be square, reposition things inside it, the dot line is the edge, add some padding
     /// between the edge and content. Also add some space around the close button. Don't show the coin amount on the next
-    /// few days, only show icon"). Pieces: Store/ui/daily_treats_2026-11-19/build.py. The square mint card is 1060 wide;
-    /// its dotted line runs at +-458 (top: 347), and everything keeps 36 inside it.
+    /// few days, only show icon"; then "Leave margin between left and right of screen edge and the daily treat panel.
+    /// Change the day streak to 4 days instead of 5 so we have one less sticker"). Pieces:
+    /// Store/ui/daily_treats_2026-11-19/build.py. A tall phone's canvas is only about 977 wide, so the square card is 890
+    /// (846 painted): about 65 free on each side. Its dotted line runs at +-385 (top: 291); everything keeps 30 inside it.
     private void ShowOnPaper(RectTransform canvasRect, Sprite paper, int day)
     {
-        RewardY = -175f; RewardScale = 0.8f; ButtonY = -342f; ButtonScale = 0.88f; ClosePos = new Vector2(384f, 273f);
+        RewardY = -165f; RewardScale = 0.66f; ButtonY = -292f; ButtonScale = 0.78f; ClosePos = new Vector2(322f, 229f);
         AmountTint = new Color(0.90f, 0.56f, 0.24f);   // the cream "+50" letters, orange on the pale card
         var board = NewImage("Board", canvasRect, paper, Color.white);
-        Place(board.rectTransform, 0f, 0f, 1060f, 1060f);
+        Place(board.rectTransform, 0f, 0f, 890f, 890f);
 
         // the title: plain letters with a row of dots under them
         var titleGo = new GameObject("Title", typeof(RectTransform)); titleGo.transform.SetParent(canvasRect, false);
         var title = titleGo.AddComponent<TMPro.TextMeshProUGUI>();
         var font = Resources.Load<TMPro.TMP_FontAsset>("Fonts & Materials/beachday SDF"); if (font != null) title.font = font;
         var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) title.fontSharedMaterial = plain;
-        title.text = "DAILY TREATS"; title.fontSize = 84f; title.color = new Color(0.36f, 0.20f, 0.10f); title.alignment = TMPro.TextAlignmentOptions.Center;
+        title.text = "DAILY TREATS"; title.fontSize = 68f; title.color = new Color(0.36f, 0.20f, 0.10f); title.alignment = TMPro.TextAlignmentOptions.Center;
         title.enableWordWrapping = false; title.raycastTarget = false;
-        Place(title.rectTransform, -30f, 276f, 640f, 110f);
+        Place(title.rectTransform, -25f, 226f, 540f, 92f);
         var dots = NewImage("TitleDots", canvasRect, Load("title_dots"), Color.white);
-        Place(dots.rectTransform, -30f, 222f, 500f, 12f);
+        Place(dots.rectTransform, -25f, 182f, 410f, 10f);
 
-        // five notes, each a little tilted; today's is bigger and shows what it gives, earlier days are pale and ticked,
-        // later days show only their picture
+        // the row's notes, each a little tilted; today's is bigger and shows what it gives, earlier days are pale and
+        // ticked, later days show only their picture
         float[] tilt = { 3f, -5f, 2f, -3f, 4f };
-        for (var i = 0; i < 5; i++)
+        const float step = 178f;
+        for (var i = 0; i < RowDays; i++)
         {
-            var d = i + 1; var x = -336f + i * 168f; var today = d == day;
+            var d = i + 1; var x = -step * (RowDays - 1) / 2f + i * step; var today = d == day;
             var note = NewImage("Note" + d, canvasRect, Load(today ? "note" + d + "_today" : "note" + d), Color.white);
             var k = today ? 1.16f : 1f;
-            Place(note.rectTransform, x, today ? 104f : 92f, 150f * k, 203f * k);
-            note.rectTransform.localRotation = Quaternion.Euler(0f, 0f, tilt[i]);
+            Place(note.rectTransform, x, today ? 54f : 46f, 140f * k, 190f * k);
+            note.rectTransform.localRotation = Quaternion.Euler(0f, 0f, tilt[i % tilt.Length]);
             if (d < day)
             {
                 note.color = new Color(1f, 1f, 1f, 0.55f);
                 var tick = NewImage("Tick" + d, canvasRect, Load("tick"), Color.white);
-                Place(tick.rectTransform, x, 80f, 88f, 88f);
+                Place(tick.rectTransform, x, 34f, 82f, 82f);
             }
             else if (today) note.transform.SetAsLastSibling();
         }
 
         // the dotted trail to the star, filled as far as the row has come
         var trail = NewImage("Trail", canvasRect, Load("trail"), Color.white); trail.preserveAspect = false;
-        Place(trail.rectTransform, -34f, -62f, 700f, 22f);
+        Place(trail.rectTransform, -30f, -88f, 600f, 19f);
         var fill = NewImage("TrailFill", canvasRect, Load("trail_fill"), Color.white); fill.preserveAspect = false;
-        Place(fill.rectTransform, -34f, -62f, 700f, 22f);
-        fill.type = Image.Type.Filled; fill.fillMethod = Image.FillMethod.Horizontal; fill.fillAmount = (day - 1) / 5f;
+        Place(fill.rectTransform, -30f, -88f, 600f, 19f);
+        fill.type = Image.Type.Filled; fill.fillMethod = Image.FillMethod.Horizontal; fill.fillAmount = (day - 1) / (float)RowDays;
         var star = NewImage("Star", canvasRect, starSprite, Color.white);
-        Place(star.rectTransform, 368f, -60f, 92f, 92f);
+        Place(star.rectTransform, 314f, -86f, 80f, 80f);
 
-        // today's reward: hidden until Collect is tapped (the gift box shows at once on day 5)
+        // today's reward: hidden until Collect is tapped (the gift box shows at once on the last day)
         sparkles = NewImage("Sparkles", canvasRect, Load("sparkles"), Color.white);
         Place(sparkles.rectTransform, 0f, RewardY, 700f * RewardScale, 240f * RewardScale);
         sparkles.gameObject.SetActive(false);
-        if (day == 5)
+        if (day == RowDays)
         {
             giftImage = NewImage("Gift", canvasRect, Load("gift_big"), Color.white);
-            Place(giftImage.rectTransform, 0f, RewardY + 6f, 150f, 176f);
+            Place(giftImage.rectTransform, 0f, RewardY + 4f, 124f, 146f);
         }
-        // the coin cookie and the amount in orange letters, put together here (the old baked picture was made for the wood)
+        // the coin cookie and the amount in orange letters, put together here (the old baked picture was made for the
+        // wood); laid out for a scale of 0.8 and shrunk as a whole
         rewardImage = NewImage("Reward", canvasRect, null, new Color(1f, 1f, 1f, 0f));
-        Place(rewardImage.rectTransform, 0f, RewardY, 520f * RewardScale, 180f * RewardScale);
+        Place(rewardImage.rectTransform, 0f, RewardY, 416f, 144f);
+        rewardImage.rectTransform.localScale = Vector3.one * (RewardScale / 0.8f);
         var rc = NewImage("Coin", rewardImage.rectTransform, Load("glyph_coin"), Color.white);
         Place(rc.rectTransform, -160f, 0f, 120f, 120f);
-        var amountText = "+" + (day == 5 ? DailyCoins + Day5Bonus : DailyCoins); var gx = -70f;
+        var amountText = "+" + (day == RowDays ? DailyCoins + Day5Bonus : DailyCoins); var gx = -70f;
         foreach (var ch in amountText)
         {
             var gs = Load(ch == '+' ? "glyph_plus" : "glyph_" + ch); if (gs == null) continue;
@@ -187,7 +194,7 @@ public class DailyTreats : MonoBehaviour
         rewardImage.gameObject.SetActive(false);
 
         collectButton = NewImage("Collect", canvasRect, collectSprite, Color.white);
-        Place(collectButton.rectTransform, 14f, ButtonY, 548f * ButtonScale, 305f * ButtonScale);
+        Place(collectButton.rectTransform, 12f, ButtonY, 548f * ButtonScale, 305f * ButtonScale);
         var button = collectButton.gameObject.AddComponent<Button>();
         button.transition = Selectable.Transition.None;
         button.onClick.AddListener(Collect);
@@ -206,16 +213,16 @@ public class DailyTreats : MonoBehaviour
         Place(ribbon.rectTransform, 0f, 560f, 800f, 220f);
 
         // Five day cards; today glows, earlier days are ticked
-        for (var i = 0; i < 5; i++)
+        for (var i = 0; i < RowDays; i++)
         {
             var d = i + 1;
-            var x = -348f + i * 174f;
+            var x = -87f * (RowDays - 1) + i * 174f;
             if (d == day)
             {
                 var glow = NewImage("Glow" + d, canvasRect, Load("glow"), Color.white);
                 Place(glow.rectTransform, x, 245f, 226f, 298f);
             }
-            var card = NewImage("Card" + d, canvasRect, Load("card" + d), Color.white);
+            var card = NewImage("Card" + d, canvasRect, Load("card" + (d == RowDays ? 5 : d)), Color.white);
             Place(card.rectTransform, x, 245f, 158f, 230f);
             if (d < day)
             {
@@ -233,7 +240,7 @@ public class DailyTreats : MonoBehaviour
         Place(barFill.rectTransform, 0f, 10f, 708f, 28f);
         barFill.type = Image.Type.Filled;
         barFill.fillMethod = Image.FillMethod.Horizontal;
-        barFill.fillAmount = (day - 1) / 5f;
+        barFill.fillAmount = (day - 1) / (float)RowDays;
         var star = NewImage("Star", canvasRect, starSprite, Color.white);
         Place(star.rectTransform, 368f, 12f, 96f, 96f);
 
@@ -242,7 +249,7 @@ public class DailyTreats : MonoBehaviour
         sparkles = NewImage("Sparkles", canvasRect, Load("sparkles"), Color.white);
         Place(sparkles.rectTransform, 0f, -190f, 700f, 240f);
         sparkles.gameObject.SetActive(false);
-        if (day == 5)
+        if (day == RowDays)
         {
             giftImage = NewImage("Gift", canvasRect, Load("gift_big"), Color.white);
             Place(giftImage.rectTransform, 0f, -170f, 220f, 260f);
@@ -270,7 +277,7 @@ public class DailyTreats : MonoBehaviour
         if (collecting) return;
         collecting = true;
         var day = dayToday;
-        var amount = DailyCoins + (day == 5 ? Day5Bonus : 0);
+        var amount = DailyCoins + (day == RowDays ? Day5Bonus : 0);
 
         // Always held until the player taps Continue or New, which both pay it (paying into the running game here
         // lost it when the player then started a new game)
@@ -280,7 +287,7 @@ public class DailyTreats : MonoBehaviour
         PlayerPrefs.SetInt(StreakKey, day);
         PlayerPrefs.Save();
 
-        StartCoroutine(CloseAfterReveal(day == 5));
+        StartCoroutine(CloseAfterReveal(day == RowDays));
     }
 
     private IEnumerator CloseAfterReveal(bool gift)
