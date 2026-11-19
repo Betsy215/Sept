@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// bag glow to the one i picked for default glow" (their painted glow is taken out of the pictures:
 /// Store/glow_default_2026-11-18/strip_glow.py) and "oven does not need glow". It is off while the thing cannot be used:
 /// no apples or coconuts left, the waffle machine while it bakes.
-/// Never while the kitchen is being arranged (the pieces are moved then, not used).
+/// Shown while the kitchen is being arranged too (since 19 November 2026); a newly bought thing shows the "new" glow instead.
 public static class KitchenGlow
 {
     /// Once per kitchen load, beside KitchenBlender.Apply.
@@ -62,7 +62,8 @@ public class KitchenGlowRunner : MonoBehaviour
                 if (e.glow != null) { e.glow.name = "GlowFxOld"; Destroy(e.glow.gameObject); }
                 GlowFx.Default(e.image); e.glow = e.image.transform.Find("GlowFx");
             }
-            if (e.glow != null) e.glow.gameObject.SetActive(!arranging && e.image != null && e.image.isActiveAndEnabled && e.usable());
+            // also while arranging (owner, 19 November 2026: "during arrangement mode, coffee bag doesn't have the default glow, fix it")
+            if (e.glow != null) e.glow.gameObject.SetActive(e.image != null && e.image.isActiveAndEnabled && e.usable());
         }
     }
 }

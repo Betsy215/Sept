@@ -196,9 +196,9 @@ public class PullHandle : MonoBehaviour, IPointerDownHandler, IBeginDragHandler,
     private bool MayMove()
     {
         if (pulling || Time.timeScale == 0f) return false;
-        if (inKitchen) return FindObjectOfType<TutorialDirector>() == null;
-        var phases = FindObjectOfType<GamePhaseManager>();
-        return phases != null && phases.GetCurrentPhase() == GamePhase.ARRANGEMENT;
+        // at any time, on the table as in the kitchen (owner, 19 November 2026: "the kitchen pulling handle can be moved
+        // anytime, i like it, do that for the game scene handle too"); until then the table's only while arranging
+        return FindObjectOfType<TutorialDirector>() == null;
     }
 
     /// Moves the knob to a world height if it may be there (inside the limits, on no food). False when it stayed.

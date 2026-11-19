@@ -49,12 +49,12 @@ public class GamePhaseManager : MonoBehaviour
     private ArrangeHintAnim kitchenHint;
     private const string TableHint = "Drag to arrange your table", KitchenHint = "Drag to arrange your kitchen";
 
-    /// The arrangement's hint (the card and the hand moving an item) is never shown while arranging any more (owner, 19
-    /// November 2026: "drag to arrange your kitchen banner is in the way, it covers up the kitchen ... don't show this
-    /// during arrangement mode, don't show this in game scene neither, only shows these banner and animation in
-    /// tutorial"): the chapter 1 tutorial demonstrates both drags (TutorialDirector.DragDemo). 18 November it showed on a
-    /// save's first arrangement.
-    public bool HintDue => false;
+    /// The arrangement's hint (the card and the hand moving an item): on the first arrangement a player meets, which is
+    /// day 2, on the table and in the kitchen, and on no later day (owner, 19 November 2026: "let's show drag to
+    /// arrangement banner the first time player needs to do this, that is level 2. for the other levels we won't show").
+    /// In the kitchen the card sits low, over the opening under the counter, clear of the coffee bags and the table.
+    public bool HintDue => SessionManager.Instance != null && SessionManager.Instance.ArrangeTutorialDue && !SkipsArrangement
+                           && currentPhase == GamePhase.ARRANGEMENT && FindObjectOfType<TutorialDirector>() == null;
 
     /// Day 1 comes pre-arranged: no drag, no Ready; the arrangement is taught on day 2 (owner, 31 October 2026).
     /// The tutorial day (level 0 while the tutorial is due) keeps its own flow.
@@ -159,6 +159,7 @@ public class GamePhaseManager : MonoBehaviour
         var card = arrangmentUI != null ? arrangmentUI.transform.Find("HintCard") : null;
         if (card != null) card.gameObject.SetActive(on);
         if (!on) return;
+        PlaceHint(card as RectTransform);
         if (tutorialText != null)
         {
             tutorialText.text = inKitchen ? KitchenHint : TableHint;
@@ -175,6 +176,24 @@ public class GamePhaseManager : MonoBehaviour
             var at = cardRt != null ? cardRt.anchoredPosition + new Vector2(0f, -cardRt.rect.height / 2f - 110f) : new Vector2(0f, 300f);
             kitchenHint = ArrangeHintAnim.Make((RectTransform)arrangmentUI.transform, at, Resources.Load<Sprite>("Kitchen/whisk"), handT != null ? handT.GetComponent<Image>() : null);
         }
+    }
+
+    private Vector3 hintCardHome, hintTextHome; private bool hintHomeKept;
+    private const float KitchenHintFromTop = 0.653f;   // the middle of the big opening under the counter (KitchenArrange's cabinet 2)
+
+    /// The card and its words at their own place on the table; in the kitchen lower, over the opening under the
+    /// counter, so the coffee bags' shelf and the kitchen table stay clear (owner, 19 November 2026).
+    private void PlaceHint(RectTransform card)
+    {
+        var words = tutorialText != null ? tutorialText.rectTransform : null;
+        if (card == null) return;
+        if (!hintHomeKept) { hintCardHome = card.localPosition; if (words != null) hintTextHome = words.localPosition; hintHomeKept = true; }
+        card.localPosition = hintCardHome; if (words != null) words.localPosition = hintTextHome;
+        var canvas = arrangmentUI != null ? arrangmentUI.transform as RectTransform : null;
+        if (!inKitchen || canvas == null) return;
+        var want = canvas.TransformPoint(new Vector3(0f, canvas.rect.yMax - KitchenHintFromTop * canvas.rect.height, 0f)).y;
+        var move = new Vector3(0f, want - card.position.y, 0f);
+        card.position += move; if (words != null) words.position += move;
     }
 
     /// The kitchen opened or closed while arranging (KitchenArrangeRunner): the Ready button goes down onto the

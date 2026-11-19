@@ -238,8 +238,13 @@ public class TutorialDirector : MonoBehaviour
 
         // Arranging is taught here, as a moving demo (owner, 19 November 2026: "only shows these banner and animation in
         // tutorial. add animation to demo it in tutorial, moving things"); the arrangement phase itself shows no hint
-        var breadLook = bread != null ? bread.GetComponentInChildren<SpriteRenderer>() : null;
-        yield return DragDemo("Drag to arrange your table", breadLook != null ? breadLook.sprite : null);
+        if (machine != null && Camera.main != null)
+        {
+            // over to the open middle of the table and back
+            var cam = Camera.main; var p = cam.WorldToScreenPoint(machine.transform.position);
+            var target = cam.ScreenToWorldPoint(new Vector3(Mathf.Clamp(p.x + Screen.width * 0.25f, Screen.width * 0.2f, Screen.width * 0.75f), Mathf.Clamp(p.y + Screen.height * 0.14f, 0f, Screen.height * 0.45f), p.z));
+            yield return DragDemo("Drag to arrange your table", machine.transform, target, cam);
+        }
 
         var kitchenButton = GameObject.Find("KitchenButton");
         if (kitchenButton != null && KitchenSceneManager.Instance != null)
@@ -312,7 +317,7 @@ public class TutorialDirector : MonoBehaviour
                 yield return new WaitForSeconds(2f);
             }
 
-            yield return DragDemo("Drag to arrange your kitchen", Resources.Load<Sprite>("Kitchen/whisk"));
+            yield return DragBagsDemo();
 
             HideHand();
             Say("Swipe back to serve");
@@ -517,23 +522,69 @@ public class TutorialDirector : MonoBehaviour
 
     private int saidCount;
 
-    /// A caption and a hand moving a thing across the screen and putting it down: how arranging works. One full move
-    /// (4 s, the arrangement hint's own clip), on the tutorial's canvas, which is drawn over the kitchen too.
-    private IEnumerator DragDemo(string text, Sprite thing)
+    /// Arranging, shown on a real thing (owner, 19 November 2026: "a real item being dragged and repositioned instead of
+    /// the item just in the animation ... in kitchen, reposition coffee bags, on table move around coffee machine"): the
+    /// drag hand takes the thing, carries it to `to` (a world position), puts it down, then carries it back, so the
+    /// player's layout is as it was. `cam` turns the thing's place into the screen (null for an overlay canvas).
+    private IEnumerator DragDemo(string text, Transform thing, Vector3 to, Camera cam)
     {
         if (thing == null) yield break;
         HideHand();
         Say(text);
-        Image handLook = null;
+        var hand = DragHand();
+        var from = thing.position;
+        System.Action follow = () =>
+        {
+            if (hand == null || thing == null) return;
+            var screen = cam != null ? (Vector2)cam.WorldToScreenPoint(thing.position) : RectTransformUtility.WorldToScreenPoint(null, thing.position);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screen, null, out var local);
+            hand.anchoredPosition = local + new Vector2(40f, -30f);   // the finger on the thing
+        };
+        follow(); yield return new WaitForSeconds(0.6f);                                      // the hand comes to it
+        for (var leg = 0; leg < 2; leg++)
+        {
+            var a = leg == 0 ? from : to; var b = leg == 0 ? to : from;
+            hand.localScale = Vector3.one * 0.92f;                                             // pressed
+            for (var t = 0f; t < 1f; t += Time.deltaTime / 1.1f)
+            {
+                thing.position = Vector3.Lerp(a, b, Mathf.SmoothStep(0f, 1f, t)); follow(); yield return null;
+            }
+            thing.position = b; follow();
+            hand.localScale = Vector3.one;                                                     // let go
+            yield return new WaitForSeconds(leg == 0 ? 0.9f : 0.4f);
+        }
+        thing.position = from;
+        Destroy(hand.gameObject);
+    }
+
+    /// The coffee bags from their shelf into the big opening under the counter (KitchenArrange's cabinets) and back.
+    private IEnumerator DragBagsDemo()
+    {
+        var bags = FindInScene("KitchenScene", "coffee"); var bg = FindInScene("KitchenScene", "bg");
+        if (bags == null || bg == null || !bags.activeInHierarchy) yield break;
+        var brt = (RectTransform)bags.transform; var bgrt = (RectTransform)bg.transform;
+        var c = new Vector3[4]; brt.GetWorldCorners(c);
+        var foot = (c[0] + c[3]) / 2f;                                                          // the bags' bottom middle
+        var r = bgrt.rect; var dest = bgrt.TransformPoint(new Vector3(r.xMin + 0.29f * r.width, r.yMin + 0.2906f * r.height, 0f));   // the big opening's floor, middle
+        var canvas = bags.GetComponentInParent<Canvas>(); var cam = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.rootCanvas.worldCamera : null;
+        yield return DragDemo("Drag to arrange your kitchen", bags.transform, bags.transform.position + (dest - foot), cam);
+    }
+
+    /// The arrangement's own drag hand (the tutorial panel's picture), on the tutorial canvas.
+    private RectTransform DragHand()
+    {
+        Image look = null;
         if (phaseManager != null && phaseManager.tutorialPanel != null)
         {
             var h = phaseManager.tutorialPanel.transform.Find("AnimationContainer/Hand");
-            if (h != null) handLook = h.GetComponent<Image>();
+            if (h != null) look = h.GetComponent<Image>();
         }
-        var demo = ArrangeHintAnim.Make(canvasRect, new Vector2(-90f, -500f), thing, handLook);   // under the caption card, in the open
-        demo.transform.localScale = Vector3.one * 1.5f;
-        yield return new WaitForSeconds(4.4f);
-        if (demo != null) Destroy(demo.gameObject);
+        var img = NewImage("DragHand", canvasRect, Color.white); var rt = img.rectTransform;
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        img.sprite = look != null ? look.sprite : arrowSprite; img.preserveAspect = true; img.raycastTarget = false;
+        rt.sizeDelta = (look != null ? look.rectTransform.rect.size : new Vector2(100f, 150f)) * 1.6f;
+        if (look != null) { rt.pivot = look.rectTransform.pivot; rt.localRotation = look.rectTransform.localRotation; }
+        return rt;
     }
 
     private void Say(string text)
