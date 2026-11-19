@@ -20,16 +20,17 @@ public static class NewTag
         var go = new GameObject(Name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(NewTagPulse));
         go.layer = owner.gameObject.layer;
         var rt = (RectTransform)go.transform; rt.SetParent(owner, false); rt.SetAsLastSibling();
-        var w = Mathf.Clamp(Mathf.Min(owner.rect.width, owner.rect.height) * 0.62f, 84f, 140f);
+        // on the painted part of the picture, not its frame (many pictures have wide empty margins)
+        var c = GlowFx.UiContent(owner.GetComponent<Image>()); if (c.width <= 0f || c.height <= 0f) c = owner.rect;
+        var w = Mathf.Clamp(Mathf.Min(c.width, c.height) * 0.62f, 84f, 140f);
         // at the screen's right edge the label goes to the thing's top left instead, so it is never cut off
-        var corners = new Vector3[4]; owner.GetWorldCorners(corners);
         var canvas = owner.GetComponentInParent<Canvas>(); var cam = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.rootCanvas.worldCamera : null;
-        var x0 = RectTransformUtility.WorldToScreenPoint(cam, corners[1]).x; var x1 = RectTransformUtility.WorldToScreenPoint(cam, corners[2]).x;
-        var perUnit = owner.rect.width > 0f ? (x1 - x0) / owner.rect.width : 1f;
+        var x0 = RectTransformUtility.WorldToScreenPoint(cam, owner.TransformPoint(new Vector3(c.xMin, c.yMax))).x; var x1 = RectTransformUtility.WorldToScreenPoint(cam, owner.TransformPoint(new Vector3(c.xMax, c.yMax))).x;
+        var perUnit = c.width > 0f ? (x1 - x0) / c.width : 1f;
         var left = x1 + 0.2f * w * perUnit > Screen.width * 0.94f;   // the label's own right edge
-        rt.anchorMin = rt.anchorMax = new Vector2(left ? 0f : 1f, 1f); rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0.5f);
         rt.sizeDelta = new Vector2(w, w * Picture.rect.height / Picture.rect.width);
-        rt.anchoredPosition = new Vector2(left ? w * 0.30f : -w * 0.30f, -w * 0.16f);
+        rt.anchoredPosition = new Vector2(left ? c.xMin + w * 0.30f : c.xMax - w * 0.30f, c.yMax - w * 0.16f) - owner.rect.center;
         rt.localRotation = Quaternion.Euler(0f, 0f, left ? -12f : 12f);
         var img = go.GetComponent<Image>(); img.sprite = Picture; img.raycastTarget = false;
     }
@@ -48,8 +49,9 @@ public static class NewTag
         var has = false; var b = new Bounds(owner.position, Vector3.zero); var order = 0; var layer = 0;
         foreach (var r in owner.GetComponentsInChildren<SpriteRenderer>())
         {
-            if (!r.enabled || r.sprite == null) continue;
-            if (!has) { b = r.bounds; has = true; } else b.Encapsulate(r.bounds);
+            if (!r.enabled || r.sprite == null || r.color.a < 0.05f) continue;
+            var cb = GlowFx.WorldContent(r);   // the painted part, not the picture's frame
+            if (!has) { b = cb; has = true; } else b.Encapsulate(cb);
             if (r.sortingOrder >= order) { order = r.sortingOrder; layer = r.sortingLayerID; }
         }
         if (!has) return;

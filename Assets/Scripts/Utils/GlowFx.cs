@@ -23,6 +23,9 @@ public static class GlowFx
 
     private class Made { public Sprite glow; public float padX, padY; }   // pad as a share of the source picture's size
     private static readonly Dictionary<long, Made> cache = new Dictionary<long, Made>();
+    // where the painted thing really is inside its picture's frame (0..1 of sprite.rect): many pictures have wide empty
+    // margins (owner, 18 November 2026: "the new and glow effect needs to fit the size of the content")
+    private static readonly Dictionary<int, Rect> contentOf = new Dictionary<int, Rect>();
     // the coffee bags' measured alpha by distance / brush width (glow_brush.py)
     private static readonly float[] CurveT = { 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 34 };
     private static readonly float[] CurveA = { 215, 158, 131, 114, 102, 91, 82, 73, 64, 57, 50, 43, 37, 32, 28, 23, 20, 16, 13.5f, 11, 9, 7.4f, 6, 5, 3.9f, 3.1f, 2.5f, 1.9f, 1.5f, 0.8f, 0.4f, 0 };
@@ -79,7 +82,12 @@ public static class GlowFx
                 int X = x + ox, Y = y + oy; if (X < 0 || Y < 0 || X >= w || Y >= h) continue;
                 px[Y * w + X] = inMesh[Y * w + X] ? tpx[y * tw + x] : new Color32(0, 0, 0, 0);
             }
-        var brush = (4f * k + 0.151f * Mathf.Min(w, h)) * widthMul;
+        int cx0 = w, cy0 = h, cx1 = -1, cy1 = -1;
+        for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) if (px[y * w + x].a >= 200) { if (x < cx0) cx0 = x; if (x > cx1) cx1 = x; if (y < cy0) cy0 = y; if (y > cy1) cy1 = y; }
+        if (cx1 < cx0) { cx0 = 0; cy0 = 0; cx1 = w - 1; cy1 = h - 1; }
+        contentOf[s.GetInstanceID()] = Rect.MinMaxRect(cx0 / (float)w, cy0 / (float)h, (cx1 + 1) / (float)w, (cy1 + 1) / (float)h);
+        // the brush follows the painted thing's size, not its frame's
+        var brush = (4f * k + 0.151f * Mathf.Min(cx1 - cx0 + 1, cy1 - cy0 + 1)) * widthMul;
         var pad = Mathf.CeilToInt(brush) + 2; int W = w + 2 * pad, H = h + 2 * pad;
         // distance from the shape, two chamfer passes
         var d = new float[W * H]; const float Far = 1e6f, Diag = 1.41421f;
@@ -115,6 +123,36 @@ public static class GlowFx
         var glow = Sprite.Create(tex, new Rect(0, 0, W, H), new Vector2((pad + pivotN.x * w) / W, (pad + pivotN.y * h) / H), W / Mathf.Max(units, 1e-4f), 0, SpriteMeshType.FullRect);
         var made = new Made { glow = glow, padX = pad / (float)w, padY = pad / (float)h };
         cache[key] = made; return made;
+    }
+
+    /// The painted part of a picture, as a share of its frame (0..1).
+    public static Rect ContentRect(Sprite s)
+    {
+        if (s == null) return new Rect(0f, 0f, 1f, 1f);
+        if (!contentOf.TryGetValue(s.GetInstanceID(), out var r)) { Make(s, 1.7f, 2f); contentOf.TryGetValue(s.GetInstanceID(), out r); }
+        return r.width > 0f ? r : new Rect(0f, 0f, 1f, 1f);
+    }
+
+    /// The painted part of a world sprite, in world space.
+    public static Bounds WorldContent(SpriteRenderer r)
+    {
+        var s = r.sprite; var c = ContentRect(s); var ppu = s.pixelsPerUnit; var rect = s.rect; var piv = s.pivot;
+        var b = new Bounds(); var first = true;
+        foreach (var u in new[] { new Vector2(c.xMin, c.yMin), new Vector2(c.xMax, c.yMin), new Vector2(c.xMin, c.yMax), new Vector2(c.xMax, c.yMax) })
+        {
+            var local = new Vector3((u.x * rect.width - piv.x) / ppu * (r.flipX ? -1f : 1f), (u.y * rect.height - piv.y) / ppu * (r.flipY ? -1f : 1f), 0f);
+            var w = r.transform.TransformPoint(local);
+            if (first) { b = new Bounds(w, Vector3.zero); first = false; } else b.Encapsulate(w);
+        }
+        return b;
+    }
+
+    /// The painted part of a UI picture, in its own rect's space.
+    public static Rect UiContent(Image owner)
+    {
+        if (owner == null || owner.sprite == null) return owner != null ? owner.rectTransform.rect : new Rect();
+        var d = Drawn(owner); var c = ContentRect(owner.sprite);
+        return Rect.MinMaxRect(d.xMin + c.xMin * d.width, d.yMin + c.yMin * d.height, d.xMin + c.xMax * d.width, d.yMin + c.yMax * d.height);
     }
 
     // ---- small pictures made once: a four-point star, a soft band ------------------------------------------------
@@ -205,7 +243,7 @@ public static class GlowFx
     {
         if (!Usable(owner)) return;
         UiGlow(owner, WhiteColour, 2.2f, 2f, 0.5f, 1f);
-        var d = Drawn(owner); var size = Mathf.Clamp(Mathf.Min(d.width, d.height) * 0.26f, 26f, 60f);
+        var d = UiContent(owner); var size = Mathf.Clamp(Mathf.Min(d.width, d.height) * 0.26f, 26f, 60f);
         var root = Child(owner, Name + "Stars", d);
         Object.Destroy(root.GetComponent<Image>());
         for (var i = 0; i < Spots.Length; i++)
@@ -261,8 +299,9 @@ public static class GlowFx
         var renderers = new List<SpriteRenderer>(); var has = false; var b = new Bounds(owner.position, Vector3.zero); var minOrder = int.MaxValue; var maxOrder = int.MinValue; var layer = 0;
         foreach (var r in owner.GetComponentsInChildren<SpriteRenderer>())
         {
-            if (!r.enabled || r.sprite == null) continue;
-            renderers.Add(r); if (!has) { b = r.bounds; has = true; } else b.Encapsulate(r.bounds);
+            if (!r.enabled || r.sprite == null || r.color.a < 0.05f) continue;
+            var cb = WorldContent(r);
+            renderers.Add(r); if (!has) { b = cb; has = true; } else b.Encapsulate(cb);
             if (r.sortingOrder < minOrder) minOrder = r.sortingOrder;
             if (r.sortingOrder >= maxOrder) { maxOrder = r.sortingOrder; layer = r.sortingLayerID; }
         }
