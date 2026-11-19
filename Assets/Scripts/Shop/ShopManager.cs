@@ -1196,6 +1196,7 @@ public class ShopManager : MonoBehaviour
     private const float TabHeight = 120f;
     private static readonly string[] TabIcons = { "tab_star", "tab_coin", "tab_dollar" };   // the tabs' pictures, in the order Stars, Coins, $   // 104 touched the EARNED line above (review captures, 11 November)
     private const float ScoreLift = 56f + 34f;   // the EARNED line still sat on the open tab's top edge (owner, 13 November: "add some space between earned text line and the shop panel"): half a letter height of air
+    private ShopGlass.Parts glass;      // the panel as liquid glass with a tab pill (owner, 19 November 2026); null = the flat panel and folder tabs
     private RectTransform panelGroup;   // the panel and its tabs live in this one object; the slide-in moves it (owner, round 1: "make tab and panel a whole")
 
     /// On a squarer screen (iPad) the panel reaches higher and the EARNED line, lifted a fixed amount, lay on the tabs and
@@ -1300,6 +1301,8 @@ public class ShopManager : MonoBehaviour
         nrt.anchoredPosition = new Vector2((tl.x + br.x) * 0.5f, (tl.y + br.y) * 0.5f) - pivotOff; nrt.sizeDelta = new Vector2(800f, 120f);
         tabNote = ngo.GetComponent<TextMeshProUGUI>(); tabNote.fontSize = 44f; tabNote.alignment = TextAlignmentOptions.Center;
         tabNote.color = new Color(0.30f, 0.22f, 0.18f, 0.85f); if (font != null) tabNote.font = font; tabNote.text = ""; ngo.SetActive(false);
+        if (ShopGlass.Ready && panelImage != null) glass = ShopGlass.Build(panelGroup, viewport, panelImage);
+        if (glass != null) ngo.transform.SetAsLastSibling();
         PaintTabs();
         FitScoreAboveTabs();
     }
@@ -1346,6 +1349,18 @@ public class ShopManager : MonoBehaviour
             prt.anchoredPosition = new Vector2(Mathf.Round(tabRowLeft + w * (slot + 0.5f)), prt.anchoredPosition.y); prt.sizeDelta = new Vector2(w, prt.sizeDelta.y); slot++;
             var on = i == (int)currentTab;
             var img = tabButtons[i].GetComponent<Image>();
+            if (glass != null)
+            {
+                // on the glass pill: the tab itself is only its picture and its touch area; the lens marks the open one
+                if (img != null) img.color = new Color(1f, 1f, 1f, 0f);
+                prt.anchoredPosition = new Vector2(prt.anchoredPosition.x, glass.barBottom); prt.sizeDelta = new Vector2(w, ShopGlass.BarHeight);
+                var gico = tabButtons[i].transform.Find("Icon"); var gimg = gico != null ? gico.GetComponent<Image>() : null;
+                var squash = panelGroup != null && panelGroup.localScale.x > 0f ? panelGroup.localScale.y / panelGroup.localScale.x : 1f;   // the group is drawn squashed: the picture is stretched back
+                if (gimg != null) { gimg.color = new Color(1f, 1f, 1f, on ? 1f : 0.62f); var k = on ? 0.74f : 0.64f; gico.localScale = new Vector3(k, k / squash, 1f); ((RectTransform)gico).anchoredPosition = Vector2.zero; }
+                var glbl = tabButtons[i].GetComponentInChildren<TextMeshProUGUI>(); if (glbl != null) glbl.alpha = on ? 1f : 0.6f;
+                if (on) ShopGlass.MoveThumb(glass, prt.anchoredPosition.x, w);
+                continue;
+            }
             if (img != null) img.color = on ? baseCol : closed;
             var trt = tabButtons[i].GetComponent<RectTransform>();
             if (trt != null) trt.sizeDelta = new Vector2(trt.sizeDelta.x, (on ? TabHeight : TabHeight - 18f) + 1f);   // the open tab sticks out higher
