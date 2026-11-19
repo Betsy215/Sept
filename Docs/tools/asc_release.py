@@ -17,7 +17,7 @@ APP = "6755611355"
 TOKEN = subprocess.run(["python3", "-I", os.path.join(os.path.dirname(os.path.abspath(__file__)), "asc_token.py")],
                        capture_output=True, text=True).stdout.strip().splitlines()[-1]
 
-WHATS_NEW = "Everything is a cookie: new cookie buttons, start menu and shop.\nYour purchases go into a cookie book.\nArrange your kitchen, not just your table.\nNew blender, new choux flavours, a new cake.\nSmoother animations."   # 2026.11.18: a DRAFT held until the owner sends their words (18 November 2026), then set with `whatsnew <file>`
+WHATS_NEW = "Add cookies collection.\nNew feature for kitchen, allow customization in kitchen.\nNew design for choux and blender.\nAdd labels for new item."   # 2026.11.18: the owner's words of 18 November 2026 (set with `whatsnew`)
 WHATS_NEW_2611_22 = "Hire new staff.\nNew sound effects.\nRemove ads feature.\nNew swipe gesture and pulling handle for kitchen."   # 26.11.22: the owner's words of 15 November 2026 ("What's new for today's release"). 26.11.21 was "Bug fixes"; 26.11.13: "- Tune balance\n- Night decorations\n- Added star as a currency in shop\n- Sprites tune"
 DESCRIPTION_EDITS = {}  # {"old words": "new words"}; filled only on the owner's tick, e.g. the "two customers" line
 
