@@ -100,11 +100,17 @@ public class DailyTreats : MonoBehaviour
         dim.rectTransform.anchorMin = Vector2.zero; dim.rectTransform.anchorMax = Vector2.one;
         dim.rectTransform.offsetMin = Vector2.zero; dim.rectTransform.offsetMax = Vector2.zero;
 
-        // Wood board with a soft shadow under it
-        var shadow = NewImage("BoardShadow", canvasRect, boardSprite, new Color(0.08f, 0.04f, 0f, 0.45f));
-        Place(shadow.rectTransform, 10f, -30f, 960f, 1180f);
-        var board = NewImage("Board", canvasRect, boardSprite, Color.white);
-        Place(board.rectTransform, 0f, -10f, 960f, 1180f);
+        // The card: paper since 19 November 2026 (owner: "for panels, i want to use papers"; "use H for daily treat card":
+        // the cream card with the mint checked band, Store/ui/paper_panels_2026-11-19/board_H.png, its shadow painted in).
+        // Without that picture: the wood board with a soft shadow under it, as before.
+        var paper = Load("board_paper");
+        if (paper == null)
+        {
+            var shadow = NewImage("BoardShadow", canvasRect, boardSprite, new Color(0.08f, 0.04f, 0f, 0.45f));
+            Place(shadow.rectTransform, 10f, -30f, 960f, 1180f);
+        }
+        var board = NewImage("Board", canvasRect, paper != null ? paper : boardSprite, Color.white);
+        Place(board.rectTransform, 0f, -10f, paper != null ? 1020f : 960f, paper != null ? 1240f : 1180f);   // the paper's picture has a 26 px margin for its shadow
 
         var ribbon = NewImage("Ribbon", canvasRect, Load("ribbon"), Color.white);
         Place(ribbon.rectTransform, 0f, 560f, 800f, 220f);
