@@ -100,17 +100,107 @@ public class DailyTreats : MonoBehaviour
         dim.rectTransform.anchorMin = Vector2.zero; dim.rectTransform.anchorMax = Vector2.one;
         dim.rectTransform.offsetMin = Vector2.zero; dim.rectTransform.offsetMax = Vector2.zero;
 
-        // The card: paper since 19 November 2026 (owner: "for panels, i want to use papers"; "use H for daily treat card":
-        // the cream card with the mint checked band, Store/ui/paper_panels_2026-11-19/board_H.png, its shadow painted in).
-        // Without that picture: the wood board with a soft shadow under it, as before.
         var paper = Load("board_paper");
-        if (paper == null)
+        if (paper != null && Load("note1") != null) { ShowOnPaper(canvasRect, paper, day); return; }
+        ShowOnWood(canvasRect, day);
+    }
+
+    // Where the reward, the button and the close cross sit: DailyTreatsAd reads them (they differ on the paper card).
+    public static float RewardY = -190f, RewardScale = 1f, ButtonY = -431f, ButtonScale = 1f;
+    public static Vector2 ClosePos = new Vector2(440f, 540f);
+    public static Color AmountTint = Color.white;
+
+    /// The card since 19 November 2026 (owner: "for panels, i want to use papers"; "use H for daily treat card"; then design
+    /// 2 with their changes: "Remove that red sticker, only keep the texts, style the text like the stamp card ... Change
+    /// the shape of this card to be square, reposition things inside it, the dot line is the edge, add some padding
+    /// between the edge and content. Also add some space around the close button. Don't show the coin amount on the next
+    /// few days, only show icon"). Pieces: Store/ui/daily_treats_2026-11-19/build.py. The square mint card is 1060 wide;
+    /// its dotted line runs at +-458 (top: 347), and everything keeps 36 inside it.
+    private void ShowOnPaper(RectTransform canvasRect, Sprite paper, int day)
+    {
+        RewardY = -175f; RewardScale = 0.8f; ButtonY = -342f; ButtonScale = 0.88f; ClosePos = new Vector2(384f, 273f);
+        AmountTint = new Color(0.90f, 0.56f, 0.24f);   // the cream "+50" letters, orange on the pale card
+        var board = NewImage("Board", canvasRect, paper, Color.white);
+        Place(board.rectTransform, 0f, 0f, 1060f, 1060f);
+
+        // the title: plain letters with a row of dots under them
+        var titleGo = new GameObject("Title", typeof(RectTransform)); titleGo.transform.SetParent(canvasRect, false);
+        var title = titleGo.AddComponent<TMPro.TextMeshProUGUI>();
+        var font = Resources.Load<TMPro.TMP_FontAsset>("Fonts & Materials/beachday SDF"); if (font != null) title.font = font;
+        var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) title.fontSharedMaterial = plain;
+        title.text = "DAILY TREATS"; title.fontSize = 84f; title.color = new Color(0.36f, 0.20f, 0.10f); title.alignment = TMPro.TextAlignmentOptions.Center;
+        title.enableWordWrapping = false; title.raycastTarget = false;
+        Place(title.rectTransform, -30f, 276f, 640f, 110f);
+        var dots = NewImage("TitleDots", canvasRect, Load("title_dots"), Color.white);
+        Place(dots.rectTransform, -30f, 222f, 500f, 12f);
+
+        // five notes, each a little tilted; today's is bigger and shows what it gives, earlier days are pale and ticked,
+        // later days show only their picture
+        float[] tilt = { 3f, -5f, 2f, -3f, 4f };
+        for (var i = 0; i < 5; i++)
         {
-            var shadow = NewImage("BoardShadow", canvasRect, boardSprite, new Color(0.08f, 0.04f, 0f, 0.45f));
-            Place(shadow.rectTransform, 10f, -30f, 960f, 1180f);
+            var d = i + 1; var x = -336f + i * 168f; var today = d == day;
+            var note = NewImage("Note" + d, canvasRect, Load(today ? "note" + d + "_today" : "note" + d), Color.white);
+            var k = today ? 1.16f : 1f;
+            Place(note.rectTransform, x, today ? 104f : 92f, 150f * k, 203f * k);
+            note.rectTransform.localRotation = Quaternion.Euler(0f, 0f, tilt[i]);
+            if (d < day)
+            {
+                note.color = new Color(1f, 1f, 1f, 0.55f);
+                var tick = NewImage("Tick" + d, canvasRect, Load("tick"), Color.white);
+                Place(tick.rectTransform, x, 80f, 88f, 88f);
+            }
+            else if (today) note.transform.SetAsLastSibling();
         }
-        var board = NewImage("Board", canvasRect, paper != null ? paper : boardSprite, Color.white);
-        Place(board.rectTransform, 0f, -10f, paper != null ? 1020f : 960f, paper != null ? 1240f : 1180f);   // the paper's picture has a 26 px margin for its shadow
+
+        // the dotted trail to the star, filled as far as the row has come
+        var trail = NewImage("Trail", canvasRect, Load("trail"), Color.white); trail.preserveAspect = false;
+        Place(trail.rectTransform, -34f, -62f, 700f, 22f);
+        var fill = NewImage("TrailFill", canvasRect, Load("trail_fill"), Color.white); fill.preserveAspect = false;
+        Place(fill.rectTransform, -34f, -62f, 700f, 22f);
+        fill.type = Image.Type.Filled; fill.fillMethod = Image.FillMethod.Horizontal; fill.fillAmount = (day - 1) / 5f;
+        var star = NewImage("Star", canvasRect, starSprite, Color.white);
+        Place(star.rectTransform, 368f, -60f, 92f, 92f);
+
+        // today's reward: hidden until Collect is tapped (the gift box shows at once on day 5)
+        sparkles = NewImage("Sparkles", canvasRect, Load("sparkles"), Color.white);
+        Place(sparkles.rectTransform, 0f, RewardY, 700f * RewardScale, 240f * RewardScale);
+        sparkles.gameObject.SetActive(false);
+        if (day == 5)
+        {
+            giftImage = NewImage("Gift", canvasRect, Load("gift_big"), Color.white);
+            Place(giftImage.rectTransform, 0f, RewardY + 6f, 150f, 176f);
+        }
+        // the coin cookie and the amount in orange letters, put together here (the old baked picture was made for the wood)
+        rewardImage = NewImage("Reward", canvasRect, null, new Color(1f, 1f, 1f, 0f));
+        Place(rewardImage.rectTransform, 0f, RewardY, 520f * RewardScale, 180f * RewardScale);
+        var rc = NewImage("Coin", rewardImage.rectTransform, Load("glyph_coin"), Color.white);
+        Place(rc.rectTransform, -160f, 0f, 120f, 120f);
+        var amountText = "+" + (day == 5 ? DailyCoins + Day5Bonus : DailyCoins); var gx = -70f;
+        foreach (var ch in amountText)
+        {
+            var gs = Load(ch == '+' ? "glyph_plus" : "glyph_" + ch); if (gs == null) continue;
+            var gw = 144f * gs.rect.width / gs.rect.height;
+            var g = NewImage("G" + ch, rewardImage.rectTransform, gs, AmountTint);
+            Place(g.rectTransform, gx + gw / 2f, 0f, gw, 144f); gx += gw - 5f;
+        }
+        rewardImage.gameObject.SetActive(false);
+
+        collectButton = NewImage("Collect", canvasRect, collectSprite, Color.white);
+        Place(collectButton.rectTransform, 14f, ButtonY, 548f * ButtonScale, 305f * ButtonScale);
+        var button = collectButton.gameObject.AddComponent<Button>();
+        button.transition = Selectable.Transition.None;
+        button.onClick.AddListener(Collect);
+    }
+
+    /// The wood board of before 19 November 2026, kept for a build without the paper pieces.
+    private void ShowOnWood(RectTransform canvasRect, int day)
+    {
+        RewardY = -190f; RewardScale = 1f; ButtonY = -431f; ButtonScale = 1f; ClosePos = new Vector2(440f, 540f); AmountTint = Color.white;
+        var shadow = NewImage("BoardShadow", canvasRect, boardSprite, new Color(0.08f, 0.04f, 0f, 0.45f));
+        Place(shadow.rectTransform, 10f, -30f, 960f, 1180f);
+        var board = NewImage("Board", canvasRect, boardSprite, Color.white);
+        Place(board.rectTransform, 0f, -10f, 960f, 1180f);
 
         var ribbon = NewImage("Ribbon", canvasRect, Load("ribbon"), Color.white);
         Place(ribbon.rectTransform, 0f, 560f, 800f, 220f);

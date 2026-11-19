@@ -238,14 +238,14 @@ public class MapScreen : MonoBehaviour
         Stretch(dim.rectTransform); // swallows taps on the map
 
         // The day card: paper since 19 November 2026 (owner: "for panels, i want to use papers"; "use C for day card":
-        // the cream doily card, Store/ui/paper_panels_2026-11-19/daycard_C.png, shorter than the wood board so the
-        // day, the stars and the buttons fill it). Without that picture: the wood board, as before.
+        // the cream doily card, Store/ui/paper_panels_2026-11-19/daycard_C.png, square, with the day, the stars and the buttons
+        // spread evenly down it). Without that picture: the wood board, as before.
         var paper = Resources.Load<Sprite>("Map/day_paper");
         var board = NewImage("Board", root, paper != null ? paper : boardSprite);
-        if (paper != null) Place(board.rectTransform, new Vector2(0f, 40f), new Vector2(700f, 700f * paper.rect.height / paper.rect.width));
+        if (paper != null) Place(board.rectTransform, new Vector2(0f, 40f), new Vector2(740f, 740f * paper.rect.height / paper.rect.width));   // square (owner, 19 November)
         else Place(board.rectTransform, new Vector2(0f, 40f), new Vector2(660f, 878f)); // board.png's own shape (433 x 576)
         board.raycastTarget = false;
-        var up = paper != null ? 70f : 0f;   // on the shorter card everything sits a little higher
+        var up = paper != null ? 70f : 0f;   // on the square card: the day at 180, the stars at 345, the buttons at 545 of its 740
 
         var title = NewText("DayTitle", board.rectTransform, "Day " + (day + 1), 110f, paper != null ? new Color(0.36f, 0.20f, 0.10f) : new Color(1f, 0.965f, 0.886f));
         if (paper == null) { title.outlineWidth = 0.3f; title.outlineColor = new Color32(110, 60, 20, 255); }
@@ -258,13 +258,13 @@ public class MapScreen : MonoBehaviour
         {
             var st = NewImage("Star", board.rectTransform, k < stars ? starSprite : darkStarSprite);
             st.rectTransform.anchorMin = st.rectTransform.anchorMax = new Vector2(0.5f, 1f);
-            st.rectTransform.anchoredPosition = new Vector2(-130f + k * 130f, -410f + up + (k == 1 ? 18f : 0f));
+            st.rectTransform.anchoredPosition = new Vector2(-130f + k * 130f, -410f + up + (paper != null ? -5f : 0f) + (k == 1 ? 18f : 0f));
             st.rectTransform.sizeDelta = new Vector2(110f, 110f);
             st.raycastTarget = false;
         }
 
-        MakeButton(board.rectTransform, Load("btn_play"), new Vector2(-140f, -640f + up + (paper != null ? 30f : 0f)), () => PlayDay(day));
-        MakeButton(board.rectTransform, Load("btn_cancel"), new Vector2(140f, -640f + up + (paper != null ? 30f : 0f)), CloseDay);
+        MakeButton(board.rectTransform, Load("btn_play"), new Vector2(-150f, -640f + up + (paper != null ? 25f : 0f)), () => PlayDay(day));
+        MakeButton(board.rectTransform, Load("btn_cancel"), new Vector2(150f, -640f + up + (paper != null ? 25f : 0f)), CloseDay);
     }
 
     private static Sprite glowSprite;

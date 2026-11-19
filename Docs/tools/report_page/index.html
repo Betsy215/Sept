@@ -74,136 +74,91 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>To pick</b> (Current): the page turn sound; the handle's kitchen and table cookies; the Daily Treats design; screenshot captions.</p>
-<p><b>To look at:</b> your picks in the game (day card, book, page turn, book button); cake frame 2.</p>
-<p><b>Q&amp;A:</b> forcing updates.</p>
-<p><b>Build:</b> say when; today's second list is in the project only.</p>
+<p><b>Release 1 (the look):</b> check the cards in Current; then say "build" for a test build, and send the What's New words.</p>
+<p><b>Release 2 (the kitchen, this weekend):</b> pick a regular blender (MVP); tell me the kitchen flow.</p>
+<p><b>Q&amp;A:</b> the journal on a tall screen: three ways, pick one.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>Waiting on your picks.</p>
+<p>For release 1 after your "build": test build 2026.11.19 (1); new store screenshots and video with caption style B.</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>Can we force players to update?</h3>
+<div class="q"><h3>The book as a journal: how does an open book fit a tall screen?</h3>
+<figure><img src="journal_layouts.jpg" alt="Three sketches of the journal on a phone. A: a notepad bound across the middle, an upper page with the day, a photo and lines, a lower page with the cookies bought that day. B: one tall page bound on the left with coloured tabs on the right. C: the whole open book small at the top with two pages, one page shown large below it"><figcaption>Sketches, not in the game.</figcaption></figure>
 <ul>
-<li><b>Yes, from the next version on.</b> Apple has no switch for it; the game does it itself: at start it asks the App Store which version is on sale and, if the player's is older, shows a card with an Update button that opens the store page.</li>
-<li><b>Two ways:</b> <i>soft</i> (Update / Later, asked once a day) or <i>hard</i> (no Later: the game cannot be played until updated).</li>
-<li><b>Limits:</b> it only works in versions that contain the check, so players on 2026.11.18 or older are never asked. With no internet the game just starts. A new version can take a few hours to show in every country, so the hard way should only block when the store really offers something newer.</li>
-<li>Most iPhones update by themselves within a few days; a hard block mostly matters when an old version would break (a changed save, a removed feature). My suggestion: the soft card now; keep the hard block for the day it is needed.</li>
+<li><b>A, a notepad:</b> the fold runs across the middle, so both pages of the open book show at full width: the day above (stars, a picture of the table, a line or two), what came with it below. Pages turn upwards. This is the only way to see a real two-page spread large on a phone.</li>
+<li><b>B, one page at a time</b> (as the cookie book is now): bound on the left, each page fills the screen, the page turns as it does today. Coloured tabs jump to the parts (Journal, My cookies, Customers).</li>
+<li><b>C, the whole book small:</b> both pages side by side at the top, and the page you tap shown large below. Looks most like a book, but the small pages are hard to read.</li>
+<li><b>What the journal could hold:</b> one entry per day (stars, coins, customers served, the best tip), firsts ("hired Grandma", "bought the second oven"), the cookies bought (today's book), the customers met, the chapters' maps.</li>
+<li>My pick: <b>A</b> for the journal pages, with the cookie pages inside it; it keeps today's red cover and page turn (upwards instead of sideways).</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="qa.update.soft"> Add the soft card (Update / Later)</label></li>
-<li><label><input type="checkbox" data-id="qa.update.hard"> Add the hard block</label></li>
-<li><label><input type="checkbox" data-id="qa.update.no"> Not now</label></li>
+<li><label><input type="checkbox" data-id="qa.journal.a"> A</label></li>
+<li><label><input type="checkbox" data-id="qa.journal.b"> B</label></li>
+<li><label><input type="checkbox" data-id="qa.journal.c"> C</label></li>
+<li><label><input type="checkbox" data-id="qa.journal.other"> Something else (I will say)</label></li>
 </ul>
 </div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
+<p class="sub" style="margin:0 0 8px">Release 1: the look. Everything here is in the project; the last test build is 2026.11.19 (0), from before these.</p>
 <div class="card">
-<p style="margin-top:0"><b>Store screenshots: four looks for the captions, for the next release.</b> Same words; only the banner changes.</p>
-<figure><img src="banner_drafts.jpg" alt="Four caption styles, each on a table scene with the caption at the top and a kitchen scene with it at the bottom. A: the words iced on a long yellow cookie bar. B: a cream band edged with red and white checks, like the game's own cards. C: big white letters with a brown outline over a soft shade, no bar. D: a mint band, the start menu's colour, with a few cookies at its ends."><figcaption>A cookie bar, B checked ribbon, C big letters, D mint band.</figcaption></figure>
+<p style="margin-top:0"><b>Daily Treats, as you asked: the notes on the square mint card.</b></p>
+<figure><img src="treats_square.jpg" alt="Daily Treats three times on a square mint checked card: day 2 with the title in brown letters, five small coloured notes (day 1 pale with a tick, day 2 bigger with +50, days 3 and 4 with only a coin, day 5 with the gift), a dotted trail to a star and Collect; the same after Collect with the coin, +50, a close button and One more treat; day 5 with the gift"><figcaption>Day 2; after Collect; day 5.</figcaption></figure>
 <ul>
-<li><b>A</b> matches the cookie buttons. <b>B</b> matches the game's own cards (the arrange and tutorial banners). <b>C</b> covers the least of the game. <b>D</b> matches the new start menu.</li>
+<li>The red tape is gone: the title is plain brown letters with a row of dots, as on the stamp card.</li>
+<li>The card is square; the dotted line is its edge and everything keeps a margin inside it. The close button sits inside the dots with room round it.</li>
+<li>Later days show only their picture (coin or gift); today's note alone shows "+50".</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.banner.a"> A</label></li>
-<li><label><input type="checkbox" data-id="cur.banner.b"> B</label></li>
-<li><label><input type="checkbox" data-id="cur.banner.c"> C</label></li>
-<li><label><input type="checkbox" data-id="cur.banner.d"> D</label></li>
+<li><label><input type="checkbox" data-id="cur.treats3.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.treats3.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
+
 <div class="card">
-<p style="margin-top:0"><b>Your picks, in the game.</b> In the project, in no build (you said to wait).</p>
-<figure><img src="picks_ingame.jpg" alt="Daily Treats on the mint checked card; the map's day card as a cream doily card with Day 3, three stars, Play and Cancel; the cookie book as a red book bound on the left with sixteen cookies in rows of four, clear of the edges"><figcaption>Daily Treats on H, the day card on C, the cookie book as 5.</figcaption></figure>
-<ul>
-<li><b>Cookie book (5):</b> the cookies and words now keep clear of the spine and the page's edges; the close button sits on the page with room round it; the ribbon moved to the left so it does not crowd it.</li>
-<li><b>Day card (C):</b> made a little shorter than the wood board, so the day, stars and buttons fill it. The pause menu is still wood: say if it should get C too.</li>
-</ul>
-<p style="margin:14px 0 4px"><b>The page turn, redone:</b> a sheet of the book's own paper swings over at the spine, its free edge lifting towards you, darker along that edge, with a bright rim and a soft shadow on the page under it. About half a second.</p>
-<figure><img src="book_flip.jpg" alt="Six moments of a page turning: page 1 flat, the page lifting at its right edge with a shadow, half way, nearly closed at the spine, page 2 showing"><figcaption>One turn, page 1 to page 2.</figcaption></figure>
-<p style="margin:14px 0 4px"><b>The book's button</b> now matches the open book: the same red cover, stitched spine and gold ribbon (Gemini). An open version is there too if you prefer it.</p>
-<figure><img src="book_icon.jpg" style="max-height:300px" alt="Three book cookies: the old open book with drawn pages, a closed red book with a stitched darker spine, a gold ribbon and a small label with a cookie, and the same book open on a cream page with four tiny cookies"><figcaption>Before; now (closed); the open version.</figcaption></figure>
+<p style="margin-top:0"><b>Day card, cookie book, handle, cake.</b></p>
+<p style="margin:8px 0 4px"><b>Day card:</b> square, the day, stars and buttons spread evenly down it.</p>
+<figure><img src="daycard_square.jpg" style="max-height:440px" alt="The map's day card as a square cream doily card: Day 3, three stars, Play and Cancel"><figcaption>The map's day card.</figcaption></figure>
+<p style="margin:14px 0 4px"><b>Cookie book:</b> the whole page turns now, with its title, cookies, arrows and words on it; the next page lies under it. It plays your sound (4, the magazine page). The book's button is the old one again, as you said.</p>
+<figure><img src="book_flip.jpg" alt="Six moments of the whole page turning in the red book: page 1 flat, the full page lifting at its right edge with a shadow, half way, page 2 showing under it"><figcaption>One turn, page 1 to page 2.</figcaption></figure>
+<p style="margin:14px 0 4px"><b>Pull handle:</b> your pair 2. On the table the knob is the chef's hat (it leads to the kitchen); in the kitchen it is the plate (it leads back).</p>
+<figure><img src="handle_pair.jpg" style="max-height:300px" alt="The table's left edge with a blue chef's hat cookie on a biscuit stick; the kitchen's right edge with a plate, fork and knife cookie on its stick"><figcaption>Left: on the table. Right: in the kitchen.</figcaption></figure>
+<p style="margin:14px 0 4px"><b>Strawberry cake:</b> in the game (your tick). ChatGPT's cut faces and bare plate are laid into the game's frames; the slices that stay, the stand and the napkin are the same pixels in every frame, so nothing jumps.</p>
+<figure><img src="cake_frames_game.jpg" alt="The seven cake frames in the game: 6, 5, 4, 3, 2, 1 and 0 slices"><figcaption>The seven frames in the game.</figcaption></figure>
+<figure><img src="cake_frame2_game.jpg" alt="Frame 2 in the game, before and after: the cut faces crisper, the bare plate clean"><figcaption>Frame 2 in the game. Left: before. Right: now.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.picks19.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.picks19.openicon"> Use the open book as the button</label></li>
-<li><label><input type="checkbox" data-id="cur.picks19.pause"> Put C on the pause menu too</label></li>
-<li><label><input type="checkbox" data-id="cur.picks19.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.rel1b.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.rel1b.pause"> Put the doily card on the pause menu too</label></li>
+<li><label><input type="checkbox" data-id="cur.rel1b.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Page turn sound: five to choose from.</b> Free to use (Mixkit licence or CC0). Until you pick, the turn plays the game's own paper sound. The four you do not pick are deleted, as you asked.</p>
-<p style="margin:8px 0 2px"><b>1</b> Light flick, thin page (0.29 s, the quietest)</p><audio controls preload="none" src="pageflip/page_1_light_flick.mp3"></audio>
-<p style="margin:8px 0 2px"><b>2</b> Soft, slower turn of a big page (0.56 s)</p><audio controls preload="none" src="pageflip/page_2_soft_slow_turn.mp3"></audio>
-<p style="margin:8px 0 2px"><b>3</b> Thick sketchbook paper, a low "fwap" (0.30 s)</p><audio controls preload="none" src="pageflip/page_3_thick_paper.mp3"></audio>
-<p style="margin:8px 0 2px"><b>4</b> Glossy magazine page (0.41 s)</p><audio controls preload="none" src="pageflip/page_4_magazine.mp3"></audio>
-<p style="margin:8px 0 2px"><b>5</b> Gentle, even paper whoosh (0.54 s)</p><audio controls preload="none" src="pageflip/page_5_gentle_whoosh.mp3"></audio>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.flipsfx.1"> 1</label></li><li><label><input type="checkbox" data-id="cur.flipsfx.2"> 2</label></li><li><label><input type="checkbox" data-id="cur.flipsfx.3"> 3</label></li><li><label><input type="checkbox" data-id="cur.flipsfx.4"> 4</label></li><li><label><input type="checkbox" data-id="cur.flipsfx.5"> 5</label></li>
-<li><label><input type="checkbox" data-id="cur.flipsfx.more"> None, find more</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Pull handle: a kitchen cookie on the way to the kitchen, a table cookie on the way back.</b> Four pairs, on the biscuit stick. Left: the handle you see on the table. Right: the one in the kitchen.</p>
-<figure><img src="handle_places.jpg" style="max-height:1100px" alt="Four pairs of knob cookies. 1: a red striped oven mitt, and red and white checked cloth. 2: a white chef's hat on blue, and a plate with fork and knife. 3: a tiny kitchen with shelf, window and blue oven, and a tiny picnic table with checked cloth, coffee and bread. 4: the game's blue oven cookie and coffee cup cookie"><figcaption>1 to 3 are new, by Gemini; 4 uses cookies the game already has.</figcaption></figure>
+<p style="margin-top:0"><b>Release 1, the whole list</b> (since 2026.11.18, which is live).</p>
+<figure><img src="coinstar.jpg" style="max-height:440px" alt="The shop's coins tab with a star cookie card at 999 coins and the coffee machine at 650"><figcaption>The shop: a star for 999 coins; the coffee machine at 650.</figcaption></figure>
 <ul>
-<li>Pairs can be mixed (say, the little kitchen with the checked cloth).</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.knobp.1"> 1</label></li><li><label><input type="checkbox" data-id="cur.knobp.2"> 2</label></li><li><label><input type="checkbox" data-id="cur.knobp.3"> 3</label></li><li><label><input type="checkbox" data-id="cur.knobp.4"> 4</label></li>
-<li><label><input type="checkbox" data-id="cur.knobp.mix"> A mix (I will say which)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Strawberry cake, frame 2: the gap is clean.</b> Not in the game yet.</p>
-<figure><img src="cake_frame2_zoom.jpg" alt="Frame 2 close up. Left: beside the front slice a narrow strip and a hard line left on the bare plate. Right: the plate there smooth and even, like the other frames"><figcaption>Frame 2, close up. Left: ChatGPT's second retouch. Right: now.</figcaption></figure>
-<figure><img src="cake_gpt_retouch.jpg" alt="The seven cake frames, frame 2 cleaned"><figcaption>The whole sheet now.</figcaption></figure>
-<ul>
-<li>The strokes were what was left of the slice that went. The same patch of plate is clean in frame 3, so I laid that bare plate into frame 2's gap, up to the front slice's own edge. Nothing else on ChatGPT's sheet is touched.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.cake3.use"> Good, cut it into the game</label></li>
-<li><label><input type="checkbox" data-id="cur.cake3.change"> Still something (I will say where)</label></li>
+<li><b>Paper:</b> Daily Treats (square mint card, notes), the map's day card (doily), the cookie book as a red book with turning pages.</li>
+<li><b>Cookies:</b> One more treat, the shop's three tabs, the pull handles (stick, chef's hat, plate).</li>
+<li><b>Shop:</b> 1 star for 999 coins; coffee machine upgrade 650; a crunch on the book's cookies.</li>
+<li><b>Tutorial and arranging:</b> the hand drags the real coffee machine and coffee bags; "drag to arrange" banner on day 2 only, low in the kitchen; NEW on the cups only for the cups; the table's handle movable at any time; the coffee bags glow while arranging.</li>
+<li><b>Play:</b> 2 stars at 80 %; Daily Treats only after the first tutorial; Apple's rating popup after day 3; the strawberry cake's new frames.</li>
+<li><b>Still to do for it:</b> a test build when you say; new store screenshots and video with caption style B (your pick); your What's New words.</li>
 </ul>
 </div>
-
-<div class="card">
-<p style="margin-top:0"><b>Also done today.</b> In the project, in no build.</p>
-<figure><img src="coinstar.jpg" style="max-height:520px" alt="The shop's coins tab with a star cookie card at 999 coins"><figcaption>The shop: a star for 999 coins.</figcaption></figure>
-<ul>
-<li><b>1 star for 999 coins:</b> a card on the coins tab, can be bought again and again; the star goes to the star shop's count. Tried: 2,500 coins and two buys left 502 coins and 2 more stars; a third was refused. Coin-bought stars belong to the game in play, like coins (a new game starts without them; stars bought with money stay).</li>
-<li><b>Tutorial drags</b> (you said ship it), <b>banner on day 2 only</b>, <b>coffee bags' glow while arranging</b>, <b>table handle movable any time</b>, <b>2 stars at 80 %</b>, <b>rating popup after day 3</b>, <b>coffee machine $650 on its card too</b>: all in.</li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Daily Treats: the mint card (H) is in, and three designs for its other pieces.</b> H is in the project (no build). The designs are painted mock-ups made from the game's own cookies, paper and letters; day 1 is collected, day 2 is today, day 5 is the gift.</p>
-<figure><img src="treats_designs.jpg" alt="Daily Treats four times on the mint checked card. Now: the red ribbon title, brown day cards and a dark bar. 1: a stamp card, brown title, five dashed circles with coin cookies stamped in, DAY labels under them. 2: the title on red checked tape, five little coloured paper notes with tape, a dotted line to a star. 3: the title iced on a cookie bar, five cookies along a biscuit stick ending at a star"><figcaption>Now on H, then 1 to 3.</figcaption></figure>
-<ul>
-<li><b>1 Stamp card:</b> like a cafe loyalty card. Each day is a dashed circle; a collected day has its coin cookie stamped in with a tick, today's glows, day 5 holds the gift. No bar: the row of stamps is the progress.</li>
-<li><b>2 Sticker notes:</b> the title on checked tape, each day a small coloured note taped on (like the menu's stickers), today's bigger and tilted; a dotted line runs to the star.</li>
-<li><b>3 Cookie trail:</b> the title iced on a cookie bar, the days as cookies along a biscuit stick (the handle's stick) that ends at the star.</li>
-<li>All three keep the cookie coin, "+50" and the Collect cookie. Pieces can be mixed (say, 1's stamps with 2's tape title).</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.treatsd.1"> 1 Stamp card</label></li>
-<li><label><input type="checkbox" data-id="cur.treatsd.2"> 2 Sticker notes</label></li>
-<li><label><input type="checkbox" data-id="cur.treatsd.3"> 3 Cookie trail</label></li>
-<li><label><input type="checkbox" data-id="cur.treatsd.more"> More options (I will say what I like)</label></li>
-</ul>
-</div>
-
-
-
-
-
-<!--CURRENT-->
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Nothing open.</p>
+<p class="sub" style="margin:0 0 8px">Release 2, this weekend: the kitchen flow, with a regular blender. Waiting for your flow.</p>
+<div class="card">
+<p style="margin-top:0"><b>A regular blender for the kitchen: first drafts.</b> The one in the game stays the ice cream blender.</p>
+<figure><img src="blender_gemini.jpg" alt="Three painted blenders by Gemini: a rounded one with a cream base and a red dial, a retro one with a mint base, a chrome band and two buttons, a small one with a yellow base and a wooden lid knob"><figcaption>Gemini, in the kitchen's painting style: 1 cream, 2 mint, 3 yellow.</figcaption></figure>
+<figure><img src="blender_mine.jpg" style="max-height:330px" alt="Three quick drafts made from the game's own blender pictures: the ice cream blender's shape with a red base and an empty jar, the older round blender with a mint base, the same with a cream base and a red dial"><figcaption>Mine, quick ones made from the game's own two blender pictures: 4 red, 5 mint, 6 cream.</figcaption></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="mvp.blender.1"> 1</label></li><li><label><input type="checkbox" data-id="mvp.blender.2"> 2</label></li><li><label><input type="checkbox" data-id="mvp.blender.3"> 3</label></li><li><label><input type="checkbox" data-id="mvp.blender.4"> 4</label></li><li><label><input type="checkbox" data-id="mvp.blender.5"> 5</label></li><li><label><input type="checkbox" data-id="mvp.blender.6"> 6</label></li>
+<li><label><input type="checkbox" data-id="mvp.blender.more"> More drafts (I will say what I like)</label></li>
+</ul>
+</div>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>

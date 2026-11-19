@@ -41,17 +41,18 @@ public class DailyTreatsAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
         // The coin alone (the baked "+50" picture goes; the amount is composed per reward)
         coin = NewImage("AdCoin", Load("glyph_coin") != null ? Load("glyph_coin") : null, Color.white);
         if (coin.sprite == null) { coin.sprite = coinAndAmountToHide.sprite; }   // fallback: the whole +50 picture
-        Place(coin.rectTransform, -200f, -190f, 150f, 150f);
+        Place(coin.rectTransform, -200f * DailyTreats.RewardScale, DailyTreats.RewardY, 150f * DailyTreats.RewardScale, 150f * DailyTreats.RewardScale);
         coin.gameObject.SetActive(false);
         var a = new GameObject("AdAmount", typeof(RectTransform)); a.transform.SetParent(canvasRect, false);
-        amount = (RectTransform)a.transform; Place(amount, 60f, -190f, 400f, 180f); a.SetActive(false);
+        amount = (RectTransform)a.transform; Place(amount, 60f * DailyTreats.RewardScale, DailyTreats.RewardY, 400f, 180f); amount.localScale = Vector3.one * DailyTreats.RewardScale; a.SetActive(false);
 
         // The button: a cookie with the words iced on it (owner, 19 November 2026: "change one more treat button to cookie
         // style"; Gemini, Store/cookies_2026-11-17/gemini/gemini_onemore_B.png); before, the blank felt with the words on it
         var cookie = Load("btn_onemore"); var blank = Load("button_blank");
         button = NewImage("OneMoreTreat", cookie != null ? cookie : blank != null ? blank : buttonSprite, Color.white);
-        if (cookie != null) Place(button.rectTransform, 16f, -431f, 548f, 548f * cookie.rect.height / cookie.rect.width);
-        else Place(button.rectTransform, 16f, -431f, 548f, 305f);
+        var wideBtn = 548f * DailyTreats.ButtonScale;
+        if (cookie != null) Place(button.rectTransform, 14f, DailyTreats.ButtonY, wideBtn, wideBtn * cookie.rect.height / cookie.rect.width);
+        else Place(button.rectTransform, 14f, DailyTreats.ButtonY, wideBtn, 305f * DailyTreats.ButtonScale);
         button.raycastTarget = true;
         label = NewText("Label", button.rectTransform, font, 58f, new Color(0.8f, 0.47f, 0.16f));
         Place(label.rectTransform, -8f, -4f, 520f, 90f);
@@ -61,7 +62,7 @@ public class DailyTreatsAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
         // A small cross at the board's top right corner
         close = new GameObject("Close", typeof(RectTransform), typeof(Image)); close.transform.SetParent(canvasRect, false);
         var ci = close.GetComponent<Image>(); var cross = Resources.Load<Sprite>("UI/cross"); if (cross != null) ci.sprite = cross; else ci.color = new Color(0.86f, 0.24f, 0.2f);
-        Place((RectTransform)close.transform, 440f, 540f, 76f, 76f);
+        Place((RectTransform)close.transform, DailyTreats.ClosePos.x, DailyTreats.ClosePos.y, 76f, 76f);   // on the paper card: inside the dotted line, with room round it
         close.AddComponent<Button>().onClick.AddListener(() => { if (!showing) { closed = true; onClose?.Invoke(); } });
 
         button.transform.localScale = Vector3.one * 0.6f;
@@ -134,7 +135,7 @@ public class DailyTreatsAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
         for (var i = 0; i < text.Length; i++)
         {
             var s = Load(text[i] == '+' ? "glyph_plus" : "glyph_" + text[i]);
-            var g = NewImage("G" + i, s, Color.white); g.transform.SetParent(amount, false);
+            var g = NewImage("G" + i, s, DailyTreats.AmountTint); g.transform.SetParent(amount, false);
             var rt = g.rectTransform; rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0f, 0.5f);
             rt.anchoredPosition = new Vector2(x, 0f); rt.sizeDelta = new Vector2(widths[i], 180f); x += widths[i] - 6f;
         }

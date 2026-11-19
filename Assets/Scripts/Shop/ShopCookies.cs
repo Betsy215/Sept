@@ -363,8 +363,14 @@ public static class ShopCookies
         }
         // the pages: the one with the newest cookie first; arrows and "1 / 2" under the grid when there is more than one
         var turner = go.AddComponent<BookTurner>();
-        turner.Set(page, leaves, owned.Count > 0 ? newest / perPage : 0, new Rect(left - 24f, gridBottom, wide + 48f, gridTop - gridBottom),
+        // the whole page turns (owner, 19 November 2026: "when flip the page, the entire page flips"): the cream page from
+        // the spine to its right edge, carrying the title, the cookies, the arrows and the description
+        var sheetArea = bookLook != null
+            ? Rect.MinMaxRect(-W / 2f + 104f * W / 960f, -H / 2f + 60f * H / 1560f, W / 2f - 56f * W / 960f, H / 2f - 48f * H / 1560f)
+            : Rect.MinMaxRect(-W / 2f + 12f, -H / 2f + 12f, W / 2f - 12f, H / 2f - 12f);
+        turner.Set(page, leaves, owned.Count > 0 ? newest / perPage : 0, sheetArea,
                    bookLook != null ? new Color(1f, 0.976f, 0.925f, 1f) : pageImg.color);   // the turning sheet in the page's own paper
+        var furniture = new List<RectTransform> { title.rectTransform, rule, chosen, name.rectTransform, info.rectTransform };
         if (pageCount > 1)
         {
             var arrowY = gridBottom - arrowRow / 2f + 6f;
@@ -377,7 +383,21 @@ public static class ShopCookies
             var nb = next.gameObject.AddComponent<Button>(); nb.transition = Selectable.Transition.None; nb.onClick.AddListener(() => turner.Turn(1));
             var pb = prev.gameObject.AddComponent<Button>(); pb.transition = Selectable.Transition.None; pb.onClick.AddListener(() => turner.Turn(-1));
             turner.Controls(count, next.gameObject, prev.gameObject);
+            furniture.Add(count.rectTransform); furniture.Add(next); furniture.Add(prev);
         }
+        // what stays in place over a turning page: the ribbon (the book's own bookmark) and the close button
+        var keep = new List<RectTransform>();
+        var ribbonSprite = bookLook != null ? Resources.Load<Sprite>("Cookies/book_ribbon") : null;
+        if (ribbonSprite != null)
+        {
+            float kx = W / 960f, ky = H / 1560f;
+            var ribbon = Child(page, "Ribbon", new Vector2(0.5f, 0.5f), new Vector2(ribbonSprite.rect.width * kx, ribbonSprite.rect.height * ky),
+                               new Vector2(-W / 2f + (156f + ribbonSprite.rect.width / 2f) * kx, H / 2f - (40f + ribbonSprite.rect.height / 2f) * ky));
+            var ri = ribbon.gameObject.AddComponent<Image>(); ri.sprite = ribbonSprite; ri.raycastTarget = false;
+            keep.Add(ribbon);
+        }
+        var closeT = page.Find("Close") as RectTransform; if (closeT != null) keep.Add(closeT);
+        turner.Furniture(furniture, keep);
         if (owned.Count > 0) cells[newest].GetComponent<Button>().onClick.Invoke();   // a new one is shown first
         // looked at: the labels stay on this open page, the book's own label goes
         if (SessionManager.Instance != null) SessionManager.Instance.ClearNewInBook();
@@ -410,8 +430,9 @@ public static class ShopCookies
     }
 }
 
-/// The cookie book's pages: one leaf of cookies shown at a time. A turn is a sheet of the book's own paper, hinged at
-/// the spine, that carries the leaving leaf: it swings over with its free edge lifting towards the reader (a little
+/// The cookie book's pages: one leaf of cookies shown at a time. A turn is the whole page as a sheet of the book's own
+/// paper, hinged at the spine, that carries the leaving page (its cookies, and copies of the title, the description and
+/// the arrows): it swings over with its free edge lifting towards the reader (a little
 /// taller there), darker along that edge like a bent page, a bright rim on the edge itself, and a soft shadow thrown on
 /// the page under it; the next leaf lies ready below (owner, 19 November 2026: "change the page flip animation, it looks
 /// bad. It can be simple but needs to look good"). Back: the earlier leaf swings down over the page. Unscaled time.
@@ -429,13 +450,18 @@ public class BookTurner : MonoBehaviour
         for (var i = 0; i < leaves.Count; i++) leaves[i].gameObject.SetActive(i == current);
     }
 
-    public void Controls(TextMeshProUGUI pageCount, GameObject nextArrow, GameObject prevArrow) { count = pageCount; next = nextArrow; prev = prevArrow; Show(); }
+    public void Controls(TextMeshProUGUI pageCount, GameObject nextArrow, GameObject prevArrow) { count = pageCount; next = nextArrow; prev = prevArrow; Show(current); }
 
-    private void Show()
+    private List<RectTransform> furniture = new List<RectTransform>(), keep = new List<RectTransform>();
+    /// What lies on every page and turns with it (title, description, arrows), and what stays over a turning page.
+    public void Furniture(List<RectTransform> onThePage, List<RectTransform> staysOnTop) { furniture = onThePage; keep = staysOnTop; }
+
+    /// The page number and the arrows as they are on page `n`.
+    private void Show(int n)
     {
-        if (count != null) count.text = (current + 1) + " / " + leaves.Count;
-        if (next != null) next.SetActive(current < leaves.Count - 1);
-        if (prev != null) prev.SetActive(current > 0);
+        if (count != null) count.text = (n + 1) + " / " + leaves.Count;
+        if (next != null) next.SetActive(n < leaves.Count - 1);
+        if (prev != null) prev.SetActive(n > 0);
     }
 
     public void Turn(int by)
@@ -470,29 +496,50 @@ public class BookTurner : MonoBehaviour
     private IEnumerator Flip(int to, bool forward)
     {
         turning = true;
-        var carried = leaves[forward ? current : to];     // the leaf on the turning sheet
-        var under = leaves[forward ? to : current];       // the leaf that lies flat
-        under.gameObject.SetActive(true); carried.gameObject.SetActive(true);
+        var from = current;
+        var onSheet = forward ? from : to;                // the page that rides on the turning sheet
+        var below = forward ? to : from;                  // the page that lies flat under it
+        leaves[from].gameObject.SetActive(true); leaves[to].gameObject.SetActive(true);
+
+        // no taps while a page turns
+        var guard = Layer("TurnGuard", page, null); guard.color = new Color(0f, 0f, 0f, 0f); guard.raycastTarget = true;
+        var guardRt = guard.rectTransform; guardRt.anchorMin = Vector2.zero; guardRt.anchorMax = Vector2.one; guardRt.offsetMin = guardRt.offsetMax = Vector2.zero;
 
         // the shadow the sheet throws on the page under it, just past its free edge
         var cast = Layer("TurnShadow", page, Ramp); var castRt = cast.rectTransform;
         castRt.anchorMin = castRt.anchorMax = new Vector2(0.5f, 0.5f); castRt.pivot = new Vector2(0f, 0.5f); castRt.localScale = new Vector3(-1f, 1f, 1f);   // dark at the sheet's edge, fading away to the right
-        castRt.SetSiblingIndex(under.GetSiblingIndex() + 1);
 
-        // the sheet: the book's paper over the grid's area, hinged on its left edge
+        // the sheet: the whole page in the book's paper, hinged at the spine
         var paperSprite = Resources.Load<Sprite>("Cookies/book_paper");
         var sheetImg = Layer("TurningSheet", page, paperSprite); var sheet = sheetImg.rectTransform;
         sheet.anchorMin = sheet.anchorMax = new Vector2(0.5f, 0.5f); sheet.pivot = new Vector2(0f, 0.5f);
         sheet.sizeDelta = grid.size; sheet.anchoredPosition = new Vector2(grid.xMin, grid.center.y);
-        sheetImg.color = paperSprite != null ? Color.white : paper; sheetImg.raycastTarget = true;   // no taps through a turning page
+        sheetImg.color = paperSprite != null ? Color.white : paper;
         var bend = sheet.gameObject.AddComponent<PageBend>();
-        sheet.SetSiblingIndex(castRt.GetSiblingIndex() + 1);
-        carried.SetParent(sheet, true);
+
+        // on the sheet: that page's title, description, number and arrows as copies, and its own cookies
+        Show(onSheet);
+        foreach (var f in furniture)
+        {
+            if (f == null || !f.gameObject.activeSelf) continue;
+            var copy = Instantiate(f.gameObject, sheet, true);
+            foreach (var b in copy.GetComponentsInChildren<Selectable>(true)) Destroy(b);
+            foreach (var g in copy.GetComponentsInChildren<Graphic>(true)) g.raycastTarget = false;
+            foreach (var c in copy.GetComponentsInChildren<CookiePress>(true)) Destroy(c);
+        }
+        leaves[onSheet].SetParent(sheet, true);
+        Show(below);                                      // the real ones show the page that lies under the sheet
+
         var shade = Layer("Shade", sheet, Ramp); var shadeRt = shade.rectTransform;
         shadeRt.anchorMin = Vector2.zero; shadeRt.anchorMax = Vector2.one; shadeRt.offsetMin = shadeRt.offsetMax = Vector2.zero;
         var shadeBend = shade.gameObject.AddComponent<PageBend>();
         var rim = Layer("Rim", sheet, null); var rimRt = rim.rectTransform;
-        rimRt.anchorMin = new Vector2(1f, 0f); rimRt.anchorMax = new Vector2(1f, 1f); rimRt.pivot = new Vector2(1f, 0.5f); rimRt.sizeDelta = new Vector2(10f, 0f); rimRt.anchoredPosition = Vector2.zero;
+        rimRt.anchorMin = new Vector2(1f, 0f); rimRt.anchorMax = new Vector2(1f, 1f); rimRt.pivot = new Vector2(1f, 0.5f); rimRt.sizeDelta = new Vector2(12f, 0f); rimRt.anchoredPosition = Vector2.zero;
+
+        // order: page things, the shadow, the sheet, then what stays on top (ribbon, close), then the guard
+        castRt.SetAsLastSibling(); sheet.SetAsLastSibling();
+        foreach (var k in keep) if (k != null) k.SetAsLastSibling();
+        guardRt.SetAsLastSibling();
 
         var clip = Resources.Load<AudioClip>("UI/page_flip"); if (clip == null) clip = Resources.Load<AudioClip>("Audio/paper_flip");
         if (AudioManager.Instance != null) { if (clip != null) AudioManager.Instance.PlaySFX(clip); else AudioManager.Instance.PlayButtonClick(); }
@@ -503,20 +550,20 @@ public class BookTurner : MonoBehaviour
             var flat = Mathf.Cos(k * Mathf.PI * 0.5f);                                   // the sheet's width as seen from above
             var up = Mathf.Sin(k * Mathf.PI);                                            // how far it is off the page: most half way
             sheet.localScale = new Vector3(Mathf.Max(0.001f, flat), 1f, 1f);
-            bend.Lift = shadeBend.Lift = 0.07f * Mathf.Sin(k * Mathf.PI * 0.5f);          // the free edge comes towards the reader
+            bend.Lift = shadeBend.Lift = 0.035f * Mathf.Sin(k * Mathf.PI * 0.5f);         // the free edge comes towards the reader
             shade.color = new Color(0.30f, 0.18f, 0.08f, 0.5f * Mathf.Sin(k * Mathf.PI * 0.5f));   // none while it lies flat
             rim.color = new Color(1f, 1f, 1f, 0.75f * up);
-            castRt.sizeDelta = new Vector2(30f + 150f * up, grid.height * (1f + 0.10f * up));
+            castRt.sizeDelta = new Vector2(30f + 170f * up, grid.height * (1f + 0.05f * up));
             castRt.anchoredPosition = new Vector2(grid.xMin + grid.width * flat + castRt.sizeDelta.x, grid.center.y);
             cast.color = new Color(0.25f, 0.14f, 0.06f, 0.34f * up);
             yield return null;
         }
-        carried.SetParent(page, true); carried.localScale = Vector3.one; carried.anchoredPosition = Vector2.zero;
-        carried.SetSiblingIndex(under.GetSiblingIndex());
-        Destroy(sheet.gameObject); Destroy(cast.gameObject);
+        var leaf = leaves[onSheet]; leaf.SetParent(page, true); leaf.localScale = Vector3.one; leaf.anchoredPosition = Vector2.zero;
+        leaf.SetSiblingIndex(leaves[below].GetSiblingIndex());
+        Destroy(sheet.gameObject); Destroy(cast.gameObject); Destroy(guard.gameObject);
         current = to;
         for (var i = 0; i < leaves.Count; i++) leaves[i].gameObject.SetActive(i == current);
-        Show(); turning = false;
+        Show(current); turning = false;
     }
 }
 

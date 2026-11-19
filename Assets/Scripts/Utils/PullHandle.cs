@@ -83,7 +83,12 @@ public class PullHandle : MonoBehaviour, IPointerDownHandler, IBeginDragHandler,
         tap.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
         var wobble = button.GetComponent<BalatroWobble>();
         if (wobble != null) { wobble.Rebase(); wobble.ResetTransform(); wobble.enabled = false; }
-        var knob = Resources.Load<Sprite>("UI/handle_knob"); var picture = button.GetComponent<Image>();
+        // the knob shows where the handle leads (owner, 19 November 2026: "i want the cookie to look like kitchen for the
+        // handle goes to kitchen, and look like the table for the one goes to table"; their pick: a chef's hat cookie on
+        // the table's handle, a plate with fork and knife on the kitchen's; Store/cookies_2026-11-17/knobs_places)
+        var knob = Resources.Load<Sprite>(kitchen ? "UI/handle_knob_table" : "UI/handle_knob_kitchen");
+        if (knob == null) knob = Resources.Load<Sprite>("UI/handle_knob");
+        var picture = button.GetComponent<Image>();
         if (knob != null && picture != null) { picture.sprite = knob; picture.preserveAspect = true; }
         var press = button.GetComponent<Button>(); if (press != null) press.transition = Selectable.Transition.None;   // its pressed picture was the truck
         var wood = Resources.Load<Sprite>("UI/handle_stick");
