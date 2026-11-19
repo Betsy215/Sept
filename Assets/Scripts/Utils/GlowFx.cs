@@ -46,7 +46,7 @@ public static class GlowFx
         // The picture's shape, in its full frame (sprite.rect), small. Some pictures keep their shape in alpha, others
         // (the table's, stored without alpha) only in their outline mesh: the shape is alpha AND inside the mesh.
         var r = s.rect; var tr = s.textureRect; var off = s.textureRectOffset;
-        var k = Mathf.Min(1f, 224f / Mathf.Max(r.width, r.height));
+        var k = Mathf.Min(1f, 448f / Mathf.Max(r.width, r.height));   // fine enough that the glow's inner edge is smooth (was 224: steps showed round the coffee bags)
         int w = Mathf.Max(8, Mathf.RoundToInt(r.width * k)), h = Mathf.Max(8, Mathf.RoundToInt(r.height * k));
         var src = s.texture;
         int tw = Mathf.Max(1, Mathf.RoundToInt(tr.width * k)), th = Mathf.Max(1, Mathf.RoundToInt(tr.height * k));
@@ -231,8 +231,8 @@ public static class GlowFx
     public static void Default(Image owner)
     {
         if (!Usable(owner)) return;
-        // toned down the same evening ("the glow is too much"): narrower, softer, fainter
-        var p = UiGlow(owner, WhiteColour, 1.4f, 1.5f, 0.5f, 0.5f); p.gate = null;
+        // toned down twice the same evening ("the glow is too much", "tune down the default glow even more")
+        var p = UiGlow(owner, WhiteColour, 1.1f, 1.2f, 0.35f, 0.35f); p.gate = null;
     }
 
     /// A: gold, beating once a second. For the next thing to act on.
