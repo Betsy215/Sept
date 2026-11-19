@@ -34,7 +34,17 @@ public class DailyTreats : MonoBehaviour
     private void Start()
     {
         dueDate = DateTime.Now.Date;
+        if (!TutorialDone()) return;   // the day's treat waits; it shows on the first menu after the tutorial
         if (DueDay(out dayToday)) Show(dayToday);
+    }
+
+    /// No Daily Treats before the tutorial is done (owner, 19 November 2026, from the player data: new players watched the
+    /// treats ad before playing at all, and some never started the tutorial).
+    private static bool TutorialDone()
+    {
+        var sm = SessionManager.Instance;
+        var s = sm != null ? sm.GetCurrentSession() : null;
+        return s != null && s.isActive && (s.tutorialSeen || s.levelsCompleted >= 1);
     }
 
     /// <summary>True when today's treat has not been collected; day is the row day (1..5) it would be.</summary>
