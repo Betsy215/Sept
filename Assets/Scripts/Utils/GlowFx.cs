@@ -193,7 +193,8 @@ public static class GlowFx
     public static void Default(Image owner)
     {
         if (!Usable(owner)) return;
-        var p = UiGlow(owner, WhiteColour, 2.2f, 2f, 0.75f, 0.75f); p.gate = null;
+        // toned down the same evening ("the glow is too much"): narrower, softer, fainter
+        var p = UiGlow(owner, WhiteColour, 1.4f, 1.5f, 0.5f, 0.5f); p.gate = null;
     }
 
     /// A: gold, beating once a second. For the next thing to act on.

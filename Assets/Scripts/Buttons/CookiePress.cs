@@ -80,8 +80,11 @@ public class CookiePress : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     void Write()
     {
         var t = transform;
-        if (t.localScale != lastScale) baseScale = t.localScale;            // someone else set it this frame: build on it
-        if (t.localPosition != lastPos) basePos = t.localPosition;
+        // someone else set it this frame: build on it. With a tolerance: a RectTransform gives back what was written
+        // with a little float rounding, which an exact compare took for a move (the map's Play sank further every
+        // frame and stayed down, 18 November 2026)
+        if ((t.localScale - lastScale).sqrMagnitude > 1e-6f) baseScale = t.localScale;
+        if ((t.localPosition - lastPos).sqrMagnitude > 0.01f) basePos = t.localPosition;
         var k = 1f - Shrink * amount;
         var h = rt != null ? rt.rect.height * baseScale.y : 0f;
         t.localScale = lastScale = new Vector3(baseScale.x * k, baseScale.y * k, baseScale.z);
