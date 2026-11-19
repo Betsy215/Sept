@@ -3,11 +3,11 @@
 /// example 90 percent (rounded to customer count) is served full order." "For one star, if more than 50% customers are
 /// served full then give 1 star" (same day; it replaces the 70 percent gap-fill). Exactly half or less: no star.
 /// A customer counts when their order closes: served whole, or lost (left with nothing, or with only part of it).
-/// The share is rounded to the nearest whole customer and a half rounds down, so two stars always allow one customer
-/// lost (15 customers: 13.5 becomes 13). Before any order has closed the day stands at three stars.
+/// The share is rounded to the nearest whole customer and a half rounds down (10 customers: 8 for two stars at 80 %;
+/// at 90 %, before 19 November, 9). Before any order has closed the day stands at three stars.
 public static class StarRule
 {
-    public const int TwoStarPercent = 90;
+    public const int TwoStarPercent = 80;   // 80 since 19 November 2026 (owner, after 8 of 10 gave one star: "Make 2 stars 80 %"); was 90
 
     /// Customers that must be served whole for that share of the day's customers (whole numbers only, no float edge)
     public static int Needed(int customers, int percent) => (customers * percent + 49) / 100;
