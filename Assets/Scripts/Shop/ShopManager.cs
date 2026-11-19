@@ -606,6 +606,7 @@ public class ShopManager : MonoBehaviour
     private const int Columns = 3;
     private const float ColumnPitchMax = 245f;     // three columns left of the arrow buttons
     private const float RowPitchMax = 450f;        // three rows on a screen
+    private const float GlassCardShrink = 0.93f, GlassColumnPitchMax = 224f, GlassColumnsCentre = -136f;   // on the glass pane: 36 free at its left edge, the arrows 36 inside its right edge
     private const float ColumnsCentre = -143f;     // in the container's space: the usable width sits left of the arrows
 
     /// Sorts the cards cheap to expensive and lays them out in a grid, scaled down (owner, 16 October: "sort shop
@@ -636,7 +637,11 @@ public class ShopManager : MonoBehaviour
         foreach (var c in cards) { c.transform.localScale = Vector3.one; bounds.Add(VisualBounds((RectTransform)c.transform, cont)); }
         var maxW = 0f; var maxH = 0f;
         foreach (var b in bounds) { maxW = Mathf.Max(maxW, b.width); maxH = Mathf.Max(maxH, b.height); }
-        var colPitch = Mathf.Min(maxW * cardScale + 24f, ColumnPitchMax);
+        // on the glass pane the cards keep clear of its edges (owner, 19 November 2026: "resize or reposition the items so
+        // there is some margin between the edge of panel and items"): a little smaller, the columns closer, moved right
+        var cs = glass != null ? cardScale * GlassCardShrink : cardScale;
+        var colPitch = Mathf.Min(maxW * cs + 24f, glass != null ? GlassColumnPitchMax : ColumnPitchMax);
+        var colCentre = glass != null ? GlassColumnsCentre : ColumnsCentre;
         rowPitch = Mathf.Min(maxH * cardScale + 28f, RowPitchMax);   // the people cards' picture boxes are much taller than their figures
         // The visible window is the masked ShopPanel (the container's parent); the scene's ScrollRect sits on the
         // container itself with no viewport, so it is pointed at the panel too, which makes a finger drag work
@@ -650,15 +655,15 @@ public class ShopManager : MonoBehaviour
         for (var i = 0; i < cards.Count; i++)
         {
             var rt = (RectTransform)cards[i].transform;
-            var slot = new Vector2(ColumnsCentre + (i % Columns - 1) * colPitch, top - (i / Columns) * rowPitch);
+            var slot = new Vector2(colCentre + (i % Columns - 1) * colPitch, top - (i / Columns) * rowPitch);
             // sideways the visual centre goes on the slot; vertically the card's BOTTOM (its price line) goes on the row's
             // baseline, so every card in a row stands on the same line whatever its picture's height (owner, 26 October
             // 2026: the small plant floated above the plates and the oven once the price sort moved it into their row)
             var offset = bounds[i].center - (Vector2)rt.localPosition;
             var bottomOffset = bounds[i].yMin - rt.localPosition.y;
             var baseline = slot.y - rowPitch / 2f + 14f;
-            rt.localScale = Vector3.one * cardScale;
-            rt.localPosition = new Vector3(slot.x - offset.x * cardScale, baseline - bottomOffset * cardScale, rt.localPosition.z);
+            rt.localScale = Vector3.one * cs;
+            rt.localPosition = new Vector3(slot.x - offset.x * cs, baseline - bottomOffset * cs, rt.localPosition.z);
         }
         var span = Mathf.Max(0f, (contentH - viewH) / 2f);
         topBoundary = -span; bottomBoundary = span;
@@ -1302,6 +1307,16 @@ public class ShopManager : MonoBehaviour
         tabNote = ngo.GetComponent<TextMeshProUGUI>(); tabNote.fontSize = 44f; tabNote.alignment = TextAlignmentOptions.Center;
         tabNote.color = new Color(0.30f, 0.22f, 0.18f, 0.85f); if (font != null) tabNote.font = font; tabNote.text = ""; ngo.SetActive(false);
         if (ShopGlass.Ready && panelImage != null) glass = ShopGlass.Build(panelGroup, viewport, panelImage);
+        if (glass != null)
+        {
+            // the arrows (and the book above them, which takes its place and size from the up arrow) come in from the
+            // pane's right edge and are a little smaller
+            foreach (var b in new[] { scrollUpButton, scrollDownButton })
+            {
+                var art = b != null ? b.transform as RectTransform : null; if (art == null) continue;
+                art.sizeDelta *= 0.88f; art.anchoredPosition = new Vector2(viewport.rect.width * 0.5f - 44f - art.sizeDelta.x * 0.5f, art.anchoredPosition.y);
+            }
+        }
         if (glass != null) ngo.transform.SetAsLastSibling();
         PaintTabs();
         FitScoreAboveTabs();

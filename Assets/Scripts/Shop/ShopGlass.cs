@@ -2,27 +2,31 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// The shop's panel as liquid glass (owner, 19 November 2026: "change shop panel to liquid glass style, make the corners
-/// rounded"). The panel becomes a rounded pane: the shop's own background shows through it blurred, under a thin white
-/// veil, with a bright rim and a soft shadow round it. The tabs become a glass pill above the pane, with a brighter
-/// lens that slides to the open tab. Pieces: Store/ui/shop_glass_2026-11-19/glass.py (Resources/UI/glass_*). The
-/// panel's group is drawn squashed (scale 1 x 0.8), and the pieces are painted taller by the same amount, so the corners
-/// are round on screen. Without the pieces the shop keeps its flat panel and folder tabs.
+/// rounded"; then "the glass needs to be much more transparent, almost completely transparent, the tabs and the panel
+/// needs to be a whole without space without divider line"). One rounded pane of nearly clear glass holds the tab row
+/// and the cards: the shop's background shows through it almost untouched (a trace of blur and of white), with a bright
+/// rim and a soft shadow round it. A faint lens inside the pane slides to the open tab. Pieces:
+/// Store/ui/shop_glass_2026-11-19/glass.py (Resources/UI/glass_*). The panel's group is drawn squashed (scale 1 x 0.8),
+/// and the pieces are painted taller by the same amount, so the corners are round on screen. Without the pieces the
+/// shop keeps its flat panel and folder tabs.
 public static class ShopGlass
 {
-    public const float BarGap = 22f;      // between the pane's top and the tab pill, in the group's units
-    public const float BarHeight = 112f;  // the pill's height in the group's units (0.8 of that on screen)
+    public const float BarHeight = 112f;  // the tab row's height in the group's units (0.8 of that on screen)
     private const float CornerPx = 75f;   // the pieces' corner height in pixels (their top and bottom border)
+    private const float Haze = 0.30f;     // how much of the blurred background is laid over the sharp one
+    private const float Veil = 0.05f;     // white in the glass
 
     private static Sprite Piece(string name) => Resources.Load<Sprite>("UI/" + name);
     public static bool Ready => Piece("glass_fill") != null && Piece("glass_rim") != null;
 
     public class Parts
     {
-        public RectTransform bar, thumb;
-        public float barBottom;   // the pill's lower edge, measured from the group's middle
+        public RectTransform thumb;
+        public float barBottom;   // the tab row's lower edge (the cards' upper edge), measured from the group's middle
     }
 
-    /// Dresses the panel (the masked viewport inside its group) and builds the tab pill above it.
+    /// Dresses the panel (the masked viewport inside its group) as the lower part of one pane and lays the tab row in
+    /// the pane's top.
     public static Parts Build(RectTransform group, RectTransform viewport, Image panelImage)
     {
         var fill = Piece("glass_fill"); var rim = Piece("glass_rim"); var shadow = Piece("glass_shadow");
@@ -30,46 +34,38 @@ public static class ShopGlass
         var blurred = bg != null && bg.sprite != null ? Blur(bg.sprite.texture) : null;
         if (blurred != null) group.gameObject.AddComponent<GlassOwner>().texture = blurred;
         var w = group.rect.width; var h = group.rect.height;
+        var paneH = h + BarHeight; var paneY = BarHeight * 0.5f;   // the pane: the cards' window and the tab row above it
 
-        // the pane: the panel's own image is the rounded mask; behind the cards lie the blurred background, a veil of
-        // white and the light on its top
+        // the cards' window keeps its mask (rounded like the pane) and shows nothing of its own
         panelImage.sprite = fill; panelImage.type = Image.Type.Sliced; panelImage.pixelsPerUnitMultiplier = 1f;
         panelImage.color = new Color(1f, 1f, 1f, 0.02f);
-        var at = 0;
-        if (blurred != null) Backdrop(viewport, bg, blurred).SetSiblingIndex(at++);
-        var veil = NewImage("GlassVeil", viewport, null, new Color(1f, 1f, 1f, blurred != null ? 0.22f : 0.62f)); Stretch(veil.rectTransform); veil.transform.SetSiblingIndex(at++);
-        var sheenSprite = Piece("glass_sheen");
-        if (sheenSprite != null) { var sheen = NewImage("GlassSheen", viewport, sheenSprite, Color.white); Stretch(sheen.rectTransform); sheen.transform.SetSiblingIndex(at++); }
-        var paneRim = NewImage("GlassRim", group, rim, Color.white); paneRim.type = Image.Type.Sliced;
-        Box(paneRim.rectTransform, 0f, 0f, w, h); paneRim.transform.SetSiblingIndex(viewport.GetSiblingIndex() + 1);
 
-        // the tab pill: the same glass, its ends half circles
-        var parts = new Parts { barBottom = h * 0.5f + BarGap };
-        var barY = parts.barBottom + BarHeight * 0.5f; var barM = CornerPx / (BarHeight * 0.5f);
-        var bar = NewImage("GlassBar", group, fill, new Color(1f, 1f, 1f, 0.02f)); bar.type = Image.Type.Sliced; bar.pixelsPerUnitMultiplier = barM;
-        Box(bar.rectTransform, 0f, barY, w, BarHeight);
-        bar.gameObject.AddComponent<Mask>().showMaskGraphic = true;
-        if (blurred != null) Backdrop(bar.rectTransform, bg, blurred);
-        var barVeil = NewImage("GlassVeil", bar.rectTransform, null, new Color(1f, 1f, 1f, blurred != null ? 0.16f : 0.50f)); Stretch(barVeil.rectTransform);
-        parts.bar = bar.rectTransform;
-        var barRim = NewImage("GlassBarRim", group, rim, Color.white); barRim.type = Image.Type.Sliced; barRim.pixelsPerUnitMultiplier = barM;
-        Box(barRim.rectTransform, 0f, barY, w, BarHeight);
-        // the lens over the open tab
-        var thumbH = BarHeight - 20f; var thumbM = CornerPx / (thumbH * 0.5f);
-        var thumb = NewImage("GlassThumb", group, fill, new Color(1f, 1f, 1f, 0.46f)); thumb.type = Image.Type.Sliced; thumb.pixelsPerUnitMultiplier = thumbM;
-        Box(thumb.rectTransform, 0f, barY, 200f, thumbH);
-        var thumbRim = NewImage("Rim", thumb.rectTransform, rim, Color.white); thumbRim.type = Image.Type.Sliced; thumbRim.pixelsPerUnitMultiplier = thumbM; Stretch(thumbRim.rectTransform);
+        // the glass, behind the cards and the tabs: a trace of the blurred background, a trace of white, light on its top
+        var pane = NewImage("GlassPane", group, fill, new Color(1f, 1f, 1f, 0.02f)); pane.type = Image.Type.Sliced;
+        Box(pane.rectTransform, 0f, paneY, w, paneH);
+        pane.gameObject.AddComponent<Mask>().showMaskGraphic = true;
+        if (blurred != null) { var back = Backdrop(pane.rectTransform, bg, blurred).GetComponent<RawImage>(); var c = back.color; c.a = Haze; back.color = c; }
+        var veil = NewImage("GlassVeil", pane.rectTransform, null, new Color(1f, 1f, 1f, Veil)); Stretch(veil.rectTransform);
+        var sheenSprite = Piece("glass_sheen");
+        if (sheenSprite != null) { var sheen = NewImage("GlassSheen", pane.rectTransform, sheenSprite, new Color(1f, 1f, 1f, 0.45f)); Stretch(sheen.rectTransform); }
+        var paneRim = NewImage("GlassRim", group, rim, Color.white); paneRim.type = Image.Type.Sliced;
+        Box(paneRim.rectTransform, 0f, paneY, w, paneH); paneRim.transform.SetSiblingIndex(viewport.GetSiblingIndex() + 1);
+
+        // the lens over the open tab, inside the pane's top
+        var parts = new Parts { barBottom = h * 0.5f };
+        var thumbH = BarHeight - 28f; var thumbM = CornerPx / (thumbH * 0.5f);
+        var thumb = NewImage("GlassThumb", group, fill, new Color(1f, 1f, 1f, 0.20f)); thumb.type = Image.Type.Sliced; thumb.pixelsPerUnitMultiplier = thumbM;
+        Box(thumb.rectTransform, 0f, parts.barBottom + BarHeight * 0.5f - 2f, 200f, thumbH);
+        var thumbRim = NewImage("Rim", thumb.rectTransform, rim, new Color(1f, 1f, 1f, 0.9f)); thumbRim.type = Image.Type.Sliced; thumbRim.pixelsPerUnitMultiplier = thumbM; Stretch(thumbRim.rectTransform);
         thumb.gameObject.AddComponent<GlassThumb>();
         parts.thumb = thumb.rectTransform;
 
-        // back to front in the group: shadows, the pill, its rim, the lens, then the tabs, the pane and its rim
-        thumb.transform.SetAsFirstSibling(); barRim.transform.SetAsFirstSibling(); bar.transform.SetAsFirstSibling();
+        // back to front in the group: the shadow, the glass, the lens, then the cards' window, the rim and the tabs
+        thumb.transform.SetAsFirstSibling(); pane.transform.SetAsFirstSibling();
         if (shadow != null)
         {
-            var barShadow = NewImage("GlassBarShadow", group, shadow, Color.white); barShadow.type = Image.Type.Sliced; barShadow.pixelsPerUnitMultiplier = barM;
-            var pad = 40f / barM; Box(barShadow.rectTransform, 0f, barY, w + 2f * pad, BarHeight + 2f * pad / 0.8f); barShadow.transform.SetAsFirstSibling();
             var paneShadow = NewImage("GlassShadow", group, shadow, Color.white); paneShadow.type = Image.Type.Sliced;
-            Box(paneShadow.rectTransform, 0f, 0f, w + 80f, h + 100f); paneShadow.transform.SetAsFirstSibling();
+            Box(paneShadow.rectTransform, 0f, paneY, w + 80f, paneH + 100f); paneShadow.transform.SetAsFirstSibling();
         }
         return parts;
     }
@@ -78,7 +74,7 @@ public static class ShopGlass
     public static void MoveThumb(Parts parts, float x, float width)
     {
         if (parts == null || parts.thumb == null) return;
-        var t = parts.thumb.GetComponent<GlassThumb>(); if (t != null) t.Go(x, width - 20f);
+        var t = parts.thumb.GetComponent<GlassThumb>(); if (t != null) t.Go(x, width - 48f);
     }
 
     // ---- pieces ----
