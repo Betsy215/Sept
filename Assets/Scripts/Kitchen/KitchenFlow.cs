@@ -17,6 +17,11 @@ public static class KitchenFlow
 {
     public enum Stage { Empty, Baked, Creamed, Done }
     public static float MixSeconds = 2.5f, CutSeconds = 2f, ShowSeconds = 0.9f, FlySeconds = 0.55f;   // the first two shorter with the kitchen upgrade
+    /// The kitchen also finishes a dessert by itself (owner, 20 November 2026: "i want kitchen be able to cook the recipe
+    /// all the way after we pick a recipe with oven ... if we wait for kitchen itself to automatically cook, between each
+    /// step, it will wait for 3 seconds"): a dessert waiting at the mixer or the board starts that step on its own after
+    /// this many seconds (kitchen clock: a pause stops it); a tap starts it at once.
+    public static float AutoWaitSeconds = 3f;
     public static readonly string[] Foods = { "Choux", "Cake" };
 
     private class Line { public Stage stage; public float since; public bool working; }
@@ -50,20 +55,35 @@ public static class KitchenFlow
         if (!Handles(food)) return;
         var l = Of(food); l.stage = Stage.Baked; l.since = KitchenClock.Now; l.working = false;
         Refresh();
+        if (Host != null) Host.StartCoroutine(AutoNext(food, Stage.Baked));
     }
+
+    /// The step after `waiting` starts by itself once the dessert has waited AutoWaitSeconds and its tool is free.
+    private static IEnumerator AutoNext(string food, Stage waiting)
+    {
+        var gen = generation;
+        yield return KitchenClock.Wait(AutoWaitSeconds);
+        while (gen == generation && Of(food).stage == waiting && !Of(food).working)
+        {
+            if (waiting == Stage.Baked && mixing == null) { StartMix(food); yield break; }
+            if (waiting == Stage.Creamed && cutting == null) { StartCut(food); yield break; }
+            yield return null;                                                  // the tool is busy with the other dessert
+        }
+    }
+
+    private static void StartMix(string f) { mixing = f; Of(f).working = true; Refresh(); Host.StartCoroutine(Step(f, MixSeconds, Stage.Creamed, true)); }
+    private static void StartCut(string f) { cutting = f; Of(f).working = true; Refresh(); Host.StartCoroutine(Step(f, CutSeconds, Stage.Done, false)); }
 
     public static void TapMixer()
     {
         if (!MixerReady || Host == null) return;
-        var f = Waiting(Stage.Baked); mixing = f; Of(f).working = true; Refresh();
-        Host.StartCoroutine(Step(f, MixSeconds, Stage.Creamed, true));
+        StartMix(Waiting(Stage.Baked));
     }
 
     public static void TapBoard()
     {
         if (!BoardReady || Host == null) return;
-        var f = Waiting(Stage.Creamed); cutting = f; Of(f).working = true; Refresh();
-        Host.StartCoroutine(Step(f, CutSeconds, Stage.Done, false));
+        StartCut(Waiting(Stage.Creamed));
     }
 
     private static MonoBehaviour Host => SessionManager.Instance;
@@ -76,7 +96,7 @@ public static class KitchenFlow
         var l = Of(food); l.stage = next; l.since = KitchenClock.Now; l.working = false;
         if (atMixer) mixing = null; else cutting = null;
         Refresh();
-        if (next != Stage.Done) yield break;
+        if (next != Stage.Done) { Host.StartCoroutine(AutoNext(food, next)); yield break; }
         yield return KitchenClock.Wait(ShowSeconds);                       // the done picture, for a moment
         if (gen != generation) yield break;
         yield return Fly(food);

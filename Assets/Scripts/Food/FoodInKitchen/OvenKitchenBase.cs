@@ -35,7 +35,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
 
     /// Bake time per recipe, in seconds (owner: the ovens are all the same, each recipe has its own time).
     public static readonly Dictionary<string, float> BakeTimes =
-        new Dictionary<string, float> { { "Bread", 8f }, { "Choux", 10f }, { "Cake", 15f }, { "Cookies", 6f } };
+        new Dictionary<string, float> { { "Bread", 5f }, { "Choux", 3f }, { "Cake", 3f }, { "Cookies", 3f } };   // owner, 20 November 2026: "reduce the oven bake time for all item to be the same: 3 seconds. besides bread, bread takes 5 seconds" (were 8, 10, 15, 6)
 
     /// The recipe each oven (by cooldown key) is baking, kept across kitchen loads with the pick times.
     public static readonly Dictionary<string, string> Recipes = new Dictionary<string, string>();
