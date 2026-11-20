@@ -736,7 +736,7 @@ public class ShopManager : MonoBehaviour
             var shown = DisplayName(c);
             if (c.itemType == ItemType.Upgrade && c.upgradeFoodType == "Oven")
                 shown = SessionManager.Instance != null && SessionManager.Instance.OvensOwned >= 3 ? "Three ovens" : "Two ovens";
-            list.Add(new ShopCookies.Entry { cookie = cookie, name = shown, info = info, key = KeyOf(c) });
+            list.Add(new ShopCookies.Entry { cookie = cookie, name = shown, info = info, key = KeyOf(c), staff = c.itemName == YogaHire.ItemName });   // hired staff have their own tab in the book
         }
         // What the player owns from the start has no shop card (owner, 18 November 2026: "add bread and coffee to the
         // book"); they open the book, before everything bought

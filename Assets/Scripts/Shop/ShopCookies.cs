@@ -213,7 +213,19 @@ public static class ShopCookies
 
     // ---------------------------------------------------------------- the book of owned things -----------------
 
-    public struct Entry { public Sprite cookie; public string name; public string info; public string key; }
+    public struct Entry { public Sprite cookie; public string name; public string info; public string key; public bool staff; }
+
+    // The book's three parts since 19 November 2026 (owner: "a pencil, this one opens the journals page, a chef hat,
+    // this one opens staff I own, a heart, this one opens my cookies"; "staff is just staff, not customers. only show
+    // hired staff"): square index tabs on the book's right edge, cut from their own paper (Resources/Journal/tab_*).
+    private const int Journal = 0, Staff = 1, Cookies = 2;
+    private static readonly string[] TabArt = { "Journal/tab_journal", "Journal/tab_staff", "Journal/tab_cookies" };
+    private static readonly Color[] SectionPaper = { Color.white, new Color(0.886f, 0.933f, 0.965f), new Color(0.988f, 0.902f, 0.886f) };
+    // where a journal page's blank tag is, for "DAY n": x and y from the sheet's top left on a sheet of 800 x 1212, the turn in degrees
+    private static readonly Dictionary<string, Vector3> DayTags = new Dictionary<string, Vector3> {
+        { "open", new Vector3(630f, 290f, 8f) }, { "star3", new Vector3(600f, 900f, -6f) }, { "icecream", new Vector3(206f, 1030f, 4f) },
+        { "cake", new Vector3(640f, 290f, -7f) }, { "choux", new Vector3(630f, 190f, 6f) }, { "machine", new Vector3(630f, 290f, 8f) } };
+    private static RectTransform lastRoot; private static List<Entry> lastOwned; private static TMP_FontAsset lastTitleFont, lastTextFont; private static Image lastPanelLook;
 
     private static RectTransform bookButton;
     private static GameObject bookPanel;
@@ -244,7 +256,7 @@ public static class ShopCookies
     public static void RefreshBookTag()
     {
         if (bookButton == null) return;
-        if (SessionManager.Instance != null && SessionManager.Instance.AnyNewInBook) NewTag.OnUI(bookButton); else NewTag.Remove(bookButton);
+        if (SessionManager.Instance != null && (SessionManager.Instance.AnyNewInBook || SessionManager.Instance.AnyNewJournal)) NewTag.OnUI(bookButton); else NewTag.Remove(bookButton);
     }
 
     /// A small hop of the book's button: the thing just eaten went in there.
@@ -268,9 +280,21 @@ public static class ShopCookies
 
     private static readonly Color Ink = new Color(0.36f, 0.20f, 0.10f);
 
-    private static void OpenBook(RectTransform root, List<Entry> owned, TMP_FontAsset titleFont, TMP_FontAsset textFont, Image panelLook)
+    private static void OpenBook(RectTransform root, List<Entry> owned, TMP_FontAsset titleFont, TMP_FontAsset textFont, Image panelLook, int section = -1)
     {
         if (root == null || bookPanel != null) return;
+        lastRoot = root; lastOwned = owned; lastTitleFont = titleFont; lastTextFont = textFont; lastPanelLook = panelLook;
+        var bookLook = Resources.Load<Sprite>("Cookies/book_page");
+        var sm = SessionManager.Instance;
+        var tabs = bookLook != null && Resources.Load<Sprite>(TabArt[0]) != null;
+        // which part opens: the journal, unless only the cookies have something new
+        if (!tabs) section = Cookies; else if (section < 0) section = sm != null && sm.AnyNewInBook && !sm.AnyNewJournal ? Cookies : Journal;
+        var journalPages = sm != null ? sm.JournalPages() : new List<string>();
+        if (tabs)
+        {
+            var part = new List<Entry>(); foreach (var e in owned) if (e.staff == (section == Staff)) part.Add(e);
+            owned = section == Journal ? new List<Entry>() : part;
+        }
         var go = new GameObject("CookieBook", typeof(RectTransform), typeof(Image), typeof(Button));
         go.transform.SetParent(root, false); go.transform.SetAsLastSibling();
         var rt = (RectTransform)go.transform; rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.offsetMin = rt.offsetMax = Vector2.zero;
@@ -279,19 +303,33 @@ public static class ShopCookies
         dimButton.onClick.AddListener(CloseBook);   // a tap beside the book closes it
         bookPanel = go;
 
-        float W = Mathf.Min(960f, root.rect.width - 80f), H = Mathf.Min(1560f, root.rect.height - 240f);
-        var page = Child(rt, "Page", new Vector2(0.5f, 0.5f), new Vector2(W, H), Vector2.zero);
+        // the book keeps its picture's shape (960 x 1320 since the journal; it was 960 x 1560) and leaves room at the right for the tabs
+        float artW = bookLook != null ? bookLook.rect.width : 960f, artH = bookLook != null ? bookLook.rect.height : 1560f;
+        float W = Mathf.Min(artW, root.rect.width - (tabs ? 190f : 80f)), H = Mathf.Min(artH, root.rect.height - 240f);
+        if (bookLook != null) { var fit = Mathf.Min(W / artW, H / artH); W = artW * fit; H = artH * fit; }
+        var pageAt = new Vector2(tabs ? -45f : 0f, 0f);
+        if (tabs)
+        {
+            // the other parts' tabs peep out from behind the book; the open part's tab is laid over the book's edge, joined to its page
+            var k = W / artW;
+            for (var i = 0; i < TabArt.Length; i++)
+            {
+                if (i == section) continue;
+                MakeTab(rt, i, false, new Vector2(pageAt.x + W / 2f - 76f * k + 77f * k - 8f, H / 2f - (210f + i * 150f) * k), k);
+            }
+        }
+        var page = Child(rt, "Page", new Vector2(0.5f, 0.5f), new Vector2(W, H), pageAt);
+        if (tabs) { var k = W / artW; MakeTab(rt, section, true, new Vector2(pageAt.x + W / 2f - 76f * k + 77f * k, H / 2f - (210f + section * 150f) * k), k); }
         var pageImg = page.gameObject.AddComponent<Image>();
         // The open book (owner, 19 November 2026: "use 5 for cookies book": a red book bound on the left, a cream page,
         // the page block's edges at the right and bottom; Store/ui/paper_panels_2026-11-19/book_5_game.png, 960 x 1560).
         // Everything keeps clear of the spine and the page's edges ("the icons are too close to the left and right
         // edge. need more space. close icon need some space around it too"). Without the picture: the shop panel's cream.
-        var bookLook = Resources.Load<Sprite>("Cookies/book_page");
         float left, right, top, bottom;   // the room for cookies and words, in the page's own space
         if (bookLook != null)
         {
             pageImg.sprite = bookLook; pageImg.type = Image.Type.Simple; pageImg.color = Color.white;
-            float kx = W / 960f, ky = H / 1560f;
+            float kx = W / artW, ky = H / artH;
             left = -W / 2f + (104f + 64f) * kx; right = W / 2f - (56f + 64f) * kx; top = H / 2f - 48f * ky; bottom = -H / 2f + 66f * ky;
         }
         else
@@ -301,19 +339,30 @@ public static class ShopCookies
             left = -W / 2f + 40f; right = W / 2f - 40f; top = H / 2f; bottom = -H / 2f;
         }
         float wide = right - left, middle = (left + right) / 2f;
+        // the cream page from the spine to its right edge: what a turning page covers, and what a journal page fills
+        var sheetArea = bookLook != null
+            ? Rect.MinMaxRect(-W / 2f + 104f * W / artW, -H / 2f + 60f * H / artH, W / 2f - 56f * W / artW, H / 2f - 48f * H / artH)
+            : Rect.MinMaxRect(-W / 2f + 12f, -H / 2f + 12f, W / 2f - 12f, H / 2f - 12f);
+        var paper = bookLook != null ? new Color(1f, 0.976f, 0.925f, 1f) * SectionPaper[tabs ? section : 0] : pageImg.color;
+        if (tabs && section != Journal)
+        {
+            // the staff's and the cookies' pages have their own paper (pale blue, pale pink), as their tabs do
+            var tint = Child(page, "Paper", new Vector2(0.5f, 0.5f), sheetArea.size, sheetArea.center);
+            var ti = tint.gameObject.AddComponent<Image>(); ti.sprite = Resources.Load<Sprite>("Cookies/book_paper"); ti.color = SectionPaper[section]; ti.raycastTarget = false;
+        }
 
-        var title = Label(page, "Title", "MY COOKIES", titleFont, 78f, new Vector2(middle, top - 96f), new Vector2(wide, 110f));
+        var title = Label(page, "Title", section == Staff ? "MY STAFF" : "MY COOKIES", titleFont, 78f * Mathf.Min(1f, W / 900f), new Vector2(middle - 40f, top - 96f), new Vector2(wide, 110f));
         title.color = Ink;
 
         // four cookies in a row, and as many rows as fit above the description; a full page is followed by another, turned
         // like a book's with the arrows under the grid (owner, 19 November 2026: "put four cookies in a row, we will
         // have a page flip effect when a page is full, and a next arrow to click on to flip the page. So it's like a book")
-        const float infoH = 330f; const float arrowRow = 110f; const int columns = 4;
+        var infoH = artH < 1500f ? 260f : 330f; const float arrowRow = 110f; const int columns = 4;   // the shorter book: a lower description, closer rows
         var gridTop = top - 176f; var gridBottom = bottom + infoH + 60f + arrowRow;
-        var cell = wide / columns; var rowPitch = Mathf.Max(cell, 190f);
+        var cell = wide / columns; var rowPitch = Mathf.Max(cell, artH < 1500f ? 150f : 190f);
         var rowsPerPage = Mathf.Max(1, Mathf.FloorToInt((gridTop - gridBottom) / rowPitch)); var perPage = rowsPerPage * columns;
         rowPitch = Mathf.Min((gridTop - gridBottom) / rowsPerPage, cell * 1.3f);   // the rows share the height, not further apart than looks right
-        var pageCount = Mathf.Max(1, Mathf.CeilToInt(owned.Count / (float)perPage));
+        var pageCount = section == Journal && tabs ? Mathf.Max(1, journalPages.Count) : Mathf.Max(1, Mathf.CeilToInt(owned.Count / (float)perPage));
         var icon = Mathf.Min(cell, rowPitch) * 0.88f;
         // the chosen thing: its cookie, its name and what it does, on the lower part of the page
         var chosen = Child(page, "Chosen", new Vector2(0.5f, 0.5f), new Vector2(200f, 200f), new Vector2(left + 100f, bottom + infoH / 2f + 20f));
@@ -321,7 +370,7 @@ public static class ShopCookies
         float textLeft = left + 226f, textWide = right - textLeft;
         var name = Label(page, "Name", "", titleFont, 58f, new Vector2(textLeft + textWide / 2f, bottom + infoH - 30f), new Vector2(textWide, 90f));
         name.color = Ink; name.alignment = TextAlignmentOptions.Left;
-        var info = Label(page, "Info", "", textFont != null ? textFont : titleFont, bookLook != null ? 44f : 50f, new Vector2(textLeft + textWide / 2f, bottom + infoH / 2f - 20f - ShopManager.HandTopFix * (bookLook != null ? 44f : 50f)), new Vector2(textWide, 210f));   // three lines fit above the page's edge
+        var info = Label(page, "Info", "", textFont != null ? textFont : titleFont, bookLook != null ? (artH < 1500f ? 38f : 44f) : 50f, new Vector2(textLeft + textWide / 2f, bottom + infoH / 2f - 20f - ShopManager.HandTopFix * (bookLook != null ? 44f : 50f)), new Vector2(textWide, 210f));   // three lines fit above the page's edge
         info.color = Ink; info.alignment = TextAlignmentOptions.TopLeft; info.enableWordWrapping = true; info.lineSpacing = -14f + ShopManager.HandLineFix * 0.6f;   // the hand font (Delius): a little closer than the old font's lines
         var rule = Child(page, "Rule", new Vector2(0.5f, 0.5f), new Vector2(wide, 4f), new Vector2(middle, bottom + infoH + 40f));
         var ruleImg = rule.gameObject.AddComponent<Image>(); ruleImg.color = new Color(Ink.r, Ink.g, Ink.b, 0.25f); ruleImg.raycastTarget = false;
@@ -329,6 +378,34 @@ public static class ShopCookies
         var cells = new List<RectTransform>(); var newest = owned.Count - 1;
         var leaves = new List<RectTransform>();
         for (var k = 0; k < pageCount; k++) { var leaf = Child(page, "Leaf" + k, new Vector2(0.5f, 0.5f), new Vector2(W, H), Vector2.zero); leaf.gameObject.SetActive(false); leaves.Add(leaf); }
+        if (tabs && section == Journal)
+        {
+            // the journal: one whole page per event, a picture, with the day written on its blank tag
+            title.gameObject.SetActive(false); rule.gameObject.SetActive(false); chosen.gameObject.SetActive(false); name.gameObject.SetActive(false); info.gameObject.SetActive(false);
+            for (var k = 0; k < journalPages.Count; k++)
+            {
+                var bits = journalPages[k].Split('|'); var id = bits[0]; var day = 0; if (bits.Length > 1) int.TryParse(bits[1], out day);
+                var art = Resources.Load<Sprite>("Journal/page_" + id);
+                var sheet = Child(leaves[k], "JournalPage", new Vector2(0.5f, 0.5f), sheetArea.size, sheetArea.center);
+                var si = sheet.gameObject.AddComponent<Image>(); si.sprite = art; si.color = art != null ? Color.white : paper; si.raycastTarget = false;
+                if (day > 0 && DayTags.TryGetValue(id, out var tag))
+                {
+                    var at = new Vector2(sheetArea.xMin + tag.x / 800f * sheetArea.width, sheetArea.yMax - tag.y / 1212f * sheetArea.height);
+                    var dl = Label(leaves[k], "Day", "DAY " + day, titleFont, 40f * sheetArea.width / 800f, at, new Vector2(220f, 70f));
+                    dl.color = Ink; dl.rectTransform.localRotation = Quaternion.Euler(0f, 0f, tag.z);
+                }
+            }
+            if (journalPages.Count == 0)
+            {
+                var empty = Label(leaves[0], "Empty", "Finish your first day\nto start the journal.", textFont != null ? textFont : titleFont, 48f, sheetArea.center, new Vector2(sheetArea.width - 120f, 300f));
+                empty.color = Ink;
+            }
+        }
+        else if (owned.Count == 0 && section == Staff)
+        {
+            var none = Label(leaves[0], "Empty", "No staff yet.", textFont != null ? textFont : titleFont, 48f, new Vector2(middle, (gridTop + gridBottom) / 2f), new Vector2(wide, 120f));
+            none.color = Ink;
+        }
         for (var i = 0; i < owned.Count; i++)
         {
             var e = owned[i];
@@ -365,15 +442,11 @@ public static class ShopCookies
         var turner = go.AddComponent<BookTurner>();
         // the whole page turns (owner, 19 November 2026: "when flip the page, the entire page flips"): the cream page from
         // the spine to its right edge, carrying the title, the cookies, the arrows and the description
-        var sheetArea = bookLook != null
-            ? Rect.MinMaxRect(-W / 2f + 104f * W / 960f, -H / 2f + 60f * H / 1560f, W / 2f - 56f * W / 960f, H / 2f - 48f * H / 1560f)
-            : Rect.MinMaxRect(-W / 2f + 12f, -H / 2f + 12f, W / 2f - 12f, H / 2f - 12f);
-        turner.Set(page, leaves, owned.Count > 0 ? newest / perPage : 0, sheetArea,
-                   bookLook != null ? new Color(1f, 0.976f, 0.925f, 1f) : pageImg.color);   // the turning sheet in the page's own paper
-        var furniture = new List<RectTransform> { title.rectTransform, rule, chosen, name.rectTransform, info.rectTransform };
+        turner.Set(page, leaves, tabs && section == Journal ? pageCount - 1 : owned.Count > 0 ? newest / perPage : 0, sheetArea, paper);   // the turning sheet in the page's own paper; the journal opens on its newest page
+        var furniture = tabs && section == Journal ? new List<RectTransform>() : new List<RectTransform> { title.rectTransform, rule, chosen, name.rectTransform, info.rectTransform };
         if (pageCount > 1)
         {
-            var arrowY = gridBottom - arrowRow / 2f + 6f;
+            var arrowY = tabs && section == Journal ? sheetArea.yMin + 74f : gridBottom - arrowRow / 2f + 6f;
             const float ArrowW = 230f, ArrowH = 150f;   // the map arrow's picture has wide margins
             var count = Label(page, "PageCount", "", titleFont, 58f, new Vector2(middle, arrowY), new Vector2(240f, 70f)); count.color = new Color(Ink.r, Ink.g, Ink.b, 0.7f);
             var next = Child(page, "NextPage", new Vector2(0.5f, 0.5f), new Vector2(ArrowW, ArrowH), new Vector2(right - 80f, arrowY));
@@ -390,7 +463,7 @@ public static class ShopCookies
         var ribbonSprite = bookLook != null ? Resources.Load<Sprite>("Cookies/book_ribbon") : null;
         if (ribbonSprite != null)
         {
-            float kx = W / 960f, ky = H / 1560f;
+            float kx = W / artW, ky = H / artH;
             var ribbon = Child(page, "Ribbon", new Vector2(0.5f, 0.5f), new Vector2(ribbonSprite.rect.width * kx, ribbonSprite.rect.height * ky),
                                new Vector2(-W / 2f + (156f + ribbonSprite.rect.width / 2f) * kx, H / 2f - (40f + ribbonSprite.rect.height / 2f) * ky));
             var ri = ribbon.gameObject.AddComponent<Image>(); ri.sprite = ribbonSprite; ri.raycastTarget = false;
@@ -400,8 +473,25 @@ public static class ShopCookies
         turner.Furniture(furniture, keep);
         if (owned.Count > 0) cells[newest].GetComponent<Button>().onClick.Invoke();   // a new one is shown first
         // looked at: the labels stay on this open page, the book's own label goes
-        if (SessionManager.Instance != null) SessionManager.Instance.ClearNewInBook();
+        if (SessionManager.Instance != null) { if (section == Cookies || !tabs) SessionManager.Instance.ClearNewInBook(); if (section == Journal && tabs) SessionManager.Instance.ClearNewJournal(); }
         RefreshBookTag();
+    }
+
+    /// One index tab: a square of its part's paper with its picture. The open part's is in front and full bright; the
+    /// others are a shade darker and open their part on a tap, with the page's sound.
+    private static void MakeTab(RectTransform parent, int index, bool open, Vector2 at, float k)
+    {
+        var sprite = Resources.Load<Sprite>(TabArt[index]); if (sprite == null) return;
+        var t = Child(parent, "Tab" + index, new Vector2(0.5f, 0.5f), new Vector2(sprite.rect.width, sprite.rect.height) * 0.5f * k, at);
+        var ti = t.gameObject.AddComponent<Image>(); ti.sprite = sprite; ti.color = open ? Color.white : new Color(0.93f, 0.93f, 0.93f, 1f);
+        var b = t.gameObject.AddComponent<Button>(); b.transition = Selectable.Transition.None;
+        if (open) return;
+        b.onClick.AddListener(() =>
+        {
+            var flip = Resources.Load<AudioClip>("UI/page_flip");
+            if (AudioManager.Instance != null) { if (flip != null) AudioManager.Instance.PlaySFX(flip); else AudioManager.Instance.PlayButtonClick(); }
+            CloseBook(); OpenBook(lastRoot, lastOwned, lastTitleFont, lastTextFont, lastPanelLook, index);
+        });
     }
 
     public static void CloseBook()

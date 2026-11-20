@@ -436,6 +436,7 @@ public class IceCreamStation : MonoBehaviour
         if (orderSystem == null) { Reject(); return; }
         if (orderSystem.TryServeItem("IceCream", Variant(d)))
         {
+            if (SessionManager.Instance != null) SessionManager.Instance.EarnJournal(SessionManager.JournalIceCream);   // the journal: the first ice cream served
             var clip = serveSound != null ? serveSound : Resources.Load<AudioClip>("IceCream/serve_clink");   // the glass clink until the owner picks one (26 October 2026)
             if (clip != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(clip);
             EmptyDish(d); Deselect();

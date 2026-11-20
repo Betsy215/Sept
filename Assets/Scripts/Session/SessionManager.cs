@@ -29,6 +29,9 @@ public class SessionData
     // "NEW" labels (owner, 18 November 2026). Keys are "Food:Juice", "Decor:PotFlowers", "Upgrade:Oven" ... (ShopManager.KeyOf).
     public List<string> newThings;             // bought since the last day started: labelled in the arrangement, table and kitchen
     public List<string> newInBook;             // bought since the cookie book was last opened: labelled on the book and inside it
+    public List<string> journal;               // the journal's pages in the order they were earned: "id|day" (day 0 = not known)
+    public List<string> journalNew;            // pages earned since the journal was last opened
+    public bool journalFilled;                 // a save from before the journal has been given the pages it had already earned
     // JsonUtility cannot serialize a Dictionary, so upgrade levels are mirrored
     // into two parallel lists around every save and load (see Sync methods).
     [NonSerialized] public Dictionary<string, int> foodUpgradeLevels;
@@ -659,6 +662,8 @@ public class SessionManager : MonoBehaviour
         if (currentSession.starBonusPaidDays == null) currentSession.starBonusPaidDays = new List<int>();
         while (currentSession.levelStars.Count <= levelIndex) currentSession.levelStars.Add(0);
         currentSession.levelStars[levelIndex] = Mathf.Max(currentSession.levelStars[levelIndex], stars);
+        EarnJournal(JournalOpen, levelIndex + 1);                      // the journal: the first finished day, the first three stars
+        if (stars >= 3) EarnJournal(JournalStar3, levelIndex + 1);
         var bonus = 0;
         if (stars >= 3 && !currentSession.starBonusPaidDays.Contains(levelIndex))
         {
@@ -838,7 +843,50 @@ public class SessionManager : MonoBehaviour
         if (!currentSession.newThings.Contains(key)) currentSession.newThings.Add(key);
         if (!currentSession.newInBook.Contains(key)) currentSession.newInBook.Add(key);
         SaveSession();
+        if (key == "Upgrade:CoffeeMachine") EarnJournal(JournalMachine);   // a journal page for the bigger machine
     }
+    // --- The journal (owner, 19 November 2026: a milestone journal in the book; "for journal events, let's do opening
+    // day, three stars, first ice cream, baking strawberry cake, decorating choux", then "add a journal event for upgrade
+    // coffee machine"; "we will add more later"). A page is earned once and stays, in the order earned. The pictures
+    // are Resources/Journal/page_<id> (Store/ui/journal_2026-11-19/build_game.py). ------------------------------------
+    public const string JournalOpen = "open", JournalStar3 = "star3", JournalIceCream = "icecream", JournalCake = "cake", JournalChoux = "choux", JournalMachine = "machine";
+
+    /// Earns a journal page (once). day: the day it happened, 1-based; below 0 = the day being played.
+    public bool EarnJournal(string id, int day = -1)
+    {
+        if (currentSession == null || !currentSession.isActive || string.IsNullOrEmpty(id)) return false;
+        FillJournal();
+        foreach (var e in currentSession.journal) if (e.StartsWith(id + "|")) return false;
+        if (day < 0) day = currentSession.levelsCompleted + 1;
+        currentSession.journal.Add(id + "|" + day);
+        if (currentSession.journalNew == null) currentSession.journalNew = new List<string>();
+        currentSession.journalNew.Add(id);
+        SaveSession();
+        return true;
+    }
+
+    /// The journal's pages, oldest first, each "id|day".
+    public List<string> JournalPages() { if (currentSession == null) return new List<string>(); FillJournal(); return currentSession.journal; }
+    public bool AnyNewJournal => currentSession != null && currentSession.journalNew != null && currentSession.journalNew.Count > 0;
+    public void ClearNewJournal() { if (currentSession == null || currentSession.journalNew == null || currentSession.journalNew.Count == 0) return; currentSession.journalNew.Clear(); SaveSession(); }
+
+    /// A save from before the journal gets, once, the pages it has plainly earned already: opening day when a day is
+    /// finished, three stars when a day has them, and the foods and the machine it owns (day unknown for those).
+    private void FillJournal()
+    {
+        if (currentSession.journal == null) currentSession.journal = new List<string>();
+        if (currentSession.journalFilled) return;
+        currentSession.journalFilled = true;
+        if (currentSession.levelsCompleted < 1) return;
+        var j = currentSession.journal;
+        j.Add(JournalOpen + "|1");
+        if (currentSession.levelStars != null) { var d = currentSession.levelStars.IndexOf(3); if (d >= 0) j.Add(JournalStar3 + "|" + (d + 1)); }
+        if (IsFoodItemPurchased("Cake")) j.Add(JournalCake + "|0");
+        if (IsFoodItemPurchased("Choux")) j.Add(JournalChoux + "|0");
+        if (GetFoodUpgradeLevel("CoffeeMachine") >= 2) j.Add(JournalMachine + "|0");
+        if (IsFoodItemPurchased("IceCream")) j.Add(JournalIceCream + "|0");
+    }
+
     public bool IsNewToArrange(string key) => currentSession != null && currentSession.newThings != null && currentSession.newThings.Contains(key);
     public void ClearNewToArrange() { if (currentSession == null || currentSession.newThings == null || currentSession.newThings.Count == 0) return; currentSession.newThings.Clear(); SaveSession(); }
     public bool IsNewInBook(string key) => currentSession != null && currentSession.newInBook != null && currentSession.newInBook.Contains(key);

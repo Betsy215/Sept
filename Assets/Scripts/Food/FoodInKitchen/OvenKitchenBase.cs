@@ -166,6 +166,8 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         CooldownRegistry.ClearPickTime(key);
         if (string.IsNullOrEmpty(food) && Recipes.TryGetValue(key, out var r)) food = r;   // a destroyed instance keeps its field; a fresh one reads the registry
         OnRefill();
+        // the journal: the first strawberry cake out of the oven, the first choux (owner, 19 November 2026)
+        if (SessionManager.Instance != null && (food == "Cake" || food == "Choux")) SessionManager.Instance.EarnJournal(food == "Cake" ? SessionManager.JournalCake : SessionManager.JournalChoux);
         Recipes.Remove(key); food = "";
         SetSprite(defaultSprite); ShowNote(false);
         if (bakeCompleteSound != null && AudioManager.Instance != null)
