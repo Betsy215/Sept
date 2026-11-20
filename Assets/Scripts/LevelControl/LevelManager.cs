@@ -690,6 +690,7 @@ public class LevelManager : MonoBehaviour
 
         if (levelCompletePanel != null)
             levelCompletePanel.SetActive(true);
+        StyleDayEnd();
 
         // GetCurrentScore() already includes tips, so split it: order sale + tips = level score.
         // Each amount is transferred into "Earned" exactly once.
@@ -738,6 +739,9 @@ public class LevelManager : MonoBehaviour
             totalEarned.text = $"New Record! ${totalScore:F2}";
         else
             totalEarned.text = $"Final Score: ${totalScore:F2}";
+        // on the journal page the total is written on the pink ribbon: cream, and small enough to stay on it
+        totalEarned.text = "<color=#FFF8EC>" + totalEarned.text + "</color>";
+        totalEarned.enableAutoSizing = true; totalEarned.fontSizeMax = 60f; totalEarned.fontSizeMin = 30f;
 
         Debug.Log($"🎉 All levels completed! Total score: {totalScore}");
         // The session was already completed in OnLevelComplete.
@@ -809,7 +813,7 @@ public class LevelManager : MonoBehaviour
             go.transform.SetParent(host, false);
             var rt = (RectTransform)go.transform;
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 1f);
-            rt.anchoredPosition = new Vector2(0f, -88f); rt.sizeDelta = new Vector2(820f, 110f);
+            rt.anchoredPosition = new Vector2(0f, -565f); rt.sizeDelta = new Vector2(820f, 110f);   // on the journal page: between the ribbon and the stickers
             label = go.GetComponent<TMPro.TextMeshProUGUI>();
             label.font = unlockedItemsText.font; label.fontSize = 30f; label.alignment = TMPro.TextAlignmentOptions.Top;
             label.color = new Color(0.36f, 0.3f, 0.26f); label.raycastTarget = false; label.enableWordWrapping = true;
@@ -944,19 +948,51 @@ public class LevelManager : MonoBehaviour
 
     /// A money line of the day-end note, centred: "Order Sale: $ 85" on one line while it fits the label, else the
     /// money on its own line under the words, so a long number never runs off the note (owner, 16 October).
-    private const float MoneyLineMaxWidth = 720f;   // inside the day-end note's ruled lines
 
     public static void SetMoneyLine(TextMeshProUGUI label, string words, string money)
     {
         if (label == null) return;
-        label.alignment = TextAlignmentOptions.Center;
-        label.enableWordWrapping = true;
-        label.overflowMode = TextOverflowModes.Overflow;
-        var one = words + " " + money;
-        // the labels are 1,000 wide but the note under them is 860 with ruled margins, so the note's width decides
-        var width = Mathf.Min(label.rectTransform.rect.width - label.margin.x - label.margin.z, MoneyLineMaxWidth);
-        var fits = width <= 0f || label.GetPreferredValues(one, Mathf.Infinity, Mathf.Infinity).x <= width;
-        label.text = fits ? one : words + "\n" + money;
+        // The day-end panel is a journal page since 19 November 2026 (owner's pick 5): a row has its words on the left
+        // in the hand font and its money on the right; the total is written in cream on the pink ribbon. (Both on one
+        // line: the first part's line gets no height, the second is set to the right over it.)
+        label.alignment = TextAlignmentOptions.Center; label.enableWordWrapping = false; label.overflowMode = TextOverflowModes.Overflow; label.richText = true;
+        var w = (words ?? "").Trim().TrimEnd(':');
+        if (label.name == "TotalEarned")
+            label.text = "<color=#FFF8EC><align=left>" + w.ToUpperInvariant() + "<line-height=0>\n<align=right>" + money + "<line-height=1em></color>";
+        else
+        {
+            var shown = w.StartsWith("Tips") ? "Tips" : w.EndsWith("Sale") ? "Order sale" : w;
+            label.text = "<align=left><font=\"Delius SDF\">" + shown + "</font><line-height=0>\n<align=right>" + money + "<line-height=1em>";
+        }
+    }
+
+    private static readonly Color DayEndInk = new Color(0.36f, 0.20f, 0.09f);
+    private bool dayEndStyled;
+
+    /// The day-end panel laid out as the journal page of Assets/Images/paper.png (Store/ui/dayend_2026-11-19/build5.py):
+    /// a title, the stars under it, the two rows, the total on the ribbon painted in the paper. Once per day.
+    private void StyleDayEnd()
+    {
+        if (dayEndStyled || levelCompletePanel == null) return;
+        dayEndStyled = true;
+        var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain");
+        System.Action<TextMeshProUGUI, float, float, float> row = (l, y, size, width) =>
+        {
+            if (l == null) return;
+            var rt = l.rectTransform; rt.anchoredPosition = new Vector2(-14f, y); rt.sizeDelta = new Vector2(width, 120f);
+            l.fontSize = size; l.enableAutoSizing = false; l.color = DayEndInk; l.margin = Vector4.zero;
+            if (plain != null) l.fontSharedMaterial = plain;   // brown ink, no rim
+        };
+        row(todaySale, 352f, 58f, 640f); row(todayTip, 242f, 58f, 640f); row(totalEarned, 60f, 60f, 540f);
+        if (totalEarned != null) totalEarned.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -2f);   // the ribbon's tilt
+        if (unlockedItemsText != null) unlockedItemsText.rectTransform.anchoredPosition = new Vector2(-14f, 540f);   // the stars, under the title
+        var go = new GameObject("DayTitle", typeof(RectTransform), typeof(TextMeshProUGUI));
+        go.transform.SetParent(levelCompletePanel.transform, false);
+        var trt = (RectTransform)go.transform; trt.anchorMin = trt.anchorMax = new Vector2(0.5f, 0.5f); trt.anchoredPosition = new Vector2(-14f, 706f); trt.sizeDelta = new Vector2(780f, 110f);
+        var title = go.GetComponent<TextMeshProUGUI>();
+        if (totalEarned != null) title.font = totalEarned.font; if (plain != null) title.fontSharedMaterial = plain;
+        title.fontSize = 80f; title.color = DayEndInk; title.alignment = TextAlignmentOptions.Center; title.enableWordWrapping = false; title.raycastTarget = false;
+        title.text = "DAY " + (currentLevelIndex + 1) + " DONE!";
     }
 
     public IEnumerator AnimateFullTransfer(

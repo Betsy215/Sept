@@ -44,7 +44,7 @@ public static class ShopCookies
     public static bool Eating { get; private set; }
 
     /// Called when the shop opens: an eating cut short by leaving the shop must not leave its flag behind.
-    public static void Reset() { Eating = false; bookPanel = null; bookButton = null; bookGlowing = false; }
+    public static void Reset() { Eating = false; bookPanel = null; bookButton = null; bookGlowing = false; HoldBookTag = false; ShowingJournal = false; }
 
     /// The bought cookie, big in the middle of the screen, eaten in five bites: each bite takes a scalloped piece out
     /// of the picture itself, with a crunch, a little shake and crumbs. Taps are held off while it runs (about two seconds).
@@ -253,6 +253,60 @@ public static class ShopCookies
     }
 
     private static bool bookGlowing;
+    public static bool HoldBookTag;      // while a new journal page is showing itself: the book's NEW comes when the page has flown in
+    public static bool ShowingJournal;
+
+    /// A new journal page shows itself (owner, 19 November 2026: "show the journal page when shop opens ... show the
+    /// individual page for 3 seconds and then the page has a animation of flying into the book. then book show new
+    /// label"): each page not shown yet, one after the other: it pops up alone over the dimmed shop, stays three
+    /// seconds (a tap moves on sooner), flies small into the book's button, the book hops; after the last the book wears
+    /// NEW. Run by the shop when it opens and after a purchase that earned a page. Unscaled time.
+    public static IEnumerator ShowNewJournalPages(RectTransform root)
+    {
+        var sm = SessionManager.Instance;
+        if (sm == null || root == null || bookButton == null || ShowingJournal) yield break;
+        var due = sm.JournalPagesToShow(); if (due.Count == 0) yield break;
+        ShowingJournal = true; HoldBookTag = true; RefreshBookTag();
+        yield return new WaitForSecondsRealtime(0.8f);                        // the shop has slid in
+        foreach (var id in due)
+        {
+            var art = Resources.Load<Sprite>("Journal/page_" + id);
+            sm.MarkJournalShown(id);
+            if (art == null || root == null || bookButton == null) continue;
+            var dimGo = new GameObject("JournalShow", typeof(RectTransform), typeof(Image), typeof(Button));
+            dimGo.transform.SetParent(root, false); dimGo.transform.SetAsLastSibling();
+            var drt = (RectTransform)dimGo.transform; drt.anchorMin = Vector2.zero; drt.anchorMax = Vector2.one; drt.offsetMin = drt.offsetMax = Vector2.zero;
+            var dim = dimGo.GetComponent<Image>(); dim.color = new Color(0f, 0f, 0f, 0f);
+            var tapped = false; var skip = dimGo.GetComponent<Button>(); skip.transition = Selectable.Transition.None; skip.onClick.AddListener(() => tapped = true);
+            var h = Mathf.Min(root.rect.height * 0.62f, 1212f); var w = h * 800f / 1212f; if (w > root.rect.width - 120f) { w = root.rect.width - 120f; h = w * 1212f / 800f; }
+            var page = Child(drt, "Page", new Vector2(0.5f, 0.5f), new Vector2(w, h), new Vector2(0f, 40f));
+            var pi = page.gameObject.AddComponent<Image>(); pi.sprite = art; pi.raycastTarget = false;
+            var flip = Resources.Load<AudioClip>("UI/page_flip"); if (flip != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(flip);
+            for (var t = 0f; t < 0.3f; t += Time.unscaledDeltaTime)       // it pops up
+            {
+                var k = t / 0.3f; var e = 1f - (1f - k) * (1f - k);
+                page.localScale = Vector3.one * Mathf.LerpUnclamped(0.7f, 1f, e * (1f + 0.25f * (1f - k))); page.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(-6f, -2f, e));
+                dim.color = new Color(0f, 0f, 0f, 0.5f * e); yield return null;
+            }
+            page.localScale = Vector3.one; page.localRotation = Quaternion.Euler(0f, 0f, -2f); dim.color = new Color(0f, 0f, 0f, 0.5f);
+            for (var t = 0f; t < 3f && !tapped; t += Time.unscaledDeltaTime) yield return null;   // three seconds to read it
+            if (bookButton != null)
+            {
+                var from = page.anchoredPosition; var to = (Vector2)drt.InverseTransformPoint(bookButton.position);
+                for (var t = 0f; t < 0.55f; t += Time.unscaledDeltaTime)   // into the book
+                {
+                    var k = t / 0.55f; var e = k * k;
+                    page.anchoredPosition = Vector2.Lerp(from, to, e) + new Vector2(0f, Mathf.Sin(k * Mathf.PI) * 120f);
+                    page.localScale = Vector3.one * Mathf.Lerp(1f, 0.08f, e); page.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(-2f, -40f, e));
+                    dim.color = new Color(0f, 0f, 0f, 0.5f * (1f - k)); yield return null;
+                }
+            }
+            Object.Destroy(dimGo);
+            if (bookButton != null) { var host = bookButton.GetComponentInParent<ShopManager>(); if (host == null) host = Object.FindObjectOfType<ShopManager>(); BumpBook(host); }
+            yield return new WaitForSecondsRealtime(0.35f);
+        }
+        ShowingJournal = false; HoldBookTag = false; RefreshBookTag();
+    }
 
     /// "NEW" on the book, and the new things' white glow with its little stars round it, while a journal page, a cookie
     /// or a staff member in it has not been looked at (owner, 18 November 2026; 19 November: "show a new label on the
@@ -260,7 +314,7 @@ public static class ShopCookies
     public static void RefreshBookTag()
     {
         if (bookButton == null) return;
-        var any = SessionManager.Instance != null && (SessionManager.Instance.AnyNewInBook || SessionManager.Instance.AnyNewJournal);
+        var any = !HoldBookTag && SessionManager.Instance != null && (SessionManager.Instance.AnyNewInBook || SessionManager.Instance.AnyNewJournal);
         if (any) NewTag.OnUI(bookButton); else NewTag.Remove(bookButton);
         var img = bookButton.GetComponent<Image>();
         if (any && !bookGlowing) { GlowFx.New(img); bookGlowing = true; }

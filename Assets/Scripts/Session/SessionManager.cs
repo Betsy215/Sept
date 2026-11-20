@@ -32,6 +32,7 @@ public class SessionData
     public List<string> journal;               // the journal's pages in the order they were earned: "id|day" (day 0 = not known)
     public List<string> journalNew;            // pages earned since the journal was last opened
     public bool journalFilled;                 // a save from before the journal has been given the pages it had already earned
+    public List<string> journalShown;          // new pages that have already shown themselves in the shop (once each)
     // JsonUtility cannot serialize a Dictionary, so upgrade levels are mirrored
     // into two parallel lists around every save and load (see Sync methods).
     [NonSerialized] public Dictionary<string, int> foodUpgradeLevels;
@@ -872,6 +873,19 @@ public class SessionManager : MonoBehaviour
 
     /// The journal's pages, oldest first, each "id|day".
     public List<string> JournalPages() { if (currentSession == null) return new List<string>(); FillJournal(); return currentSession.journal; }
+    /// The new pages that have not shown themselves yet (they do so in the shop, once each), oldest first.
+    public List<string> JournalPagesToShow()
+    {
+        var due = new List<string>(); if (currentSession == null || currentSession.journalNew == null) return due;
+        foreach (var id in currentSession.journalNew) if (currentSession.journalShown == null || !currentSession.journalShown.Contains(id)) due.Add(id);
+        return due;
+    }
+    public void MarkJournalShown(string id)
+    {
+        if (currentSession == null || string.IsNullOrEmpty(id)) return;
+        if (currentSession.journalShown == null) currentSession.journalShown = new List<string>();
+        if (!currentSession.journalShown.Contains(id)) { currentSession.journalShown.Add(id); SaveSession(); }
+    }
     public bool AnyNewJournal => currentSession != null && currentSession.journalNew != null && currentSession.journalNew.Count > 0;
     public void ClearNewJournal() { if (currentSession == null || currentSession.journalNew == null || currentSession.journalNew.Count == 0) return; currentSession.journalNew.Clear(); SaveSession(); }
 

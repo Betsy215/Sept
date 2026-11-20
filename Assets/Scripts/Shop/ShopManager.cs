@@ -61,6 +61,8 @@ public class ShopManager : MonoBehaviour
         EnsureTabs();            // Stars | Coins | $ (owner, 10 November 2026); Coins is the default
         LayoutCards();
         EnsureCookieBook();      // owned things live in a book that is always in the shop (owner, 17 November 2026)
+        // a journal page earned since the last visit shows itself, then flies into the book (owner, 19 November 2026)
+        if (shopPanel != null) { var showRoot = shopPanel.GetComponentInParent<Canvas>(); if (showRoot != null) StartCoroutine(ShopCookies.ShowNewJournalPages(showRoot.rootCanvas.transform as RectTransform)); }
         ShopFlourish.BeginVisit(); ShopFlourish.ApplyTags(GetAllShopItems());   // NEW tags on cards first open this visit (owner, 9 November 2026)
         EnsureRestoreButton();
         if (itemScrollRect != null) itemScrollRect.onValueChanged.AddListener(_ => UpdateScrollButtons());   // a finger drag updates the lock too
@@ -780,7 +782,7 @@ public class ShopManager : MonoBehaviour
             return;
         }
         LayoutCards(true); RefreshShopDisplay(); UpdateScrollButtons(); RefreshTabNote();
-        ShopCookies.Eat(this, root, cookie, () => { ShopCookies.BumpBook(this); ShopCookies.RefreshBookTag(); });
+        ShopCookies.Eat(this, root, cookie, () => { ShopCookies.BumpBook(this); ShopCookies.RefreshBookTag(); StartCoroutine(ShopCookies.ShowNewJournalPages(root)); });   // a page earned by this purchase shows itself too
     }
 
     /// The box around everything a card draws (icon, price, name), in the container's space

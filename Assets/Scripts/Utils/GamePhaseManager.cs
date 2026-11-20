@@ -47,7 +47,7 @@ public class GamePhaseManager : MonoBehaviour
     private bool tableReady, kitchenReady, inKitchen;
     private Vector2 doneButtonHome; private bool doneButtonHomeKept;
     private ArrangeHintAnim kitchenHint;
-    private const string TableHint = "Drag things where you like\nbefore you tap READY", KitchenHint = "The kitchen too: drag things\nwhere you like";
+    private const string TableHint = "Drag to arrange your table", KitchenHint = "Drag to arrange your kitchen";   // the short, one-line words (owner, 19 November late: the two-line banner was too much)
     private bool tableDemoPlayed, kitchenDemoPlayed, lessonInKitchen;   // the lesson's moving hand plays once in each place
 
     /// The arrangement's hint (the card and the hand moving an item): on the first arrangement a player meets, which is
