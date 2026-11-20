@@ -220,7 +220,7 @@ public static class ShopCookies
     // hired staff"): square index tabs on the book's right edge, cut from their own paper (Resources/Journal/tab_*).
     private const int Journal = 0, Staff = 1, Cookies = 2;
     private static readonly string[] TabArt = { "Journal/tab_journal", "Journal/tab_staff", "Journal/tab_cookies" };
-    private static readonly Color[] SectionPaper = { Color.white, new Color(0.886f, 0.933f, 0.965f), new Color(0.988f, 0.902f, 0.886f) };
+    private static readonly Color[] SectionPaper = { new Color(1f, 0.976f, 0.925f), new Color(0.886f, 0.933f, 0.965f), new Color(0.988f, 0.902f, 0.886f) };   // cream, pale blue, pale pink: the tabs' own papers
     // where a journal page's blank tag is, for "DAY n": x and y from the sheet's top left on a sheet of 800 x 1212, the turn in degrees
     private static readonly Dictionary<string, Vector3> DayTags = new Dictionary<string, Vector3> {
         { "open", new Vector3(630f, 290f, 8f) }, { "star3", new Vector3(600f, 900f, -6f) }, { "icecream", new Vector3(206f, 1030f, 4f) },
@@ -290,6 +290,9 @@ public static class ShopCookies
         // which part opens: the journal, unless only the cookies have something new
         if (!tabs) section = Cookies; else if (section < 0) section = sm != null && sm.AnyNewInBook && !sm.AnyNewJournal ? Cookies : Journal;
         var journalPages = sm != null ? sm.JournalPages() : new List<string>();
+        // the staff part exists once somebody is hired (owner, 19 November: "if not hired, don't show staff in the book")
+        var anyStaff = false; foreach (var e in owned) if (e.staff) anyStaff = true;
+        if (section == Staff && !anyStaff) section = Journal;
         if (tabs)
         {
             var part = new List<Entry>(); foreach (var e in owned) if (e.staff == (section == Staff)) part.Add(e);
@@ -308,18 +311,7 @@ public static class ShopCookies
         float W = Mathf.Min(artW, root.rect.width - (tabs ? 190f : 80f)), H = Mathf.Min(artH, root.rect.height - 240f);
         if (bookLook != null) { var fit = Mathf.Min(W / artW, H / artH); W = artW * fit; H = artH * fit; }
         var pageAt = new Vector2(tabs ? -45f : 0f, 0f);
-        if (tabs)
-        {
-            // the other parts' tabs peep out from behind the book; the open part's tab is laid over the book's edge, joined to its page
-            var k = W / artW;
-            for (var i = 0; i < TabArt.Length; i++)
-            {
-                if (i == section) continue;
-                MakeTab(rt, i, false, new Vector2(pageAt.x + W / 2f - 76f * k + 77f * k - 8f, H / 2f - (210f + i * 150f) * k), k);
-            }
-        }
         var page = Child(rt, "Page", new Vector2(0.5f, 0.5f), new Vector2(W, H), pageAt);
-        if (tabs) { var k = W / artW; MakeTab(rt, section, true, new Vector2(pageAt.x + W / 2f - 76f * k + 77f * k, H / 2f - (210f + section * 150f) * k), k); }
         var pageImg = page.gameObject.AddComponent<Image>();
         // The open book (owner, 19 November 2026: "use 5 for cookies book": a red book bound on the left, a cream page,
         // the page block's edges at the right and bottom; Store/ui/paper_panels_2026-11-19/book_5_game.png, 960 x 1560).
@@ -343,12 +335,28 @@ public static class ShopCookies
         var sheetArea = bookLook != null
             ? Rect.MinMaxRect(-W / 2f + 104f * W / artW, -H / 2f + 60f * H / artH, W / 2f - 56f * W / artW, H / 2f - 48f * H / artH)
             : Rect.MinMaxRect(-W / 2f + 12f, -H / 2f + 12f, W / 2f - 12f, H / 2f - 12f);
-        var paper = bookLook != null ? new Color(1f, 0.976f, 0.925f, 1f) * SectionPaper[tabs ? section : 0] : pageImg.color;
+        var paper = bookLook != null ? SectionPaper[tabs ? section : 0] : pageImg.color;
         if (tabs && section != Journal)
         {
             // the staff's and the cookies' pages have their own paper (pale blue, pale pink), as their tabs do
             var tint = Child(page, "Paper", new Vector2(0.5f, 0.5f), sheetArea.size, sheetArea.center);
-            var ti = tint.gameObject.AddComponent<Image>(); ti.sprite = Resources.Load<Sprite>("Cookies/book_paper"); ti.color = SectionPaper[section]; ti.raycastTarget = false;
+            var ti = tint.gameObject.AddComponent<Image>(); ti.color = SectionPaper[section]; ti.raycastTarget = false;   // the very colour of the part's tab, so the two are one piece
+        }
+
+        if (tabs)
+        {
+            // The index tabs: every one lies over the red cover, because it is cut from a page's paper (owner, 19 November:
+            // "show the other two book mark above the red cover since book marks is on paper"), its straight end exactly
+            // on the paper's right edge so tab and page are one piece with no line between them. The open part's is in
+            // front and as bright as its page; the others a shade darker.
+            var k = W / artW; var slot = 0;
+            for (var i = 0; i < TabArt.Length; i++)
+            {
+                if (i == Staff && !anyStaff) continue;
+                var at = new Vector2(pageAt.x + sheetArea.xMax - 1f, H / 2f - (150f + slot * 138f) * k); slot++;
+                var tab = MakeTab(rt, i, i == section, at, k);
+                if (tab != null && i != section) tab.SetSiblingIndex(page.GetSiblingIndex() + 1);   // behind the open part's tab, in front of the book
+            }
         }
 
         var title = Label(page, "Title", section == Staff ? "MY STAFF" : "MY COOKIES", titleFont, 78f * Mathf.Min(1f, W / 900f), new Vector2(middle - 40f, top - 96f), new Vector2(wide, 110f));
@@ -477,21 +485,23 @@ public static class ShopCookies
         RefreshBookTag();
     }
 
-    /// One index tab: a square of its part's paper with its picture. The open part's is in front and full bright; the
-    /// others are a shade darker and open their part on a tap, with the page's sound.
-    private static void MakeTab(RectTransform parent, int index, bool open, Vector2 at, float k)
+    /// One index tab: a square of its part's paper with its picture, its left end at `at` (the page's right edge). The
+    /// open part's is full bright; the others are a shade darker and open their part on a tap, with the page's sound.
+    private static RectTransform MakeTab(RectTransform parent, int index, bool open, Vector2 at, float k)
     {
-        var sprite = Resources.Load<Sprite>(TabArt[index]); if (sprite == null) return;
-        var t = Child(parent, "Tab" + index, new Vector2(0.5f, 0.5f), new Vector2(sprite.rect.width, sprite.rect.height) * 0.5f * k, at);
-        var ti = t.gameObject.AddComponent<Image>(); ti.sprite = sprite; ti.color = open ? Color.white : new Color(0.93f, 0.93f, 0.93f, 1f);
+        var sprite = Resources.Load<Sprite>(TabArt[index]); if (sprite == null) return null;
+        var size = new Vector2(sprite.rect.width, sprite.rect.height) * 0.5f * k;
+        var t = Child(parent, "Tab" + index, new Vector2(0.5f, 0.5f), size, at + new Vector2(size.x / 2f, 0f));
+        var ti = t.gameObject.AddComponent<Image>(); ti.sprite = sprite; ti.color = open ? Color.white : new Color(0.94f, 0.94f, 0.94f, 1f);
         var b = t.gameObject.AddComponent<Button>(); b.transition = Selectable.Transition.None;
-        if (open) return;
+        if (open) return t;
         b.onClick.AddListener(() =>
         {
             var flip = Resources.Load<AudioClip>("UI/page_flip");
             if (AudioManager.Instance != null) { if (flip != null) AudioManager.Instance.PlaySFX(flip); else AudioManager.Instance.PlayButtonClick(); }
             CloseBook(); OpenBook(lastRoot, lastOwned, lastTitleFont, lastTextFont, lastPanelLook, index);
         });
+        return t;
     }
 
     public static void CloseBook()
