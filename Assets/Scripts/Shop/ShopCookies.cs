@@ -44,7 +44,7 @@ public static class ShopCookies
     public static bool Eating { get; private set; }
 
     /// Called when the shop opens: an eating cut short by leaving the shop must not leave its flag behind.
-    public static void Reset() { Eating = false; bookPanel = null; bookButton = null; }
+    public static void Reset() { Eating = false; bookPanel = null; bookButton = null; bookGlowing = false; }
 
     /// The bought cookie, big in the middle of the screen, eaten in five bites: each bite takes a scalloped piece out
     /// of the picture itself, with a crunch, a little shake and crumbs. Taps are held off while it runs (about two seconds).
@@ -252,11 +252,19 @@ public static class ShopCookies
         RefreshBookTag();
     }
 
-    /// "NEW" on the book while something bought has not been looked at in it (owner, 18 November 2026).
+    private static bool bookGlowing;
+
+    /// "NEW" on the book, and the new things' white glow with its little stars round it, while a journal page, a cookie
+    /// or a staff member in it has not been looked at (owner, 18 November 2026; 19 November: "show a new label on the
+    /// book when a journal event or new cookie or new staff is added. also show the new glow on it").
     public static void RefreshBookTag()
     {
         if (bookButton == null) return;
-        if (SessionManager.Instance != null && (SessionManager.Instance.AnyNewInBook || SessionManager.Instance.AnyNewJournal)) NewTag.OnUI(bookButton); else NewTag.Remove(bookButton);
+        var any = SessionManager.Instance != null && (SessionManager.Instance.AnyNewInBook || SessionManager.Instance.AnyNewJournal);
+        if (any) NewTag.OnUI(bookButton); else NewTag.Remove(bookButton);
+        var img = bookButton.GetComponent<Image>();
+        if (any && !bookGlowing) { GlowFx.New(img); bookGlowing = true; }
+        else if (!any && bookGlowing) { GlowFx.Remove(img); bookGlowing = false; }
     }
 
     /// A small hop of the book's button: the thing just eaten went in there.
@@ -287,8 +295,12 @@ public static class ShopCookies
         var bookLook = Resources.Load<Sprite>("Cookies/book_page");
         var sm = SessionManager.Instance;
         var tabs = bookLook != null && Resources.Load<Sprite>(TabArt[0]) != null;
-        // which part opens: the journal, unless only the cookies have something new
-        if (!tabs) section = Cookies; else if (section < 0) section = sm != null && sm.AnyNewInBook && !sm.AnyNewJournal ? Cookies : Journal;
+        // what is new in which part (the keys of bought things are in the save's list until their part has been opened)
+        var newStaff = new List<string>(); var newCookies = new List<string>();
+        foreach (var e in owned) if (sm != null && !string.IsNullOrEmpty(e.key) && sm.IsNewInBook(e.key)) (e.staff ? newStaff : newCookies).Add(e.key);
+        var newJournal = sm != null && sm.AnyNewJournal;
+        // which part opens: the one with something new (journal first, then staff, then cookies); else the journal
+        if (!tabs) section = Cookies; else if (section < 0) section = newJournal ? Journal : newStaff.Count > 0 ? Staff : newCookies.Count > 0 ? Cookies : Journal;
         var journalPages = sm != null ? sm.JournalPages() : new List<string>();
         // the staff part exists once somebody is hired (owner, 19 November: "if not hired, don't show staff in the book")
         var anyStaff = false; foreach (var e in owned) if (e.staff) anyStaff = true;
@@ -356,6 +368,8 @@ public static class ShopCookies
                 var at = new Vector2(pageAt.x + sheetArea.xMax - 1f, H / 2f - (150f + slot * 138f) * k); slot++;
                 var tab = MakeTab(rt, i, i == section, at, k);
                 if (tab != null && i != section) tab.SetSiblingIndex(page.GetSiblingIndex() + 1);   // behind the open part's tab, in front of the book
+                // a part with something not yet looked at wears NEW on its tab
+                if (tab != null && i != section && (i == Journal ? newJournal : i == Staff ? newStaff.Count > 0 : newCookies.Count > 0)) NewTag.OnUI(tab);
             }
         }
 
@@ -486,7 +500,14 @@ public static class ShopCookies
         turner.Furniture(furniture, keep);
         if (owned.Count > 0) cells[newest].GetComponent<Button>().onClick.Invoke();   // a new one is shown first
         // looked at: the labels stay on this open page, the book's own label goes
-        if (SessionManager.Instance != null) { if (section == Cookies || !tabs) SessionManager.Instance.ClearNewInBook(); if (section == Journal && tabs) SessionManager.Instance.ClearNewJournal(); }
+        // looked at: only the open part's things; the other parts keep their labels (and the book's button its NEW) until they are opened
+        if (SessionManager.Instance != null)
+        {
+            if (!tabs) SessionManager.Instance.ClearNewInBook();
+            else if (section == Cookies) SessionManager.Instance.ClearNewInBook(newCookies);
+            else if (section == Staff) SessionManager.Instance.ClearNewInBook(newStaff);
+            else SessionManager.Instance.ClearNewJournal();
+        }
         RefreshBookTag();
     }
 

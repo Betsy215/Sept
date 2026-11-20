@@ -892,6 +892,13 @@ public class SessionManager : MonoBehaviour
     public bool IsNewInBook(string key) => currentSession != null && currentSession.newInBook != null && currentSession.newInBook.Contains(key);
     public bool AnyNewInBook => currentSession != null && currentSession.newInBook != null && currentSession.newInBook.Count > 0;
     public void ClearNewInBook() { if (currentSession == null || currentSession.newInBook == null || currentSession.newInBook.Count == 0) return; currentSession.newInBook.Clear(); SaveSession(); }
+    /// Only these have been looked at (one part of the book: the cookies, or the staff); the other part keeps its labels.
+    public void ClearNewInBook(List<string> keys)
+    {
+        if (currentSession == null || currentSession.newInBook == null || keys == null) return;
+        var before = currentSession.newInBook.Count; currentSession.newInBook.RemoveAll(k => keys.Contains(k));
+        if (currentSession.newInBook.Count != before) SaveSession();
+    }
 
     /// The candy jar (owner, 26 October 2026): a shop purchase adds three (the jar holds nine, CandyJar.Full); a tap on the jar uses one
     public int Candies => currentSession != null ? currentSession.candies : 0;
