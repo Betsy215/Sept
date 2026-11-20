@@ -221,7 +221,7 @@ public static class ShopCookies
     private const int Journal = 0, Staff = 1, Cookies = 2;
     private static readonly string[] TabArt = { "Journal/tab_journal", "Journal/tab_staff", "Journal/tab_cookies" };
     private static readonly Color[] SectionPaper = { new Color(1f, 0.976f, 0.925f), new Color(0.886f, 0.933f, 0.965f), new Color(0.988f, 0.902f, 0.886f) };   // cream, pale blue, pale pink: the tabs' own papers
-    // where a journal page's blank tag is, for "DAY n": x and y from the sheet's top left on a sheet of 800 x 1212, the turn in degrees
+    // where a journal page's day stamp goes: x and y from the sheet's top left on a sheet of 800 x 1212, the turn in degrees
     private static readonly Dictionary<string, Vector3> DayTags = new Dictionary<string, Vector3> {
         { "open", new Vector3(630f, 290f, 8f) }, { "star3", new Vector3(600f, 900f, -6f) }, { "icecream", new Vector3(206f, 1030f, 4f) },
         { "cake", new Vector3(640f, 290f, -7f) }, { "choux", new Vector3(630f, 190f, 6f) }, { "machine", new Vector3(630f, 290f, 8f) } };
@@ -399,8 +399,13 @@ public static class ShopCookies
                 if (day > 0 && DayTags.TryGetValue(id, out var tag))
                 {
                     var at = new Vector2(sheetArea.xMin + tag.x / 800f * sheetArea.width, sheetArea.yMax - tag.y / 1212f * sheetArea.height);
-                    var dl = Label(leaves[k], "Day", "DAY " + day, titleFont, 40f * sheetArea.width / 800f, at, new Vector2(220f, 70f));
-                    dl.color = Ink; dl.rectTransform.localRotation = Quaternion.Euler(0f, 0f, tag.z);
+                    // the day as a red ink stamp, laid on only when the day is known (owner, 19 November: no brown tag on the pages)
+                    var unit = sheetArea.width / 800f; var red = new Color(0.77f, 0.23f, 0.20f, 0.9f);
+                    var stamp = Child(leaves[k], "DayStamp", new Vector2(0.5f, 0.5f), new Vector2(150f, 150f) * unit, at);
+                    var sti = stamp.gameObject.AddComponent<Image>(); sti.sprite = Resources.Load<Sprite>("Journal/day_stamp"); sti.raycastTarget = false; sti.enabled = sti.sprite != null;
+                    stamp.localRotation = Quaternion.Euler(0f, 0f, tag.z);
+                    var dl = Label(stamp, "Day", "DAY\n" + day, titleFont, 34f * unit, Vector2.zero, new Vector2(140f, 120f) * unit);
+                    dl.color = red; dl.lineSpacing = -30f;
                 }
             }
             if (journalPages.Count == 0)

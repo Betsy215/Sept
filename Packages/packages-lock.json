@@ -121,6 +121,12 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.adaptiveperformance.none": {
+      "version": "file:com.unity.adaptiveperformance.none",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.ads": {
       "version": "4.17.0",
       "depth": 0,

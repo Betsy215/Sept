@@ -1,0 +1,7 @@
+{
+  "name": "com.unity.adaptiveperformance.none",
+  "version": "1.0.0",
+  "displayName": "Adaptive Performance: no provider (keeps the build dialog quiet)",
+  "description": "An empty package. Unity's Adaptive Performance package (it comes with the Mobile feature set; this game does not use it) opens a dialog 'No Adaptive Performance provider found' after every build unless some package named com.unity.adaptiveperformance.* is installed. That dialog blocks the editor until it is clicked. This package has no code and no assets: it only satisfies that check, so nothing in the built game changes. Added 19 November 2026 at the owner's request.",
+  "unity": "2022.3"
+}
