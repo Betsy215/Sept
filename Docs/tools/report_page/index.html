@@ -75,16 +75,53 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>Release 2026.11.20 is submitted</b> (20 Nov, 08:25), waiting for Apple's review; it goes to the store by itself once approved.</p>
-<p><b>Q&amp;A:</b> your four questions answered.</p>
-<p><b>Current:</b> the "Ready to go?" card in the game; the kitchen-flow drafts.</p>
-<p><b>MVP:</b> pick a mixer (you will describe it).</p>
+<p><b>Q&amp;A:</b> three kitchen-flow questions; how chapter 2 opens after day 9; the store's new header.</p>
+<p><b>Current:</b> pick a day-9 look and a thinking sign; look at the shop locks.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>Next release: the kitchen remodel plus your small fixes (more to come). Nothing is built into a test build yet.</p>
+<p>Building the kitchen flow for choux and cake with placeholder pictures (plate and stand in the kitchen, oven, mixer, fruit board, flight to the table). Pictures here when it runs.</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>Kitchen flow: my questions (I build with the first answer of each unless you tick another)</h3>
+<ul>
+<li><b>Cake steps.</b> As I understand it: oven → a sponge appears on the cake stand → mixer glows, tap, the sponge gets its cream → fruit board glows, tap, cutting → the finished strawberry cake shows for a moment and flies to the table, the stand is empty again.</li>
+<li><b>Choux and cake both waiting for the mixer</b> (or the board): one tap does one dessert, the one that has waited longest; a second tap does the other.</li>
+<li><b>A plate that is still busy:</b> the oven does not take a new choux bake while choux are on the plate unfinished (same for the cake stand).</li>
+<li>Placeholder times: mixer 2.5 s, cutting 2 s (shorter with the kitchen upgrade). The whisk stands in for the mixer until its picture exists.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.kflow.ok"> All as you wrote</label></li>
+<li><label><input type="checkbox" data-id="qa.kflow.cakeother"> Cake steps are different (I will say)</label></li>
+<li><label><input type="checkbox" data-id="qa.kflow.both"> One tap on the mixer or board does both desserts</label></li>
+<li><label><input type="checkbox" data-id="qa.kflow.queue"> The oven may bake again while the plate is busy</label></li>
+</ul>
+</div>
+<div class="q"><h3>Chapter 2 opens after day 9: how should it work?</h3>
+<ul>
+<li>Today a save counts finished days in one line, so the beach starts only after day 12. With the new rule, days 10 to 12 and the beach days are open at the same time; I will give each chapter its own count of finished days.</li>
+<li><b>A (my pick):</b> after day 9 the arrow to the beach unlocks with a small celebration; the player chooses. Days 10 to 12 stay playable whenever they like, and each page of the map shows its own next day.</li>
+<li><b>B:</b> after day 9 the game moves to the beach by itself; days 10 to 12 are optional extras to come back to.</li>
+<li>Already built: the shop's Cookies card unlocks when day 9 is finished.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.day9.a"> A: the player chooses</label></li>
+<li><label><input type="checkbox" data-id="qa.day9.b"> B: on to the beach by itself</label></li>
+<li><label><input type="checkbox" data-id="qa.day9.other"> Something else (I will say)</label></li>
+</ul>
+</div>
+<div class="q"><h3>What are "Header" and "Search Results" on the release page? They are empty for our game.</h3>
+<ul>
+<li>They are new, optional slots from Apple ("creative assets", shown from iOS 27): a picture or short looping video at the very top of our store page (<b>Header</b>), and a picture shown beside the game in search (<b>Search Results</b>).</li>
+<li><b>Empty is fine:</b> the page looks as it does now, and search keeps showing our video and screenshots. Nothing is missing from the release.</li>
+<li>They are a chance to look better: one clear picture of the truck and the table, no prices, readable small. Apple gives templates with safe areas. They go through review like screenshots.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.header.drafts"> Make drafts for both</label></li>
+<li><label><input type="checkbox" data-id="qa.header.leave"> Leave them empty</label></li>
+</ul>
+</div>
 <div class="q"><h3>The drag-to-arrange animation in the kitchen: do we have it in the game scene too? How and when does it play?</h3>
 <ul>
 <li><b>Yes, on the table too.</b> Both belong to one lesson, on <b>day 2 only</b> (the first day a player arranges; day 1 comes ready-arranged).</li>
@@ -127,6 +164,45 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <p class="sub" style="margin:0 0 8px">Release 2026.11.20 (build 0) submitted with your What's New, seven iPhone and seven iPad screenshots and the new video.</p>
+<div class="card">
+<p style="margin-top:0"><b>Day 9 on the chapter 1 map: four ideas.</b> Mock-ups; nothing built.</p>
+<figure><img src="map_day9_ideas.jpg" alt="Four views of the chapter 1 map around day 9. 1: day 9 is a big glowing star cookie with a tag Opens the beach! and a dotted trail to the locked chapter 2 arrow. 2: day 9 ringed in gold beside a wooden signpost TO THE BEACH and a palm cookie. 3: day 9 is an ice cream cookie with a red 9 badge, and the arrow's lock wears a tag after day 9. 4: day 9 in gold with a red bow, a gift cookie beside it, a tag Day 9 opens chapter 2, a palm over the arrow"><figcaption>Map, chapter 1. 1 star cookie with a trail, 2 signpost, 3 ice cream day, 4 gift.</figcaption></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.day9look.1"> 1</label></li>
+<li><label><input type="checkbox" data-id="cur.day9look.2"> 2</label></li>
+<li><label><input type="checkbox" data-id="cur.day9look.3"> 3</label></li>
+<li><label><input type="checkbox" data-id="cur.day9look.4"> 4</label></li>
+<li><label><input type="checkbox" data-id="cur.day9look.more"> More (I will say what)</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Thinking before the order: four ideas.</b> The customer arrives, the bubble opens with a thinking sign, then the foods pop in. Patience starts only when the order shows. Mock-ups; nothing built.</p>
+<figure><img src="think_ideas.jpg" alt="Four views of the chef customer with an order bubble. 1: three dark dots hopping in the bubble. 2: a red question mark, tilted. 3: faint foods flicking past: a coffee, a cake, a bread. 4: the word Hmm... hand-written"><figcaption>Table. 1 hopping dots, 2 question mark, 3 foods flicking past, 4 "Hmm...".</figcaption></figure>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.think.1"> 1</label></li>
+<li><label><input type="checkbox" data-id="cur.think.2"> 2</label></li>
+<li><label><input type="checkbox" data-id="cur.think.3"> 3</label></li>
+<li><label><input type="checkbox" data-id="cur.think.4"> 4</label></li>
+<li><label><input type="checkbox" data-id="cur.think.t1"> 1 second</label></li>
+<li><label><input type="checkbox" data-id="cur.think.t15"> 1.5 seconds</label></li>
+<li><label><input type="checkbox" data-id="cur.think.t2"> 2 seconds</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Shop: locks and NEW on tabs, in the project.</b></p>
+<figure><img src="shop_locks.jpg" alt="Four shop pictures. Before day 9: the coins tab, NEW labels on the star tab's icon and the banknote tab's icon, the yoga customer card with NEW. The stars tab: the kitchen upgrade, and two darkened cards with padlocks at 15 and 20 stars. After day 9: the Cookies heart card open with NEW. After the yoga lady is bought as a customer: her star card open with NEW, the chef still locked"><figcaption>Shop. A tab's icon wears NEW while it holds something not looked at yet.</figcaption></figure>
+<ul>
+<li><b>NEW on a tab</b> when a card under it becomes buyable for the first time; it goes once that tab has been looked at.</li>
+<li><b>Locked cards show with a padlock</b> and take no taps: Cookies until day 9 is finished; the yoga lady's star card until she is bought as a customer; the new <b>Chef</b> star card (20 stars) stays locked for now.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.locks.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.locks.change"> Changes (I will say what)</label></li>
+</ul>
+</div>
+
 <div class="card">
 <p style="margin-top:0"><b>"Ready to go?" card: your pick 1, in the game.</b> The tutorial's last card on the doily paper; LET'S GO! and the replay cookie press and crunch like the other cookie buttons; the words "Replay tutorial" can be tapped too.</p>
 <figure><img src="ready_card1.jpg" style="max-height:620px" alt="The end of the tutorial on the beach: the doily card with READY TO GO?, Your truck is open for business!, a big LET'S GO! cookie and the round replay cookie with Replay tutorial beside it"><figcaption>Captured in the editor at the end of the chapter 2 tutorial; Let's go starts the day.</figcaption></figure>
