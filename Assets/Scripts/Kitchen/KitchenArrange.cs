@@ -49,8 +49,8 @@ public static class KitchenArrange
         new Def { name = "basket",   foot = new Vector2(0.56f, 0.5177f),  box = new Vector4(0.20f, 0.25f, 0.80f, 0.95f),   fit = new Vector4(0.01f, 0.03f, 0.98f, 0.95f) },
         new Def { name = "cake",     foot = new Vector2(0.8078f, 0.451f), box = new Vector4(0.21f, 0.03f, 0.875f, 0.775f), fit = new Vector4(0.01f, 0.03f, 0.99f, 0.98f) },
         new Def { name = "coffee",   foot = new Vector2(0.2694f, 0.6859f),box = new Vector4(0.20f, 0.25f, 0.80f, 0.90f),   fit = new Vector4(0.07f, 0.10f, 0.92f, 0.90f) },
-        // the choux plate (20 November 2026, KitchenFlow): in the big opening under the counter, which is free; made by this file
-        new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.02f, 0.05f, 0.98f, 0.98f), fit = new Vector4(0.02f, 0.05f, 0.98f, 0.98f), size = new Vector2(300f, 94f) },
+        // the choux plate (20 November 2026, KitchenFlow), made by this file: on the table at a free place (FirstCheck); this foot, the opening under the counter, is the fallback
+        new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.05f, 0.30f, 0.95f, 0.98f), fit = new Vector4(0.02f, 0.05f, 0.98f, 0.98f), size = new Vector2(270f, 85f) },
         new Def { name = "juice",    foot = new Vector2(0.1662f, 0.1469f),box = new Vector4(0.15f, 0.30f, 0.85f, 0.98f),   fit = new Vector4(0.13f, 0.07f, 0.87f, 0.98f) },
     };
 
@@ -123,6 +123,7 @@ public static class KitchenArrange
             working = new Dictionary<string, Vector2>();
             var kept = SessionManager.Instance != null ? SessionManager.Instance.GetKitchenPlaces() : null;
             foreach (var d in Defs) working[d.name] = kept != null && kept.TryGetValue(d.name, out var p) ? p : d.foot;
+            plateNeedsSpot = kept == null || !kept.ContainsKey("chouxplate");   // never placed by the player: it starts on the table
             fresh = true;
         }
 
@@ -294,8 +295,40 @@ public static class KitchenArrange
     /// One frame after the load, when the canvas has its size: the first check. An arrangement from the save that is
     /// red before the player touched anything (a newly bought piece stands where another was moved to) goes back to
     /// the game's own places, which never are.
+    private static bool plateNeedsSpot;
+
+    /// A free place on the kitchen table for a piece: its box on the table's top and on no other table piece's box,
+    /// the front of the table first, the middle before the sides.
+    private static bool FreeTableSpot(Piece p, out Vector2 foot)
+    {
+        foot = p.def.foot; if (AreaSize.x <= 0f) return false;
+        for (var y = TableLow + 0.004f; y <= TableHigh; y += 0.01f)
+            foreach (var x in new[] { 0.5f, 0.4f, 0.6f, 0.3f, 0.7f, 0.2f, 0.8f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.15f, 0.85f })
+            {
+                var f = new Vector2(x, y); if (!OnTable(p, f)) continue;
+                var r = Part(p, f, p.def.box); var free = true;
+                foreach (var o in pieces)
+                {
+                    if (o == p || o.rt == null || !o.rt.gameObject.activeInHierarchy || CabinetAt(o, working[o.def.name]) != null) continue;
+                    if (r.Overlaps(Part(o, working[o.def.name], o.def.box))) { free = false; break; }
+                }
+                if (free) { foot = f; return true; }
+            }
+        return false;
+    }
+
     public static void FirstCheck()
     {
+        // the choux plate, new in the kitchen: on the kitchen table (owner, 20 November 2026: "The default location ...
+        // for choux plate is on the kitchen table"), at a free place; only when the table is full it keeps the
+        // opening under the counter
+        if (plateNeedsSpot)
+        {
+            plateNeedsSpot = false;
+            var plate = Find("chouxplate");
+            if (plate != null && plate.rt != null && plate.rt.gameObject.activeInHierarchy && FreeTableSpot(plate, out var spot))
+            { plate.def.foot = spot; working["chouxplate"] = spot; Place(plate, spot); Sort(); }
+        }
         Check();
         if (AnyRed && fresh)
         {
