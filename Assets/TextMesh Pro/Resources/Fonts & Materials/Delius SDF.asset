@@ -38,9 +38,9 @@ Material:
     - _OutlineSoftness: 0
     - _OutlineWidth: 0
     - _PerspectiveFilter: 0.875
-    - _ScaleRatioA: 1
+    - _ScaleRatioA: 0.9
     - _ScaleRatioB: 1
-    - _ScaleRatioC: 1
+    - _ScaleRatioC: 0.73125
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -78,9 +78,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: Delius SDF
   m_EditorClassIdentifier: 
-  hashCode: 0
+  hashCode: -1111153101
   material: {fileID: -66818003905015292}
-  materialHashCode: -2006316128
+  materialHashCode: -132314061
   m_Version: 1.1.0
   m_SourceFontFileGUID: 62296d3ca7f5b483c84cf46c651b96b0
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 62296d3ca7f5b483c84cf46c651b96b0, type: 3}
