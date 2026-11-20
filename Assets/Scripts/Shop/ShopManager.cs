@@ -54,6 +54,7 @@ public class ShopManager : MonoBehaviour
         EnsureRemoveAdsCard();   // the one-time Remove Ads card (owner, 9 November 2026)
         EnsureStarPackCard();    // 15 stars for money (owner, 15 November 2026)
         EnsureStarYogaCard();    // the star shop's first card: the yoga lady (owner, 14 November 2026)
+        EnsureStarCard(SessionManager.StarChefName, SessionManager.StarChefPrice, "Coming soon", Resources.Load<Sprite>("Cookies/Chef"), "Chef");   // locked for now (owner, 20 November 2026)
         EnsureKitchenUpgradeCard();   // 15 stars: the kitchen cooks faster (owner, 19 November 2026)
         EnsureCoinStarCard();    // one star for 999 coins (owner, 19 November 2026)
         EvenOutCharacterIcons();
@@ -137,6 +138,7 @@ public class ShopManager : MonoBehaviour
                 {
                     if (session != null && session.OwnsStarItem(shopItem.itemName)) shopItem.MarkAsPurchased();
                     else shopItem.UpdateAffordability(session != null && session.StarsAvailable >= shopItem.price);
+                    ShowCardLock(shopItem, IsLockedCard(shopItem));   // star cards can be locked too (the yoga lady until hired as a customer, the chef)
                     continue;
                 }
                 var canAfford = session != null && session.CanAfford(shopItem.price);
@@ -210,7 +212,7 @@ public class ShopManager : MonoBehaviour
         // Check if player has enough score
         if (SessionManager.IsLockedInShop(item.itemName) || SessionManager.IsLockedInShop(item.gameObject.name))
         {
-            ShowPurchaseFailedFeedback("Opens with chapter 2");   // the card's lock stops taps; this stops every other path (16 October)
+            ShowPurchaseFailedFeedback(SessionManager.LockReason(SessionManager.IsLockedInShop(item.itemName) ? item.itemName : item.gameObject.name));   // the card's lock stops taps; this stops every other path (16 October)
             return false;
         }
 
@@ -919,6 +921,7 @@ public class ShopManager : MonoBehaviour
 
     public void ShowPurchasePopup(ShopItemController item)
     {
+        if (IsLockedCard(item)) return;   // a locked card opens nothing (20 November 2026)
         if (item == null || purchaseConfirmationPopup == null) return;
 
         currentPurchaseItem = item;
@@ -1391,6 +1394,7 @@ public class ShopManager : MonoBehaviour
     private void SetTab(ShopTab tab)
     {
         if (IsPurchasePopupOpen) return;
+        if (tab != currentTab) ShopFlourish.MarkSeen(GetAllShopItems());   // the tab being left: its open cards are seen (its NEW goes)
         currentTab = tab;
         PaintTabs();
         LayoutCards();
@@ -1407,6 +1411,24 @@ public class ShopManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
         RefreshShopDisplay();
         UpdateScrollButtons();
+    }
+
+    /// NEW on a tab (not the open one) that holds a card the player has not seen yet (owner, 20 November 2026: "When
+    /// something new shows up in shop under a tab, show new label on the tab"): a card is new from the visit it first
+    /// becomes buyable (unlocked, in season, not owned) until its tab has been looked at; ShopFlourish keeps the seen ones.
+    private void PaintTabNews()
+    {
+        for (var i = 0; i < tabButtons.Count; i++)
+        {
+            var rt = tabButtons[i] != null ? tabButtons[i].transform as RectTransform : null; if (rt == null) continue;
+            var any = false;
+            if (i != (int)currentTab && rt.gameObject.activeInHierarchy)
+                foreach (var c in GetAllShopItems())
+                    if (c != null && (int)TabOf(c) == i && !IsHeldBackCard(c) && !LeavesShop(c) && !IsLockedCard(c) && ShopFlourish.Unseen(c)) { any = true; break; }
+            // the label sits on the tab's own picture (the tab's box changes width while the row is laid out)
+            var pic = rt.Find("Icon") as RectTransform; var owner = pic != null ? pic : rt;
+            if (any) NewTag.OnUI(owner); else NewTag.Remove(owner);
+        }
     }
 
     private void PaintTabs()
@@ -1456,6 +1478,7 @@ public class ShopManager : MonoBehaviour
             }
         }
         RefreshTabNote();
+        PaintTabNews();
     }
 
     /// The line on an empty tab. Bought cards leave the shop for the book (17 November 2026), so a tab can be empty

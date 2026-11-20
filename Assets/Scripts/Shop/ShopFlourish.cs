@@ -37,6 +37,10 @@ public static class ShopFlourish
         if (!init) { PlayerPrefs.SetInt(InitKey, 1); PlayerPrefs.Save(); }
     }
 
+    /// A card not seen yet (after the first visit's set-up); its tab wears NEW (20 November 2026).
+    public static bool Unseen(ShopItemController c) =>
+        c != null && !c.isPurchased && PlayerPrefs.GetInt(InitKey, 0) == 1 && PlayerPrefs.GetInt(SeenKey + c.itemName, 0) == 0;
+
     /// On leaving the shop: every card that was open this visit is seen; cards on tabs never opened stay new.
     public static void MarkSeen(IEnumerable<ShopItemController> cards)
     {

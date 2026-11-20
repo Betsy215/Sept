@@ -256,7 +256,26 @@ public class SessionManager : MonoBehaviour
     public static readonly Dictionary<string, int> UnlockChapter = new Dictionary<string, int> { { "Cookies", 2 }, { "Coconut", 2 } };
     /// Chapters the player has reached: the chapter of the next day to play (12 days in chapter 1, 16 in chapter 2), never past Chapter.Count
     public static int ChaptersStarted => Mathf.Clamp(Chapter.Of(Instance != null ? Instance.GetLevelsCompleted() : 0), 1, Chapter.Count);
-    public static bool IsLockedInShop(string foodType) => foodType != null && UnlockChapter.TryGetValue(foodType, out var c) && c > ChaptersStarted;
+    /// Chapter 2 opens once day 9 is finished (owner, 20 November 2026: "I want chapter to be unlocked when day 9 is
+    /// finished in chapter 1"); the shop's chapter locks follow it. (The map still opens chapter 2 after day 12 until its
+    /// new logic is built.)
+    public const int Chapter2OpensAfterDays = 9;
+    public static int ChaptersOpen => Mathf.Clamp(Mathf.Max(ChaptersStarted, Instance != null && Instance.GetLevelsCompleted() >= Chapter2OpensAfterDays ? 2 : 1), 1, Mathf.Max(1, Chapter.Count));
+    /// The star shop's chef (owner, 20 November 2026: "Add another star item - chef, he is locked, costs 20 stars, lock him
+    /// for now, we won't unlock for now until later release").
+    public const string StarChefName = "StarChef"; public const int StarChefPrice = 20;
+    /// Locked cards still show in the shop, with a padlock, and take no taps (owner, 20 November 2026): a food until its
+    /// chapter opens; the yoga lady's star card until she has been bought as a customer; the chef for now.
+    public static bool IsLockedInShop(string foodType)
+    {
+        if (foodType == null) return false;
+        if (foodType == StarChefName) return true;
+        if (foodType == YogaHire.ItemName) { var s = Instance != null ? Instance.GetCurrentSession() : null; return s == null || s.purchasedCharacters == null || !s.purchasedCharacters.Contains("Yoga"); }
+        return UnlockChapter.TryGetValue(foodType, out var c) && c > ChaptersOpen;
+    }
+    /// What a locked card says when something tries to buy it anyway.
+    public static string LockReason(string key) =>
+        key == StarChefName ? "Coming soon" : key == YogaHire.ItemName ? "Hire her as a customer first" : "Opens with chapter 2";
 
     /// Chapter of the day being played (always 1 while Chapter.Count is 1).
     public static int CurrentChapter =>
