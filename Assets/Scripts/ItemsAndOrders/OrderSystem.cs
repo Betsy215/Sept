@@ -128,6 +128,7 @@ public class OrderSystem : MonoBehaviour
         public int petals;
         public bool active;
         public bool hadCustomer;                 // opened for a customer (false on the original no-customer flow)
+        public bool thinking; public float thinkLeft; public GameObject thinkDots;   // the customer is still choosing (20 November 2026)
         public bool AllServed => items.TrueForAll(i => i.isServed);
         public bool Needs(string food) => items.Exists(i => !i.isServed && i.foodType == food);
         public bool Needs(string food, string variant) => items.Exists(i => !i.isServed && i.foodType == food && (variant == null || i.variant == variant));
@@ -372,6 +373,7 @@ public class OrderSystem : MonoBehaviour
         foreach (var o in orders.ToArray())
         {
             if (!o.active) continue;
+            if (o.thinking) { Think(o); continue; }   // patience starts when the order shows
             o.timer -= Time.deltaTime;
             if (o.timer <= 0f)
             {
@@ -379,6 +381,60 @@ public class OrderSystem : MonoBehaviour
                 ExpireOrder(o);
             }
         }
+    }
+
+    // ---- thinking before the order shows ----
+    public static float ThinkSeconds = 1.5f;
+    private static Sprite dotSprite;
+    private static Sprite DotSprite()
+    {
+        if (dotSprite != null) return dotSprite;
+        const int n = 48; var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear }; var px = new Color[n * n];
+        for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) { var d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(n / 2f, n / 2f)); px[y * n + x] = new Color(1f, 1f, 1f, Mathf.Clamp01(n / 2f - 1f - d)); }
+        tex.SetPixels(px); tex.Apply(); dotSprite = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);   // one world unit across
+        return dotSprite;
+    }
+
+    private void BeginThinking(ActiveOrder order, SlotVisuals s)
+    {
+        order.thinking = true; order.thinkLeft = ThinkSeconds;
+        // the dots stand where the foods will: in the middle of the order's pictures, sized from one of them, and under
+        // the same parent, so they move and shrink with the bubble when a second customer arrives
+        var mid = Vector3.zero; var n = 0; SpriteRenderer icon = null;
+        foreach (var go in order.displayObjects)
+        {
+            if (go == null) continue;
+            mid += go.transform.localPosition; n++;
+            if (icon == null) icon = go.GetComponentInChildren<SpriteRenderer>(true);
+            go.SetActive(false);
+        }
+        if (n == 0 || icon == null || icon.sprite == null || s.container == null) return;
+        var wide = icon.sprite.bounds.size.x * Mathf.Abs(icon.transform.lossyScale.x) / Mathf.Max(0.0001f, Mathf.Abs(s.container.lossyScale.x));   // one food picture, in the container's units
+        var size = wide * 0.42f;
+        var root = new GameObject("ThinkDots"); root.transform.SetParent(s.container, false); root.transform.localPosition = mid / n;
+        for (var i = 0; i < 3; i++)
+        {
+            var d = new GameObject("Dot" + i); d.transform.SetParent(root.transform, false);
+            d.transform.localPosition = new Vector3((i - 1) * size * 1.55f, 0f, 0f); d.transform.localScale = Vector3.one * size;
+            var sr = d.AddComponent<SpriteRenderer>(); sr.sprite = DotSprite(); sr.color = new Color(0.24f, 0.16f, 0.12f);
+            sr.sortingLayerID = icon.sortingLayerID; sr.sortingOrder = icon.sortingOrder;
+        }
+        order.thinkDots = root;
+    }
+
+    private void Think(ActiveOrder o)
+    {
+        o.thinkLeft -= Time.deltaTime;
+        if (o.thinkDots != null)
+        {
+            var t = ThinkSeconds - o.thinkLeft; var k = 0;
+            foreach (Transform d in o.thinkDots.transform) { var hop = Mathf.Max(0f, Mathf.Sin(t * 7f - k * 0.9f)); var p = d.localPosition; p.y = hop * d.localScale.x * 0.9f; d.localPosition = p; k++; }
+        }
+        if (o.thinkLeft > 0f) return;
+        o.thinking = false; o.startedAt = Time.time;
+        if (o.thinkDots != null) { Destroy(o.thinkDots); o.thinkDots = null; }
+        foreach (var go in o.displayObjects) if (go != null) go.SetActive(true);
+        if (slots != null) PatienceMeter.Show(o, MeterPosition(slots[Mathf.Clamp(o.slot, 0, slots.Length - 1)]));
     }
 
     /// When set, the next generated order uses exactly these food types (in this order) instead of a
@@ -409,6 +465,7 @@ public class OrderSystem : MonoBehaviour
         };
         var s = slots[slot];
 
+        var forcedOrder = forcedNextOrder != null && forcedNextOrder.Count > 0;
         if (forcedNextOrder != null && forcedNextOrder.Count > 0)
         {
             var forced = forcedNextOrder;
@@ -432,7 +489,11 @@ public class OrderSystem : MonoBehaviour
         SetBubble(s, order.items.Count);
         PlaceBubbleOverCustomer(s, customer);
         if (orderTitleText != null) orderTitleText.text = "Order:";
-        PatienceMeter.Show(order, MeterPosition(s));
+        // The customer thinks first (owner, 20 November 2026: "Add a think time before customer order, show something
+        // indicate thinking"; their pick 1, three hopping dots): the bubble opens with the dots, then the foods show and
+        // patience starts. Not for the tutorial's set orders, which keep their own timing.
+        if (order.hadCustomer && !forcedOrder && ThinkSeconds > 0f) BeginThinking(order, s);
+        else PatienceMeter.Show(order, MeterPosition(s));
         Debug.Log($"New order in slot {slot} with {order.items.Count} items, timer {order.timer:F1}s, tip x{tipMultiplier}");
     }
 
@@ -509,7 +570,7 @@ public class OrderSystem : MonoBehaviour
 
         ActiveOrder target = null;
         foreach (var o in orders)
-            if (o.active && o.Needs(foodType, variant) && (target == null || o.startedAt < target.startedAt)) target = o;
+            if (o.active && !o.thinking && o.Needs(foodType, variant) && (target == null || o.startedAt < target.startedAt)) target = o;   // nothing can be served to a customer still thinking
 
         if (target == null)
         {
@@ -704,6 +765,8 @@ public class OrderSystem : MonoBehaviour
 
     private void ClearOrderDisplay(ActiveOrder order)
     {
+        if (order.thinkDots != null) { Destroy(order.thinkDots); order.thinkDots = null; }
+        order.thinking = false;
         // Stop any in-flight serve effects first so they never touch a destroyed display object.
         // Snapshot + clear before stopping: stopping disposes the coroutine, whose finally block removes itself from the list.
         var effectsToStop = order.serveEffects.ToArray();
@@ -770,7 +833,7 @@ public class OrderSystem : MonoBehaviour
         var types = new List<string>();
         foreach (var o in orders.OrderBy(o => o.startedAt))
             foreach (var item in o.items)
-                if (!item.isServed)
+                if (!item.isServed && !o.thinking)
                     types.Add(item.foodType);
         return types;
     }
@@ -781,7 +844,7 @@ public class OrderSystem : MonoBehaviour
         var types = new List<string>();
         foreach (var o in orders.OrderBy(o => o.startedAt))
             foreach (var item in o.items)
-                if (!item.isServed)
+                if (!item.isServed && !o.thinking)
                     types.Add(item.variant != null ? item.foodType + ":" + item.variant : item.foodType);
         return types;
     }
