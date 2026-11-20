@@ -793,15 +793,45 @@ public class TutorialDirector : MonoBehaviour
         Stretch(cardRect);
         var dim = NewImage("Dim", cardRect, new Color(0f, 0f, 0f, 0.55f));
         Stretch(dim.rectTransform);
-        var panel = NewImage("Panel", cardRect, new Color(1f, 0.96f, 0.88f, 1f));
-        panel.rectTransform.sizeDelta = new Vector2(820f, 620f);
-        var title = NewText("Title", panel.rectTransform, font, 72f, new Color(0.25f, 0.15f, 0.1f));
-        title.rectTransform.anchoredPosition = new Vector2(0f, 180f);
-        title.rectTransform.sizeDelta = new Vector2(760f, 120f);
-        title.alignment = TextAlignmentOptions.Center;
-        title.text = "Ready to go?";
-        NewButton("LetsGo", panel.rectTransform, font, "Let's go!", new Vector2(0f, 10f), new Color(1f, 0.72f, 0.2f), OnLetsGo);
-        NewButton("Replay", panel.rectTransform, font, "Replay tutorial", new Vector2(0f, -150f), new Color(0.85f, 0.85f, 0.8f), OnReplay);
+        // On the map's doily paper with cookie buttons (owner's pick 1 of 20 November 2026, Store/ui/ready_card_2026-11-20:
+        // "Redesign the Ready to go panel ... use some kind of paper style"). Without the pictures: the plain card as before.
+        var doily = Resources.Load<Sprite>("Map/day_paper"); var letsGo = Resources.Load<Sprite>("UI/cookie_letsgo"); var again = Resources.Load<Sprite>("UI/cookie_replay");
+        var handFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/Delius SDF");
+        if (doily != null && letsGo != null && again != null)
+        {
+            var ink = new Color(0.36f, 0.20f, 0.09f); var soft = new Color(0.47f, 0.31f, 0.20f);
+            var panel = NewImage("Panel", cardRect, Color.white); panel.sprite = doily; panel.rectTransform.sizeDelta = new Vector2(770f, 770f);
+            var title = NewText("Title", panel.rectTransform, font, 86f, ink);
+            title.rectTransform.anchoredPosition = new Vector2(0f, 246f); title.rectTransform.sizeDelta = new Vector2(680f, 120f);
+            title.alignment = TextAlignmentOptions.Center; title.text = "READY TO GO?";
+            var line = NewText("Line", panel.rectTransform, handFont != null ? handFont : font, 37f, soft);
+            line.rectTransform.anchoredPosition = new Vector2(0f, 155f); line.rectTransform.sizeDelta = new Vector2(680f, 70f);
+            line.alignment = TextAlignmentOptions.Center; line.text = "Your truck is open for business!";
+            var letsGoImg = NewImage("LetsGo", panel.rectTransform, Color.white); letsGoImg.sprite = letsGo;
+            letsGoImg.rectTransform.anchoredPosition = new Vector2(0f, -21f); letsGoImg.rectTransform.sizeDelta = new Vector2(444f, 444f * letsGo.rect.height / letsGo.rect.width);
+            letsGoImg.gameObject.AddComponent<Button>().onClick.AddListener(OnLetsGo);
+            // the replay cookie with its hand-written label beside it, the pair centred under Let's go
+            var label = NewText("ReplayLabel", panel.rectTransform, handFont != null ? handFont : font, 40f, ink);
+            label.text = "Replay tutorial"; label.alignment = TextAlignmentOptions.Left; label.enableWordWrapping = false;
+            var lw = label.GetPreferredValues(label.text).x; const float icon = 104f, gap = 18f; var x0 = -(icon + gap + lw) / 2f;
+            var rp = NewImage("Replay", panel.rectTransform, Color.white); rp.sprite = again; rp.preserveAspect = true;
+            rp.rectTransform.anchoredPosition = new Vector2(x0 + icon / 2f, -209f); rp.rectTransform.sizeDelta = new Vector2(icon, icon);
+            rp.gameObject.AddComponent<Button>().onClick.AddListener(OnReplay);
+            label.rectTransform.pivot = new Vector2(0f, 0.5f); label.rectTransform.anchoredPosition = new Vector2(x0 + icon + gap, -212f); label.rectTransform.sizeDelta = new Vector2(lw + 10f, 70f);
+            label.raycastTarget = true; label.gameObject.AddComponent<Button>().onClick.AddListener(OnReplay);   // the words are tappable too
+        }
+        else
+        {
+            var panel = NewImage("Panel", cardRect, new Color(1f, 0.96f, 0.88f, 1f));
+            panel.rectTransform.sizeDelta = new Vector2(820f, 620f);
+            var title = NewText("Title", panel.rectTransform, font, 72f, new Color(0.25f, 0.15f, 0.1f));
+            title.rectTransform.anchoredPosition = new Vector2(0f, 180f);
+            title.rectTransform.sizeDelta = new Vector2(760f, 120f);
+            title.alignment = TextAlignmentOptions.Center;
+            title.text = "Ready to go?";
+            NewButton("LetsGo", panel.rectTransform, font, "Let's go!", new Vector2(0f, 10f), new Color(1f, 0.72f, 0.2f), OnLetsGo);
+            NewButton("Replay", panel.rectTransform, font, "Replay tutorial", new Vector2(0f, -150f), new Color(0.85f, 0.85f, 0.8f), OnReplay);
+        }
         endCard.SetActive(false);
     }
 

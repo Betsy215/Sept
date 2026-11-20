@@ -21,6 +21,7 @@ public class CookiePress : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         { "setting 1", Kind.Tap }, { "pause 1", Kind.Tap }, { "audio", Kind.Tap }, { "music 1", Kind.Tap },
         { "up 1", Kind.Tap }, { "down 1", Kind.Tap }, { "arrow_right", Kind.Tap }, { "arrow_left", Kind.Tap },
         { "day_done", Kind.Tap }, { "day_today", Kind.Tap },
+        { "cookie_letsgo", Kind.Go }, { "cookie_replay", Kind.Back },   // the tutorial's "Ready to go?" card (20 November 2026)
     };
     const float Shrink = 0.05f;      // pushed in: 5 % smaller
     const float Sink = 0.06f;        // and lower by 6 % of its height
