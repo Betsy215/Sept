@@ -912,7 +912,7 @@ public class ShopManager : MonoBehaviour
             var chalk = Resources.Load<TMP_FontAsset>(HandFontPath);
             if (chalk != null) popupItemInfo.font = chalk;
             // On paper since 19 November 2026 (owner: "also use a paper style for shop item description panel"; their
-            // pick 3 of four, "remove the tables, remove the title text"): a cream card held by tape instead of the
+            // pick 3 of four, without its tape and title): a cream ruled card instead of the
             // wooden board (Resources/UI/buy_card, Store/ui/shop_popup_paper_2026-11-19/build_card.py), a little shorter,
             // the writing in brown ink, the price in blue ink. Without the picture the board and the chalk stay.
             var cardArt = Resources.Load<Sprite>("UI/buy_card"); var onPaper = cardArt != null;
