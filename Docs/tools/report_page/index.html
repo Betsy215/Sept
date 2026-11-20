@@ -76,10 +76,10 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="who p1"><h3>You</h3>
 <p><b>Release 2026.11.20 is submitted</b> (20 Nov, 08:25), waiting for Apple's review; it goes to the store by itself once approved.</p>
 <p><b>Q&amp;A:</b> three kitchen-flow questions; how chapter 2 opens after day 9; the store's new header.</p>
-<p><b>Current:</b> pick a day-9 look and a thinking sign; look at the shop locks.</p>
+<p><b>Current:</b> the kitchen flow; pick a day-9 look and a thinking sign; the shop locks.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>Building the kitchen flow for choux and cake with placeholder pictures (plate and stand in the kitchen, oven, mixer, fruit board, flight to the table). Pictures here when it runs.</p>
+<p>The kitchen flow runs with placeholders (Current). Next on your word: a test build, the mixer picture, the real frames from ChatGPT and Gemini.</p>
 </div>
 </div>
 
@@ -165,6 +165,22 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="current"><span class="n">3</span>Current</h2>
 <p class="sub" style="margin:0 0 8px">Release 2026.11.20 (build 0) submitted with your What's New, seven iPhone and seven iPad screenshots and the new video.</p>
 <div class="card">
+<p style="margin-top:0"><b>Kitchen flow for choux and cake: running, with placeholder pictures.</b> In the project, checked in the editor; no test build yet.</p>
+<figure><img src="kitchen_flow.jpg" alt="Seven kitchen pictures. 1: the empty choux plate in the opening under the counter and the empty cake stand on the counter. 2: after the oven, four plain choux on the plate and the whisk glowing gold. 3: the whisk rocking. 4: choux with white cream, a sponge on the cake stand, the fruit board and the whisk glowing gold. 5: the four finished choux on the plate. 6: the plate empty again. 7: the finished strawberry cake on the stand"><figcaption>Kitchen. The whisk stands in for the mixer; the cream and sponge pictures are placeholders.</figcaption></figure>
+<ul>
+<li><b>With choux or cake on the menu</b> the empty choux plate and the empty cake stand stand in the kitchen and can be arranged like the other pieces. The plate starts in the opening under the counter, because the counter is full; drag it where you like.</li>
+<li><b>Choux:</b> oven → plain choux on the plate → the mixer glows, a tap, it runs 2.5 s → cream → the fruit board glows, a tap, 2 s → the finished choux show for a moment, fly to the kitchen's handle, the table is refilled, the plate is empty.</li>
+<li><b>Cake:</b> the same on the cake stand: sponge → cream → finished cake → table.</li>
+<li>The oven takes no new choux (or cake) while its plate is busy. With both waiting, one tap does the one that waited longest. Pause stops the steps; the kitchen upgrade shortens them.</li>
+<li>Not done yet: the cutting animation and the mixer are stand-ins (the board hops, the whisk rocks); the test robot that plays whole chapters does not know the new taps.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.kflow2.good"> The flow is right: on to the real pictures</label></li>
+<li><label><input type="checkbox" data-id="cur.kflow2.change"> Changes (I will say what)</label></li>
+</ul>
+</div>
+
+<div class="card">
 <p style="margin-top:0"><b>Day 9 on the chapter 1 map: four ideas.</b> Mock-ups; nothing built.</p>
 <figure><img src="map_day9_ideas.jpg" alt="Four views of the chapter 1 map around day 9. 1: day 9 is a big glowing star cookie with a tag Opens the beach! and a dotted trail to the locked chapter 2 arrow. 2: day 9 ringed in gold beside a wooden signpost TO THE BEACH and a palm cookie. 3: day 9 is an ice cream cookie with a red 9 badge, and the arrow's lock wears a tag after day 9. 4: day 9 in gold with a red bow, a gift cookie beside it, a tag Day 9 opens chapter 2, a palm over the arrow"><figcaption>Map, chapter 1. 1 star cookie with a trail, 2 signpost, 3 ice cream day, 4 gift.</figcaption></figure>
 <ul class="checks">
@@ -209,20 +225,6 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.ready1b.good"> Good</label></li>
 <li><label><input type="checkbox" data-id="cur.ready1b.change"> Changes (I will say what)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Kitchen flow: the first four frames.</b> Drafts for shape and size only; once these are right, ChatGPT and Gemini draw them in our style.</p>
-<figure><img src="kitchen_drafts1.jpg" alt="Four kitchen pictures in a row. 1: the long white choux platter with its blue rim, empty. 2: the same platter with four plain golden choux puffs, no cream, no fruit, each with a small grey shadow. 3: the white cake stand on the blue gingham napkin, empty. 4: the same stand with a plain golden sponge cake on it, no cream, no strawberries"><figcaption>Kitchen. 1 and 3 are the game's own platter and stand; 2 and 4 are new.</figcaption></figure>
-<ul>
-<li><b>Sizes:</b> the four choux take the places and size of today's four. The sponge is a little lower and narrower than the finished cake (no cream yet).</li>
-<li><b>The stand keeps the napkin</b> as on the table.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.kflow1.good"> Shapes and sizes good: brief ChatGPT and Gemini</label></li>
-<li><label><input type="checkbox" data-id="cur.kflow1.nonapkin"> No napkin under the stand in the kitchen</label></li>
-<li><label><input type="checkbox" data-id="cur.kflow1.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
