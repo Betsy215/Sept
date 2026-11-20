@@ -262,6 +262,12 @@ public class SimpleScorePopup : MonoBehaviour
         }
         NextAtScreen = null;
 
+        // The receipt restyled as a till receipt (owner, 19 November 2026: "restyle the receipt card too ... improve our
+        // receipt using that style"; "don't put title text on receipt"): zigzag ends, dashed lines, no title (Resources/UI/receipt_paper, the same
+        // shape and paper place as the white receipt it replaces; Store/ui/receipt_2026-11-19/build.py)
+        var restyled = backgroundSprite != null ? Resources.Load<Sprite>("UI/receipt_paper") : null;
+        if (restyled != null) backgroundSprite = restyled;
+
         // Create BACKGROUND child (separate GameObject)
         if (backgroundSprite != null)
         {

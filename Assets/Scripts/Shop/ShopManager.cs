@@ -609,6 +609,7 @@ public class ShopManager : MonoBehaviour
     /// hundredths of an em, added to a line spacing) and HandTopFix (in em, times the font size, a shift down) keep
     /// every line where it was.
     public const string HandFontPath = "Fonts & Materials/Delius SDF";
+    private static readonly Color PaperInk = new Color(0.36f, 0.20f, 0.09f);   // brown ink on the paper panels
     public const float HandLineFix = 72f, HandTopFix = 0.42f;
     public float cardScale = 0.62f;
     private const int Columns = 3;
@@ -910,12 +911,28 @@ public class ShopManager : MonoBehaviour
             // under it. The hand is Delius since 19 November 2026 (see HandFontPath).
             var chalk = Resources.Load<TMP_FontAsset>(HandFontPath);
             if (chalk != null) popupItemInfo.font = chalk;
+            // On paper since 19 November 2026 (owner: "also use a paper style for shop item description panel"; their
+            // pick 3 of four, "remove the tables, remove the title text"): a cream card held by tape instead of the
+            // wooden board (Resources/UI/buy_card, Store/ui/shop_popup_paper_2026-11-19/build_card.py), a little shorter,
+            // the writing in brown ink, the price in blue ink. Without the picture the board and the chalk stay.
+            var cardArt = Resources.Load<Sprite>("UI/buy_card"); var onPaper = cardArt != null;
+            if (onPaper)
+            {
+                var boardImg = purchaseConfirmationPopup.GetComponent<Image>();
+                if (boardImg != null) { boardImg.sprite = cardArt; boardImg.type = Image.Type.Simple; boardImg.preserveAspect = false; }
+                ((RectTransform)purchaseConfirmationPopup.transform).sizeDelta = new Vector2(1100f, 1480f);
+                foreach (var b in new[] { confirmPurchaseButton, cancelPurchaseButton })
+                {
+                    var brt = b != null ? b.transform as RectTransform : null;
+                    if (brt != null) brt.anchoredPosition = new Vector2(brt.anchoredPosition.x, -585f);
+                }
+            }
             var lines = (item.popupInfoText ?? "").Split('\n');
             // the price line in blue chalk, for a price in stars as well (owner, 14 November 2026: the star card "use the same layout as the coins tab")
-            if (lines.Length > 0 && (lines[0].TrimStart().StartsWith("$") || TabOf(item) == ShopTab.Stars)) lines[0] = "<color=#9FD2FF>" + lines[0] + "</color>";
+            if (lines.Length > 0 && (lines[0].TrimStart().StartsWith("$") || TabOf(item) == ShopTab.Stars)) lines[0] = (onPaper ? "<color=#3A70B0>" : "<color=#9FD2FF>") + lines[0] + "</color>";
             var shown = DisplayName(item);                                                                    // the card's name on top (owner, 18 October: "why is it a big eater instead of chef")
             popupItemInfo.text = TextStars.Mark((shown != null ? shown + "\n" : "") + string.Join("\n", lines));   // a star picture where the text says [*]
-            popupItemInfo.color = Color.white;
+            popupItemInfo.color = onPaper ? PaperInk : Color.white;
             popupItemInfo.richText = true;
             popupItemInfo.fontSize = 70f; popupItemInfo.lineSpacing = -18f + HandLineFix; popupItemInfo.alignment = TextAlignmentOptions.Center;   // one size, tighter lines (owner, 18 October)
             popupItemInfo.fontStyle = FontStyles.Bold;
@@ -931,7 +948,7 @@ public class ShopManager : MonoBehaviour
             var mat = popupItemInfo.fontMaterial; if (mat != null && mat.HasProperty("_FaceDilate")) mat.SetFloat("_FaceDilate", 0.08f);
             var note = EnsureNoteLabel(chalk);
             var hasNote = note != null && !string.IsNullOrWhiteSpace(item.specialNote);
-            if (note != null) { note.text = item.specialNote ?? ""; note.gameObject.SetActive(hasNote); }
+            if (note != null) { note.text = item.specialNote ?? ""; note.gameObject.SetActive(hasNote); if (onPaper) note.color = new Color(0.22f, 0.50f, 0.32f); }   // green ink on the paper
             // fixed places (owner, 16 October): the price and a two-line description in one label, the one-line note
             // under it; every card's text was cut to fit, so nothing is measured and nothing can overlap
             var shift = 0f;

@@ -74,8 +74,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 2026.11.19 (1) is in TestFlight.</b> After it came: the glass shop panel with tab design A, the new font, the cake fix, and the last Daily Treats change (approved). Say "build" for (2).</p>
-<p><b>Current:</b> pick a paper for the shop's buy panel.</p>
+<p><b>Test build 2026.11.19 (1) is in TestFlight.</b> After it came: the glass shop panel with tab design A, the new font, the paper buy panel, the new receipt, the cake repair, and the last Daily Treats change (approved). Say "build" for (2).</p>
 <p><b>Q&amp;A:</b> the journal's milestones.</p>
 <p><b>MVP:</b> pick a mixer (three like your photo, cuter).</p>
 </div>
@@ -139,22 +138,30 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>The shop's buy panel on paper: four proposals.</b> Mock-ups on the real shop screen.</p>
-<figure><img src="shop_popup_paper.jpg" alt="Five versions of the shop's buy panel for Grandma. Now: the tall wooden board with white writing. 1: a brown kraft price tag with cut corners, a stitched edge and a red and white twine through its hole. 2: a white till receipt with zigzag ends, the cafe's name on top, dashed lines and a small barcode. 3: a cream recipe card with a red line and blue ruled lines, held by two strips of tape. 4: the Daily Treats card: cream paper with a mint checked band and a dotted line. Each shows the cookie, the name, the price in blue ink, the description, and the two cookie buttons"><figcaption>Left: today's wooden board. Then the four papers. The writing is brown ink in your new font; the price stays blue.</figcaption></figure>
+<p style="margin-top:0"><b>The shop's buy panel: your paper 3.</b> After build (1).</p>
+<figure><img src="buy_paper.jpg" alt="The shop's buy panel four times as a cream paper card held by two strips of tape, no lines and no title: Grandma, 380, She tips double; Extra cup with a two-line description; the red message Not enough points when the coins are short; Remove ads with its two sentences. Brown ink in the new font, the price in blue, the two cookie buttons at the bottom"><figcaption>Grandma; a two-line description; too few coins; Remove ads.</figcaption></figure>
 <ul>
-<li><b>1, price tag:</b> kraft paper on baker's twine, a stitched edge. The most "shop".</li>
-<li><b>2, receipt:</b> like the day's receipt you already have: zigzag ends, dashed lines.</li>
-<li><b>3, recipe card:</b> ruled card held by tape. The red word on top would be the kind of thing (food, help, kitchen, decor).</li>
-<li><b>4, mint card:</b> the same paper as Daily Treats.</li>
-<li>All four are shorter than the wooden board, so more of the shop stays in view.</li>
-<li>My pick: <b>1</b>. It says "for sale" by itself and looks different from the receipt and from Daily Treats.</li>
+<li>The cream card with two strips of tape. No title. I took "tables" to mean the ruled lines and removed them; tick below if you meant the tape.</li>
+<li>Brown ink, the price in blue ink; a little shorter than the wooden board was.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.buypaper.1"> 1 Price tag</label></li>
-<li><label><input type="checkbox" data-id="cur.buypaper.2"> 2 Receipt</label></li>
-<li><label><input type="checkbox" data-id="cur.buypaper.3"> 3 Recipe card</label></li>
-<li><label><input type="checkbox" data-id="cur.buypaper.4"> 4 Mint card</label></li>
-<li><label><input type="checkbox" data-id="cur.buypaper.more"> More options (I will say what I like)</label></li>
+<li><label><input type="checkbox" data-id="cur.buycard.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.buycard.tape"> I meant the tape: remove it</label></li>
+<li><label><input type="checkbox" data-id="cur.buycard.change"> Changes (I will say what)</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>The receipt, restyled like option 2.</b> After build (1).</p>
+<figure><img src="receipt_restyle.jpg" style="max-height:420px" alt="Left: the receipt as it was, white paper with scalloped ends, two thin lines and a barcode, the amount and the tips in the middle. Right: the new receipt in the game: zigzag ends, dashed lines, the amount and the tips in the middle, a barcode and a small THANK YOU under it; no title"><figcaption>Left: before. Right: now, in the game.</figcaption></figure>
+<ul>
+<li>Zigzag ends, dashed lines, a barcode with a small THANK YOU under it. No title, as you said. The amount and the tips are where they were, same size.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.receipt2.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.receipt2.nothanks"> Remove THANK YOU too</label></li>
+<li><label><input type="checkbox" data-id="cur.receipt2.old"> Go back to the old receipt</label></li>
+<li><label><input type="checkbox" data-id="cur.receipt2.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
@@ -173,15 +180,16 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Strawberry cake, frame 2: both places fixed.</b> After build (1).</p>
-<figure><img src="cake_frame2_fixed.jpg" alt="Frame 2 of the cake, enlarged, before and after. Before: a thin tan and red line down the left edge of the empty space and a pale strip at the left end of the cut face. After: the empty space's left edge is clean down to the plate, and the cut face ends at one clean edge"><figcaption>Left: before. Right: now.</figcaption></figure>
+<p style="margin-top:0"><b>Strawberry cake, frame 2: repaired again, with ChatGPT.</b> After build (1).</p>
+<figure><img src="cake_frame2_fixed.jpg" alt="Frame 2 of the cake, enlarged, twice. Left, this afternoon's fix: the empty space is a flat patch with a faint straight seam beside the front slice, whose edge is a hard vertical line. Right, now: the bare plate is one smooth surface with a soft shade under the cut face and beside the front slice, and the slice's edge runs naturally from the cake's middle down to the plate"><figcaption>Left: this afternoon's fix. Right: now.</figcaption></figure>
 <ul>
-<li><b>1:</b> the line down the left edge of the empty space is gone; the bare plate is there, as in the other frames.</li>
-<li><b>2:</b> the pale strip is gone; the cut face ends at one clean edge.</li>
+<li><b>What was still wrong:</b> a faint straight seam on the plate beside the front slice, and that slice's edge was a hard vertical line, like cut with scissors.</li>
+<li><b>Now:</b> ChatGPT repainted the frame; I took only its empty space (the bare plate with its soft shade, and the front slice's edge) and fitted it into the game's frame. Every slice, strawberry, the stand and the napkin are still the game's own pixels, so nothing jumps between frames.</li>
+<li>That was ChatGPT's last picture for today; the next is free tomorrow at 11:29.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.cake5.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.cake5.more"> Still something (I will say)</label></li>
+<li><label><input type="checkbox" data-id="cur.cake6.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.cake6.more"> Still something (I will say)</label></li>
 </ul>
 </div>
 
