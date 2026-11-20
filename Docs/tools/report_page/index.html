@@ -74,42 +74,24 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Release 2026.11.20 is submitted</b> (20 Nov, 08:25), waiting for Apple's review; it goes to the store by itself once approved.</p>
-<p><b>Q&amp;A:</b> three kitchen-flow questions; how chapter 2 opens after day 9; the store's new header.</p>
-<p><b>Current:</b> the kitchen flow; pick a day-9 look and a thinking sign; the shop locks.</p>
+<p><b>Release 2026.11.20</b> is waiting for Apple's review; it goes to the store by itself once approved.</p>
+<p><b>Current:</b> ChatGPT's two cake stages; the mixer set (pose and colours); the kitchen flow with your notes; chapter 2 after day 9.</p>
+<p>Open when you have decided: the day-9 look, the thinking sign, the store's header.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>The kitchen flow runs with placeholders (Current). Next on your word: a test build, the mixer picture, the real frames from ChatGPT and Gemini.</p>
+<p>On your ticks: the cake stages into the game, the mixer picture from Gemini or ChatGPT in the pose you pick. A test build on your word.</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>Kitchen flow: my questions (I build with the first answer of each unless you tick another)</h3>
+<div class="q"><h3>Why does App Store Connect not show the 19th yet? Normally yesterday's data is there every morning.</h3>
 <ul>
-<li><b>Cake steps.</b> As I understand it: oven → a sponge appears on the cake stand → mixer glows, tap, the sponge gets its cream → fruit board glows, tap, cutting → the finished strawberry cake shows for a moment and flies to the table, the stand is empty again.</li>
-<li><b>Choux and cake both waiting for the mixer</b> (or the board): one tap does one dessert, the one that has waited longest; a second tap does the other.</li>
-<li><b>A plate that is still busy:</b> the oven does not take a new choux bake while choux are on the plate unfinished (same for the cake stand).</li>
-<li>Placeholder times: mixer 2.5 s, cutting 2 s (shorter with the kitchen upgrade). The whisk stands in for the mixer until its picture exists.</li>
+<li><b>It is late on Apple's side, not ours.</b> At 12:10 today the Analytics page of the game ended on <b>18 November</b>; the 19th had not arrived.</li>
+<li>The Trends page showed "An unexpected error occurred" and a notice from Apple dated the same day: "As of November 19, 2026, new Sales Events Reports are no longer generated", and Trends dashboards are being retired in favour of the app's Analytics tab. So Apple changed its reporting on the 19th; I cannot see more of the cause than that.</li>
+<li>Apple's status page lists Analytics and Sales and Trends as available, no outage. Analytics data can take up to two days; I will look again tomorrow morning and note it here.</li>
+<li>While there: the last 30 days show <b>131 first-time downloads</b> (up from about 21), 17.1K impressions, 2.02K page views.</li>
 </ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.kflow.ok"> All as you wrote</label></li>
-<li><label><input type="checkbox" data-id="qa.kflow.cakeother"> Cake steps are different (I will say)</label></li>
-<li><label><input type="checkbox" data-id="qa.kflow.both"> One tap on the mixer or board does both desserts</label></li>
-<li><label><input type="checkbox" data-id="qa.kflow.queue"> The oven may bake again while the plate is busy</label></li>
-</ul>
-</div>
-<div class="q"><h3>Chapter 2 opens after day 9: how should it work?</h3>
-<ul>
-<li>Today a save counts finished days in one line, so the beach starts only after day 12. With the new rule, days 10 to 12 and the beach days are open at the same time; I will give each chapter its own count of finished days.</li>
-<li><b>A (my pick):</b> after day 9 the arrow to the beach unlocks with a small celebration; the player chooses. Days 10 to 12 stay playable whenever they like, and each page of the map shows its own next day.</li>
-<li><b>B:</b> after day 9 the game moves to the beach by itself; days 10 to 12 are optional extras to come back to.</li>
-<li>Already built: the shop's Cookies card unlocks when day 9 is finished.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.day9.a"> A: the player chooses</label></li>
-<li><label><input type="checkbox" data-id="qa.day9.b"> B: on to the beach by itself</label></li>
-<li><label><input type="checkbox" data-id="qa.day9.other"> Something else (I will say)</label></li>
-</ul>
+<ul class="checks"><li><label><input type="checkbox" data-id="qa.asc19.seen"> Seen</label></li></ul>
 </div>
 <div class="q"><h3>What are "Header" and "Search Results" on the release page? They are empty for our game.</h3>
 <ul>
@@ -121,16 +103,6 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="qa.header.drafts"> Make drafts for both</label></li>
 <li><label><input type="checkbox" data-id="qa.header.leave"> Leave them empty</label></li>
 </ul>
-</div>
-<div class="q"><h3>The drag-to-arrange animation in the kitchen: do we have it in the game scene too? How and when does it play?</h3>
-<ul>
-<li><b>Yes, on the table too.</b> Both belong to one lesson, on <b>day 2 only</b> (the first day a player arranges; day 1 comes ready-arranged).</li>
-<li><b>Table:</b> when day 2's arranging starts, the banner "Drag to arrange your table" shows and a hand carries the real coffee machine to the middle of the table and back, once.</li>
-<li><b>Kitchen:</b> when the kitchen opens during that same arranging time (by the pull handle, or by itself after Ready on the table), the banner reads "Drag to arrange your kitchen" and the hand carries the coffee bags down to the counter and back, once.</li>
-<li>A touch anywhere stops the hand and puts the thing back. If the menu book interrupts it, it plays again when that place shows again.</li>
-<li>Once day 2's Ready is done, the lesson never comes back.</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.arrlesson.seen"> Seen</label></li></ul>
 </div>
 <div class="q"><h3>The sale price of each item</h3>
 <ul>
@@ -152,31 +124,59 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 <ul class="checks"><li><label><input type="checkbox" data-id="qa.ktimes.seen"> Seen</label></li></ul>
 </div>
-<div class="q"><h3>Do we show locked items in the shop, e.g. cookies in chapter 1?</h3>
-<figure><img src="shop_locked.jpg" style="max-height:520px" alt="The chapter 1 shop, coins tab: the Cookies card at $600 is a red heart cookie with a yellow padlock, second row, third column"><figcaption>Chapter 1 shop: Cookies at $600, locked (second row, right).</figcaption></figure>
-<ul>
-<li><b>Yes:</b> in chapter 1 the <b>Cookies</b> card shows at $600 as the heart cookie with a yellow padlock. A tap does nothing; it opens when chapter 2 starts.</li>
-<li>Coconut has the same lock for chapter 2, but it is a chapter 2 food, so in chapter 1 it does not show at all.</li>
-<li>Foods of the other chapter (ice cream in chapter 1; apples and coffee in chapter 2) are not in the shop.</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.locked.seen"> Seen</label></li></ul>
-</div>
-
 <h2 id="current"><span class="n">3</span>Current</h2>
 <p class="sub" style="margin:0 0 8px">Release 2026.11.20 (build 0) submitted with your What's New, seven iPhone and seven iPad screenshots and the new video.</p>
 <div class="card">
-<p style="margin-top:0"><b>Kitchen flow for choux and cake: running, with placeholder pictures.</b> In the project, checked in the editor; no test build yet.</p>
-<figure><img src="kitchen_flow.jpg" alt="Seven kitchen pictures. 1: the empty choux plate in the opening under the counter and the empty cake stand on the counter. 2: after the oven, four plain choux on the plate and the whisk glowing gold. 3: the whisk rocking. 4: choux with white cream, a sponge on the cake stand, the fruit board and the whisk glowing gold. 5: the four finished choux on the plate. 6: the plate empty again. 7: the finished strawberry cake on the stand"><figcaption>Kitchen. The whisk stands in for the mixer; the cream and sponge pictures are placeholders.</figcaption></figure>
+<p style="margin-top:0"><b>Kitchen flow for choux and cake: your three notes are in.</b> In the project, checked in the editor; no test build yet.</p>
+<figure><img src="kitchen_flow.jpg" alt="Three kitchen pictures. The empty choux plate on the kitchen table behind the fruit board, the empty cake stand on its napkin. Four round plain choux on the plate, the whisk glowing gold. The four choux with their own creams, white, purple, pink and yellow, no fruit yet, the fruit board glowing gold"><figcaption>Kitchen. The plate now starts on the kitchen table; the plain choux are rounder; the creamed choux are the final four without their fruit.</figcaption></figure>
 <ul>
-<li><b>With choux or cake on the menu</b> the empty choux plate and the empty cake stand stand in the kitchen and can be arranged like the other pieces. The plate starts in the opening under the counter, because the counter is full; drag it where you like.</li>
-<li><b>Choux:</b> oven → plain choux on the plate → the mixer glows, a tap, it runs 2.5 s → cream → the fruit board glows, a tap, 2 s → the finished choux show for a moment, fly to the kitchen's handle, the table is refilled, the plate is empty.</li>
-<li><b>Cake:</b> the same on the cake stand: sponge → cream → finished cake → table.</li>
-<li>The oven takes no new choux (or cake) while its plate is busy. With both waiting, one tap does the one that waited longest. Pause stops the steps; the kitchen upgrade shortens them.</li>
-<li>Not done yet: the cutting animation and the mixer are stand-ins (the board hops, the whisk rocks); the test robot that plays whole chapters does not know the new taps.</li>
+<li><b>Flow, as you confirmed:</b> oven → plain bake on its plate → mixer glows, tap → cream → fruit board glows, tap → finished, flies to the table, plate empty. Cake the same on the stand.</li>
+<li><b>Plate's first place:</b> a free spot on the kitchen table; only if the table is full, the opening under the counter.</li>
+<li>Still stand-ins: the whisk as the mixer, the board's hop as the cutting, my choux pictures.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.kflow2.good"> The flow is right: on to the real pictures</label></li>
-<li><label><input type="checkbox" data-id="cur.kflow2.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.kflow3.good"> Good so far</label></li>
+<li><label><input type="checkbox" data-id="cur.kflow3.change"> Changes (I will say what)</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>ChatGPT: the sponge and the creamed cake</b>, drawn from the kitchen's finished cake as the reference.</p>
+<figure><img src="cake_stages_gpt.jpg" alt="Two paintings in the kitchen cake's style. Left: the white stand on the blue checked napkin with a golden sponge cake. Right: the same with the cake covered in smooth white cream, no strawberries"><figcaption>Kitchen. Left the sponge, right the cake with cream; the finished cake stays your painting.</figcaption></figure>
+<ul><li>On your tick I cut the two cakes out and set them on your own stand and napkin (your pixels stay), in place of my placeholders.</li></ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.gptcake.use"> Use both</label></li>
+<li><label><input type="checkbox" data-id="cur.gptcake.redo"> Redraw (I will say what)</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Mixer: an electric hand mixer with its bowl, as one set.</b> Three poses of mine (shape only) and four from Gemini.</p>
+<figure><img src="mixer_mine.jpg" alt="Three flat drafts on a wood colour. 1: a cream hand mixer held over a white bowl with two blue stripes, the beaters in the cream. 2: a mint hand mixer standing on its heel beside a cream bowl. 3: a pink hand mixer leaning into a blue bowl"><figcaption>Mine. 1 over the bowl, 2 standing beside it, 3 leaning in.</figcaption></figure>
+<figure><img src="mixer_gemini.jpg" alt="Four painted sets by Gemini. A cream mixer resting on a blue bowl. A mint mixer standing beside a cream bowl. A pink mixer with a curly cord leaning into a white bowl with a blue rim. A yellow mixer lying in front of a pale blue striped bowl"><figcaption>Gemini. G1 cream on blue, G2 mint standing, G3 pink leaning in, G4 yellow lying in front.</figcaption></figure>
+<ul><li>For the game the set is one piece on the kitchen table; while it runs the mixer can tremble and the cream rise. Tell me pose and colours, or tick.</li></ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.hmix.1"> Pose 1 (over the bowl)</label></li>
+<li><label><input type="checkbox" data-id="cur.hmix.2"> Pose 2 (standing beside)</label></li>
+<li><label><input type="checkbox" data-id="cur.hmix.3"> Pose 3 (leaning in)</label></li>
+<li><label><input type="checkbox" data-id="cur.hmix.g1"> Gemini G1</label></li>
+<li><label><input type="checkbox" data-id="cur.hmix.g2"> Gemini G2</label></li>
+<li><label><input type="checkbox" data-id="cur.hmix.g3"> Gemini G3</label></li>
+<li><label><input type="checkbox" data-id="cur.hmix.g4"> Gemini G4</label></li>
+<li><label><input type="checkbox" data-id="cur.hmix.more"> More (I will say what)</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Chapter 2 opens after day 9 (your pick A): built.</b> In the project, checked in the editor.</p>
+<figure><img src="day9_unlock.jpg" alt="Four map pictures. Chapter 1 with day 9 next and the arrow to chapter 2 locked. After day 9: the arrow open, shining, with a NEW label; day 10 is next. The beach map with day 13 as its next day. Back on chapter 1 after a beach day: day 10 still waits"><figcaption>Map. The arrow opens after day 9; each chapter keeps its own next day.</figcaption></figure>
+<ul>
+<li>Days 10 to 12 stay playable any time; finishing them later still counts.</li>
+<li>The arrow wears NEW and shines until the first beach day is done. The day-9 look below is still yours to pick.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.day9built.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.day9built.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
@@ -206,41 +206,13 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 </div>
 
-<div class="card">
-<p style="margin-top:0"><b>Shop: locks and NEW on tabs, in the project.</b></p>
-<figure><img src="shop_locks.jpg" alt="Four shop pictures. Before day 9: the coins tab, NEW labels on the star tab's icon and the banknote tab's icon, the yoga customer card with NEW. The stars tab: the kitchen upgrade, and two darkened cards with padlocks at 15 and 20 stars. After day 9: the Cookies heart card open with NEW. After the yoga lady is bought as a customer: her star card open with NEW, the chef still locked"><figcaption>Shop. A tab's icon wears NEW while it holds something not looked at yet.</figcaption></figure>
-<ul>
-<li><b>NEW on a tab</b> when a card under it becomes buyable for the first time; it goes once that tab has been looked at.</li>
-<li><b>Locked cards show with a padlock</b> and take no taps: Cookies until day 9 is finished; the yoga lady's star card until she is bought as a customer; the new <b>Chef</b> star card (20 stars) stays locked for now.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.locks.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.locks.change"> Changes (I will say what)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>"Ready to go?" card: your pick 1, in the game.</b> The tutorial's last card on the doily paper; LET'S GO! and the replay cookie press and crunch like the other cookie buttons; the words "Replay tutorial" can be tapped too.</p>
-<figure><img src="ready_card1.jpg" style="max-height:620px" alt="The end of the tutorial on the beach: the doily card with READY TO GO?, Your truck is open for business!, a big LET'S GO! cookie and the round replay cookie with Replay tutorial beside it"><figcaption>Captured in the editor at the end of the chapter 2 tutorial; Let's go starts the day.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.ready1b.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.ready1b.change"> Changes (I will say what)</label></li>
-</ul>
-</div>
-
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Release 2, this weekend: the kitchen flow, with a baking mixer. Waiting for your flow.</p>
-<div class="card">
-<p style="margin-top:0"><b>The mixer, like your photo but cuter.</b></p>
-<figure><img src="mixer_bowllift.jpg" alt="Three painted bowl-lift stand mixers seen from the side, rounder and plumper than a real one: a wide rounded head with a band and a small round speed lever, a thick column on a rounded foot, a steel bowl with a handle held on an arm. A: silver grey. B: cream with a red lever and a red cap. C: mint green"><figcaption>Gemini, in the kitchen's painting style: the same build as your photo (side view, bowl held on an arm, lever on the band), made rounder and shorter.</figcaption></figure>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="mvp.mixer2.a"> A silver</label></li>
-<li><label><input type="checkbox" data-id="mvp.mixer2.b"> B cream</label></li>
-<li><label><input type="checkbox" data-id="mvp.mixer2.c"> C mint</label></li>
-<li><label><input type="checkbox" data-id="mvp.mixer2.cuter"> Even cuter (rounder, shorter)</label></li>
-<li><label><input type="checkbox" data-id="mvp.mixer2.more"> Other changes (I will say what)</label></li>
+<p class="sub" style="margin:0 0 8px">Next release: the kitchen remodel and the small fixes.</p>
+<ul>
+<li><b>In the project:</b> the kitchen flow for choux and cake (placeholders); chapter 2 after day 9; shop locks and NEW on tabs; taller hen; aligned shop; the day card opening on the map; pause stops the kitchen; the "Ready to go?" card; the extra cup's words.</li>
+<li><b>Waiting on you:</b> the mixer set's pose (Current), ChatGPT's cake stages, the day-9 look, the thinking sign.</li>
+<li><b>Still to make:</b> the real choux stages and the mixer picture; the cutting animation; the test robot learning the new kitchen taps.</li>
 </ul>
-</div>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>
