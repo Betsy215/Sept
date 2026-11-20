@@ -50,8 +50,10 @@ public class MapScreen : MonoBehaviour
         Time.timeScale = 1f;
         font = Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF");
         var sm0 = SessionManager.Instance;
-        var done0 = sm0 != null ? sm0.GetLevelsCompleted() : 0;
-        page = Mathf.Clamp(Chapter.Of(done0) - 1, 0, Chapter.Count - 1);   // the page with today's day
+        // the page of the day the player is on (the next day after the one just played); the chapters run side by side
+        // since chapter 2 opens after day 9 (20 November 2026)
+        var on0 = sm0 != null ? Chapter.Of(sm0.GetCurrentLevelIndex()) : 1;
+        page = Mathf.Clamp(Mathf.Min(on0, SessionManager.ChaptersOpen) - 1, 0, Chapter.Count - 1);
         Build();
         // today's day card opens by itself once the map is up (owner, 20 November 2026: "Show the day start panel
         // automatically when the level map shows up"); Cancel closes it and the map is there as before
@@ -106,8 +108,8 @@ public class MapScreen : MonoBehaviour
         var Stars = StarsOf(page);
         var days = Chapter.DaysIn(page + 1);                     // this chapter's days (12 in chapter 1, 16 in chapter 2)
         var first = Chapter.FirstDay(page + 1);                   // this page's first day index
-        var completed = Mathf.Clamp((sm != null ? sm.GetLevelsCompleted() : 0) - first, 0, days);   // days done on this page
-        var todayHere = sm == null || Chapter.Of(sm.GetLevelsCompleted()) - 1 == page;   // today's day is on this page
+        var completed = sm != null ? sm.DaysDoneIn(page + 1) : 0;   // days done on this page
+        var todayHere = sm == null || page + 1 <= SessionManager.ChaptersOpen;   // every open chapter has its own next day
         var today = Mathf.Min(completed, days - 1);              // the next day to play
         var allDone = completed >= days;
 
@@ -197,7 +199,8 @@ public class MapScreen : MonoBehaviour
 
         // The next chapter's arrow: locked while there is no next chapter to show, a button once there is
         // (21 October) and only once every day of this page is done: before that a new player could open chapter 2 and play day 17 first
-        var nextOpen = page + 1 < Chapter.Count && completed >= days;
+        // (20 November 2026, owner: chapter 2 opens when day 9 is finished; the player chooses when to go)
+        var nextOpen = page + 1 < Chapter.Count && SessionManager.ChaptersOpen >= page + 2;
         var arrow = NewImage(nextOpen ? "NextChapter" : "NextChapterLocked", canvasRect, Load(nextOpen ? "arrow_right" : "arrow_right_locked"));
         arrow.rectTransform.anchorMin = arrow.rectTransform.anchorMax = new Vector2(1f, 0.5f);
         arrow.rectTransform.pivot = new Vector2(1f, 0.5f);
@@ -205,6 +208,8 @@ public class MapScreen : MonoBehaviour
         arrow.SetNativeSize();
         arrow.raycastTarget = nextOpen;
         if (nextOpen) { var ab = arrow.gameObject.AddComponent<Button>(); ab.transition = Selectable.Transition.None; ab.onClick.AddListener(() => ShowPage(page + 1)); }
+        // newly open and not played yet: the arrow wears NEW and shines until the first day there is done
+        if (nextOpen && sm != null && sm.DaysDoneIn(page + 2) == 0) { NewTag.OnUI(arrow.rectTransform); GlowFx.Shine(arrow); }
         if (page > 0)
         {
             var back = NewImage("PreviousChapter", canvasRect, Load("arrow_left"));

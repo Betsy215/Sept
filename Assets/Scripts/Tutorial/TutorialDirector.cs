@@ -39,7 +39,7 @@ public class TutorialDirector : MonoBehaviour
     {
         if (ReplayRequested2) return true;
         var s = sm != null ? sm.GetCurrentSession() : null;
-        return s != null && s.isActive && !s.tutorial2Seen && SessionManager.CurrentChapter == 2 && s.levelsCompleted == Chapter.DaysPerChapter[0];
+        return s != null && s.isActive && !s.tutorial2Seen && SessionManager.CurrentChapter == 2 && sm.DaysDoneIn(2) == 0;   // chapter 2's first day (it can open before chapter 1 is finished)
     }
 
     public void Begin2(LevelManager lm, GamePhaseManager gpm, OrderSystem os, CustomerManager cm)

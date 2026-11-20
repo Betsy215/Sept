@@ -66,6 +66,10 @@ public class SessionData
     // three-star bonus has been paid. Missing (null) in sessions saved before the map.
     public List<int> levelStars;
     public List<int> starBonusPaidDays;
+    // Days finished in each chapter (index = chapter - 1), since chapter 2 opens after day 9 (20 November 2026) and
+    // the chapters can be played side by side. levelsCompleted stays the unbroken run of finished days from day 1;
+    // a chapter's count is the larger of the two (older saves have only the run).
+    public List<int> chapterDone;
     // The star shop (14 November 2026): what was bought with stars, and how many stars that took. The stars a player
     // can spend are the stars earned minus these; the days keep their stars on the map.
     public List<string> starItems;
@@ -255,12 +259,11 @@ public class SessionManager : MonoBehaviour
     /// Cookies and Coconut open with chapter 2, and once bought they play in any chapter.
     public static readonly Dictionary<string, int> UnlockChapter = new Dictionary<string, int> { { "Cookies", 2 }, { "Coconut", 2 } };
     /// Chapters the player has reached: the chapter of the next day to play (12 days in chapter 1, 16 in chapter 2), never past Chapter.Count
-    public static int ChaptersStarted => Mathf.Clamp(Chapter.Of(Instance != null ? Instance.GetLevelsCompleted() : 0), 1, Chapter.Count);
+    public static int ChaptersStarted => Mathf.Clamp(Instance != null && (Instance.DaysDoneIn(2) > 0 || Instance.DaysDoneIn(1) >= Chapter.DaysIn(1)) ? 2 : 1, 1, Mathf.Max(1, Chapter.Count));
     /// Chapter 2 opens once day 9 is finished (owner, 20 November 2026: "I want chapter to be unlocked when day 9 is
-    /// finished in chapter 1"); the shop's chapter locks follow it. (The map still opens chapter 2 after day 12 until its
-    /// new logic is built.)
+    /// finished in chapter 1"); the shop's chapter locks and the map's arrow follow it. Days 10 to 12 stay playable.
     public const int Chapter2OpensAfterDays = 9;
-    public static int ChaptersOpen => Mathf.Clamp(Mathf.Max(ChaptersStarted, Instance != null && Instance.GetLevelsCompleted() >= Chapter2OpensAfterDays ? 2 : 1), 1, Mathf.Max(1, Chapter.Count));
+    public static int ChaptersOpen => Mathf.Clamp(Mathf.Max(ChaptersStarted, Instance != null && Instance.DaysDoneIn(1) >= Chapter2OpensAfterDays ? 2 : 1), 1, Mathf.Max(1, Chapter.Count));
     /// The star shop's chef (owner, 20 November 2026: "Add another star item - chef, he is locked, costs 20 stars, lock him
     /// for now, we won't unlock for now until later release").
     public const string StarChefName = "StarChef"; public const int StarChefPrice = 20;
@@ -582,9 +585,17 @@ public class SessionManager : MonoBehaviour
     {
         if (currentSession != null && currentSession.isActive)
         {
-            currentSession.currentLevel = levelIndex + 1; // Next level to play
-            // A replay of an earlier day must not move progress back
-            currentSession.levelsCompleted = Mathf.Max(currentSession.levelsCompleted, levelIndex + 1);
+            // each chapter keeps its own count of finished days (chapter 2 opens after day 9, so they run side by side)
+            var ch = Chapter.Of(levelIndex); var inChapter = levelIndex - Chapter.FirstDay(ch) + 1;
+            if (currentSession.chapterDone == null) currentSession.chapterDone = new List<int>();
+            while (currentSession.chapterDone.Count < ch) currentSession.chapterDone.Add(0);
+            currentSession.chapterDone[ch - 1] = Mathf.Max(currentSession.chapterDone[ch - 1], inChapter);   // a replay never moves progress back
+            // levelsCompleted: the unbroken run of finished days from day 1
+            var run = 0;
+            for (var c = 1; c <= Chapter.DaysPerChapter.Length; c++) { var d = DaysDoneIn(c); run += d; if (d < Chapter.DaysIn(c)) break; }
+            currentSession.levelsCompleted = Mathf.Max(currentSession.levelsCompleted, run);
+            // next: the day after; at a chapter's end, the next chapter's first unfinished day
+            currentSession.currentLevel = Chapter.IsLastDay(levelIndex) && ch < Chapter.Count ? NextDayIn(ch + 1) : levelIndex + 1;
             SaveSession();
 
             Debug.Log($"Level {levelIndex + 1} completed. Next level: {currentSession.currentLevel + 1}");
@@ -697,6 +708,18 @@ public class SessionManager : MonoBehaviour
     }
 
     public int GetLevelsCompleted() => currentSession != null ? currentSession.levelsCompleted : 0;
+
+    /// Days finished in a chapter (1-based).
+    public int DaysDoneIn(int chapter)
+    {
+        if (currentSession == null || chapter < 1 || chapter > Chapter.DaysPerChapter.Length) return 0;
+        var run = Mathf.Clamp(currentSession.levelsCompleted - Chapter.FirstDay(chapter), 0, Chapter.DaysIn(chapter));
+        var own = currentSession.chapterDone != null && chapter - 1 < currentSession.chapterDone.Count ? currentSession.chapterDone[chapter - 1] : 0;
+        return Mathf.Clamp(Mathf.Max(run, own), 0, Chapter.DaysIn(chapter));
+    }
+    public bool IsDayDone(int dayIndex) { var ch = Chapter.Of(dayIndex); return dayIndex - Chapter.FirstDay(ch) < DaysDoneIn(ch); }
+    /// The next day to play in a chapter (its last day once all are done).
+    public int NextDayIn(int chapter) => Chapter.FirstDay(chapter) + Mathf.Min(DaysDoneIn(chapter), Chapter.DaysIn(chapter) - 1);
 
     // Add this to SessionManager.cs
     public void SetCurrentLevel(int levelIndex)

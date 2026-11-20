@@ -406,7 +406,7 @@ public class LevelManager : MonoBehaviour
             currentLevelData = allLevels[levelIndex];
             // A day already finished pays half its order money on a replay (stars and the three-star bonus are unchanged)
             scoreManager.payFactor = restartPayFactor > 0f ? restartPayFactor
-                : SessionManager.Instance != null && levelIndex < SessionManager.Instance.GetLevelsCompleted() ? ReplayPayFactor : 1f;
+                : SessionManager.Instance != null && SessionManager.Instance.IsDayDone(levelIndex) ? ReplayPayFactor : 1f;
             restartPayFactor = -1f;
             scoreManager.starProgressBar.Initialize(currentLevelData);
             ApplyLevelSettings();
