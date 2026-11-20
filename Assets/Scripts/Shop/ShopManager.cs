@@ -54,6 +54,7 @@ public class ShopManager : MonoBehaviour
         EnsureRemoveAdsCard();   // the one-time Remove Ads card (owner, 9 November 2026)
         EnsureStarPackCard();    // 15 stars for money (owner, 15 November 2026)
         EnsureStarYogaCard();    // the star shop's first card: the yoga lady (owner, 14 November 2026)
+        EnsureKitchenUpgradeCard();   // 15 stars: the kitchen cooks faster (owner, 19 November 2026)
         EnsureCoinStarCard();    // one star for 999 coins (owner, 19 November 2026)
         EvenOutCharacterIcons();
         foreach (var card in GetAllShopItems()) ShopCookies.Dress(card);   // the cards' pictures as iced cookies (owner, 17 November 2026)
@@ -1125,28 +1126,39 @@ public class ShopManager : MonoBehaviour
     // down"; the icon is her sitting on her mat. Cloned from the Candies card like the Remove Ads card. ----------------
     private void EnsureStarYogaCard()
     {
+        EnsureStarCard(YogaHire.ItemName, YogaHire.StarPrice, "Hire her to calm\ncustomers down", Resources.Load<Sprite>("Yoga/shop_icon"), "Yoga lady");
+    }
+
+    /// The kitchen upgrade (owner, 19 November 2026): 15 stars, every kitchen wait a quarter shorter (KitchenSpeed).
+    private void EnsureKitchenUpgradeCard()
+    {
+        EnsureStarCard(KitchenSpeed.ItemName, KitchenSpeed.StarPrice, "Kitchen cooks\nfaster", Resources.Load<Sprite>("Cookies/" + KitchenSpeed.ItemName), "Kitchen upgrade");
+    }
+
+    /// A card on the star tab, cloned from the Candies card: bought once, for stars.
+    private void EnsureStarCard(string itemName, int starPrice, string words, Sprite icon, string shownName)
+    {
         if (itemContainer == null) return;
-        foreach (var c in GetAllShopItems()) if (c != null && c.itemName == YogaHire.ItemName) return;
+        foreach (var c in GetAllShopItems()) if (c != null && c.itemName == itemName) return;
         ShopItemController template = null;
         foreach (var c in GetAllShopItems()) if (c != null && c.itemName == "Candies") { template = c; break; }
         if (template == null) return;
         var go = Instantiate(template.gameObject, template.transform.parent);
-        go.name = YogaHire.ItemName; go.SetActive(true);
+        go.name = itemName; go.SetActive(true);
         var card = go.GetComponent<ShopItemController>();
-        card.itemName = YogaHire.ItemName; card.itemType = ItemType.Decor; card.price = YogaHire.StarPrice; card.isPurchased = false;
+        card.itemName = itemName; card.itemType = ItemType.Decor; card.price = starPrice; card.isPurchased = false;
         card.upgradeFoodType = ""; card.specialNote = "";
-        card.popupInfoText = YogaHire.StarPrice + " " + TextStars.Token + "\nHire her to calm\ncustomers down";   // the star picture, not the word (15 November)
-        card.purchaseButtonText = YogaHire.StarPrice + " " + TextStars.Token;
+        card.popupInfoText = starPrice + " " + TextStars.Token + "\n" + words;   // the star picture, not the word (15 November)
+        card.purchaseButtonText = starPrice + " " + TextStars.Token;
         // her sitting, on a square picture with air under her like the coins tab's pictures, so the price keeps the
         // same distance from the picture as theirs (owner, 14 November 2026: "the icon and text too close")
-        var icon = Resources.Load<Sprite>("Yoga/shop_icon");
         var iconT = go.transform.Find("ItemIcon"); var img = iconT != null ? iconT.GetComponent<Image>() : null;
         if (img != null && icon != null) { img.sprite = icon; img.preserveAspect = true; }
         var priceT = go.transform.Find("PriceText"); var price = priceT != null ? priceT.GetComponent<TextMeshProUGUI>() : null;
         if (price != null)
         {
             // "15" with the cookie star in front of it, in place of the "$"
-            price.text = YogaHire.StarPrice.ToString();
+            price.text = starPrice.ToString();
             var star = Resources.Load<Sprite>("UI/star_icon");
             if (star != null)
             {
@@ -1162,7 +1174,7 @@ public class ShopManager : MonoBehaviour
                 price.margin = new Vector4(size + gap, 0f, 0f, 0f);   // the number moves right by the star's width, so the pair stays centred
             }
         }
-        if (!popupNames.ContainsKey(YogaHire.ItemName)) popupNames[YogaHire.ItemName] = "Yoga lady";
+        if (!popupNames.ContainsKey(itemName)) popupNames[itemName] = shownName;
     }
 
     /// Apple wants a way to restore a purchase: a small text button at the bottom of the shop.

@@ -97,9 +97,10 @@ public class WaffleAnim : MonoBehaviour, IPointerClickHandler
         var warm = new Color(1f, 0.93f, 0.82f);
         // 1. the plate warms and steams
         var t = 0f;
-        while (t < BakeSeconds)
+        var bake = BakeSeconds * KitchenSpeed.Factor;   // shorter with the kitchen upgrade
+        while (t < bake)
         {
-            t += Time.unscaledDeltaTime; var k = t / BakeSeconds;
+            t += Time.unscaledDeltaTime; var k = t / bake;
             if (closed != null) closed.color = Color.Lerp(Color.white, warm, Mathf.Sin(k * Mathf.PI));
             for (var i = 0; i < steam.Length; i++)
             {

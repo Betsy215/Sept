@@ -76,7 +76,10 @@ public class ShopItemController : MonoBehaviour
     // card in the editor). The disabled tint is now neutral and reset on every change; the three looks below carry
     // what the tint used to add, so nothing looks different when all is in step.
     private static readonly Color OwnedLook = new Color(0f, 0.78f, 0f, 0.5f);       // was green under the grey half tint
-    private static readonly Color CannotAffordLook = new Color(0f, 0f, 0f, 0.4f);   // was black 0.8 under the grey half tint
+    private static readonly Color CannotAffordLook = new Color(0f, 0f, 0f, 0.4f);   // was black 0.8 under the grey half tint (not used since 19 November)
+    private static readonly Color CannotAffordPrice = new Color(0.86f, 0.14f, 0.12f);   // the price of a card that cannot be bought yet
+    private Color priceColour; private bool priceColourKept;
+    private static Color normalPrice; private static bool normalPriceKnown;
 
     private void UpdateVisualState(bool canAfford)
     {
@@ -106,11 +109,26 @@ public class ShopItemController : MonoBehaviour
         }
         else
         {
-            // Item is not affordable - a dark see-through shape, non-clickable
+            // Not affordable: the same picture as every card, not to be opened, and its price in red (owner, 19 November
+            // 2026: "for all shop items, even not affordable, show the icons the same way, but unaffordable items are
+            // not openable when clicked. and price show a red color"; it was a dark see-through shape)
             if (iconButton != null)
                 iconButton.interactable = false;
             if (iconImage != null)
-                iconImage.color = CannotAffordLook;
+                iconImage.color = Color.white;
+        }
+        var priceLabel = transform.Find("PriceText") != null ? transform.Find("PriceText").GetComponent<TMPro.TextMeshProUGUI>() : null;
+        if (priceLabel != null)
+        {
+            // the price's own colour, kept the first time; a card cloned from one that was red at that moment (the star
+            // cards are cloned from the Candies card) takes the colour the cards really have
+            if (!priceColourKept)
+            {
+                if (priceLabel.color != CannotAffordPrice) { priceColour = priceLabel.color; if (!normalPriceKnown) { normalPrice = priceColour; normalPriceKnown = true; } }
+                else priceColour = normalPriceKnown ? normalPrice : Color.black;
+                priceColourKept = true;
+            }
+            priceLabel.color = !isPurchased && !canAfford ? CannotAffordPrice : priceColour;
         }
         if (iconImage != null) iconImage.canvasRenderer.SetColor(Color.white);   // the button's own tint back to neutral, hidden or not
     }

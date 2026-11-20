@@ -844,18 +844,23 @@ public class SessionManager : MonoBehaviour
         if (!currentSession.newInBook.Contains(key)) currentSession.newInBook.Add(key);
         SaveSession();
         if (key == "Upgrade:CoffeeMachine") EarnJournal(JournalMachine);   // a journal page for the bigger machine
+        if (key == "Decor:" + KitchenSpeed.ItemName) EarnJournal(JournalKitchen);   // and one for the kitchen upgrade
     }
     // --- The journal (owner, 19 November 2026: a milestone journal in the book; "for journal events, let's do opening
     // day, three stars, first ice cream, baking strawberry cake, decorating choux", then "add a journal event for upgrade
     // coffee machine"; "we will add more later"). A page is earned once and stays, in the order earned. The pictures
     // are Resources/Journal/page_<id> (Store/ui/journal_2026-11-19/build_game.py). ------------------------------------
-    public const string JournalOpen = "open", JournalStar3 = "star3", JournalIceCream = "icecream", JournalCake = "cake", JournalChoux = "choux", JournalMachine = "machine";
+    public const string JournalOpen = "open", JournalStar3 = "star3", JournalIceCream = "icecream", JournalCake = "cake", JournalChoux = "choux", JournalMachine = "machine", JournalKitchen = "kitchen";
 
     /// Earns a journal page (once). day: the day it happened, 1-based; below 0 = the day being played.
     public bool EarnJournal(string id, int day = -1)
     {
         if (currentSession == null || !currentSession.isActive || string.IsNullOrEmpty(id)) return false;
+        // a save from before the journal is filled first; what that filling guessed for THIS page (the thing is already
+        // in the save at this moment) gives way to the real entry, with its day, marked new
+        var wasFilled = currentSession.journalFilled;
         FillJournal();
+        if (!wasFilled) currentSession.journal.RemoveAll(e => e.StartsWith(id + "|"));
         foreach (var e in currentSession.journal) if (e.StartsWith(id + "|")) return false;
         if (day < 0) day = currentSession.levelsCompleted + 1;
         currentSession.journal.Add(id + "|" + day);
@@ -884,6 +889,7 @@ public class SessionManager : MonoBehaviour
         if (IsFoodItemPurchased("Cake")) j.Add(JournalCake + "|0");
         if (IsFoodItemPurchased("Choux")) j.Add(JournalChoux + "|0");
         if (GetFoodUpgradeLevel("CoffeeMachine") >= 2) j.Add(JournalMachine + "|0");
+        if (OwnsStarItem(KitchenSpeed.ItemName)) j.Add(JournalKitchen + "|0");
         if (IsFoodItemPurchased("IceCream")) j.Add(JournalIceCream + "|0");
     }
 

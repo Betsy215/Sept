@@ -144,10 +144,11 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         for (var i = 0; i < flavours.Length; i++)
         {
             var t = 0f;
-            while (t < StepSeconds)
+            var step = StepSeconds * KitchenSpeed.Factor;   // shorter with the kitchen upgrade
+            while (t < step)
             {
                 t += Time.unscaledDeltaTime;
-                var k = Mathf.Clamp01(t / (StepSeconds * 0.35f));                        // a quick crossfade, then the colour holds
+                var k = Mathf.Clamp01(t / (step * 0.35f));                        // a quick crossfade, then the colour holds
                 if (contents != null) contents.color = Color.Lerp(from, flavours[i], k);
                 Turn(i == 0 ? k : 1f); Spin(1f);
                 Shake(rt, 1f);

@@ -20,6 +20,8 @@ public abstract class KitchenItemWithTimer : MonoBehaviour, IPointerClickHandler
 
     [Header("Respawn")] [Tooltip("Seconds before this kitchen item reappears after being used")]
     public float respawnDelay = 5f;
+    /// The wait as it is now: shorter once the kitchen upgrade is owned (KitchenSpeed).
+    protected float Delay => respawnDelay * KitchenSpeed.Factor;
 
     [Header("Debug")] public bool enableDebugLogs = true;
 
@@ -43,7 +45,7 @@ public abstract class KitchenItemWithTimer : MonoBehaviour, IPointerClickHandler
         if (pickTime < 0f) return; // Never picked — show normally
 
         var elapsed = Time.realtimeSinceStartup - pickTime;
-        var remaining = respawnDelay - elapsed;
+        var remaining = Delay - elapsed;
 
         if (remaining > 0f)
         {
@@ -64,7 +66,7 @@ public abstract class KitchenItemWithTimer : MonoBehaviour, IPointerClickHandler
     {
         if (Time.timeScale == 0f) return; // paused: UI taps still arrive, gameplay must not
         if (eventData.pointerCurrentRaycast.gameObject != gameObject) return;
-        if (CooldownRegistry.IsOnCooldown(GetCooldownKey(), respawnDelay)) return;
+        if (CooldownRegistry.IsOnCooldown(GetCooldownKey(), Delay)) return;
 
         DebugLog($"{gameObject.name} clicked!");
 
@@ -77,7 +79,7 @@ public abstract class KitchenItemWithTimer : MonoBehaviour, IPointerClickHandler
         // Record the pick time BEFORE hiding
         CooldownRegistry.RecordPickTime(GetCooldownKey());
 
-        timerHelper.StartTimer(GetCooldownKey(), respawnDelay, OnRespawn);
+        timerHelper.StartTimer(GetCooldownKey(), Delay, OnRespawn);
 
         // Let any click effect (e.g. a pop) finish before deactivating, otherwise
         // SetActive(false) kills the effect coroutine on the same frame it starts.
@@ -93,14 +95,14 @@ public abstract class KitchenItemWithTimer : MonoBehaviour, IPointerClickHandler
         yield return new WaitForSecondsRealtime(delay);
 
         // Only hide if the respawn has not already fired in the meantime.
-        if (CooldownRegistry.IsOnCooldown(GetCooldownKey(), respawnDelay))
+        if (CooldownRegistry.IsOnCooldown(GetCooldownKey(), Delay))
             Hide();
     }
 
     private void Hide()
     {
         gameObject.SetActive(false);
-        DebugLog($"Hidden. Reappearing in {respawnDelay}s...");
+        DebugLog($"Hidden. Reappearing in {Delay}s...");
     }
 
     private void OnRespawn()

@@ -29,7 +29,7 @@ public class CoconutInKitchen : MonoBehaviour, IPointerClickHandler
         if (pick < 0f) { if (Count <= 0) Count = Full; }                               // no regrow pending (a new game cleared it): full
         else
         {
-            var remaining = respawnDelay - (Time.realtimeSinceStartup - pick);
+            var remaining = respawnDelay * KitchenSpeed.Factor - (Time.realtimeSinceStartup - pick);   // shorter with the kitchen upgrade
             if (remaining > 0f) { Count = 0; timer.StartTimer(Key, remaining, Regrow); }
             else { CooldownRegistry.ClearPickTime(Key); Count = Full; }
         }
@@ -63,7 +63,7 @@ public class CoconutInKitchen : MonoBehaviour, IPointerClickHandler
         if (Count <= 0)
         {
             CooldownRegistry.RecordPickTime(Key);
-            timer.StartTimer(Key, respawnDelay, Regrow);
+            timer.StartTimer(Key, respawnDelay * KitchenSpeed.Factor, Regrow);
             StartCoroutine(HideAfter(popDuration + returnDuration));
         }
         else Show();

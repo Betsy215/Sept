@@ -224,7 +224,7 @@ public static class ShopCookies
     // where a journal page's day stamp goes: x and y from the sheet's top left on a sheet of 800 x 1212, the turn in degrees
     private static readonly Dictionary<string, Vector3> DayTags = new Dictionary<string, Vector3> {
         { "open", new Vector3(630f, 290f, 8f) }, { "star3", new Vector3(600f, 900f, -6f) }, { "icecream", new Vector3(206f, 1030f, 4f) },
-        { "cake", new Vector3(640f, 290f, -7f) }, { "choux", new Vector3(630f, 190f, 6f) }, { "machine", new Vector3(630f, 290f, 8f) } };
+        { "cake", new Vector3(640f, 290f, -7f) }, { "choux", new Vector3(630f, 190f, 6f) }, { "machine", new Vector3(630f, 290f, 8f) }, { "kitchen", new Vector3(630f, 290f, -7f) } };
     private static RectTransform lastRoot; private static List<Entry> lastOwned; private static TMP_FontAsset lastTitleFont, lastTextFont; private static Image lastPanelLook;
 
     private static RectTransform bookButton;
@@ -394,6 +394,7 @@ public static class ShopCookies
         float textLeft = left + 226f, textWide = right - textLeft;
         var name = Label(page, "Name", "", titleFont, 58f, new Vector2(textLeft + textWide / 2f, bottom + infoH - 30f), new Vector2(textWide, 90f));
         name.color = Ink; name.alignment = TextAlignmentOptions.Left;
+        name.enableAutoSizing = true; name.fontSizeMax = 58f; name.fontSizeMin = 34f;   // a long name ("Kitchen upgrade") stays on the page
         var info = Label(page, "Info", "", textFont != null ? textFont : titleFont, bookLook != null ? (artH < 1500f ? 38f : 44f) : 50f, new Vector2(textLeft + textWide / 2f, bottom + infoH / 2f - 20f - ShopManager.HandTopFix * (bookLook != null ? 44f : 50f)), new Vector2(textWide, 210f));   // three lines fit above the page's edge
         info.color = Ink; info.alignment = TextAlignmentOptions.TopLeft; info.enableWordWrapping = true; info.lineSpacing = -14f + ShopManager.HandLineFix * 0.6f;   // the hand font (Delius): a little closer than the old font's lines
         var rule = Child(page, "Rule", new Vector2(0.5f, 0.5f), new Vector2(wide, 4f), new Vector2(middle, bottom + infoH + 40f));

@@ -41,7 +41,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
     public static readonly Dictionary<string, string> Recipes = new Dictionary<string, string>();
 
     /// This oven's bake time now: the recipe's, else the Inspector value.
-    public float BakeTime => !string.IsNullOrEmpty(food) && BakeTimes.TryGetValue(food, out var t) ? t : bakeTime;
+    public float BakeTime => (!string.IsNullOrEmpty(food) && BakeTimes.TryGetValue(food, out var t) ? t : bakeTime) * KitchenSpeed.Factor;   // shorter with the kitchen upgrade
 
     /// False for an oven the player has not bought yet (OvenAssigner decides at kitchen load).
     [System.NonSerialized] public bool owned = true;
@@ -147,7 +147,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
     public static bool IsRecipeBaking(string recipe)
     {
         foreach (var kv in Recipes)
-            if (kv.Value == recipe && BakeTimes.TryGetValue(recipe, out var t) && CooldownRegistry.IsOnCooldown(kv.Key, t)) return true;
+            if (kv.Value == recipe && BakeTimes.TryGetValue(recipe, out var t) && CooldownRegistry.IsOnCooldown(kv.Key, t * KitchenSpeed.Factor)) return true;
         return false;
     }
 
@@ -155,7 +155,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
     public static bool AnyBaking()
     {
         foreach (var kv in Recipes)
-            if (!string.IsNullOrEmpty(kv.Value) && BakeTimes.TryGetValue(kv.Value, out var t) && CooldownRegistry.IsOnCooldown(kv.Key, t)) return true;
+            if (!string.IsNullOrEmpty(kv.Value) && BakeTimes.TryGetValue(kv.Value, out var t) && CooldownRegistry.IsOnCooldown(kv.Key, t * KitchenSpeed.Factor)) return true;
         return false;
     }
 
