@@ -57,7 +57,76 @@ public class MapScreen : MonoBehaviour
         Build();
         // today's day card opens by itself once the map is up (owner, 20 November 2026: "Show the day start panel
         // automatically when the level map shows up"); Cancel closes it and the map is there as before
-        if (todayDay >= 0) StartCoroutine(OpenTodaySoon(todayDay));
+        // not at day 9: the map shows first, the player taps the big star day themselves (owner, 20 November 2026)
+        if (todayDay >= 0 && !skipAutoCard) StartCoroutine(OpenTodaySoon(todayDay));
+    }
+
+    // ---- day 9, the day that opens chapter 2 (owner, 20 November 2026) ----
+    private const int SpecialDay = 8;                     // day 9's place in chapter 1
+    private bool skipAutoCard, ceremonyRunning;
+    private RectTransform day9Rect, truckRect; private Image arrowImage;
+    private Vector2 curveA, curveB, curveC;               // the dotted line: from day 9, to the arrow, its bend
+    private readonly System.Collections.Generic.List<Image> curveDots = new System.Collections.Generic.List<Image>();
+    private static readonly Color DotFaint = new Color(1f, 0.93f, 0.7f, 0.6f), DotBright = new Color(1f, 0.9f, 0.55f, 1f);
+    private Vector2 Curve(float k) => (1f - k) * (1f - k) * curveA + 2f * (1f - k) * k * curveC + k * k * curveB;
+
+    private void TapDay(int day, bool special)
+    {
+        if (popup != null || leaving || ceremonyRunning) return;
+        var sm = SessionManager.Instance;
+        if (special && sm != null && sm.Chapter2CeremonyDue) { StartCoroutine(Chapter2Ceremony()); return; }
+        OpenDay(day);
+    }
+
+    /// A star pops out of day 9 and flies up (the player's reward: one star), the truck drives along the dotted line
+    /// to the arrow, the arrow opens.
+    private System.Collections.IEnumerator Chapter2Ceremony()
+    {
+        ceremonyRunning = true;
+        SessionManager.Instance.ClaimChapter2();
+        if (day9Rect != null && starSprite != null)
+        {
+            var star = NewImage("RewardStar", canvasRect, starSprite); star.raycastTarget = false;
+            var from = day9Rect.anchoredPosition; Place(star.rectTransform, from, new Vector2(130f, 130f));
+            for (var t = 0f; t < 0.4f; t += Time.unscaledDeltaTime)          // it pops out
+            {
+                var k = t / 0.4f; var e = 1f - (1f - k) * (1f - k);
+                star.rectTransform.localScale = Vector3.one * Mathf.LerpUnclamped(0f, 1f, e * (1f + 0.35f * (1f - k)));
+                star.rectTransform.anchoredPosition = from + new Vector2(0f, 110f * e); yield return null;
+            }
+            yield return new WaitForSecondsRealtime(0.3f);
+            var mid = from + new Vector2(0f, 110f); var top = new Vector2(from.x * 0.3f, canvasRect.rect.height * 0.5f - 320f);
+            for (var t = 0f; t < 0.8f; t += Time.unscaledDeltaTime)          // and flies up
+            {
+                var k = t / 0.8f; var e = k * k;
+                star.rectTransform.anchoredPosition = Vector2.Lerp(mid, top, e); star.rectTransform.localScale = Vector3.one * Mathf.Lerp(1f, 0.55f, e);
+                star.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 360f * e); star.color = new Color(1f, 1f, 1f, 1f - Mathf.Clamp01((k - 0.75f) / 0.25f)); yield return null;
+            }
+            Destroy(star.gameObject);
+        }
+        if (truckRect != null)
+        {
+            var start = truckRect.anchoredPosition; var lift = new Vector2(0f, truckRect.sizeDelta.y * 0.35f);   // its wheels on the line
+            for (var t = 0f; t < 0.35f; t += Time.unscaledDeltaTime) { truckRect.anchoredPosition = Vector2.Lerp(start, curveA + lift, t / 0.35f); yield return null; }
+            for (var t = 0f; t < 1.7f; t += Time.unscaledDeltaTime)          // along the dotted line, which lights up behind it
+            {
+                var k = Mathf.SmoothStep(0f, 1f, t / 1.7f);
+                truckRect.anchoredPosition = Curve(k) + lift + new Vector2(0f, Mathf.Abs(Mathf.Sin(t * 22f)) * 4f);
+                for (var i = 0; i < curveDots.Count; i++) if (curveDots[i] != null && (i + 1f) / curveDots.Count <= k) curveDots[i].color = DotBright;
+                yield return null;
+            }
+            foreach (var d in curveDots) if (d != null) d.color = DotBright;
+        }
+        if (arrowImage != null)
+        {
+            arrowImage.sprite = Load("arrow_right") ?? arrowImage.sprite; arrowImage.name = "NextChapter"; arrowImage.raycastTarget = true;
+            for (var t = 0f; t < 0.35f; t += Time.unscaledDeltaTime) { var k = t / 0.35f; arrowImage.rectTransform.localScale = Vector3.one * (1f + 0.3f * Mathf.Sin(k * Mathf.PI)); yield return null; }
+            arrowImage.rectTransform.localScale = Vector3.one;
+            var ab = arrowImage.gameObject.GetComponent<Button>(); if (ab == null) ab = arrowImage.gameObject.AddComponent<Button>();
+            ab.transition = Selectable.Transition.None; ab.onClick.AddListener(() => ShowPage(page + 1));
+            NewTag.OnUI(arrowImage.rectTransform); GlowFx.Shine(arrowImage);
+        }
+        ceremonyRunning = false;
     }
 
     private int todayDay = -1;
@@ -69,7 +138,7 @@ public class MapScreen : MonoBehaviour
 
     private void ShowPage(int p)
     {
-        if (popup != null || leaving) return;
+        if (popup != null || leaving || ceremonyRunning) return;
         page = Mathf.Clamp(p, 0, Chapter.Count - 1);
         if (canvasRect != null) Destroy(canvasRect.gameObject);
         Build();
@@ -112,6 +181,11 @@ public class MapScreen : MonoBehaviour
         var todayHere = sm == null || page + 1 <= SessionManager.ChaptersOpen;   // every open chapter has its own next day
         var today = Mathf.Min(completed, days - 1);              // the next day to play
         var allDone = completed >= days;
+        // day 9 of chapter 1 is the day that opens chapter 2: bigger, a glowing star, a dotted line to the arrow
+        var hasSpecial = page == 0 && Chapter.Count >= 2 && Stars.Length > SpecialDay;
+        var ceremonyDue = hasSpecial && sm != null && sm.Chapter2CeremonyDue;
+        skipAutoCard = ceremonyDue || (hasSpecial && todayHere && !allDone && today == SpecialDay);
+        day9Rect = null; truckRect = null; arrowImage = null; curveDots.Clear();
 
         // Lines between the stars: bright up to today, faint after
         for (var i = 0; i < Stars.Length - 1; i++)
@@ -133,9 +207,16 @@ public class MapScreen : MonoBehaviour
             var played = i < completed;
             var isToday = todayHere && !allDone && i == today;   // a page ahead of today has no today (21 October)
             var pos = P(Stars[i]);
-            var size = isToday ? 104f : 84f;
+            var special = hasSpecial && i == SpecialDay;
+            var size = special ? 190f : isToday ? 104f : 84f;
             var dayStars = played && sm != null ? sm.GetLevelStars(first + i) : 0;
-            if (played && dayStars >= 3)
+            if (special)
+            {
+                var halo = NewImage("Day9Glow", canvasRect, GlowSprite());
+                Place(halo.rectTransform, pos, new Vector2(size * 2.4f, size * 2.4f));
+                halo.color = new Color(1f, 0.86f, 0.45f, 0.95f); halo.raycastTarget = false; halo.gameObject.AddComponent<MapGlowPulse>();
+            }
+            else if (played && dayStars >= 3)
             {
                 // Three stars: the day lights up like a star, a warm glow pulsing behind the circle (no yellow circle)
                 var glow = NewImage("Glow", canvasRect, GlowSprite());
@@ -144,12 +225,13 @@ public class MapScreen : MonoBehaviour
                 glow.raycastTarget = false;
                 glow.gameObject.AddComponent<MapGlowPulse>();
             }
-            var dot = NewImage("Day" + (i + 1), canvasRect, Load(isToday ? "day_today" : played ? "day_done" : "day_locked"));
-            if (played && dayStars >= 3) dot.color = new Color(1f, 0.98f, 0.9f);
+            var dot = NewImage("Day" + (i + 1), canvasRect, special && starSprite != null ? starSprite : Load(isToday ? "day_today" : played ? "day_done" : "day_locked"));
+            if (special) { dot.preserveAspect = true; day9Rect = dot.rectTransform; }
+            else if (played && dayStars >= 3) dot.color = new Color(1f, 0.98f, 0.9f);
             Place(dot.rectTransform, pos, new Vector2(size, size));
             if (isToday) { dot.gameObject.AddComponent<MapTodayBounce>(); GlowFx.Shine(dot); }   // today's circle bounces (owner, 13 October) and shines (C, 18 November 2026)
-            var label = NewText("Number", dot.rectTransform, (first + i + 1).ToString(), isToday ? 38f : 30f,
-                isToday ? new Color(1f, 0.98f, 0.92f) : played ? new Color(0.43f, 0.24f, 0.08f) : new Color(0.47f, 0.43f, 0.39f));
+            var label = NewText("Number", dot.rectTransform, (first + i + 1).ToString(), special ? 62f : isToday ? 38f : 30f,
+                special ? new Color(0.43f, 0.24f, 0.08f) : isToday ? new Color(1f, 0.98f, 0.92f) : played ? new Color(0.43f, 0.24f, 0.08f) : new Color(0.47f, 0.43f, 0.39f));
             Stretch(label.rectTransform);
             label.rectTransform.offsetMax = new Vector2(0, 4f);
 
@@ -160,7 +242,7 @@ public class MapScreen : MonoBehaviour
                 {
                     var st = NewImage("Star", canvasRect, k < stars ? starSprite : darkStarSprite);
                     // under the circle, clear of its edge (circle radius 42, star 30)
-                    Place(st.rectTransform, pos + new Vector2(-32f + k * 32f, -68f + (k == 1 ? 6f : 0f)), new Vector2(30f, 30f));
+                    Place(st.rectTransform, pos + new Vector2(-32f + k * 32f, -(size / 2f + 26f) + (k == 1 ? 6f : 0f)), new Vector2(30f, 30f));
                     st.raycastTarget = false;
                 }
             }
@@ -170,7 +252,8 @@ public class MapScreen : MonoBehaviour
                 var day = first + i;
                 var btn = dot.gameObject.AddComponent<Button>();
                 btn.transition = Selectable.Transition.None;
-                btn.onClick.AddListener(() => OpenDay(day));
+                btn.onClick.AddListener(() => TapDay(day, special));
+                if (special && ceremonyDue) { dot.gameObject.AddComponent<MapTodayBounce>(); GlowFx.Shine(dot); }   // "tap me": its star waits
             }
             else dot.raycastTarget = false;
         }
@@ -178,11 +261,11 @@ public class MapScreen : MonoBehaviour
         // The truck beside today's star (beside day 16 once the chapter is done); on a page ahead of today there is no truck
         if (truckSprite != null && (todayHere || allDone))
         {
-            var at = P(Stars[allDone ? days - 1 : today]);
-            var truck = NewImage("Truck", canvasRect, truckSprite);
+            var at = P(Stars[ceremonyDue ? SpecialDay : allDone ? days - 1 : today]);   // it waits at day 9 until its star is taken
+            var truck = NewImage("Truck", canvasRect, truckSprite); truckRect = truck.rectTransform;
             var h = 120f; var w = h * truckSprite.rect.width / truckSprite.rect.height;
             // beside today's star; above day 16 once the chapter is done (to its right it would cover day 11)
-            var offset = allDone ? new Vector2(0f, 110f)
+            var offset = allDone && !ceremonyDue ? new Vector2(0f, 110f)
                 : at.x < 370f ? new Vector2(44f + w / 2f, -80f)   // 370: with the 1.15 map, day 4 at x 387 clipped the truck on the right
                 : new Vector2(540f - 10f - w / 2f - at.x, -140f); // day 5 sits near the right edge: tuck the truck below it
             Place(truck.rectTransform, at + offset, new Vector2(w, h));
@@ -204,8 +287,23 @@ public class MapScreen : MonoBehaviour
         var arrow = NewImage(nextOpen ? "NextChapter" : "NextChapterLocked", canvasRect, Load(nextOpen ? "arrow_right" : "arrow_right_locked"));
         arrow.rectTransform.anchorMin = arrow.rectTransform.anchorMax = new Vector2(1f, 0.5f);
         arrow.rectTransform.pivot = new Vector2(1f, 0.5f);
-        arrow.rectTransform.anchoredPosition = new Vector2(10f, -260f);
-        arrow.SetNativeSize();
+        arrow.rectTransform.anchoredPosition = new Vector2(10f, hasSpecial ? P(Stars[SpecialDay]).y - 70f : -260f);   // chapter 1: a little lower than day 9, at the dotted line's end
+        arrow.SetNativeSize(); arrowImage = arrow;
+        if (hasSpecial)
+        {
+            Canvas.ForceUpdateCanvases();
+            var half = canvasRect.rect.width * 0.5f; var aw = arrow.rectTransform.sizeDelta.x; var d9 = P(Stars[SpecialDay]);
+            curveA = d9 + new Vector2(92f, -18f); curveB = new Vector2(half + 10f - aw - 28f, arrow.rectTransform.anchoredPosition.y);
+            curveC = (curveA + curveB) * 0.5f + new Vector2(0f, -120f);
+            var n = Mathf.Max(6, Mathf.RoundToInt(Vector2.Distance(curveA, curveB) / 34f));
+            for (var i = 0; i <= n; i++)
+            {
+                var dotImg = NewImage("TrailDot", canvasRect, Load("day_done")); dotImg.raycastTarget = false;
+                Place(dotImg.rectTransform, Curve(i / (float)n), new Vector2(20f, 20f));
+                dotImg.color = nextOpen ? DotBright : DotFaint; dotImg.transform.SetSiblingIndex(1);   // under the days and the truck
+                curveDots.Add(dotImg);
+            }
+        }
         arrow.raycastTarget = nextOpen;
         if (nextOpen) { var ab = arrow.gameObject.AddComponent<Button>(); ab.transition = Selectable.Transition.None; ab.onClick.AddListener(() => ShowPage(page + 1)); }
         // newly open and not played yet: the arrow wears NEW and shines until the first day there is done

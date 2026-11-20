@@ -70,6 +70,7 @@ public class SessionData
     // the chapters can be played side by side. levelsCompleted stays the unbroken run of finished days from day 1;
     // a chapter's count is the larger of the two (older saves have only the run).
     public List<int> chapterDone;
+    public bool chapter2Claimed;   // day 9's star was taken on the map: chapter 2 is open
     // The star shop (14 November 2026): what was bought with stars, and how many stars that took. The stars a player
     // can spend are the stars earned minus these; the days keep their stars on the map.
     public List<string> starItems;
@@ -261,9 +262,19 @@ public class SessionManager : MonoBehaviour
     /// Chapters the player has reached: the chapter of the next day to play (12 days in chapter 1, 16 in chapter 2), never past Chapter.Count
     public static int ChaptersStarted => Mathf.Clamp(Instance != null && (Instance.DaysDoneIn(2) > 0 || Instance.DaysDoneIn(1) >= Chapter.DaysIn(1)) ? 2 : 1, 1, Mathf.Max(1, Chapter.Count));
     /// Chapter 2 opens once day 9 is finished (owner, 20 November 2026: "I want chapter to be unlocked when day 9 is
-    /// finished in chapter 1"); the shop's chapter locks and the map's arrow follow it. Days 10 to 12 stay playable.
+    /// finished in chapter 1"); it opens on the map, when day 9's star is taken (ClaimChapter2); the shop's chapter locks follow. Days 10 to 12 stay playable.
     public const int Chapter2OpensAfterDays = 9;
-    public static int ChaptersOpen => Mathf.Clamp(Mathf.Max(ChaptersStarted, Instance != null && Instance.DaysDoneIn(1) >= Chapter2OpensAfterDays ? 2 : 1), 1, Mathf.Max(1, Chapter.Count));
+    public static int ChaptersOpen => Mathf.Clamp(Mathf.Max(ChaptersStarted, Instance != null && Instance.currentSession != null && Instance.currentSession.chapter2Claimed ? 2 : 1), 1, Mathf.Max(1, Chapter.Count));
+    /// Day 9 is finished and its star has not been taken on the map yet: the map plays the little scene that opens
+    /// chapter 2 (owner, 20 November 2026: a tap on day 9, "a star show up and flies up (reward player a star ...), and
+    /// then the trucks icon drives along the dot line, to the arrow, unlocks chapter 2").
+    public bool Chapter2CeremonyDue => currentSession != null && Chapter.Count >= 2 && !currentSession.chapter2Claimed && ChaptersStarted < 2 && DaysDoneIn(1) >= Chapter2OpensAfterDays;
+    /// The star is the player's and chapter 2 is open (saved at once, so leaving mid-scene loses nothing).
+    public void ClaimChapter2()
+    {
+        if (currentSession == null || currentSession.chapter2Claimed) return;
+        currentSession.chapter2Claimed = true; currentSession.starsGranted += 1; SaveSession();
+    }
     /// The star shop's chef (owner, 20 November 2026: "Add another star item - chef, he is locked, costs 20 stars, lock him
     /// for now, we won't unlock for now until later release").
     public const string StarChefName = "StarChef"; public const int StarChefPrice = 20;
