@@ -50,7 +50,10 @@ public static class KitchenArrange
         new Def { name = "cake",     foot = new Vector2(0.8078f, 0.451f), box = new Vector4(0.21f, 0.03f, 0.875f, 0.775f), fit = new Vector4(0.01f, 0.03f, 0.99f, 0.98f) },
         new Def { name = "coffee",   foot = new Vector2(0.2694f, 0.6859f),box = new Vector4(0.20f, 0.25f, 0.80f, 0.90f),   fit = new Vector4(0.07f, 0.10f, 0.92f, 0.90f) },
         // the choux plate (20 November 2026, KitchenFlow), made by this file: on the table at a free place (FirstCheck); this foot, the opening under the counter, is the fallback
-        new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.04f, 0.20f, 0.96f, 0.98f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.98f), size = new Vector2(230f, 113f) },   // ChatGPT's baking tray (654 x 320)
+        new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.04f, 0.20f, 0.96f, 0.98f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.98f), size = new Vector2(200f, 142f) },   // the baking tray, squarer, choux 2 x 2 (453 x 322; owner, 20 November 2026)
+        // the mixer set on its stand (20 November 2026), made by this file when choux or cake is on the menu; it takes the whisk's place then.
+        // Its box is its foot. On the table at a free place (FirstCheck); this foot, the opening under the counter's right place, is the fallback
+        new Def { name = "mixer", foot = new Vector2(0.40f, 0.2906f), box = new Vector4(0.03f, 0.78f, 0.90f, 0.99f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.99f), size = new Vector2(170f, 215f) },
         new Def { name = "juice",    foot = new Vector2(0.1662f, 0.1469f),box = new Vector4(0.15f, 0.30f, 0.85f, 0.98f),   fit = new Vector4(0.13f, 0.07f, 0.87f, 0.98f) },
     };
 
@@ -123,7 +126,8 @@ public static class KitchenArrange
             working = new Dictionary<string, Vector2>();
             var kept = SessionManager.Instance != null ? SessionManager.Instance.GetKitchenPlaces() : null;
             foreach (var d in Defs) working[d.name] = kept != null && kept.TryGetValue(d.name, out var p) ? p : d.foot;
-            plateNeedsSpot = kept == null || !kept.ContainsKey("chouxplate");   // never placed by the player: it starts on the table
+            needSpot.Clear();   // never placed by the player: they start on the table
+            foreach (var n in new[] { "mixer", "chouxplate" }) if (kept == null || !kept.ContainsKey(n)) needSpot.Add(n);
             fresh = true;
         }
 
@@ -139,9 +143,17 @@ public static class KitchenArrange
                 rt = (RectTransform)w.transform; rt.SetParent(area, false); rt.sizeDelta = d.size;
                 var wi = w.GetComponent<Image>(); wi.sprite = sprite; wi.raycastTarget = false;
             }
+            else if (d.name == "mixer")
+            {
+                var sprite = Resources.Load<Sprite>("Kitchen/flow/mixer_rest"); if (sprite == null || !DessertOnMenu()) continue;
+                var w = new GameObject("mixer", typeof(RectTransform), typeof(Image)); w.layer = go.layer;
+                rt = (RectTransform)w.transform; rt.SetParent(area, false); rt.sizeDelta = d.size;
+                var wi = w.GetComponent<Image>(); wi.sprite = sprite; wi.raycastTarget = false; wi.preserveAspect = true;
+            }
             else if (d.name == "whisk")
             {
                 var sprite = Resources.Load<Sprite>("Kitchen/whisk"); if (sprite == null) continue;
+                if (DessertOnMenu() && Resources.Load<Sprite>("Kitchen/flow/mixer_rest") != null) continue;   // the mixer holds the whisk now
                 var w = new GameObject("whisk", typeof(RectTransform), typeof(Image)); w.layer = go.layer;
                 rt = (RectTransform)w.transform; rt.SetParent(area, false); rt.sizeDelta = d.size;
                 var wi = w.GetComponent<Image>(); wi.sprite = sprite; wi.raycastTarget = false;
@@ -295,7 +307,10 @@ public static class KitchenArrange
     /// One frame after the load, when the canvas has its size: the first check. An arrangement from the save that is
     /// red before the player touched anything (a newly bought piece stands where another was moved to) goes back to
     /// the game's own places, which never are.
-    private static bool plateNeedsSpot;
+    private static readonly List<string> needSpot = new List<string>();
+    private static readonly float[] MiddleFirst = { 0.5f, 0.4f, 0.6f, 0.3f, 0.7f, 0.2f, 0.8f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.15f, 0.85f };
+    private static readonly float[] LeftFirst = { 0.11f, 0.14f, 0.18f, 0.22f, 0.26f, 0.3f, 0.35f, 0.4f, 0.45f, 0.5f, 0.55f, 0.6f, 0.7f, 0.8f };   // the mixer: where the whisk lay, at the table's left end
+    private static bool DessertOnMenu() { var sm = SessionManager.Instance; return sm != null && (sm.IsFoodItemActive("Choux") || sm.IsFoodItemActive("Cake")); }
 
     /// A free place on the kitchen table for a piece: its box on the table's top and on no other table piece's box,
     /// the front of the table first, the middle before the sides.
@@ -303,7 +318,7 @@ public static class KitchenArrange
     {
         foot = p.def.foot; if (AreaSize.x <= 0f) return false;
         for (var y = TableLow + 0.004f; y <= TableHigh; y += 0.01f)
-            foreach (var x in new[] { 0.5f, 0.4f, 0.6f, 0.3f, 0.7f, 0.2f, 0.8f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.15f, 0.85f })
+            foreach (var x in p.def.name == "mixer" ? LeftFirst : MiddleFirst)
             {
                 var f = new Vector2(x, y); if (!OnTable(p, f)) continue;
                 var r = Part(p, f, p.def.box); var free = true;
@@ -322,13 +337,13 @@ public static class KitchenArrange
         // the choux plate, new in the kitchen: on the kitchen table (owner, 20 November 2026: "The default location ...
         // for choux plate is on the kitchen table"), at a free place; only when the table is full it keeps the
         // opening under the counter
-        if (plateNeedsSpot)
+        foreach (var n in needSpot)
         {
-            plateNeedsSpot = false;
-            var plate = Find("chouxplate");
-            if (plate != null && plate.rt != null && plate.rt.gameObject.activeInHierarchy && FreeTableSpot(plate, out var spot))
-            { plate.def.foot = spot; working["chouxplate"] = spot; Place(plate, spot); Sort(); }
+            var piece = Find(n);
+            if (piece != null && piece.rt != null && piece.rt.gameObject.activeInHierarchy && FreeTableSpot(piece, out var spot))
+            { piece.def.foot = spot; working[n] = spot; Place(piece, spot); Sort(); }
         }
+        needSpot.Clear();
         Check();
         if (AnyRed && fresh)
         {

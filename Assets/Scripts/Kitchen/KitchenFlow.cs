@@ -119,6 +119,7 @@ public static class KitchenFlow
 
     private static Image chouxPlate, cakeStand, mixer, board;
     private static Sprite cakeDone;
+    private static bool mixerIsSet;   // the mixer set on its stand (two pictures: at rest, running); else the old whisk stands in
     private static RectTransform flyTo;
 
     private static Sprite Pic(string name) => Resources.Load<Sprite>("Kitchen/flow/" + name);
@@ -126,7 +127,8 @@ public static class KitchenFlow
     /// Called by KitchenArrange once the kitchen's pieces stand: the plates, the mixer and the board.
     public static void Attach(RectTransform area, bool arranging)
     {
-        chouxPlate = Find(area, "chouxplate"); cakeStand = Find(area, "cake"); mixer = Find(area, "whisk"); board = Find(area, "cutboard");
+        chouxPlate = Find(area, "chouxplate"); cakeStand = Find(area, "cake"); mixer = Find(area, "mixer"); if (mixer == null) mixer = Find(area, "whisk"); board = Find(area, "cutboard");
+        mixerIsSet = mixer != null && mixer.name == "mixer";
         // every stage on the stand the owner approved, the table cake's own (20 November 2026: "use the one i approved");
         // the finished cake is the table's picture
         if (cakeStand != null) { cakeStand.preserveAspect = true; cakeDone = Pic("cake_done") ?? cakeStand.sprite; }
@@ -162,6 +164,7 @@ public static class KitchenFlow
     {
         if (chouxPlate != null) Show(chouxPlate, StageOf("Choux"), "choux_empty", "choux_plain", "choux_cream", Pic("choux_done"));
         if (cakeStand != null) Show(cakeStand, StageOf("Cake"), "cake_empty", "cake_sponge", "cake_cream", cakeDone);
+        if (mixerIsSet && mixer != null) { var pic = Pic(Mixing ? "mixer_run" : "mixer_rest"); if (pic != null) mixer.sprite = pic; }   // head up and whisk out at rest; level, whisk in the bowl while it runs
         Glow(mixer, MixerReady); Glow(board, BoardReady);
     }
 
@@ -221,7 +224,8 @@ public class KitchenFlowTap : MonoBehaviour, IPointerClickHandler
         if (working && !KitchenClock.Paused)
         {
             var t = Time.unscaledTime;
-            if (isMixer) transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t * 28f) * 14f);
+            if (isMixer && name == "mixer") transform.localScale = restScale * (1f + 0.02f * Mathf.Sin(t * 40f));   // the set trembles
+            else if (isMixer) transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t * 28f) * 14f);
             else transform.localScale = restScale * (1f + 0.05f * Mathf.Abs(Mathf.Sin(t * 14f)));
         }
         else if (!working) { transform.localRotation = Quaternion.identity; transform.localScale = restScale; }
