@@ -37,7 +37,7 @@ public class AppleInKitchen : MonoBehaviour, IPointerClickHandler
         if (pick < 0f) { if (Count <= 0) Count = Full; }                               // no regrow pending (a new game cleared it): full
         else
         {
-            var remaining = respawnDelay * KitchenSpeed.Factor - (Time.realtimeSinceStartup - pick);   // shorter with the kitchen upgrade
+            var remaining = respawnDelay * KitchenSpeed.Factor - (KitchenClock.Now - pick);   // shorter with the kitchen upgrade
             if (remaining > 0f) { Count = 0; timer.StartTimer(Key, remaining, Regrow); }
             else { CooldownRegistry.ClearPickTime(Key); Count = Full; }
         }

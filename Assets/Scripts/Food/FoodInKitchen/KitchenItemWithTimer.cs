@@ -44,7 +44,7 @@ public abstract class KitchenItemWithTimer : MonoBehaviour, IPointerClickHandler
         var pickTime = CooldownRegistry.GetPickTime(GetCooldownKey());
         if (pickTime < 0f) return; // Never picked — show normally
 
-        var elapsed = Time.realtimeSinceStartup - pickTime;
+        var elapsed = KitchenClock.Now - pickTime;
         var remaining = Delay - elapsed;
 
         if (remaining > 0f)
@@ -161,7 +161,7 @@ public static class CooldownRegistry
 
     public static void RecordPickTime(string key)
     {
-        pickTimes[key] = Time.realtimeSinceStartup;
+        pickTimes[key] = KitchenClock.Now;   // the kitchen clock: real time without the pauses
     }
 
     public static float GetPickTime(string key)
@@ -172,7 +172,7 @@ public static class CooldownRegistry
     public static bool IsOnCooldown(string key, float delay)
     {
         if (!pickTimes.TryGetValue(key, out var t)) return false;
-        return Time.realtimeSinceStartup - t < delay;
+        return KitchenClock.Now - t < delay;
     }
 
     public static void ClearPickTime(string key)
@@ -261,7 +261,7 @@ public class KitchenTimerHelper : MonoBehaviour
 
     private IEnumerator Run(string key, float delay)
     {
-        yield return new WaitForSecondsRealtime(delay); // Realtime so it works across scene loads
+        yield return KitchenClock.Wait(delay); // real time so it works across scene loads, stopped while paused
 
         running.Remove(key);
 

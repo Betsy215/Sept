@@ -53,6 +53,16 @@ public class MapScreen : MonoBehaviour
         var done0 = sm0 != null ? sm0.GetLevelsCompleted() : 0;
         page = Mathf.Clamp(Chapter.Of(done0) - 1, 0, Chapter.Count - 1);   // the page with today's day
         Build();
+        // today's day card opens by itself once the map is up (owner, 20 November 2026: "Show the day start panel
+        // automatically when the level map shows up"); Cancel closes it and the map is there as before
+        if (todayDay >= 0) StartCoroutine(OpenTodaySoon(todayDay));
+    }
+
+    private int todayDay = -1;
+    private System.Collections.IEnumerator OpenTodaySoon(int day)
+    {
+        yield return new WaitForSeconds(0.45f);   // the map shows first, then the card
+        if (popup == null && !leaving) OpenDay(day);
     }
 
     private void ShowPage(int p)
@@ -152,6 +162,7 @@ public class MapScreen : MonoBehaviour
                     st.raycastTarget = false;
                 }
             }
+            if (isToday) todayDay = first + i;
             if (played || isToday)
             {
                 var day = first + i;

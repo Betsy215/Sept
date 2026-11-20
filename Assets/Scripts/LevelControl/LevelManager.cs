@@ -290,6 +290,7 @@ public class LevelManager : MonoBehaviour
 
         isPaused = true;
         Time.timeScale = 0f;
+        KitchenClock.Pause();   // ovens and refills stop too (20 November 2026)
 
         if (pausePanel != null)
         {
@@ -309,7 +310,7 @@ public class LevelManager : MonoBehaviour
         if (!isPaused) return;
 
         isPaused = false;
-        Time.timeScale = 1f;
+        Time.timeScale = 1f; KitchenClock.Resume();
 
         if (pausePanel != null)
             pausePanel.SetActive(false);
@@ -347,7 +348,7 @@ public class LevelManager : MonoBehaviour
         if (scoreManager != null) restartPayFactor = scoreManager.payFactor;
 
         // Universal restart method - handles both pause and level complete cases
-        Time.timeScale = 1f;
+        Time.timeScale = 1f; KitchenClock.Resume();
         isPaused = false;
 
         // Clear score popup when restarting
@@ -857,7 +858,7 @@ public class LevelManager : MonoBehaviour
     public void LoadNextLevel()
     {
         // Never carry a paused time scale into the Shop scene
-        Time.timeScale = 1f;
+        Time.timeScale = 1f; KitchenClock.Resume();
         isPaused = false;
 
         if (AudioManager.Instance != null)
@@ -878,7 +879,7 @@ public class LevelManager : MonoBehaviour
     {
         if (AudioManager.Instance != null)
             AudioManager.Instance.StopMusic();
-        Time.timeScale = 1f;
+        Time.timeScale = 1f; KitchenClock.Resume();
         isPaused = false;
         MapScreen.CameFromDay = false;
         SceneTransitionManager.Instance.TransitionToScene(MapScreen.SceneName);
@@ -908,7 +909,7 @@ public class LevelManager : MonoBehaviour
             AudioManager.Instance.StopMusic();
 
         // IMPORTANT: Ensure time is restored and pause state cleared before scene change
-        Time.timeScale = 1f;
+        Time.timeScale = 1f; KitchenClock.Resume();
         isPaused = false;
 
         SceneTransitionManager.Instance.TransitionToScene(mainMenuSceneName);

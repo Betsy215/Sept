@@ -648,8 +648,14 @@ public class ShopManager : MonoBehaviour
             if (ra != rb) return ra ? 1 : -1;                                   // Remove Ads at the very end
             return a.price != b.price ? a.price.CompareTo(b.price) : string.CompareOrdinal(a.itemName, b.itemName);
         });
-        var bounds = new List<Rect>();
-        foreach (var c in cards) { c.transform.localScale = Vector3.one; bounds.Add(VisualBounds((RectTransform)c.transform, cont)); }
+        var bounds = new List<Rect>(); var priceX = new List<float>();
+        foreach (var c in cards)
+        {
+            c.transform.localScale = Vector3.one; AlignCard(c);
+            bounds.Add(VisualBounds((RectTransform)c.transform, cont));
+            var pr = c.transform.Find("PriceText") as RectTransform;   // the column goes by the price's middle
+            priceX.Add(pr != null ? cont.InverseTransformPoint(pr.TransformPoint(pr.rect.center)).x : bounds[bounds.Count - 1].center.x);
+        }
         var maxW = 0f; var maxH = 0f;
         foreach (var b in bounds) { maxW = Mathf.Max(maxW, b.width); maxH = Mathf.Max(maxH, b.height); }
         // on the glass pane the cards keep clear of its edges (owner, 19 November 2026: "resize or reposition the items so
@@ -674,7 +680,7 @@ public class ShopManager : MonoBehaviour
             // sideways the visual centre goes on the slot; vertically the card's BOTTOM (its price line) goes on the row's
             // baseline, so every card in a row stands on the same line whatever its picture's height (owner, 26 October
             // 2026: the small plant floated above the plates and the oven once the price sort moved it into their row)
-            var offset = bounds[i].center - (Vector2)rt.localPosition;
+            var offset = new Vector2(priceX[i], bounds[i].center.y) - (Vector2)rt.localPosition;
             var bottomOffset = bounds[i].yMin - rt.localPosition.y;
             var baseline = slot.y - rowPitch / 2f + 14f;
             rt.localScale = Vector3.one * cs;
@@ -685,6 +691,24 @@ public class ShopManager : MonoBehaviour
         scrollAmount = rowPitch;
         // after a purchase the cards close up where the player was looking; a fresh layout starts at the top
         cont.anchoredPosition = new Vector2(cont.anchoredPosition.x, keepScroll ? Mathf.Clamp(scrolledTo, topBoundary, bottomBoundary) : topBoundary);
+    }
+
+    /// Every card the same way up (owner, 20 November 2026: "Align shop items"): its picture fitted into one box (its own
+    /// shape kept), centred over the price and standing the same gap above it. The cards' pictures had their own sizes
+    /// and places from the scene, so some floated above their price and the columns drifted.
+    private const float IconBoxW = 400f, IconBoxH = 340f, IconGap = 14f;   // about the old pictures' size, the wide ones clear of their neighbours
+    private static void AlignCard(ShopItemController c)
+    {
+        var icon = c.transform.Find("ItemIcon") as RectTransform; var price = c.transform.Find("PriceText") as RectTransform;
+        if (icon == null || price == null) return;
+        var img = icon.GetComponent<Image>(); var tm = price.GetComponent<TMP_Text>();
+        if (img == null || img.sprite == null || tm == null) return;
+        var sw = img.sprite.rect.width; var sh = img.sprite.rect.height; var k = Mathf.Min(IconBoxW / sw, IconBoxH / sh);
+        img.preserveAspect = true;
+        icon.anchorMin = icon.anchorMax = price.anchorMin; icon.pivot = new Vector2(0.5f, 0.5f);
+        icon.sizeDelta = new Vector2(sw * k, sh * k);
+        var words = tm.GetPreferredValues(tm.text, price.rect.width, Mathf.Infinity).y;   // the price's words, not its tall box
+        icon.anchoredPosition = price.anchoredPosition + new Vector2(0f, words / 2f + IconGap + sh * k / 2f);
     }
 
     // --- Owned things leave the shop for the book (owner, 17 November 2026) ------------------------------------------

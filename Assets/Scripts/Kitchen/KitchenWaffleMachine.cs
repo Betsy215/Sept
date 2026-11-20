@@ -100,7 +100,7 @@ public class WaffleAnim : MonoBehaviour, IPointerClickHandler
         var bake = BakeSeconds * KitchenSpeed.Factor;   // shorter with the kitchen upgrade
         while (t < bake)
         {
-            t += Time.unscaledDeltaTime; var k = t / bake;
+            t += KitchenClock.Delta; var k = t / bake;   // stands still while paused
             if (closed != null) closed.color = Color.Lerp(Color.white, warm, Mathf.Sin(k * Mathf.PI));
             for (var i = 0; i < steam.Length; i++)
             {

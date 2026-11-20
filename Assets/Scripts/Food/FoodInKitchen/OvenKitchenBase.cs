@@ -88,7 +88,7 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
             food = ""; ShowNote(false); return;
         }
         food = recipe;
-        var remaining = BakeTime - (Time.realtimeSinceStartup - pickTime);
+        var remaining = BakeTime - (KitchenClock.Now - pickTime);
 
         if (remaining > 0f)
         {

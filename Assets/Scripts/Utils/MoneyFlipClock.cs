@@ -69,12 +69,16 @@ public class MoneyFlipClock : MonoBehaviour
         // the red base. If the picture is missing, the old cream board is built instead.
         var hen = Resources.Load<Sprite>("UI/money_hen");
         // the hen is stretched: longer than tall, about the truck's height (owner, 13 October, late)
-        var numberPos = new Vector3(0f, -0.02f, 0f); var starsY = -0.16f; var starGap = 0.2f; var starScale = 0.5f;   // the number just above the base's line (owner, 13 October)
+        // taller (owner, 20 November 2026: "Make the Chicken on table slightly taller ... more like" the kitchen's hen, "but
+        // ... slightly flatter than the one in kitchen since we need to display probably 4 digits"): 0.6 -> 0.68 of its
+        // height at the same width; the number and the stars move with the body and the base
+        const float Tall = 0.68f, WasTall = 0.6f;
+        var numberPos = new Vector3(0f, -0.02f * Tall / WasTall, 0f); var starsY = -0.16f * Tall / WasTall; var starGap = 0.2f; var starScale = 0.5f;   // the number just above the base's line (owner, 13 October)
         if (hen != null)
         {
             var h = new GameObject("Hen");
             h.transform.SetParent(transform, false);
-            h.transform.localScale = new Vector3(HenScale * 0.75f, HenScale * 0.6f, 1f);   // 0.89 x 0.67 units: the truck's height, a quarter shorter again (owner, 13 October)
+            h.transform.localScale = new Vector3(HenScale * 0.75f, HenScale * Tall, 1f);   // 0.89 x 0.67 units: the truck's height, a quarter shorter again (owner, 13 October)
             var hsr = h.AddComponent<SpriteRenderer>(); hsr.sprite = hen; hsr.sortingOrder = 1;
         }
         else
