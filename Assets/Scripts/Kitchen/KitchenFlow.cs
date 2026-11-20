@@ -107,7 +107,9 @@ public static class KitchenFlow
     public static void Attach(RectTransform area, bool arranging)
     {
         chouxPlate = Find(area, "chouxplate"); cakeStand = Find(area, "cake"); mixer = Find(area, "whisk"); board = Find(area, "cutboard");
-        if (cakeStand != null && cakeDone == null) cakeDone = cakeStand.sprite;   // the kitchen's own painting is the finished cake
+        // every stage on the stand the owner approved, the table cake's own (20 November 2026: "use the one i approved");
+        // the finished cake is the table's picture
+        if (cakeStand != null) { cakeStand.preserveAspect = true; cakeDone = Pic("cake_done") ?? cakeStand.sprite; }
         var sm = SessionManager.Instance;
         // the fruit board also serves the cake: it shows when either dessert is on the menu
         if (board != null && sm != null && !sm.IsFoodItemActive("Choux") && sm.IsFoodItemActive("Cake"))

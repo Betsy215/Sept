@@ -384,7 +384,7 @@ public class OrderSystem : MonoBehaviour
     }
 
     // ---- thinking before the order shows ----
-    public static float ThinkSeconds = 1.5f;
+    public static float ThinkSeconds = 2f;   // owner, 20 November 2026: "Longer: 2 seconds"
     private static Sprite dotSprite;
     private static Sprite DotSprite()
     {
