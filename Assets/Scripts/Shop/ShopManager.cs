@@ -55,6 +55,7 @@ public class ShopManager : MonoBehaviour
         EnsureStarPackCard();    // 15 stars for money (owner, 15 November 2026)
         EnsureStarYogaCard();    // the star shop's first card: the yoga lady (owner, 14 November 2026)
         EnsureStarCard(SessionManager.StarChefName, SessionManager.StarChefPrice, "Coming soon", Resources.Load<Sprite>("Cookies/Chef"), "Chef");   // locked for now (owner, 20 November 2026)
+        EnsureStarCard(SessionManager.StarTableName, SessionManager.StarTablePrice, "Coming soon", Resources.Load<Sprite>("Cookies/StarTable"), "Dining table");   // locked for now (owner, 20 November 2026)
         EnsureKitchenUpgradeCard();   // 15 stars: the kitchen cooks faster (owner, 19 November 2026)
         EnsureCoinStarCard();    // one star for 999 coins (owner, 19 November 2026)
         EvenOutCharacterIcons();

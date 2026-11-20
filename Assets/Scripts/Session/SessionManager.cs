@@ -278,18 +278,21 @@ public class SessionManager : MonoBehaviour
     /// The star shop's chef (owner, 20 November 2026: "Add another star item - chef, he is locked, costs 20 stars, lock him
     /// for now, we won't unlock for now until later release").
     public const string StarChefName = "StarChef"; public const int StarChefPrice = 20;
+    /// A dining table set for the star shop (owner, 20 November 2026: "Add one more locked item in star shop, the icon
+    /// looks like a dining table set"), locked like the chef.
+    public const string StarTableName = "StarTable"; public const int StarTablePrice = 25;
     /// Locked cards still show in the shop, with a padlock, and take no taps (owner, 20 November 2026): a food until its
     /// chapter opens; the yoga lady's star card until she has been bought as a customer; the chef for now.
     public static bool IsLockedInShop(string foodType)
     {
         if (foodType == null) return false;
-        if (foodType == StarChefName) return true;
+        if (foodType == StarChefName || foodType == StarTableName) return true;
         if (foodType == YogaHire.ItemName) { var s = Instance != null ? Instance.GetCurrentSession() : null; return s == null || s.purchasedCharacters == null || !s.purchasedCharacters.Contains("Yoga"); }
         return UnlockChapter.TryGetValue(foodType, out var c) && c > ChaptersOpen;
     }
     /// What a locked card says when something tries to buy it anyway.
     public static string LockReason(string key) =>
-        key == StarChefName ? "Coming soon" : key == YogaHire.ItemName ? "Hire her as a customer first" : "Opens with chapter 2";
+        key == StarChefName || key == StarTableName ? "Coming soon" : key == YogaHire.ItemName ? "Hire her as a customer first" : "Opens with chapter 2";
 
     /// Chapter of the day being played (always 1 while Chapter.Count is 1).
     public static int CurrentChapter =>
