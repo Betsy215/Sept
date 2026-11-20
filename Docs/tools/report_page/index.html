@@ -74,12 +74,12 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 2026.11.20 (2):</b> in TestFlight since 12:56 (the approved stand, 2-second thinking). Build (1) of 12:41 had my wrong cake stand; skip it.</p>
-<p><b>Current:</b> ChatGPT's mixer set; the cake stages on your approved stand.</p>
+<p><b>Test build 2026.11.20 (2)</b> is in TestFlight (12:56). The tray, the kitchen-stand cake and the dining table came after it.</p>
+<p><b>Current:</b> the kitchen stages, the mixer with a foot, the dining table.</p>
 <p><b>Release 2026.11.20</b> is still waiting for Apple's review.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>A locked "Dining table" card (25 stars) in the star shop; its cookie is being drawn by Gemini. Tomorrow morning: App Store Connect's 19th.</p>
+<p>The mixer into the game on your tick; a new test build when you say. Tomorrow morning: App Store Connect's 19th.</p>
 </div>
 </div>
 
@@ -116,23 +116,36 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul class="checks"><li><label><input type="checkbox" data-id="qa.ktimes.seen"> Seen</label></li></ul>
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">Test build 2026.11.20 (2) has the approved stand and the 2-second thinking time; placeholders where pictures are not ready.</p>
+<p class="sub" style="margin:0 0 8px">In the project after test build (2); in the next test build.</p>
 <div class="card">
-<p style="margin-top:0"><b>Mixer set, drawn by ChatGPT from your description</b> (no Gemini picture given; our kitchen pieces as the style reference).</p>
-<figure><img src="mixer_gpt.jpg" alt="Two flat side views of a mint and cream hand mixer above a cream mixing bowl of whipped cream, one blue-grey whisk, no cord. Left: at rest, the mixer lifted and tilted, the whisk in the air above the bowl. Right: running, the mixer level and lower, the whisk in the cream"><figcaption>Kitchen. Left at rest (lifted, whisk out), right running (level, whisk in the bowl).</figcaption></figure>
-<ul><li>On your tick I cut both states for the game and swap them while it runs; the whisk is replaced by our own whisk's pixels.</li></ul>
+<p style="margin-top:0"><b>Choux on a baking tray, cake on the kitchen's own stand.</b></p>
+<figure><img src="kitchen_stages.jpg" alt="Five kitchen views. The empty baking tray on the counter and the kitchen's empty cake plate on its blue napkin. Four plain choux on the tray and a sponge on the plate, the whisk glowing. The choux with their four creams and the creamed cake, the fruit board glowing. The finished strawberry cake. The finished choux on the tray, the cake plate empty again"><figcaption>Kitchen, in the game.</figcaption></figure>
+<ul>
+<li><b>Cake:</b> every stage stands on the kitchen's own cake painting (its plate and napkin). The empty plate is painted from the painting's own colours; ChatGPT's sponge and creamed cake sit on it; the finished cake is your painting.</li>
+<li><b>Choux:</b> a new baking tray drawn by ChatGPT in the kitchen's style, in four stages: empty, plain puffs, with their creams, finished.</li>
+</ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.mixgpt.use"> Use it</label></li>
-<li><label><input type="checkbox" data-id="cur.mixgpt.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.kstages.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.kstages.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>The cake stages on the stand you approved.</b> I had swapped in my cut of the kitchen painting; now every stage stands on the table cake's own stand and napkin (your approved empty holder), and the finished cake is the table's cake.</p>
-<figure><img src="cake_stages_game.jpg" alt="Four kitchen views: the approved empty stand on the counter; ChatGPT's golden sponge on it with the whisk glowing; the creamed cake with the fruit board glowing; the finished strawberry cake"><figcaption>Kitchen, in the game: empty, sponge, cream, done.</figcaption></figure>
+<p style="margin-top:0"><b>Mixer with a foot:</b> ChatGPT's mixer, given a stand by Gemini so it no longer floats (ChatGPT's free pictures were used up until tomorrow 12:01).</p>
+<figure><img src="mixer_foot.jpg" alt="Two flat side views of the mint and cream mixer on a small mint stand with a round base; the cream bowl sits on the base. Left at rest: the head tilted up on its column, the whisk above the bowl. Right running: the head level, the whisk in the cream"><figcaption>Kitchen. Left at rest, right running.</figcaption></figure>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.cakestand2.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.cakestand2.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.mixfoot.use"> Use it</label></li>
+<li><label><input type="checkbox" data-id="cur.mixfoot.down"> Instead: the mixer laid down on the table beside the bowl at rest</label></li>
+<li><label><input type="checkbox" data-id="cur.mixfoot.gpt"> Ask ChatGPT tomorrow</label></li>
+<li><label><input type="checkbox" data-id="cur.mixfoot.change"> Changes (I will say what)</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>A locked "Dining table" in the star shop</b> (25 stars, my price), with Gemini's dining-table cookie: a round red-checked table, a flower vase, a chair each side.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.table.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.table.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
