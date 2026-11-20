@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c300b780154474508a7b4c5d778c7813
+guid: 62296d3ca7f5b483c84cf46c651b96b0
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Gloria Hallelujah
+  - Delius
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

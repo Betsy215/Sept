@@ -5,7 +5,9 @@ using UnityEngine.UI;
 /// rounded"; then "the glass needs to be much more transparent, almost completely transparent, the tabs and the panel
 /// needs to be a whole without space without divider line"). One rounded pane of nearly clear glass holds the tab row
 /// and the cards: the shop's background shows through it almost untouched (a trace of blur and of white), with a bright
-/// rim and a soft shadow round it. A faint lens inside the pane slides to the open tab. Pieces:
+/// rim and a soft shadow round it. Each tab is its own glass button in the pane's top, the open one filled white
+/// (owner, 19 November: "it's hard to tell all tab is clickable ... the two other tab is too invisible", their pick A
+/// of four). Pieces:
 /// Store/ui/shop_glass_2026-11-19/glass.py (Resources/UI/glass_*). The panel's group is drawn squashed (scale 1 x 0.8),
 /// and the pieces are painted taller by the same amount, so the corners are round on screen. Without the pieces the
 /// shop keeps its flat panel and folder tabs.
@@ -15,13 +17,14 @@ public static class ShopGlass
     private const float CornerPx = 75f;   // the pieces' corner height in pixels (their top and bottom border)
     private const float Haze = 0.45f;     // how much of the blurred background is laid over the sharp one
     private const float Veil = 0.14f;     // white in the glass
+    private const float PillHeight = 86f, OpenFill = 0.92f, ClosedFill = 0.27f;   // the tabs' buttons
 
     private static Sprite Piece(string name) => Resources.Load<Sprite>("UI/" + name);
     public static bool Ready => Piece("glass_fill") != null && Piece("glass_rim") != null;
 
     public class Parts
     {
-        public RectTransform thumb;
+        public Image[] pills = new Image[3];   // the tabs' glass buttons, in the tabs' order
         public float barBottom;   // the tab row's lower edge (the cards' upper edge), measured from the group's middle
     }
 
@@ -51,17 +54,26 @@ public static class ShopGlass
         var paneRim = NewImage("GlassRim", group, rim, Color.white); paneRim.type = Image.Type.Sliced;
         Box(paneRim.rectTransform, 0f, paneY, w, paneH); paneRim.transform.SetSiblingIndex(viewport.GetSiblingIndex() + 1);
 
-        // the lens over the open tab, inside the pane's top
+        // a glass button behind each tab, inside the pane's top
         var parts = new Parts { barBottom = h * 0.5f };
-        var thumbH = BarHeight - 28f; var thumbM = CornerPx / (thumbH * 0.5f);
-        var thumb = NewImage("GlassThumb", group, fill, new Color(1f, 1f, 1f, 0.20f)); thumb.type = Image.Type.Sliced; thumb.pixelsPerUnitMultiplier = thumbM;
-        Box(thumb.rectTransform, 0f, parts.barBottom + BarHeight * 0.5f - 2f, 200f, thumbH);
-        var thumbRim = NewImage("Rim", thumb.rectTransform, rim, new Color(1f, 1f, 1f, 0.9f)); thumbRim.type = Image.Type.Sliced; thumbRim.pixelsPerUnitMultiplier = thumbM; Stretch(thumbRim.rectTransform);
-        thumb.gameObject.AddComponent<GlassThumb>();
-        parts.thumb = thumb.rectTransform;
+        var pillM = CornerPx / (PillHeight * 0.5f);
+        for (var i = 0; i < parts.pills.Length; i++)
+        {
+            var pill = NewImage("GlassTab" + i, group, fill, new Color(1f, 1f, 1f, ClosedFill)); pill.type = Image.Type.Sliced; pill.pixelsPerUnitMultiplier = pillM;
+            Box(pill.rectTransform, 0f, parts.barBottom + BarHeight * 0.5f - 3f, 200f, PillHeight);
+            if (shadow != null)
+            {
+                var ps = NewImage("Shadow", pill.rectTransform, shadow, Color.white); ps.type = Image.Type.Sliced; ps.pixelsPerUnitMultiplier = pillM * 1.6f;
+                var pad = 40f / (pillM * 1.6f); ps.rectTransform.anchorMin = Vector2.zero; ps.rectTransform.anchorMax = Vector2.one;
+                ps.rectTransform.offsetMin = new Vector2(-pad, -pad / 0.8f - 5f); ps.rectTransform.offsetMax = new Vector2(pad, pad / 0.8f - 5f);
+            }
+            var pr = NewImage("Rim", pill.rectTransform, rim, Color.white); pr.type = Image.Type.Sliced; pr.pixelsPerUnitMultiplier = pillM; Stretch(pr.rectTransform);
+            parts.pills[i] = pill;
+        }
 
-        // back to front in the group: the shadow, the glass, the lens, then the cards' window, the rim and the tabs
-        thumb.transform.SetAsFirstSibling(); pane.transform.SetAsFirstSibling();
+        // back to front in the group: the shadow, the glass, the tabs' buttons, then the cards' window, the rim and the tabs
+        for (var i = parts.pills.Length - 1; i >= 0; i--) parts.pills[i].transform.SetAsFirstSibling();
+        pane.transform.SetAsFirstSibling();
         if (shadow != null)
         {
             var paneShadow = NewImage("GlassShadow", group, shadow, Color.white); paneShadow.type = Image.Type.Sliced;
@@ -70,11 +82,15 @@ public static class ShopGlass
         return parts;
     }
 
-    /// Slides the lens under a tab (x and width in the group's units); at once the first time.
-    public static void MoveThumb(Parts parts, float x, float width)
+    /// Places one tab's glass button (x and width of the tab's cell in the group's units) and fills it white when the
+    /// tab is the open one.
+    public static void PaintTab(Parts parts, int index, float x, float width, bool open, bool visible)
     {
-        if (parts == null || parts.thumb == null) return;
-        var t = parts.thumb.GetComponent<GlassThumb>(); if (t != null) t.Go(x, width - 48f);
+        if (parts == null || index < 0 || index >= parts.pills.Length || parts.pills[index] == null) return;
+        var pill = parts.pills[index]; pill.gameObject.SetActive(visible); if (!visible) return;
+        var rt = pill.rectTransform; rt.anchoredPosition = new Vector2(x, rt.anchoredPosition.y); rt.sizeDelta = new Vector2(width - 36f, rt.sizeDelta.y);
+        pill.color = new Color(1f, 1f, 1f, open ? OpenFill : ClosedFill);
+        var sh = rt.Find("Shadow"); if (sh != null) sh.gameObject.SetActive(open);
     }
 
     // ---- pieces ----
@@ -157,31 +173,6 @@ public class GlassBackdrop : MonoBehaviour
         rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 0.5f);
         rt.sizeDelta = new Vector2(Mathf.Abs(b.x - a.x), Mathf.Abs(b.y - a.y));
         rt.localPosition = new Vector3((a.x + b.x) * 0.5f, (a.y + b.y) * 0.5f, 0f);
-    }
-}
-
-/// The lens of the tab pill: glides to the open tab.
-public class GlassThumb : MonoBehaviour
-{
-    private float toX, toW; private bool placed;
-
-    public void Go(float x, float width)
-    {
-        toX = x; toW = width;
-        if (!placed) { placed = true; Set(x, width); }
-    }
-
-    private void Update()
-    {
-        var rt = (RectTransform)transform;
-        var k = 1f - Mathf.Exp(-18f * Mathf.Min(Time.unscaledDeltaTime, 0.05f));
-        Set(Mathf.Lerp(rt.anchoredPosition.x, toX, k), Mathf.Lerp(rt.sizeDelta.x, toW, k));
-    }
-
-    private void Set(float x, float width)
-    {
-        var rt = (RectTransform)transform;
-        rt.anchoredPosition = new Vector2(x, rt.anchoredPosition.y); rt.sizeDelta = new Vector2(width, rt.sizeDelta.y);
     }
 }
 

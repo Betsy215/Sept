@@ -321,8 +321,8 @@ public static class ShopCookies
         float textLeft = left + 226f, textWide = right - textLeft;
         var name = Label(page, "Name", "", titleFont, 58f, new Vector2(textLeft + textWide / 2f, bottom + infoH - 30f), new Vector2(textWide, 90f));
         name.color = Ink; name.alignment = TextAlignmentOptions.Left;
-        var info = Label(page, "Info", "", textFont != null ? textFont : titleFont, bookLook != null ? 44f : 50f, new Vector2(textLeft + textWide / 2f, bottom + infoH / 2f - 20f), new Vector2(textWide, 210f));   // three lines fit above the page's edge
-        info.color = Ink; info.alignment = TextAlignmentOptions.TopLeft; info.enableWordWrapping = true; info.lineSpacing = -14f;
+        var info = Label(page, "Info", "", textFont != null ? textFont : titleFont, bookLook != null ? 44f : 50f, new Vector2(textLeft + textWide / 2f, bottom + infoH / 2f - 20f - ShopManager.HandTopFix * (bookLook != null ? 44f : 50f)), new Vector2(textWide, 210f));   // three lines fit above the page's edge
+        info.color = Ink; info.alignment = TextAlignmentOptions.TopLeft; info.enableWordWrapping = true; info.lineSpacing = -14f + ShopManager.HandLineFix * 0.6f;   // the hand font (Delius): a little closer than the old font's lines
         var rule = Child(page, "Rule", new Vector2(0.5f, 0.5f), new Vector2(wide, 4f), new Vector2(middle, bottom + infoH + 40f));
         var ruleImg = rule.gameObject.AddComponent<Image>(); ruleImg.color = new Color(Ink.r, Ink.g, Ink.b, 0.25f); ruleImg.raycastTarget = false;
 

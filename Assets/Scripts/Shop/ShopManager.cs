@@ -602,6 +602,14 @@ public class ShopManager : MonoBehaviour
 
     [Header("Card layout (16 October)")]
     [Tooltip("The cards are laid out at runtime: sorted by price, three columns, scaled down so more fit a screen")]
+    /// The hand-written font of the shop's buy popup and the cookie book: Delius since 19 November 2026 (owner: the old
+    /// one, Gloria Hallelujah, "look a little hard to read"; their pick E of the samples; open licence, Assets/TextMesh
+    /// Pro/Fonts/Delius; the font asset is made by Docs/tools/recipes/make_tmp_font.cs). The layouts were set for the old
+    /// font, whose lines stand 0.72 em further apart and whose first line starts 0.42 em lower: HandLineFix (in
+    /// hundredths of an em, added to a line spacing) and HandTopFix (in em, times the font size, a shift down) keep
+    /// every line where it was.
+    public const string HandFontPath = "Fonts & Materials/Delius SDF";
+    public const float HandLineFix = 72f, HandTopFix = 0.42f;
     public float cardScale = 0.62f;
     private const int Columns = 3;
     private const float ColumnPitchMax = 245f;     // three columns left of the arrow buttons
@@ -703,7 +711,7 @@ public class ShopManager : MonoBehaviour
     private void EnsureCookieBook()
     {
         if (scrollUpButton == null) return;
-        var chalk = Resources.Load<TMP_FontAsset>("Fonts & Materials/GloriaHallelujah SDF");
+        var chalk = Resources.Load<TMP_FontAsset>(HandFontPath);
         ShopCookies.EnsureBookButton(scrollUpButton.transform as RectTransform, () => !IsPurchasePopupOpen, OwnedEntries,
             playerScoreText != null ? playerScoreText.font : null, chalk, panelImage);
     }
@@ -898,9 +906,9 @@ public class ShopManager : MonoBehaviour
 
         if (popupItemInfo != null)
         {
-            // Chalk on the board (owner, 16 October): the chalk hand (Gloria Hallelujah, open licence; Chalkduster is
-            // Apple's and cannot ship), white and fully opaque, the price line in blue chalk, a special note under it
-            var chalk = Resources.Load<TMP_FontAsset>("Fonts & Materials/GloriaHallelujah SDF");
+            // Chalk on the board (owner, 16 October), white and fully opaque, the price line in blue chalk, a special note
+            // under it. The hand is Delius since 19 November 2026 (see HandFontPath).
+            var chalk = Resources.Load<TMP_FontAsset>(HandFontPath);
             if (chalk != null) popupItemInfo.font = chalk;
             var lines = (item.popupInfoText ?? "").Split('\n');
             // the price line in blue chalk, for a price in stars as well (owner, 14 November 2026: the star card "use the same layout as the coins tab")
@@ -909,14 +917,14 @@ public class ShopManager : MonoBehaviour
             popupItemInfo.text = TextStars.Mark((shown != null ? shown + "\n" : "") + string.Join("\n", lines));   // a star picture where the text says [*]
             popupItemInfo.color = Color.white;
             popupItemInfo.richText = true;
-            popupItemInfo.fontSize = 70f; popupItemInfo.lineSpacing = -18f; popupItemInfo.alignment = TextAlignmentOptions.Center;   // one size, tighter lines (owner, 18 October)
+            popupItemInfo.fontSize = 70f; popupItemInfo.lineSpacing = -18f + HandLineFix; popupItemInfo.alignment = TextAlignmentOptions.Center;   // one size, tighter lines (owner, 18 October)
             popupItemInfo.fontStyle = FontStyles.Bold;
             // One text size on every card (owner, 15 November 2026: "Unity the font size in shop item panels, the size in
             // coins tab looks good"). Remove Ads has two full sentences under its price, six lines at 70: instead of the
             // smaller letters it had since 14 November, its lines sit a little closer and the block starts higher.
             var longText = item.itemName == RemoveAdsCardName;
             popupItemInfo.enableAutoSizing = false;
-            if (longText) popupItemInfo.lineSpacing = -34f;
+            if (longText) popupItemInfo.lineSpacing = -34f + HandLineFix;
             popupItemInfo.rectTransform.anchorMin = popupItemInfo.rectTransform.anchorMax = new Vector2(0.5f, 0.5f); popupItemInfo.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(0f, 380f);   // dead centre, like the texts (owner, 18 October)
             popupItemInfo.margin = Vector4.zero;                                                               // the scene's right margin pushed the texts left
@@ -930,13 +938,13 @@ public class ShopManager : MonoBehaviour
             if (popupItemIcon != null) shift = Mathf.Clamp(190f - (popupItemIcon.rectTransform.anchoredPosition.y - popupItemIcon.rectTransform.sizeDelta.y / 2f), 0f, 40f);   // tall pictures push the block down a little
             popupItemInfo.alignment = TextAlignmentOptions.Top;
             popupItemInfo.rectTransform.sizeDelta = new Vector2(1000f, 420f);
-            popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -50f - shift);         // spans about +160 to -260
+            popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, -50f - shift - HandTopFix * 70f);         // spans about +160 to -260
             if (longText)
             {
-                popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, 20f);            // six lines: the block starts 70 higher
+                popupItemInfo.rectTransform.anchoredPosition = new Vector2(0f, 20f - HandTopFix * 70f);            // six lines: the block starts 70 higher
                 if (popupItemIcon != null) popupItemIcon.rectTransform.anchoredPosition = new Vector2(0f, 440f);
             }
-            if (hasNote) { note.fontSize = 66f; note.lineSpacing = -18f; note.rectTransform.sizeDelta = new Vector2(1000f, 200f); note.rectTransform.anchoredPosition = new Vector2(0f, -405f - shift * 0.5f); }   // a clear gap under the description   // up to two lines (Chef, Yoga coach: 18 October)
+            if (hasNote) { note.fontSize = 66f; note.lineSpacing = -18f + HandLineFix; note.rectTransform.sizeDelta = new Vector2(1000f, 200f); note.rectTransform.anchoredPosition = new Vector2(0f, -405f - shift * 0.5f); }   // a clear gap under the description   // up to two lines (Chef, Yoga coach: 18 October)
         }
 
         if (confirmPurchaseButton != null)
@@ -1359,21 +1367,21 @@ public class ShopManager : MonoBehaviour
         {
             var visible = i != (int)ShopTab.Dollars || dollarShown;
             tabButtons[i].gameObject.SetActive(visible);
-            if (!visible) continue;
+            if (!visible) { if (glass != null) ShopGlass.PaintTab(glass, i, 0f, 0f, false, false); continue; }
             var prt = tabButtons[i].GetComponent<RectTransform>();
             prt.anchoredPosition = new Vector2(Mathf.Round(tabRowLeft + w * (slot + 0.5f)), prt.anchoredPosition.y); prt.sizeDelta = new Vector2(w, prt.sizeDelta.y); slot++;
             var on = i == (int)currentTab;
             var img = tabButtons[i].GetComponent<Image>();
             if (glass != null)
             {
-                // on the glass pill: the tab itself is only its picture and its touch area; the lens marks the open one
+                // on the glass pane: the tab itself is only its picture and its touch area; its glass button is drawn behind it
                 if (img != null) img.color = new Color(1f, 1f, 1f, 0f);
                 prt.anchoredPosition = new Vector2(prt.anchoredPosition.x, glass.barBottom); prt.sizeDelta = new Vector2(w, ShopGlass.BarHeight);
                 var gico = tabButtons[i].transform.Find("Icon"); var gimg = gico != null ? gico.GetComponent<Image>() : null;
                 var squash = panelGroup != null && panelGroup.localScale.x > 0f ? panelGroup.localScale.y / panelGroup.localScale.x : 1f;   // the group is drawn squashed: the picture is stretched back
-                if (gimg != null) { gimg.color = new Color(1f, 1f, 1f, on ? 1f : 0.62f); var k = on ? 0.74f : 0.64f; gico.localScale = new Vector3(k, k / squash, 1f); ((RectTransform)gico).anchoredPosition = Vector2.zero; }
+                if (gimg != null) { gimg.color = Color.white; var k = on ? 0.70f : 0.64f; gico.localScale = new Vector3(k, k / squash, 1f); ((RectTransform)gico).anchoredPosition = new Vector2(0f, -3f); }   // every tab's picture in full colour: each is a button
                 var glbl = tabButtons[i].GetComponentInChildren<TextMeshProUGUI>(); if (glbl != null) glbl.alpha = on ? 1f : 0.6f;
-                if (on) ShopGlass.MoveThumb(glass, prt.anchoredPosition.x, w);
+                ShopGlass.PaintTab(glass, i, prt.anchoredPosition.x, w, on, true);
                 continue;
             }
             if (img != null) img.color = on ? baseCol : closed;
