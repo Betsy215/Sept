@@ -47,7 +47,8 @@ public class GamePhaseManager : MonoBehaviour
     private bool tableReady, kitchenReady, inKitchen;
     private Vector2 doneButtonHome; private bool doneButtonHomeKept;
     private ArrangeHintAnim kitchenHint;
-    private const string TableHint = "Drag to arrange your table", KitchenHint = "Drag to arrange your kitchen";
+    private const string TableHint = "Drag things where you like\nbefore you tap READY", KitchenHint = "The kitchen too: drag things\nwhere you like";
+    private bool tableDemoPlayed, kitchenDemoPlayed, lessonInKitchen;   // the lesson's moving hand plays once in each place
 
     /// The arrangement's hint (the card and the hand moving an item): on the first arrangement a player meets, which is
     /// day 2, on the table and in the kitchen, and on no later day (owner, 19 November 2026: "let's show drag to
@@ -153,8 +154,15 @@ public class GamePhaseManager : MonoBehaviour
     public void ShowHint(bool show)
     {
         var on = show && HintDue;
+        // a running lesson belongs to the place and moment it began in; cut short by the menu book or by the other place
+        // opening (not by the player's own touch), it plays again when its place is shown again
+        if (ArrangeLesson.Cancel()) { if (lessonInKitchen) kitchenDemoPlayed = false; else tableDemoPlayed = false; }
         if (kitchenHint != null && !(on && inKitchen)) { Destroy(kitchenHint.gameObject); kitchenHint = null; }
         if (tutorialPanel != null) tutorialPanel.SetActive(on);
+        // the old lesson picture (a hand moving a bread basket) is gone; the banner stays, and the hand moves a real
+        // thing once (owner, 19 November 2026)
+        var oldAnim = tutorialPanel != null ? tutorialPanel.transform.Find("AnimationContainer") : null;
+        if (oldAnim != null) oldAnim.gameObject.SetActive(false);
         if (tutorialText != null) tutorialText.gameObject.SetActive(on);
         var card = arrangmentUI != null ? arrangmentUI.transform.Find("HintCard") : null;
         if (card != null) card.gameObject.SetActive(on);
@@ -167,14 +175,34 @@ public class GamePhaseManager : MonoBehaviour
             tutorialText.color = new Color(0.28f, 0.15f, 0.055f);
             var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) tutorialText.fontSharedMaterial = plain;
         }
-        // The table's moving hand is the panel's own clip. The kitchen covers that canvas, so in the kitchen the same
-        // move plays on the arranging canvas, under the card, with a kitchen thing (the whisk).
-        if (inKitchen && kitchenHint == null && arrangmentUI != null)
+        // The lesson on a real thing, once in each place: the coffee machine on the table, the coffee bags in the kitchen
+        var handPic = tutorialPanel != null ? tutorialPanel.transform.Find("AnimationContainer/Hand") : null;
+        var handLook = handPic != null ? handPic.GetComponent<Image>() : null;
+        var demoCanvas = arrangmentUI != null ? arrangmentUI.transform as RectTransform : null;
+        if (!inKitchen && !tableDemoPlayed)
         {
-            var handT = tutorialPanel != null ? tutorialPanel.transform.Find("AnimationContainer/Hand") : null;
-            var cardRt = card as RectTransform;
-            var at = cardRt != null ? cardRt.anchoredPosition + new Vector2(0f, -cardRt.rect.height / 2f - 110f) : new Vector2(0f, 300f);
-            kitchenHint = ArrangeHintAnim.Make((RectTransform)arrangmentUI.transform, at, Resources.Load<Sprite>("Kitchen/whisk"), handT != null ? handT.GetComponent<Image>() : null);
+            var machine = FindObjectOfType<CoffeeMachine>(); var cam = Camera.main;
+            if (machine != null && cam != null)
+            {
+                tableDemoPlayed = true; lessonInKitchen = false;
+                var p = cam.WorldToScreenPoint(machine.transform.position);   // over to the open middle of the table and back
+                var to = cam.ScreenToWorldPoint(new Vector3(Mathf.Clamp(p.x + Screen.width * 0.25f, Screen.width * 0.2f, Screen.width * 0.75f), Mathf.Clamp(p.y + Screen.height * 0.14f, 0f, Screen.height * 0.45f), p.z));
+                ArrangeLesson.Play(machine.transform, to, cam, demoCanvas, handLook);
+            }
+        }
+        else if (inKitchen && !kitchenDemoPlayed)
+        {
+            var scene = UnityEngine.SceneManagement.SceneManager.GetSceneByName("KitchenScene"); Transform bags = null, bg = null;
+            if (scene.isLoaded) foreach (var rootGo in scene.GetRootGameObjects()) foreach (var t in rootGo.GetComponentsInChildren<Transform>(true)) { if (t.name == "coffee" && bags == null) bags = t; if (t.name == "bg" && bg == null) bg = t; }
+            if (bags != null && bg != null && bags.gameObject.activeInHierarchy)
+            {
+                kitchenDemoPlayed = true; lessonInKitchen = true;
+                var brt = (RectTransform)bags; var bgrt = (RectTransform)bg; var c = new Vector3[4]; brt.GetWorldCorners(c);
+                var foot = (c[0] + c[3]) / 2f; var r = bgrt.rect;                // down onto the counter and back (the banner lies over the opening below)
+                var dest = bgrt.TransformPoint(new Vector3(r.xMin + 0.30f * r.width, r.yMin + 0.47f * r.height, 0f));
+                var kc = bags.GetComponentInParent<Canvas>(); var kcam = kc != null && kc.renderMode != RenderMode.ScreenSpaceOverlay ? kc.rootCanvas.worldCamera : null;
+                ArrangeLesson.Play(bags, bags.position + (dest - foot), kcam, demoCanvas, handLook);
+            }
         }
     }
 
@@ -377,6 +405,7 @@ public class GamePhaseManager : MonoBehaviour
     {
         // A second tap in the same frame (or a double-wired button) must not start play twice
         if (currentPhase == GamePhase.PLAYING) return;
+        ArrangeLesson.Cancel();   // the lesson's thing goes back to its place before anything is saved
 
         // Day 1 and the demos go straight into play. Otherwise both Ready buttons are needed: the first one tapped
         // leads to the other place, the second starts the day.

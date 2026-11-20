@@ -863,10 +863,11 @@ public class LevelManager : MonoBehaviour
             AudioManager.Instance.PlaySFX(Resources.Load<AudioClip>("Audio/paper_flip"));
         }
 
-        // After a day: finish board, then the map; the map's Play shows the ad, then the Shop (owner, 10 October)
-        MapScreen.CameFromDay = true;
-        if (SceneTransitionManager.Instance != null)
-            SceneTransitionManager.Instance.TransitionToScene(MapScreen.SceneName);
+        // After a day: the finish paper, the ad, the Shop, and from the Shop the map (owner, 19 November 2026: "let's
+        // show shop before the level map after a level is finished"; it was paper, map, ad, Shop since 10 October)
+        MapScreen.CameFromDay = false;
+        System.Action toShop = () => { if (SceneTransitionManager.Instance != null) SceneTransitionManager.Instance.TransitionToScene("Shop"); };
+        if (InterstitialAdService.Instance != null) InterstitialAdService.Instance.ShowAfterLevelThen(toShop); else toShop();
     }
 
     public void GoToMap()

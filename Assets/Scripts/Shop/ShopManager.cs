@@ -482,8 +482,11 @@ public class ShopManager : MonoBehaviour
     {
         if (IsPurchasePopupOpen) return;
         ShopFlourish.MarkSeen(GetAllShopItems());
-        AudioManager.Instance.PlayGameplayMusic();
-        SceneTransitionManager.Instance.TransitionToScene("GameSceneOne");
+        // On to the map, where the next day is chosen (owner, 19 November 2026: the shop comes before the map now);
+        // the day itself starts its own music
+        if (AudioManager.Instance != null) AudioManager.Instance.StopMusic();
+        MapScreen.CameFromDay = false;
+        SceneTransitionManager.Instance.TransitionToScene(MapScreen.SceneName);
     }
 
     public void OnMainMenuClicked()

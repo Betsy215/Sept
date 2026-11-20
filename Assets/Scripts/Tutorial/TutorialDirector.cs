@@ -238,13 +238,9 @@ public class TutorialDirector : MonoBehaviour
 
         // Arranging is taught here, as a moving demo (owner, 19 November 2026: "only shows these banner and animation in
         // tutorial. add animation to demo it in tutorial, moving things"); the arrangement phase itself shows no hint
-        if (machine != null && Camera.main != null)
-        {
-            // over to the open middle of the table and back
-            var cam = Camera.main; var p = cam.WorldToScreenPoint(machine.transform.position);
-            var target = cam.ScreenToWorldPoint(new Vector3(Mathf.Clamp(p.x + Screen.width * 0.25f, Screen.width * 0.2f, Screen.width * 0.75f), Mathf.Clamp(p.y + Screen.height * 0.14f, 0f, Screen.height * 0.45f), p.z));
-            yield return DragDemo("Drag to arrange your table", machine.transform, target, cam);
-        }
+        // (later the same day: "it's kind of confusing, player would think they can do that anytime ... take out the
+        // arrangement tutorial from the initial tutorial". The lesson is given on day 2, in the arranging time itself:
+        // GamePhaseManager.ShowHint and ArrangeLesson.)
 
         var kitchenButton = GameObject.Find("KitchenButton");
         if (kitchenButton != null && KitchenSceneManager.Instance != null)
@@ -317,7 +313,6 @@ public class TutorialDirector : MonoBehaviour
                 yield return new WaitForSeconds(2f);
             }
 
-            yield return DragBagsDemo();
 
             HideHand();
             Say("Swipe back to serve");

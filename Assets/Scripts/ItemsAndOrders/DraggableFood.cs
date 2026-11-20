@@ -302,6 +302,10 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         DebugLog($"Stopped iOS wiggle for {gameObject.name}");
     }
 
+    /// The arranging lesson carries this item for a moment (ArrangeLesson): its wiggle, which would hold it in place,
+    /// waits meanwhile and goes on after.
+    public void LessonHold(bool hold) { if (hold) PauseWiggle(); else ResumeWiggle(); }
+
     private void PauseWiggle()
     {
         if (!isWiggling) return;

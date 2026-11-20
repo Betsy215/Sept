@@ -368,8 +368,10 @@ public static class ShopCookies
                 var at = new Vector2(pageAt.x + sheetArea.xMax - 1f, H / 2f - (150f + slot * 138f) * k); slot++;
                 var tab = MakeTab(rt, i, i == section, at, k);
                 if (tab != null && i != section) tab.SetSiblingIndex(page.GetSiblingIndex() + 1);   // behind the open part's tab, in front of the book
-                // a part with something not yet looked at wears NEW on its tab
-                if (tab != null && i != section && (i == Journal ? newJournal : i == Staff ? newStaff.Count > 0 : newCookies.Count > 0)) NewTag.OnUI(tab);
+                // a part with something not yet looked at wears a small NEW on its tab
+                // (the open part's too, this once: its things are being looked at now; owner, 19 November: "show a tiny new
+                // label on the book mark that contains new item ... possibly more than one book mark")
+                if (tab != null && (i == Journal ? newJournal : i == Staff ? newStaff.Count > 0 : newCookies.Count > 0)) NewTag.OnUI(tab);
             }
         }
 
