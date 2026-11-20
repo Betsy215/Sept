@@ -127,6 +127,8 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
     public void StartBake(string recipe)
     {
         if (!owned || IsBaking || string.IsNullOrEmpty(recipe)) return;
+        // choux and cake are finished in the kitchen (KitchenFlow): no new bake while their plate is busy or another oven bakes them
+        if (KitchenFlow.Handles(recipe) && (KitchenFlow.Busy(recipe) || IsRecipeBaking(recipe))) { DebugLog(recipe + ": its plate is busy"); return; }
         food = recipe;
         var key = GetCooldownKey();
         Recipes[key] = recipe;
@@ -165,9 +167,9 @@ public abstract class OvenKitchenBase : MonoBehaviour, IPointerClickHandler
         DebugLog("Bake complete: " + key);
         CooldownRegistry.ClearPickTime(key);
         if (string.IsNullOrEmpty(food) && Recipes.TryGetValue(key, out var r)) food = r;   // a destroyed instance keeps its field; a fresh one reads the registry
-        OnRefill();
-        // the journal: the first strawberry cake out of the oven, the first choux (owner, 19 November 2026)
-        if (SessionManager.Instance != null && (food == "Cake" || food == "Choux")) SessionManager.Instance.EarnJournal(food == "Cake" ? SessionManager.JournalCake : SessionManager.JournalChoux);
+        // choux and cake go on to their plate in the kitchen (mixer, fruit board, then the table; the journal page comes
+        // when they are done); everything else refills the table at once
+        if (KitchenFlow.Handles(food)) KitchenFlow.Baked(food); else OnRefill();
         Recipes.Remove(key); food = "";
         SetSprite(defaultSprite); ShowNote(false);
         if (bakeCompleteSound != null && AudioManager.Instance != null)

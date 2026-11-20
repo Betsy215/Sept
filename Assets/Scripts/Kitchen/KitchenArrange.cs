@@ -49,6 +49,8 @@ public static class KitchenArrange
         new Def { name = "basket",   foot = new Vector2(0.56f, 0.5177f),  box = new Vector4(0.20f, 0.25f, 0.80f, 0.95f),   fit = new Vector4(0.01f, 0.03f, 0.98f, 0.95f) },
         new Def { name = "cake",     foot = new Vector2(0.8078f, 0.451f), box = new Vector4(0.21f, 0.03f, 0.875f, 0.775f), fit = new Vector4(0.01f, 0.03f, 0.99f, 0.98f) },
         new Def { name = "coffee",   foot = new Vector2(0.2694f, 0.6859f),box = new Vector4(0.20f, 0.25f, 0.80f, 0.90f),   fit = new Vector4(0.07f, 0.10f, 0.92f, 0.90f) },
+        // the choux plate (20 November 2026, KitchenFlow): in the big opening under the counter, which is free; made by this file
+        new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.02f, 0.05f, 0.98f, 0.98f), fit = new Vector4(0.02f, 0.05f, 0.98f, 0.98f), size = new Vector2(300f, 94f) },
         new Def { name = "juice",    foot = new Vector2(0.1662f, 0.1469f),box = new Vector4(0.15f, 0.30f, 0.85f, 0.98f),   fit = new Vector4(0.13f, 0.07f, 0.87f, 0.98f) },
     };
 
@@ -83,6 +85,7 @@ public static class KitchenArrange
     public static void BeginDay()
     {
         working = null; AnyRed = false;
+        KitchenFlow.Reset();   // a new day: every plate empty
         var button = GameObject.Find("KitchenButton");
         if (button != null && button.GetComponent<KitchenRedHint>() == null) button.AddComponent<KitchenRedHint>();
     }
@@ -127,7 +130,15 @@ public static class KitchenArrange
         foreach (var d in Defs)
         {
             RectTransform rt = null;
-            if (d.name == "whisk")
+            if (d.name == "chouxplate")
+            {
+                var sprite = Resources.Load<Sprite>("Kitchen/flow/choux_empty"); var sm = SessionManager.Instance;
+                if (sprite == null || sm == null || !sm.IsFoodItemActive("Choux")) continue;   // only with choux on the menu
+                var w = new GameObject("chouxplate", typeof(RectTransform), typeof(Image)); w.layer = go.layer;
+                rt = (RectTransform)w.transform; rt.SetParent(area, false); rt.sizeDelta = d.size;
+                var wi = w.GetComponent<Image>(); wi.sprite = sprite; wi.raycastTarget = false;
+            }
+            else if (d.name == "whisk")
             {
                 var sprite = Resources.Load<Sprite>("Kitchen/whisk"); if (sprite == null) continue;
                 var w = new GameObject("whisk", typeof(RectTransform), typeof(Image)); w.layer = go.layer;
@@ -148,6 +159,7 @@ public static class KitchenArrange
             pieces.Add(piece); Place(piece, working[d.name]);
         }
         Sort();
+        KitchenFlow.Attach(area, Arranging());   // the plates' pictures, the mixer and the board (20 November 2026)
         if (Arranging())
         {
             foreach (var p in pieces) KitchenGrab.Attach(p.rt, p.def.name);
