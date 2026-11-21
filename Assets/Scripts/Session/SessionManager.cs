@@ -23,6 +23,7 @@ public class SessionData
     // True once the player has watched (or skipped past) the Level 0 tutorial for this game
     public bool tutorialSeen;
     public bool tutorial2Seen;                 // the chapter 2 first-day tutorial (26 October 2026; old saves: false)
+    public bool chapter2GiftSeen;              // the fourth patience flower's reward card, before that tutorial (21 November 2026; old saves: false)
     // The first arrangement's hint: the hand moving an item, on the table and in the kitchen (owner, 18 November 2026:
     // "only for tutorial, handle the same way as other things in tutorial"). Old saves: false, so they see it once.
     public bool arrangeTutorialSeen;
@@ -887,6 +888,8 @@ public class SessionManager : MonoBehaviour
     }
 
     public void MarkTutorial2Seen() { if (currentSession == null) return; currentSession.tutorial2Seen = true; SaveSession(); }
+    public bool Chapter2GiftDue => currentSession != null && currentSession.isActive && !currentSession.chapter2GiftSeen;
+    public void MarkChapter2GiftSeen() { if (currentSession == null || currentSession.chapter2GiftSeen) return; currentSession.chapter2GiftSeen = true; SaveSession(); }
 
     public bool ArrangeTutorialDue => currentSession != null && currentSession.isActive && !currentSession.arrangeTutorialSeen;
     public void MarkArrangeTutorialSeen() { if (currentSession == null || currentSession.arrangeTutorialSeen) return; currentSession.arrangeTutorialSeen = true; SaveSession(); }

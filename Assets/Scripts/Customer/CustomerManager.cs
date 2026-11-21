@@ -257,7 +257,7 @@ public class CustomerManager : MonoBehaviour
         DebugLog($"CustomerManager ready for level {levelIndex + 1}");
     }
 
-    public const float Chapter2Patience = 1.2f;   // chapter 2 customers wait 20 percent longer: the flowers wilt about a sixth slower
+    public const float Chapter2Patience = (float)PatienceMeter.Chapter2Flowers / PatienceMeter.BaseFlowers;   // chapter 2 customers have a fourth flower that lasts as long as each of the three: a third more time (21 November 2026; 1.2 on three flowers since 26 October)
 
     public void OnCustomerReachedService(CustomerController customer)
     {

@@ -11,7 +11,11 @@ public class PatienceMeter : MonoBehaviour
 {
     public static readonly Vector3 WorldPosition = new Vector3(-1.11f, 3.3f, 0f);    // in the bubble root's space: centred over the bubble, sitting on its top edge (owner 13 October: closer to the bubble)
     public const float Scale = 0.8f;       // the whole set; 0.65 until 15 November 2026 (owner: "make the patiences flowers slightly larger, i want them to look more obvious")
-    public const int Flowers = 3;
+    /// Chapter 2 customers have a fourth flower (owner, 21 November 2026: "when chapter 2 starts, show a reward
+    /// animation, give chapter 2 customers extra patience flower"). Each flower lasts as long as before, so the
+    /// order's whole time grows with it (CustomerManager.Chapter2Patience = 4/3).
+    public const int BaseFlowers = 3, Chapter2Flowers = 4;
+    public static int Flowers => SessionManager.CurrentChapter >= 2 ? Chapter2Flowers : BaseFlowers;
     const float Spacing = 0.45f;           // between flower centres, world units
     const float PetalRadius = 0.15f;
     const float FallSeconds = 0.8f;
@@ -116,12 +120,12 @@ public class PatienceMeter : MonoBehaviour
     {
         LoadPainted(); PickKind();
         var hand = painted || kind != "daisy";   // painted petals get the hand-drawn turn and size
-        for (var i = 0; i < Flowers; i++)
+        for (var i = 0; i < flowers.Length; i++)
         {
             var f = new Flower();
             f.root = new GameObject("Flower" + i).transform;
             f.root.SetParent(transform, false);
-            f.root.localPosition = new Vector3((i - (Flowers - 1) / 2f) * Spacing, 0f, 0f);
+            f.root.localPosition = new Vector3((i - (flowers.Length - 1) / 2f) * Spacing, 0f, 0f);
             f.head = new GameObject("Head").transform;
             f.head.SetParent(f.root, false);
             f.head.localPosition = new Vector3(0f, 0.04f, 0f);
@@ -155,7 +159,7 @@ public class PatienceMeter : MonoBehaviour
     {
         if (order == null || !order.active) return;
         sway += Time.deltaTime;
-        for (var i = 0; i < Flowers; i++)
+        for (var i = 0; i < flowers.Length; i++)
         {
             var f = flowers[i];
             var target = Fill(order, i);
@@ -203,7 +207,7 @@ public class PatienceMeter : MonoBehaviour
     void Refill()
     {
         if (order == null) return;
-        for (var i = Flowers - 1; i >= 0; i--)
+        for (var i = flowers.Length - 1; i >= 0; i--)
         {
             var f = flowers[i];
             var target = Fill(order, i);

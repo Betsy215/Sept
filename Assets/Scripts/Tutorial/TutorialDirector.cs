@@ -58,6 +58,8 @@ public class TutorialDirector : MonoBehaviour
     private IEnumerator Run2()
     {
         yield return null;
+        // chapter 2's gift comes first, once (owner, 21 November 2026: "this happens before chapter 2 tutorial")
+        if (SessionManager.Instance != null && SessionManager.Instance.Chapter2GiftDue) yield return FlowerGift();
         if (phaseManager.GetCurrentPhase() == GamePhase.ARRANGEMENT) phaseManager.OnDoneButtonClicked();   // like chapter 1's demo: straight into play
         var station = FindObjectOfType<IceCreamStation>();
         if (station == null) { Finish2(); yield break; }
@@ -452,6 +454,138 @@ public class TutorialDirector : MonoBehaviour
         foreach (var h in Physics2D.GetRayIntersectionAll(ray, 1000f))
             if (h.transform == target || h.transform.IsChildOf(target)) return true;
         return false;
+    }
+
+    #endregion
+
+    #region Chapter 2 gift
+
+    /// Chapter 2's reward (owner, 21 November 2026: "when chapter 2 starts, show a reward animation, give chapter 2
+    /// customers extra patience flower. this happens before chapter 2 tutorial"): the day paper with three of the
+    /// chapter's flowers; a fourth drops in beside them with a pop and a burst of petals; a cookie button goes on.
+    /// The table is still being arranged behind it, so no customer walks up meanwhile. The fourth flower itself is
+    /// PatienceMeter.Flowers; this card is only the telling, shown once per save.
+    private IEnumerator FlowerGift()
+    {
+        var petal = Resources.Load<Sprite>("Patience/" + PatienceMeter.Chapter2Kind + "_petal"); var centre = Resources.Load<Sprite>("Patience/" + PatienceMeter.Chapter2Kind + "_centre");
+        var doily = Resources.Load<Sprite>("Map/day_paper"); var letsGo = Resources.Load<Sprite>("UI/cookie_letsgo");
+        if (petal == null || centre == null || doily == null || letsGo == null) { SessionManager.Instance.MarkChapter2GiftSeen(); yield break; }
+        var titleFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF"); var handFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/Delius SDF");
+        var ink = new Color(0.36f, 0.20f, 0.09f); var soft = new Color(0.47f, 0.31f, 0.20f);
+        var hadCaption = captionBox != null && captionBox.gameObject.activeSelf; if (captionBox != null) captionBox.gameObject.SetActive(false);
+
+        var card = new GameObject("FlowerGift", typeof(RectTransform)); card.transform.SetParent(canvasRect, false);
+        var cardRect = card.GetComponent<RectTransform>(); Stretch(cardRect);
+        var dim = NewImage("Dim", cardRect, new Color(0f, 0f, 0f, 0f)); Stretch(dim.rectTransform);
+        var panel = NewImage("Panel", cardRect, Color.white); panel.sprite = doily; panel.rectTransform.sizeDelta = new Vector2(770f, 770f);
+        var title = NewText("Title", panel.rectTransform, titleFont, 80f, ink);
+        title.rectTransform.anchoredPosition = new Vector2(0f, 246f); title.rectTransform.sizeDelta = new Vector2(680f, 120f);
+        title.alignment = TextAlignmentOptions.Center; title.text = "A GIFT FOR YOU!";
+        var line = NewText("Line", panel.rectTransform, handFont != null ? handFont : titleFont, 37f, soft);
+        line.rectTransform.anchoredPosition = new Vector2(0f, -52f); line.rectTransform.sizeDelta = new Vector2(640f, 110f);
+        line.alignment = TextAlignmentOptions.Center; line.text = "One more flower of patience\nfor every beach customer"; line.alpha = 0f;
+        var go = NewImage("LetsGo", panel.rectTransform, Color.white); go.sprite = letsGo;
+        go.rectTransform.anchoredPosition = new Vector2(0f, -196f); go.rectTransform.sizeDelta = new Vector2(380f, 380f * letsGo.rect.height / letsGo.rect.width);
+        var done = false; go.gameObject.AddComponent<Button>().onClick.AddListener(() => done = true);
+        go.transform.localScale = Vector3.zero;
+
+        // the flowers: three as every customer had, the fourth's place kept free at the right
+        const int n = PatienceMeter.Chapter2Flowers; const float size = 150f, gap = 165f, rowY = 92f;
+        var heads = new RectTransform[n];
+        for (var i = 0; i < n; i++) { heads[i] = UiFlower(panel.rectTransform, petal, centre, size); heads[i].anchoredPosition = new Vector2((i - (n - 1) / 2f) * gap, rowY); heads[i].localScale = Vector3.zero; }
+
+        // the card comes in
+        panel.transform.localScale = Vector3.one * 0.6f;
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.28f)
+        {
+            dim.color = new Color(0f, 0f, 0f, 0.55f * Mathf.Clamp01(t)); panel.transform.localScale = Vector3.one * Back(Mathf.Clamp01(t), 0.6f);
+            yield return null;
+        }
+        dim.color = new Color(0f, 0f, 0f, 0.55f); panel.transform.localScale = Vector3.one;
+        // the three flowers pop up one after another
+        var pop = Resources.Load<AudioClip>("Audio/pop"); var flowerPop = Resources.Load<AudioClip>("Audio/flower_pop");
+        for (var i = 0; i < n - 1; i++)
+        {
+            if (pop != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(pop);
+            for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.2f) { heads[i].localScale = Vector3.one * Back(Mathf.Clamp01(t), 0f); yield return null; }
+            heads[i].localScale = Vector3.one;
+        }
+        yield return new WaitForSecondsRealtime(0.45f);
+        // the fourth falls in from above, lands with a squash, and throws petals
+        var last = heads[n - 1]; var land = last.anchoredPosition; last.localScale = Vector3.one * 1.25f;
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.34f)
+        {
+            var k = Mathf.Clamp01(t); last.anchoredPosition = land + new Vector2(0f, 330f * (1f - k * k)); last.localRotation = Quaternion.Euler(0f, 0f, 200f * (1f - k));
+            yield return null;
+        }
+        last.anchoredPosition = land; last.localRotation = Quaternion.identity;
+        if (flowerPop != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(flowerPop);
+        Haptics.Tap();
+        StartCoroutine(PetalBurst(panel.rectTransform, petal, land));
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.5f)
+        {
+            var k = Mathf.Clamp01(t); last.localScale = Vector3.one * (1f + 0.45f * Mathf.Sin(k * Mathf.PI) * (1f - k * 0.4f));
+            for (var i = 0; i < n - 1; i++) heads[i].localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(k * Mathf.PI * 2f) * 9f * (1f - k));   // the others nod to it
+            line.alpha = k;
+            yield return null;
+        }
+        last.localScale = Vector3.one; line.alpha = 1f;
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.25f) { go.transform.localScale = Vector3.one * Back(Mathf.Clamp01(t), 0f); yield return null; }
+        go.transform.localScale = Vector3.one;
+        // the new flower keeps a slow pulse until the player goes on
+        var w = 0f;
+        while (!done) { w += Time.unscaledDeltaTime; last.localScale = Vector3.one * (1f + 0.07f * Mathf.Sin(w * 4f)); yield return null; }
+        SessionManager.Instance.MarkChapter2GiftSeen();
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.2f)
+        {
+            var k = Mathf.Clamp01(t); dim.color = new Color(0f, 0f, 0f, 0.55f * (1f - k)); panel.transform.localScale = Vector3.one * (1f - 0.4f * k);
+            var cg = panel.GetComponent<CanvasGroup>(); if (cg == null) cg = panel.gameObject.AddComponent<CanvasGroup>(); cg.alpha = 1f - k;
+            yield return null;
+        }
+        Destroy(card);
+        if (captionBox != null) captionBox.gameObject.SetActive(hadCaption);
+    }
+
+    private static float Back(float k, float from) { var c = 1.70158f; var e = 1f + (c + 1f) * Mathf.Pow(k - 1f, 3f) + c * Mathf.Pow(k - 1f, 2f); return from + (1f - from) * e; }   // a little past, then back
+
+    /// The patience meter's flower as a picture for a card: five petals round a centre, laid out as PatienceMeter does
+    private static RectTransform UiFlower(RectTransform parent, Sprite petal, Sprite centre, float size)
+    {
+        var root = new GameObject("Flower", typeof(RectTransform)).GetComponent<RectTransform>(); root.SetParent(parent, false); root.sizeDelta = new Vector2(size, size);
+        const float radius = 0.115f;                                                     // PatienceMeter's place for a hibiscus petal, world units
+        var px = size / (2f * (radius + petal.bounds.extents.y));                         // card pixels per world unit: the petals' tips touch the square
+        for (var k = 0; k < 5; k++)
+        {
+            var angle = 90f - 72f * k; var rad = angle * Mathf.Deg2Rad;
+            var p = NewImage("Petal" + k, root, Color.white); p.sprite = petal; p.raycastTarget = false;
+            p.rectTransform.sizeDelta = petal.bounds.size * px; p.rectTransform.anchoredPosition = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * radius * px;
+            p.rectTransform.localRotation = Quaternion.Euler(0f, 0f, angle - 90f);
+        }
+        var c = NewImage("Centre", root, Color.white); c.sprite = centre; c.raycastTarget = false; c.rectTransform.sizeDelta = centre.bounds.size * px;
+        return root;
+    }
+
+    private IEnumerator PetalBurst(RectTransform parent, Sprite petal, Vector2 at)
+    {
+        const int count = 10; var bits = new RectTransform[count]; var dirs = new Vector2[count];
+        for (var i = 0; i < count; i++)
+        {
+            var img = NewImage("Bit", parent, Color.white); img.sprite = petal; img.raycastTarget = false; img.preserveAspect = true;
+            bits[i] = img.rectTransform; bits[i].sizeDelta = new Vector2(34f, 34f); bits[i].anchoredPosition = at;
+            var a = (360f / count * i + Random.Range(-14f, 14f)) * Mathf.Deg2Rad; dirs[i] = new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * Random.Range(150f, 230f);
+        }
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.7f)
+        {
+            var k = Mathf.Clamp01(t); var ease = 1f - (1f - k) * (1f - k);
+            for (var i = 0; i < count; i++)
+            {
+                if (bits[i] == null) yield break;
+                bits[i].anchoredPosition = at + dirs[i] * ease + new Vector2(0f, -90f * k * k); bits[i].localRotation = Quaternion.Euler(0f, 0f, 300f * k + i * 36f);
+                bits[i].GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f - k * k);
+            }
+            yield return null;
+        }
+        foreach (var b in bits) if (b != null) Destroy(b.gameObject);
     }
 
     #endregion
