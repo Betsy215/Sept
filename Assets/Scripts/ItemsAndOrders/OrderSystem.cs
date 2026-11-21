@@ -410,8 +410,23 @@ public class OrderSystem : MonoBehaviour
         }
         if (n == 0 || icon == null || icon.sprite == null || s.container == null) return;
         var wide = icon.sprite.bounds.size.x * Mathf.Abs(icon.transform.lossyScale.x) / Mathf.Max(0.0001f, Mathf.Abs(s.container.lossyScale.x));   // one food picture, in the container's units
-        var size = wide * 0.42f;
-        var root = new GameObject("ThinkDots"); root.transform.SetParent(s.container, false); root.transform.localPosition = mid / n;
+        var size = wide * 0.42f; var at = mid / n;
+        // Sized and centred from the bubble itself (owner, 21 November 2026: "the dots looks fine on bigger bubble, but
+        // on small bubble it looks too big. resize and center the dots in bubbles"): the middle of the bubble's inside
+        // (the pictures hold a tail and a shadow too, so not the picture's middle), the three dots about half the
+        // inside's width, and never bigger than they were in the widest bubble.
+        var bubble = s.bubble1 != null && s.bubble1.activeSelf ? s.bubble1 : s.bubble2 != null && s.bubble2.activeSelf ? s.bubble2 : s.bubble4 != null && s.bubble4.activeSelf ? s.bubble4 : null;
+        var body = bubble != null ? bubble.GetComponent<SpriteRenderer>() : null;
+        if (body != null && body.sprite != null && BubbleInside(body.sprite.name, out var centre, out var inner))
+        {
+            // the inside's width and height on the screen: the bubble pictures are turned and stretched in the scene
+            Vector3 ax = body.transform.TransformVector(new Vector3(inner.x, 0f, 0f)), ay = body.transform.TransformVector(new Vector3(0f, inner.y, 0f));
+            float across = Mathf.Abs(ax.x) + Mathf.Abs(ay.x), up = Mathf.Abs(ax.y) + Mathf.Abs(ay.y);   // world units
+            var world = Mathf.Min(across * 0.125f, up * 0.22f);                                       // the row of three is 4.1 dots wide: about half the inside
+            size = world / Mathf.Max(0.0001f, Mathf.Abs(s.container.lossyScale.x));
+            at = s.container.InverseTransformPoint(body.transform.TransformPoint(centre)) - new Vector3(0f, size * 0.25f, 0f);   // the hop goes up from here
+        }
+        var root = new GameObject("ThinkDots"); root.transform.SetParent(s.container, false); root.transform.localPosition = at;
         for (var i = 0; i < 3; i++)
         {
             var d = new GameObject("Dot" + i); d.transform.SetParent(root.transform, false);
@@ -420,6 +435,19 @@ public class OrderSystem : MonoBehaviour
             sr.sortingLayerID = icon.sortingLayerID; sr.sortingOrder = icon.sortingOrder;
         }
         order.thinkDots = root;
+    }
+
+    /// The inside of each bubble picture (Assets/Images, 100 pixels per unit; measured inside the black line): its
+    /// middle from the picture's middle and its size, in the sprite's own units
+    private static bool BubbleInside(string sprite, out Vector3 centre, out Vector2 size)
+    {
+        switch (sprite)
+        {
+            case "1bubble": centre = new Vector3(0.015f, 0.425f, 0f); size = new Vector2(3.29f, 3.05f); return true;
+            case "bubble2": centre = new Vector3(-0.08f, 0.535f, 0f); size = new Vector2(2.18f, 3.57f); return true;
+            case "bubble3": centre = new Vector3(-0.005f, 0.345f, 0f); size = new Vector2(1.79f, 5.19f); return true;
+        }
+        centre = Vector3.zero; size = Vector2.zero; return false;
     }
 
     private void Think(ActiveOrder o)

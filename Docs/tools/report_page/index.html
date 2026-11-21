@@ -74,13 +74,13 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Pick a pointer cookie</b> (Current, round 2) and <b>the chapter 2 ideas you want</b> (Q&amp;A).</p>
-<p><b>Look at</b> the gift's new order and the handheld mixer (Current). The gift card's words are mine; change them if you like.</p>
-<p><b>Test build:</b> Xcode still has no Apple account sign-in. Open <b>Xcode, Settings, Accounts</b>, sign in (I cannot type your password) and tell me; I then build with today's changes and upload.</p>
+<p><b>Test build 2026.11.21 (0) is being made now.</b> If the upload is refused again, it needs your sign-in in Xcode (Settings, Accounts); I will say so here.</p>
+<p><b>Look at</b> the thinking dots and the mixer (Current); both are in the build as shown.</p>
+<p><b>Still open:</b> the chapter 2 ideas (Q&amp;A).</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>Done today: the chapter 2 gift, handheld mixer, tray shadow (approved, in), kitchen without pauses, faster blender, player analysis, the ad check for today's US player.</p>
-<p><b>Tomorrow (22 Nov):</b> Apple's sales for 21 Nov (a Remove Ads sale?), and whether that player came back.</p>
+<p>In the build today: chapter 2 gift, hand pointer with its glow, tray shadow, lean handheld mixer, kitchen without pauses, faster blender, smaller thinking dots.</p>
+<p><b>Tomorrow (22 Nov):</b> Apple's sales for 21 Nov (a Remove Ads sale?), and whether today's US player came back.</p>
 </div>
 </div>
 
@@ -113,14 +113,6 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><b>Seen in today's numbers:</b> Unity counted 4 ads shown, the game logged none as finished. At least two were players who closed the game during the ad right after day 1.</li>
 </ul>
 <ul class="checks"><li><label><input type="checkbox" data-id="qa.skipcount.seen"> Seen</label></li></ul>
-</div>
-<div class="q"><h3>Does the time of my test play match? Where is today's data from, when App Store Connect has none yet? (21 Nov)</h3>
-<ul>
-<li><b>Yes, it matches.</b> Your TestFlight play is in the test data: today 12:09 to 12:16, days 13 and 14, one star each, then the shop. It is kept apart from the players and never counted.</li>
-<li><b>So the 11:29 to 12:01 play was not you,</b> and yes, it is the player I asked you about. It was <b>today, 21 Nov</b>. "2026.11.20" in that line is the game's version number (the release), not the date. A real new player in the US on the App Store copy: all 14 days in 32 minutes, 3 stars on every day, nearly everything bought. They are in the numbers now (Analysis).</li>
-<li><b>Where today's data comes from:</b> Unity Analytics, not App Store Connect. The game itself sends its events (tutorial steps, days, stars, purchases, ads) to Unity within about a minute. App Store copies go to "production", TestFlight and my editor to "development". Apple's own numbers (downloads) come a day later; they end on 20 Nov.</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.today.seen"> Seen</label></li></ul>
 </div>
 <div class="q"><h3>Chapter 2 is much harder: ways to tune it (21 Nov)</h3>
 <ul>
@@ -175,50 +167,46 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul class="checks"><li><label><input type="checkbox" data-id="qa.ktimes2.seen"> Seen</label></li></ul>
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">Made 21 November; not in a test build yet.</p>
+<p class="sub" style="margin:0 0 8px">Made 21 November; all of it is in the new test build.</p>
 <div class="card">
-<p style="margin-top:0"><b>Chapter 2's gift, in your order: the fourth flower flies to the customer.</b></p>
-<figure><img src="gift_flower.jpg" alt="Six views of the chapter 2 tutorial. The customer has ordered and three pink flowers stand over the bubble. The screen dims and a paper card titled A gift for you shows one big flower, the words One more flower of patience for every beach customer, and a Let's go cookie button. The card is gone and the flower arrives at the right end of the row. Four flowers over the bubble. The tutorial goes on with its captions, four flowers shown"><figcaption>Table, chapter 2 tutorial: three flowers, the gift card, the flower flying over, four flowers, the tutorial going on.</figcaption></figure>
+<p style="margin-top:0"><b>Thinking dots: smaller, and centred in every bubble.</b></p>
+<figure><img src="think_dots.jpg" alt="Four order bubbles while the customer thinks, two narrow ones and two large ones, each with three small brown dots in the middle of the bubble, about half as wide as the bubble's inside"><figcaption>Table, chapter 1: the dots in the narrow bubble (top) and in the large bubble (bottom).</figcaption></figure>
 <ul>
-<li>The tutorial starts as before. The customer walks up and orders with three flowers; a second later the game holds and the card comes up with the flower.</li>
-<li>On "Let's go" the card goes, the three flowers move over, and the gift flower flies onto the row with a pop. Then the tutorial continues.</li>
-<li>From then on every chapter 2 customer has four flowers, each as long as before: a third more waiting time than in chapter 1.</li>
+<li>The dots are now sized from the bubble itself: the row of three is about half as wide as the bubble's inside, in every bubble. In the large bubble they are a little smaller than before; tick if you want them bigger.</li>
+<li>They sit in the middle of the bubble's inside (before, in the middle of the foods to come, which is off-centre in some bubbles).</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.gift5.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.gift5.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.dots2.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.dots2.bigger"> A little bigger</label></li>
+<li><label><input type="checkbox" data-id="cur.dots2.smaller"> A little smaller</label></li>
 </ul>
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Tutorial pointer, round 2: six new cookies by Gemini.</b></p>
-<figure><img src="arrow_ideas.jpg" alt="Six views of the chapter 2 table with a cookie pointing down at the waffle machine, each with a gold glow. 6: a red arrow with a white piped outline. 7: a yellow arrow with a caramel outline. 8: a mint arrow with white dots. 9: a white gloved hand pointing down. 10: two orange chevrons. 11: a pink arrow with white stripes"><figcaption>Table, chapter 2 tutorial: pointer cookies 6 to 11, each with the gold glow.</figcaption></figure>
+<p style="margin-top:0"><b>Mixer: lean body, your own whisk as the blade.</b></p>
+<figure><img src="mixer_lean.jpg" alt="Top: the two mixer frames. At rest the bowl of cream with a slim green hand mixer standing beside it, leaning a little, the kitchen's blue whisk hanging from its front. Running: the mixer level above the bowl, the whisk in the cream. Bottom: the kitchen counter in the game with each frame at the counter's left end"><figcaption>Kitchen: the mixer's two frames, and each in the game (at rest; running).</figcaption></figure>
 <ul>
-<li>Drawn for this job in our cookie style, not a turned map arrow. The glow pulses and the cookie keeps its bounce.</li>
-<li>Red (6) stands out best on both cloth colours.</li>
+<li><b>Body</b> (ChatGPT): a slim curved body with a thin handle, shorter than the bowl is wide.</li>
+<li><b>Blade:</b> the kitchen's own whisk, its pixels only turned and made smaller; its handle sits up inside the body.</li>
+<li><b>At rest</b> it stands beside the bowl the same way up, leaning 12 degrees; <b>running</b> it is level over the bowl.</li>
+<li><b>In iCloud</b> ("FoodTruckCafe art"): mixer_bowl, mixer_machine (body alone), mixer_machine_with_whisk, mixer_original_whisk (the kitchen's whisk), plus the two game frames mixer_rest and mixer_running.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.arrow2.6"> 6. Red arrow</label></li>
-<li><label><input type="checkbox" data-id="cur.arrow2.7"> 7. Yellow arrow</label></li>
-<li><label><input type="checkbox" data-id="cur.arrow2.8"> 8. Mint arrow with dots</label></li>
-<li><label><input type="checkbox" data-id="cur.arrow2.9"> 9. Pointing hand</label></li>
-<li><label><input type="checkbox" data-id="cur.arrow2.10"> 10. Orange chevrons</label></li>
-<li><label><input type="checkbox" data-id="cur.arrow2.11"> 11. Pink striped arrow</label></li>
-<li><label><input type="checkbox" data-id="cur.arrow2.other"> Something else (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.mixer4.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.mixer4.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Kitchen: handheld mixer, no pauses, faster blender.</b></p>
-<figure><img src="mixer_handheld.jpg" alt="The kitchen counter twice. Left, at rest: the bowl of cream with a small green hand mixer parked beside it on the counter, its whisk pointing at the bowl. Right, running: the hand mixer level above the bowl, its whisk in the cream. The fruit board is beside it in both"><figcaption>Kitchen: the handheld mixer at rest on the counter, and running over the bowl.</figcaption></figure>
+<p style="margin-top:0"><b>Built from your picks: the hand pointer with its glaze glow; the gift card's new words.</b></p>
+<figure><img src="pointer_hand.jpg" alt="Three moments of the chapter 2 tutorial: the white hand cookie points down at the waffle machine with a gold glow round it, bouncing a little between the pictures"><figcaption>Table, chapter 2 tutorial: the hand pointer (three moments of its bounce).</figcaption></figure>
+<figure><img src="gift_card_text.jpg" alt="The gift card: A gift for you, one big pink flower, the words Extra patience flower for beach customers, and the Let's go cookie button"><figcaption>Table, chapter 2 tutorial: the gift card with your words.</figcaption></figure>
 <ul>
-<li><b>Mixer</b> (ChatGPT): no stand or foot. A small hand mixer with a slim handle. At rest it is parked on the counter beside the bowl; while it runs it is over the bowl with the whisk in the cream. Bowl and blade are the size they were. Both frames are in iCloud (mixer_rest, mixer_running).</li>
-<li><b>No pauses:</b> after the oven the mixer starts at once, then the fruit board, then the dessert flies to the table.</li>
-<li><b>Blender:</b> 3 s with four flavours, 1.8 s with two (was 5 s and 2.8 s).</li>
+<li><b>Pointer:</b> Gemini's hand cookie (drawn again large), a gold glow that beats, and a band of light that passes over the icing every second and a half. Every tutorial arrow is this hand now, the kitchen swipe hints too.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.mixer3.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.mixer3.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.hand.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.hand.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
@@ -226,16 +214,17 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p class="sub" style="margin:0 0 8px">Next release: the kitchen remodel and the small fixes. Everything changed since release 2026.11.20:</p>
 <ul>
 <li><b>Kitchen flow:</b> choux and cake are made in steps. The oven bakes them onto the baking tray or the cake plate in the kitchen, the mixer adds the cream, the fruit board adds the fruit, then they fly to the table. The kitchen does every step by itself, with no pause.</li>
-<li><b>New kitchen pieces:</b> the baking tray (four choux, two by two, four stages, with a shadow), the cake plate's stages (empty, sponge, cream, finished), the handheld mixer with its bowl (at rest and running). All can be arranged; the tray starts on the kitchen table.</li>
+<li><b>New kitchen pieces:</b> the baking tray (four choux, two by two, four stages, with a shadow), the cake plate's stages (empty, sponge, cream, finished), the lean handheld mixer with its bowl and the kitchen's whisk as its blade (at rest and running). All can be arranged; the tray starts on the kitchen table.</li>
 <li><b>Kitchen times:</b> bread bakes 5 s; choux, cake and cookies 3 s. The ice cream blender runs 3 s (1.8 s with two flavours). Pausing the game stops the kitchen too.</li>
 <li><b>Chapter 2 opens after day 9</b> of chapter 1 (the player chooses when to go). On the map day 9 is a big glowing star with a dotted path to the arrow; finishing it gives a star and the truck drives to chapter 2.</li>
 <li><b>Chapter 2 gift:</b> a fourth patience flower for every chapter 2 customer; in the tutorial a reward card shows it and it flies to the first customer.</li>
 <li><b>Map:</b> today's day card opens by itself.</li>
-<li><b>Customers:</b> they think for 2 s (three dots in the bubble) before the order shows.</li>
+<li><b>Customers:</b> they think for 2 s (three dots in the middle of the bubble) before the order shows.</li>
+<li><b>Tutorial:</b> the pointer is a hand cookie with a gold glaze glow.</li>
 <li><b>Shop:</b> NEW on a tab that holds something new; locked items stay visible with a padlock (cookies and coconut until chapter 2, the star Yoga until she is hired); two new locked star cards, Chef (20) and Dining table (25); cards aligned; the extra cup reads "One more plate for brewed coffee."</li>
 <li><b>Look:</b> a taller hen on the table; the tutorial's "Ready to go?" card on paper with cookie buttons.</li>
 </ul>
-<p style="margin:8px 0 4px"><b>Not in yet:</b> the tutorial pointer cookie and the chapter 2 tuning (your picks); the cutting animation (the board hops for now); a sound for the day 9 scene.</p>
+<p style="margin:8px 0 4px"><b>Not in yet:</b> the chapter 2 tuning (your picks); the cutting animation (the board hops for now); a sound for the day 9 scene.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>

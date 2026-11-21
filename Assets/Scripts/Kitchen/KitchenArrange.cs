@@ -53,7 +53,7 @@ public static class KitchenArrange
         new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.04f, 0.20f, 0.96f, 0.98f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.98f), size = new Vector2(205f, 149f) },   // the baking tray, squarer, choux 2 x 2, with the fruit board's hard shadow (464 x 338; owner, 20-21 November 2026)
         // the mixer set on its stand (20 November 2026), made by this file when choux or cake is on the menu; it takes the whisk's place then.
         // Its box is its foot. On the table at a free place (FirstCheck); this foot, the opening under the counter's right place, is the fallback
-        new Def { name = "mixer", foot = new Vector2(0.40f, 0.2906f), box = new Vector4(0.02f, 0.76f, 0.98f, 0.99f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.99f), size = new Vector2(198f, 157f) },   // 21 November 2026: the handheld mixer, no stand (762 x 603): at rest it lies parked beside the bowl, running it is over the bowl; bowl rim 106 units as before
+        new Def { name = "mixer", foot = new Vector2(0.40f, 0.2906f), box = new Vector4(0.02f, 0.72f, 0.98f, 0.99f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.99f), size = new Vector2(229f, 188f) },   // 21 November 2026: the lean handheld mixer with the kitchen's own whisk as its blade (686 x 563, compose_lean.py): at rest it stands beside the bowl, leaning; running it is over the bowl; bowl rim 106 units as before
         new Def { name = "juice",    foot = new Vector2(0.1662f, 0.1469f),box = new Vector4(0.15f, 0.30f, 0.85f, 0.98f),   fit = new Vector4(0.13f, 0.07f, 0.87f, 0.98f) },
     };
 

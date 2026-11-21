@@ -161,6 +161,7 @@ public class TutorialDirector : MonoBehaviour
     private RectTransform hand;
     private Vector2 handBase;
     private Sprite arrowSprite;
+    private CanvasGroup handGroup;
     private readonly List<RectTransform> extraArrows = new();
     private readonly List<Vector2> extraArrowBases = new();
     private Coroutine extraBob;
@@ -422,7 +423,8 @@ public class TutorialDirector : MonoBehaviour
             var u = t % 1f;
             var x = Mathf.Lerp(-reach, reach, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(u / 0.75f))) * direction;
             hand.anchoredPosition = new Vector2(x, y);
-            if (img != null) { var c = img.color; c.a = u < 0.1f ? u / 0.1f : u > 0.75f ? Mathf.Clamp01(1f - (u - 0.75f) / 0.2f) : 1f; img.color = c; }
+            var fade = u < 0.1f ? u / 0.1f : u > 0.75f ? Mathf.Clamp01(1f - (u - 0.75f) / 0.2f) : 1f;
+            if (handGroup != null) handGroup.alpha = fade; else if (img != null) { var c = img.color; c.a = fade; img.color = c; }
             yield return null;
         }
     }
@@ -487,7 +489,7 @@ public class TutorialDirector : MonoBehaviour
         title.alignment = TextAlignmentOptions.Center; title.text = "A GIFT FOR YOU!";
         var line = NewText("Line", panel.rectTransform, handFont != null ? handFont : titleFont, 37f, soft);
         line.rectTransform.anchoredPosition = new Vector2(0f, -66f); line.rectTransform.sizeDelta = new Vector2(640f, 110f);
-        line.alignment = TextAlignmentOptions.Center; line.text = "One more flower of patience\nfor every beach customer"; line.alpha = 0f;
+        line.alignment = TextAlignmentOptions.Center; line.text = "Extra patience flower\nfor beach customers";   // the owner's words (21 November 2026) line.alpha = 0f;
         var go = NewImage("LetsGo", panel.rectTransform, Color.white); go.sprite = letsGo;
         go.rectTransform.anchoredPosition = new Vector2(0f, -206f); go.rectTransform.sizeDelta = new Vector2(380f, 380f * letsGo.rect.height / letsGo.rect.width);
         var done = false; go.gameObject.AddComponent<Button>().onClick.AddListener(() => done = true);
@@ -819,6 +821,7 @@ public class TutorialDirector : MonoBehaviour
         img.sprite = arrowSprite;
         img.preserveAspect = true;
         img.raycastTarget = false;
+        GlowFx.Shine(img);
         return rt;
     }
 
@@ -868,6 +871,7 @@ public class TutorialDirector : MonoBehaviour
         hand.localRotation = Quaternion.identity; hand.localScale = Vector3.one;   // a swipe hint turns, grows and fades it
         var handImage = hand.GetComponent<Image>();
         if (handImage != null) { var c = handImage.color; c.a = 1f; handImage.color = c; }
+        if (handGroup != null) handGroup.alpha = 1f;
         hand.gameObject.SetActive(false);
     }
 
@@ -878,7 +882,10 @@ public class TutorialDirector : MonoBehaviour
     private void BuildUi()
     {
         var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF");
-        var handSprite = Resources.Load<Sprite>("Tutorial/arrow");
+        // The pointer is a hand cookie with the gold glow and the glaze's shine passing over it (owner's pick 9 of
+        // 21 November 2026, Store/ui/tutorial_arrow_2026-11-21: "use 9 pointing hand, add a glazing glow on it"); its
+        // fingertip is the picture's bottom centre, as the yellow arrow's tip was. Without the picture: the arrow.
+        var handSprite = Resources.Load<Sprite>("Tutorial/pointer_hand"); if (handSprite == null) handSprite = Resources.Load<Sprite>("Tutorial/arrow");
         arrowSprite = handSprite;
 
         var go = new GameObject("TutorialCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
@@ -925,10 +932,12 @@ public class TutorialDirector : MonoBehaviour
         hand = handImage.rectTransform;
         hand.anchorMin = hand.anchorMax = new Vector2(0.5f, 0.5f);
         hand.pivot = new Vector2(0.5f, 0f);
-        hand.sizeDelta = new Vector2(150f, 150f);
+        hand.sizeDelta = new Vector2(170f, 170f);
         handImage.sprite = handSprite;
         handImage.preserveAspect = true;
         handImage.raycastTarget = false;
+        handGroup = hand.gameObject.AddComponent<CanvasGroup>(); handGroup.blocksRaycasts = false; handGroup.interactable = false;   // fades the glow with the hand
+        GlowFx.Shine(handImage);
         hand.gameObject.SetActive(false);
 
         // End card
