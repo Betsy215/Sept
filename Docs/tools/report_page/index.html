@@ -74,22 +74,38 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Pick a tutorial arrow</b> (Current) and <b>the chapter 2 ideas you want</b> (Q&amp;A).</p>
-<p><b>Look at the chapter 2 gift</b> (Current): the words on the card are mine, change them if you like.</p>
-<p><b>MVP</b> now lists everything changed since release 2026.11.20.</p>
+<p><b>Pick a pointer cookie</b> (Current, round 2) and <b>the chapter 2 ideas you want</b> (Q&amp;A).</p>
+<p><b>Look at</b> the gift's new order and the handheld mixer (Current). The gift card's words are mine; change them if you like.</p>
 <p><b>Test build:</b> Xcode still has no Apple account sign-in. Open <b>Xcode, Settings, Accounts</b>, sign in (I cannot type your password) and tell me; I then build with today's changes and upload.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>Done today: chapter 2 gift (fourth flower), tray shadow, simpler mixer, kitchen cooks without pauses, faster blender, player analysis. After your picks: the arrow in the game, the chapter 2 tuning, the test build.</p>
-<p><b>Tomorrow (22 Nov):</b> Unity Ads and Apple sales for 21 Nov, to see why today's US player was shown no ad (Remove Ads bought, or ads not working in the new release).</p>
+<p>Done today: the chapter 2 gift, handheld mixer, tray shadow (approved, in), kitchen without pauses, faster blender, player analysis, the ad check for today's US player.</p>
+<p><b>Tomorrow (22 Nov):</b> Apple's sales for 21 Nov (a Remove Ads sale?), and whether that player came back.</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>Why was no between-days ad shown to that player? (21 Nov)</h3>
+<ul>
+<li><b>Their phone never asked Unity for an ad.</b> Unity's hourly report shows 0 ad requests in the two hours they played (11:00 to 13:00 our time). Every other player's visit today shows 1 to 4 requests.</li>
+<li><b>It is not Remove Ads:</b> with Remove Ads the game still loads an ad in the background, so a request would show.</li>
+<li><b>Most likely</b> the phone blocks ad servers (an ad blocker, a private DNS or a VPN). The game then simply goes on without ads.</li>
+<li><b>Not a fault of the new release:</b> another player on the same version was shown an ad today.</li>
+</ul>
+<ul class="checks"><li><label><input type="checkbox" data-id="qa.noad.seen"> Seen</label></li></ul>
+</div>
+<div class="q"><h3>Does a skipped between-days ad still count at Unity? (21 Nov)</h3>
+<ul>
+<li><b>Yes.</b> Unity counts an ad as shown the moment it starts. Skipping it, or even closing the game during it, does not take it back.</li>
+<li><b>Income:</b> most ads pay per showing, so a skipped ad usually still earns. Some advertisers pay only when the player taps or installs; those earn nothing when skipped.</li>
+<li><b>Seen in today's numbers:</b> Unity counted 4 ads shown, the game logged none as finished. At least two were players who closed the game during the ad right after day 1.</li>
+</ul>
+<ul class="checks"><li><label><input type="checkbox" data-id="qa.skipcount.seen"> Seen</label></li></ul>
+</div>
 <div class="q"><h3>Does the time of my test play match? Where is today's data from, when App Store Connect has none yet? (21 Nov)</h3>
 <ul>
 <li><b>Yes, it matches.</b> Your TestFlight play is in the test data: today 12:09 to 12:16, days 13 and 14, one star each, then the shop. It is kept apart from the players and never counted.</li>
-<li><b>So the 11:29 to 12:01 play was not you.</b> It is a real new player in the US on the App Store copy: all 14 days in 32 minutes, 3 stars on every day, nearly everything bought. They are in the numbers now (Analysis).</li>
+<li><b>So the 11:29 to 12:01 play was not you,</b> and yes, it is the player I asked you about. It was <b>today, 21 Nov</b>. "2026.11.20" in that line is the game's version number (the release), not the date. A real new player in the US on the App Store copy: all 14 days in 32 minutes, 3 stars on every day, nearly everything bought. They are in the numbers now (Analysis).</li>
 <li><b>Where today's data comes from:</b> Unity Analytics, not App Store Connect. The game itself sends its events (tutorial steps, days, stars, purchases, ads) to Unity within about a minute. App Store copies go to "production", TestFlight and my editor to "development". Apple's own numbers (downloads) come a day later; they end on 20 Nov.</li>
 </ul>
 <ul class="checks"><li><label><input type="checkbox" data-id="qa.today.seen"> Seen</label></li></ul>
@@ -131,73 +147,66 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 <ul class="checks"><li><label><input type="checkbox" data-id="qa.prices.seen"> Seen</label></li></ul>
 </div>
-<div class="q"><h3>How long each kitchen item takes</h3>
+<div class="q"><h3>The time for each item after the kitchen redesign (21 Nov)</h3>
 <ul>
-<li><b>Ovens (changed 20 Nov):</b> bread 5 s; choux, cake and cookies 3 s.</li>
-<li><b>Apples</b> (chapter 1) and <b>coconuts</b> (chapter 2): the tree or palm grows them back 8 s after the last one is picked.</li>
-<li><b>Blender</b> (ice cream refill): 3 s with four flavours, 1.8 s with two (changed 21 Nov; was 5 s and 2.8 s).</li>
-<li><b>Waffle machine</b>: about 2.4 s (1.1 s of steam, then the lid opens and the bowls come out).</li>
-<li><b>Coffee bags and juice</b>: no wait, a tap refills at once.</li>
-<li><b>With the Kitchen upgrade</b> (15 stars) every wait above is a quarter shorter: bread 3.8 s, the others 2.3 s, apples and coconuts 6 s, blender 2.4 s, waffles 2.1 s.</li>
+<li><b>Bread:</b> 5 s in the oven.</li>
+<li><b>Cookies:</b> 3 s in the oven.</li>
+<li><b>Choux:</b> about 9 s from the oven tap to the table: oven 3 s, mixer 2.5 s, fruit board 2 s, shown finished 0.9 s, flight 0.6 s. No taps after the oven.</li>
+<li><b>Strawberry cake:</b> the same, about 9 s.</li>
+<li>Choux and cake share the mixer and the board: if both are cooking, the second waits its turn (up to 2.5 s more).</li>
+<li><b>Apples</b> and <b>coconuts:</b> back 8 s after the last one is picked.</li>
+<li><b>Ice cream blender:</b> 3 s with four flavours, 1.8 s with two.</li>
+<li><b>Waffle machine:</b> about 2.4 s.</li>
+<li><b>Coffee bags, juice:</b> at once.</li>
+<li><b>With the Kitchen upgrade</b> (15 stars) all of it is a quarter shorter: bread 3.8 s, cookies 2.3 s, choux and cake about 7 s.</li>
 </ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.ktimes.seen"> Seen</label></li></ul>
+<ul class="checks"><li><label><input type="checkbox" data-id="qa.ktimes2.seen"> Seen</label></li></ul>
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
 <p class="sub" style="margin:0 0 8px">Made 21 November; not in a test build yet.</p>
 <div class="card">
-<p style="margin-top:0"><b>Chapter 2's gift: one more patience flower.</b></p>
-<figure><img src="gift_flower.jpg" alt="Five views. A paper card titled A gift for you with three pink hibiscus flowers. A fourth flower falling in from the top right. The fourth flower landing bigger with small petals flying off. The finished card: four flowers, the words One more flower of patience for every beach customer, and a Let's go cookie button. Last, the tutorial customer's order bubble with four flowers above it"><figcaption>Table, chapter 2's first day: the gift card's animation, then the tutorial's customer with four flowers.</figcaption></figure>
+<p style="margin-top:0"><b>Chapter 2's gift, in your order: the fourth flower flies to the customer.</b></p>
+<figure><img src="gift_flower.jpg" alt="Six views of the chapter 2 tutorial. The customer has ordered and three pink flowers stand over the bubble. The screen dims and a paper card titled A gift for you shows one big flower, the words One more flower of patience for every beach customer, and a Let's go cookie button. The card is gone and the flower arrives at the right end of the row. Four flowers over the bubble. The tutorial goes on with its captions, four flowers shown"><figcaption>Table, chapter 2 tutorial: three flowers, the gift card, the flower flying over, four flowers, the tutorial going on.</figcaption></figure>
 <ul>
-<li><b>When:</b> once, on chapter 2's first day, before the tutorial. The three flowers pop up, the fourth falls in with a pop and a burst of petals, then "Let's go" starts the tutorial.</li>
-<li><b>What it gives:</b> every chapter 2 customer has four flowers. Each lasts as long as before, so they wait a third longer than in chapter 1 (until now it was 20 % longer on three flowers).</li>
-<li>A player already inside chapter 2 gets the four flowers too, without the card.</li>
+<li>The tutorial starts as before. The customer walks up and orders with three flowers; a second later the game holds and the card comes up with the flower.</li>
+<li>On "Let's go" the card goes, the three flowers move over, and the gift flower flies onto the row with a pop. Then the tutorial continues.</li>
+<li>From then on every chapter 2 customer has four flowers, each as long as before: a third more waiting time than in chapter 1.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.gift4.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.gift4.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.gift5.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.gift5.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Tutorial arrow as a cookie, with a glow: five proposals.</b></p>
-<figure><img src="arrow_ideas.jpg" alt="Six views of the chapter 2 table with the arrow over the waffle machine. Now: the small flat yellow arrow. 1: a larger iced arrow cookie with a white glow. 2: the same cookie with a gold glow. 3: the gold-glow cookie, and the waffle machine itself outlined in gold. 4: a square button cookie with a caramel arrow and a gold glow. 5: the arrow cookie iced in caramel with a gold glow"><figcaption>Table, chapter 2 tutorial: the arrow now, and proposals 1 to 5.</figcaption></figure>
+<p style="margin-top:0"><b>Tutorial pointer, round 2: six new cookies by Gemini.</b></p>
+<figure><img src="arrow_ideas.jpg" alt="Six views of the chapter 2 table with a cookie pointing down at the waffle machine, each with a gold glow. 6: a red arrow with a white piped outline. 7: a yellow arrow with a caramel outline. 8: a mint arrow with white dots. 9: a white gloved hand pointing down. 10: two orange chevrons. 11: a pink arrow with white stripes"><figcaption>Table, chapter 2 tutorial: pointer cookies 6 to 11, each with the gold glow.</figcaption></figure>
 <ul>
-<li>The cookie is the map's arrow cookie turned to point down, a third bigger than today's arrow. It keeps its bounce.</li>
-<li>The glow pulses. White is the kitchen's "tap me" glow; gold is the kitchen's "next step" glow and shows better on the pale cloth.</li>
+<li>Drawn for this job in our cookie style, not a turned map arrow. The glow pulses and the cookie keeps its bounce.</li>
+<li>Red (6) stands out best on both cloth colours.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.arrow.1"> 1. Cookie, white glow</label></li>
-<li><label><input type="checkbox" data-id="cur.arrow.2"> 2. Cookie, gold glow</label></li>
-<li><label><input type="checkbox" data-id="cur.arrow.3"> 3. Gold glow, and the thing to tap glows too</label></li>
-<li><label><input type="checkbox" data-id="cur.arrow.4"> 4. Button cookie, gold glow</label></li>
-<li><label><input type="checkbox" data-id="cur.arrow.5"> 5. Caramel cookie, gold glow</label></li>
-<li><label><input type="checkbox" data-id="cur.arrow.other"> Something else (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow2.6"> 6. Red arrow</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow2.7"> 7. Yellow arrow</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow2.8"> 8. Mint arrow with dots</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow2.9"> 9. Pointing hand</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow2.10"> 10. Orange chevrons</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow2.11"> 11. Pink striped arrow</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow2.other"> Something else (I will say what)</label></li>
 </ul>
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Kitchen: simpler, smaller mixer; no pauses; faster blender.</b></p>
-<figure><img src="mixer_simple.jpg" alt="Top: the mixer set before, with a handle opening, a hinge button and dark outlines, and now: a plain smaller machine on a slim stand, the bowl and whisk the same size as before; each at rest and running. Bottom: the kitchen counter in the game with the new mixer running at the left, the fruit board, and a sponge on the cake plate"><figcaption>Kitchen: the mixer before and now (ChatGPT), and in the game while it whips the cake's cream.</figcaption></figure>
+<p style="margin-top:0"><b>Kitchen: handheld mixer, no pauses, faster blender.</b></p>
+<figure><img src="mixer_handheld.jpg" alt="The kitchen counter twice. Left, at rest: the bowl of cream with a small green hand mixer parked beside it on the counter, its whisk pointing at the bowl. Right, running: the hand mixer level above the bowl, its whisk in the cream. The fruit board is beside it in both"><figcaption>Kitchen: the handheld mixer at rest on the counter, and running over the bowl.</figcaption></figure>
 <ul>
-<li><b>Mixer:</b> no handle opening, button or seam lines; the machine is about a third smaller; bowl and blade are the size they were. Both frames are in iCloud (mixer_rest, mixer_running).</li>
-<li><b>No pauses:</b> after the oven the mixer starts at once, then the fruit board, then the dessert flies to the table. A choux or cake takes about 9 s from the oven tap with no further taps. If both need the mixer, the second waits its turn.</li>
-<li><b>Blender:</b> 3 s with four flavours, 1.8 s with two (was 5 s and 2.8 s). The blade turns as before; only the run is shorter.</li>
+<li><b>Mixer</b> (ChatGPT): no stand or foot. A small hand mixer with a slim handle. At rest it is parked on the counter beside the bowl; while it runs it is over the bowl with the whisk in the cream. Bowl and blade are the size they were. Both frames are in iCloud (mixer_rest, mixer_running).</li>
+<li><b>No pauses:</b> after the oven the mixer starts at once, then the fruit board, then the dessert flies to the table.</li>
+<li><b>Blender:</b> 3 s with four flavours, 1.8 s with two (was 5 s and 2.8 s).</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.mixer2.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.mixer2.change"> Changes (I will say what)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>The baking tray has the fruit board's shadow.</b></p>
-<figure><img src="tray_shadow.jpg" alt="The finished choux tray with a flat brown shadow along its right and bottom edges, beside the kitchen's fruit board, which has the same shadow"><figcaption>Kitchen: the tray with its new shadow, beside the fruit board.</figcaption></figure>
-<ul>
-<li>Measured on the board: the same flat brown, hard edge, set to the right and down. All four tray frames have it; they are in iCloud (choux_tray_...).</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.trayshadow.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.trayshadow.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.mixer3.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.mixer3.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
@@ -205,16 +214,16 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p class="sub" style="margin:0 0 8px">Next release: the kitchen remodel and the small fixes. Everything changed since release 2026.11.20:</p>
 <ul>
 <li><b>Kitchen flow:</b> choux and cake are made in steps. The oven bakes them onto the baking tray or the cake plate in the kitchen, the mixer adds the cream, the fruit board adds the fruit, then they fly to the table. The kitchen does every step by itself, with no pause.</li>
-<li><b>New kitchen pieces:</b> the baking tray (four choux, two by two, four stages, with a shadow), the cake plate's stages (empty, sponge, cream, finished), the mixer set (at rest and running). All can be arranged; the tray starts on the kitchen table.</li>
+<li><b>New kitchen pieces:</b> the baking tray (four choux, two by two, four stages, with a shadow), the cake plate's stages (empty, sponge, cream, finished), the handheld mixer with its bowl (at rest and running). All can be arranged; the tray starts on the kitchen table.</li>
 <li><b>Kitchen times:</b> bread bakes 5 s; choux, cake and cookies 3 s. The ice cream blender runs 3 s (1.8 s with two flavours). Pausing the game stops the kitchen too.</li>
 <li><b>Chapter 2 opens after day 9</b> of chapter 1 (the player chooses when to go). On the map day 9 is a big glowing star with a dotted path to the arrow; finishing it gives a star and the truck drives to chapter 2.</li>
-<li><b>Chapter 2 gift:</b> a fourth patience flower for every chapter 2 customer, shown on a reward card before the tutorial.</li>
+<li><b>Chapter 2 gift:</b> a fourth patience flower for every chapter 2 customer; in the tutorial a reward card shows it and it flies to the first customer.</li>
 <li><b>Map:</b> today's day card opens by itself.</li>
 <li><b>Customers:</b> they think for 2 s (three dots in the bubble) before the order shows.</li>
 <li><b>Shop:</b> NEW on a tab that holds something new; locked items stay visible with a padlock (cookies and coconut until chapter 2, the star Yoga until she is hired); two new locked star cards, Chef (20) and Dining table (25); cards aligned; the extra cup reads "One more plate for brewed coffee."</li>
 <li><b>Look:</b> a taller hen on the table; the tutorial's "Ready to go?" card on paper with cookie buttons.</li>
 </ul>
-<p style="margin:8px 0 4px"><b>Not in yet:</b> the tutorial arrow cookie and the chapter 2 tuning (your picks); the cutting animation (the board hops for now); a sound for the day 9 scene.</p>
+<p style="margin:8px 0 4px"><b>Not in yet:</b> the tutorial pointer cookie and the chapter 2 tuning (your picks); the cutting animation (the board hops for now); a sound for the day 9 scene.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>
@@ -224,13 +233,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p style="margin-top:0"><b>Players, 19 to 21 November</b> (since the last read; times UTC).</p>
 <ul>
 <li><b>11 new players</b> (Philippines 3, Indonesia 2, Germany 2, US 2, Malaysia, UK). Opened 11, started the tutorial 10, finished it 7, finished day 1: 6, day 2: 3, day 3 or later: 2.</li>
-<li><b>Today's best player</b> (US, App Store copy 2026.11.20, 11:29 to 12:01 our time): days 1 to 14 in one sitting, 3 stars on every day, 24 purchases, chapter 2 opened and its tutorial done. No between-days ad was shown to them in 14 day ends: either they bought Remove Ads (it would be the first sale; Apple shows it tomorrow, I will look) or no ad was ready.</li>
+<li><b>Today's best player</b> (US, played today 21 Nov, 11:29 to 12:01 our time, on game version 2026.11.20 from the App Store): days 1 to 14 in one sitting, 3 stars on every day, 24 purchases, chapter 2 opened and its tutorial done. No ad was shown in 14 day ends: their phone never asked Unity for one (see Q&amp;A).</li>
 <li><b>Day 1 now gives one star to most new players.</b> Since the star rule changed (stars by customers served, live 18 Nov), 4 of 8 first tries at day 1 ended with 1 star; before, everyone got 3. Three of those four quit within two minutes and did not return; the fourth got 0 stars on day 2 and left.</li>
 <li><b>The stars do bring replays:</b> one player (Indonesia) came back three times and replayed day 4 six times until it showed 3 stars; reached day 6, 9 purchases.</li>
 <li><b>Japan's player</b> finished chapter 1 and reached day 20 on 19 Nov; chapter 2 took many tries (see Q&amp;A).</li>
 <li><b>Came back:</b> two players from last week returned after 5 and 8 days; one finished day 1, one closed 30 s into it.</li>
 <li><b>Left in the tutorial:</b> at step 1, step 3 and step 6 (one each); one only opened the game.</li>
-<li><b>Ads:</b> between-days ads 3 watched, 2 skipped; two more players watched a Daily Treats ad before the tutorial. Unity Ads 14 to 20 Nov: $0.51 from 88 ads shown.</li>
+<li><b>Ads:</b> between-days ads 3 watched, 2 skipped; two more players watched a Daily Treats ad before the tutorial. Unity Ads 14 to 20 Nov: $0.51 from 88 ads shown. Today so far: 20 requests, 4 shown, $0.05.</li>
+<li><b>Quitting in the first ad:</b> at least two players today closed the game during the ad right after day 1 and did not return. The game only logs an ad when it ends, so these were invisible until I compared with Unity's hours.</li>
 <li><b>Downloads</b> (Apple, first time), 14 to 20 Nov: 69 (15, 10, 14, 3, 7, 13, 7). Apple's 19th arrived a day late; the page is up to date again.</li>
 <li>Left out: Apple's review run of 2026.11.20.</li>
 </ul>
@@ -238,6 +248,8 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul class="checks">
 <li><label><input type="checkbox" data-id="an.nov21.day1"> Yes, make days 1 and 2 gentler</label></li>
 <li><label><input type="checkbox" data-id="an.nov21.leave"> Leave them</label></li>
+<li><label><input type="checkbox" data-id="an.nov21.ad3"> No between-days ad after days 1 and 2 (first one after day 3)</label></li>
+<li><label><input type="checkbox" data-id="an.nov21.adstart"> Log when an ad starts, so quitting in an ad shows in the data</label></li>
 <li><label><input type="checkbox" data-id="an.nov21.seen"> Seen, remove this</label></li>
 </ul>
 </div>
