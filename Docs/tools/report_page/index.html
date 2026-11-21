@@ -85,6 +85,18 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>No between-days ads: was that player me, since TestFlight does not ask for ads? (21 Nov)</h3>
+<ul>
+<li><b>No, I am fairly sure it was not you.</b> The game makes one check, "TestFlight or App Store copy?", and uses it for both things: a TestFlight copy skips the ads <i>and</i> sends its data to the test set. That play arrived in the App Store set, so the game on that phone was the App Store copy, where ads are not skipped.</li>
+<li><b>Your own play is recorded separately</b> in the test set: your iPhone, today 12:09 to 12:16, days 13 and 14, one star each.</li>
+<li><b>The other play</b> was a brand-new game: the tutorial from its first step, then days 1 to 14 in order, 3 stars on every one, 11:29 to 12:01. It ended 8 minutes before yours began.</li>
+<li><b>The one way it could be you:</b> if you also played a new game from the tutorial to day 14 in that half hour on the App Store copy (another device, or after deleting the game). If you did not, it is a real player.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.wasme.no"> I did not play that; it is a real player</label></li>
+<li><label><input type="checkbox" data-id="qa.wasme.yes"> That was me too</label></li>
+</ul>
+</div>
 <div class="q"><h3>Why was no between-days ad shown to that player? (21 Nov)</h3>
 <ul>
 <li><b>Their phone never asked Unity for an ad.</b> Unity's hourly report shows 0 ad requests in the two hours they played (11:00 to 13:00 our time). Every other player's visit today shows 1 to 4 requests.</li>
