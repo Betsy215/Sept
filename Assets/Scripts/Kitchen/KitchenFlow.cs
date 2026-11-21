@@ -21,7 +21,9 @@ public static class KitchenFlow
     /// all the way after we pick a recipe with oven ... if we wait for kitchen itself to automatically cook, between each
     /// step, it will wait for 3 seconds"): a dessert waiting at the mixer or the board starts that step on its own after
     /// this many seconds (kitchen clock: a pause stops it); a tap starts it at once.
-    public static float AutoWaitSeconds = 3f;
+    /// 21 November 2026, after playing it: "make kitchen cook automatically faster, no pause between steps": zero, so
+    /// each step follows the one before as soon as its tool is free.
+    public static float AutoWaitSeconds = 0f;
     public static readonly string[] Foods = { "Choux", "Cake" };
 
     private class Line { public Stage stage; public float since; public bool working; }

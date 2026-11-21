@@ -67,24 +67,44 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <body><main>
 
 <h1>Food Truck Cafe</h1>
-<p class="sub">19 November. 2026.11.18 is live on the App Store; test build 2026.11.19 (0) in TestFlight.</p>
+<p class="sub">21 November. 2026.11.20 is live on the App Store; the next test build waits on the Xcode sign-in.</p>
 
 <nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#qa"><b>2</b>Q&amp;A</a><a href="#current"><b>3</b>Current</a><a href="#mvp"><b>4</b>MVP</a><a href="#backlog"><b>5</b>Backlog</a><a href="#analysis"><b>6</b>Analysis</a><a href="#marketing"><b>7</b>Marketing</a><a href="visuals.html" class="page">Visuals</a><a href="cchapter.html" class="page">C chapter</a><span id="saved"></span></nav>
 
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Release 2026.11.20 is live on the App Store</b> (approved 20 Nov, released by itself).</p>
-<p><b>Test build 2026.11.21 (0) is built but cannot upload:</b> Xcode has lost its Apple account sign-in ("App Store Connect access is required"). Please open <b>Xcode, Settings, Accounts</b> and sign in again (your password; I cannot type it), then tell me and I upload at once.</p>
-<p><b>Current:</b> the dining table screenshot; the kitchen with the mixer, the tray and the self-cooking.</p>
-
+<p><b>Pick a tutorial arrow</b> (Current) and <b>the chapter 2 ideas you want</b> (Q&amp;A).</p>
+<p><b>Test build:</b> Xcode still has no Apple account sign-in. Open <b>Xcode, Settings, Accounts</b>, sign in (I cannot type your password) and tell me; I then build with today's changes and upload.</p>
+<p><b>Was the 14-day play today, 11:29 to 12:01, yours?</b> (App Store copy, new player, all 3 stars.) I left it out of the numbers.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="next.nov21.mine"> Yes, that was me</label></li>
+<li><label><input type="checkbox" data-id="next.nov21.notmine"> Not me</label></li>
+</ul>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>Better mixer art when ChatGPT's pictures are back (tomorrow 12:01). Tomorrow morning: App Store Connect's 19th.</p>
+<p>Done today: tray shadow, simpler mixer, kitchen cooks without pauses, faster blender, player analysis. After your picks: the arrow in the game, the chapter 2 tuning, the test build.</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>Chapter 2 is much harder: ways to tune it (21 Nov)</h3>
+<ul>
+<li><b>The data agrees.</b> The player from Japan got mostly 3 stars in chapter 1; in chapter 2 they got 0 stars on day 13 and needed 2 to 5 tries on each of days 15 to 19. All 11 of their restarts were in chapter 2.</li>
+<li><b>Why:</b> customers come at the same pace as chapter 1, but an ice cream is up to four taps, and the scoops and waffle bowls run out fast (4 scoops a well), so the kitchen trips pile up.</li>
+</ul>
+<p style="margin:8px 0 4px"><b>Ideas</b> (tick any; my pick is 1, 2 and 3: make the ice cream lighter, leave the customers alone):</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.ch2tune.scoops"> 1. Smaller ice creams at first: 1 or 2 scoops on days 13 to 15, 3 scoops from day 16 (now 1 to 3 from the start)</label></li>
+<li><label><input type="checkbox" data-id="qa.ch2tune.bowls"> 2. Fewer waffle bowls at first: one ice cream in four asks for one, rising to half (now half from the start)</label></li>
+<li><label><input type="checkbox" data-id="qa.ch2tune.refills"> 3. Bigger refills: 6 scoops a well (now 4) and one bake fills the whole bowl holder, so fewer kitchen trips</label></li>
+<li><label><input type="checkbox" data-id="qa.ch2tune.patience"> 4. More patience: chapter 2 customers wait 40 % longer than chapter 1 (now 20 %)</label></li>
+<li><label><input type="checkbox" data-id="qa.ch2tune.pace"> 5. Slower arrivals on the first days: a customer every 6 s (now 5)</label></li>
+<li><label><input type="checkbox" data-id="qa.ch2tune.orders"> 6. Smaller orders on days 13 to 15: 1 to 3 items (now 2 to 4)</label></li>
+<li><label><input type="checkbox" data-id="qa.ch2tune.stars"> 7. Softer stars in chapter 2: 3 stars at 90 % of customers served, 2 at 75 % (now all / 90 %)</label></li>
+<li><label><input type="checkbox" data-id="qa.ch2tune.robot"> 8. Tune by measurement: the test robot plays as an average player (slower taps) and I set the numbers until it gets 2 stars first try on every chapter 2 day</label></li>
+</ul>
+</div>
 <div class="q"><h3>What are "Header" and "Search Results" on the release page? They are empty for our game.</h3>
 <ul>
 <li>They are new, optional slots from Apple ("creative assets", shown from iOS 27): a picture or short looping video at the very top of our store page (<b>Header</b>), and a picture shown beside the game in search (<b>Search Results</b>).</li>
@@ -109,65 +129,90 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul>
 <li><b>Ovens (changed 20 Nov):</b> bread 5 s; choux, cake and cookies 3 s.</li>
 <li><b>Apples</b> (chapter 1) and <b>coconuts</b> (chapter 2): the tree or palm grows them back 8 s after the last one is picked.</li>
-<li><b>Blender</b> (ice cream refill): 5 s (four flavours of 1.1 s, then 0.6 s settling).</li>
+<li><b>Blender</b> (ice cream refill): 3 s with four flavours, 1.8 s with two (changed 21 Nov; was 5 s and 2.8 s).</li>
 <li><b>Waffle machine</b>: about 2.4 s (1.1 s of steam, then the lid opens and the bowls come out).</li>
 <li><b>Coffee bags and juice</b>: no wait, a tap refills at once.</li>
-<li><b>With the Kitchen upgrade</b> (15 stars) every wait above is a quarter shorter: bread 3.8 s, the others 2.3 s, apples and coconuts 6 s, blender 3.9 s, waffles 2.1 s.</li>
+<li><b>With the Kitchen upgrade</b> (15 stars) every wait above is a quarter shorter: bread 3.8 s, the others 2.3 s, apples and coconuts 6 s, blender 2.4 s, waffles 2.1 s.</li>
 </ul>
 <ul class="checks"><li><label><input type="checkbox" data-id="qa.ktimes.seen"> Seen</label></li></ul>
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">All of this is in test build 2026.11.21 (0).</p>
+<p class="sub" style="margin:0 0 8px">Made 21 November; not in a test build yet.</p>
 <div class="card">
-<p style="margin-top:0"><b>The locked dining table in the star shop.</b></p>
-<figure><img src="star_shop_locked.jpg" alt="The star tab of the shop: the kitchen upgrade at 15 stars; a dimmed chef cookie with a padlock at 20 stars; a dimmed dining table cookie with a red checked top, a chair each side and a padlock, at 25 stars"><figcaption>Shop, star tab: kitchen upgrade, the locked chef (20), the locked dining table (25, my price).</figcaption></figure>
+<p style="margin-top:0"><b>Tutorial arrow as a cookie, with a glow: five proposals.</b></p>
+<figure><img src="arrow_ideas.jpg" alt="Six views of the chapter 2 table with the arrow over the waffle machine. Now: the small flat yellow arrow. 1: a larger iced arrow cookie with a white glow. 2: the same cookie with a gold glow. 3: the gold-glow cookie, and the waffle machine itself outlined in gold. 4: a square button cookie with a caramel arrow and a gold glow. 5: the arrow cookie iced in caramel with a gold glow"><figcaption>Table, chapter 2 tutorial: the arrow now, and proposals 1 to 5.</figcaption></figure>
+<ul>
+<li>The cookie is the map's arrow cookie turned to point down, a third bigger than today's arrow. It keeps its bounce.</li>
+<li>The glow pulses. White is the kitchen's "tap me" glow; gold is the kitchen's "next step" glow and shows better on the pale cloth.</li>
+</ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.table2.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.table2.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow.1"> 1. Cookie, white glow</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow.2"> 2. Cookie, gold glow</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow.3"> 3. Gold glow, and the thing to tap glows too</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow.4"> 4. Button cookie, gold glow</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow.5"> 5. Caramel cookie, gold glow</label></li>
+<li><label><input type="checkbox" data-id="cur.arrow.other"> Something else (I will say what)</label></li>
 </ul>
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>The baking tray with straight sides.</b></p>
-<figure><img src="tray_straight.jpg" alt="The four tray stages, the tray now a true rectangle with straight sides: empty, four plain choux two by two, with their creams, finished with fruit. On the right the kitchen's fruit board for comparison"><figcaption>Kitchen: the tray's four stages; on the right the fruit board it follows.</figcaption></figure>
+<p style="margin-top:0"><b>Kitchen: simpler, smaller mixer; no pauses; faster blender.</b></p>
+<figure><img src="mixer_simple.jpg" alt="Top: the mixer set before, with a handle opening, a hinge button and dark outlines, and now: a plain smaller machine on a slim stand, the bowl and whisk the same size as before; each at rest and running. Bottom: the kitchen counter in the game with the new mixer running at the left, the fruit board, and a sponge on the cake plate"><figcaption>Kitchen: the mixer before and now (ChatGPT), and in the game while it whips the cake's cream.</figcaption></figure>
 <ul>
-<li>I pulled the tray itself square and set the choux back as drawn, so they are not stretched.</li>
-<li><b>In iCloud ("FoodTruckCafe art")</b> for your own painting: mixer_rest, mixer_running, choux_tray_empty / plain / cream / done, cake_stand_empty.</li>
+<li><b>Mixer:</b> no handle opening, button or seam lines; the machine is about a third smaller; bowl and blade are the size they were. Both frames are in iCloud (mixer_rest, mixer_running).</li>
+<li><b>No pauses:</b> after the oven the mixer starts at once, then the fruit board, then the dessert flies to the table. A choux or cake takes about 9 s from the oven tap with no further taps. If both need the mixer, the second waits its turn.</li>
+<li><b>Blender:</b> 3 s with four flavours, 1.8 s with two (was 5 s and 2.8 s). The blade turns as before; only the run is shorter.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.traystraight.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.traystraight.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.mixer2.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.mixer2.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Kitchen: the mixer set, the new tray, the kitchen cake.</b></p>
-<figure><img src="kitchen_stages.jpg" alt="Five kitchen views. Before baking: the mixer set at the counter's left end with its head up, the empty squarer tray, the fruit board, the empty cake plate. After the ovens: four plain choux two by two on the tray and a sponge on the plate, the mixer glowing. The mixer running, its head level and the whisk in the bowl. The creams on the choux and the cake, the fruit board glowing. The finished cake, the choux with their creams"><figcaption>Kitchen, in the game.</figcaption></figure>
+<p style="margin-top:0"><b>The baking tray has the fruit board's shadow.</b></p>
+<figure><img src="tray_shadow.jpg" alt="The finished choux tray with a flat brown shadow along its right and bottom edges, beside the kitchen's fruit board, which has the same shadow"><figcaption>Kitchen: the tray with its new shadow, beside the fruit board.</figcaption></figure>
 <ul>
-<li><b>Mixer:</b> the set with its foot is in (for now, as you said): head up and whisk out at rest, level with the whisk in the bowl while it runs. It stands at the counter's left end, where the whisk lay, and can be arranged.</li>
-<li><b>Tray</b> (shown above with straight sides): squarer like the fruit board, the choux two by two; the purple and pink creams are piped on top, the white and yellow sit in the middle. Drawn by Gemini from ChatGPT's tray (ChatGPT is out of free pictures until tomorrow 12:01). In the finished frame Gemini put small top shells on the purple and pink ones; say if that should go.</li>
-<li><b>The kitchen cooks by itself too:</b> after the oven, each next step starts on its own after 3 seconds of waiting; a tap on the glowing mixer or board starts it at once.</li>
-<li><b>Ovens:</b> choux, cake and cookies bake 3 seconds, bread 5.</li>
+<li>Measured on the board: the same flat brown, hard edge, set to the right and down. All four tray frames have it; they are in iCloud (choux_tray_...).</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.kitchen3.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.kitchen3.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.trayshadow.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.trayshadow.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
 <p class="sub" style="margin:0 0 8px">Next release: the kitchen remodel and the small fixes.</p>
 <ul>
-<li><b>In the test build:</b> the kitchen flow for choux and cake (plate on the kitchen table, mixer, fruit board, flight to the table); chapter 2 after day 9 with the map scene; thinking dots; shop locks and NEW on tabs; taller hen; aligned shop; the day card opening on the map; pause stops the kitchen; the "Ready to go?" card; the extra cup's words.</li>
-<li><b>Placeholders in it:</b> the whisk as the mixer, the fruit board's hop as the cutting, my plain and creamed choux, my empty cake stand.</li>
-<li><b>Still to make:</b> the mixer picture (your pick in Current), the real choux stages, the cutting animation, the test robot learning the new kitchen taps.</li>
+<li><b>Built:</b> the kitchen flow for choux and cake (tray, cake plate, mixer, fruit board, flight to the table), cooking by itself; oven times; chapter 2 after day 9 with the map scene; thinking dots; shop locks, NEW on tabs, the locked chef and dining table; taller hen; aligned shop; the day card opening on the map; pause stops the kitchen; the "Ready to go?" card; the extra cup's words.</li>
+<li><b>Waiting on you:</b> the tutorial arrow pick; the chapter 2 tuning picks.</li>
+<li><b>Still to make:</b> the cutting animation (the board hops for now), the test robot learning the new kitchen taps, a sound for the day 9 scene.</li>
 </ul>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
 <h2 id="analysis"><span class="n">6</span>Analysis</h2>
-<p class="sub" style="margin:0 0 8px">Nothing open.</p>
+<div class="card">
+<p style="margin-top:0"><b>Players, 19 to 21 November</b> (since the last read; times UTC).</p>
+<ul>
+<li><b>10 new players</b> (Philippines 3, Indonesia 2, Germany 2, Malaysia, UK, US). Opened 10, started the tutorial 9, finished it 6, finished day 1: 5, day 2: 2, day 3 or later: 1.</li>
+<li><b>Day 1 now gives one star to most new players.</b> Since the star rule changed (stars by customers served, live 18 Nov), 4 of 7 first tries at day 1 ended with 1 star; before, everyone got 3. Three of those four quit within two minutes and did not return; the fourth got 0 stars on day 2 and left.</li>
+<li><b>The stars do bring replays:</b> one player (Indonesia) came back three times and replayed day 4 six times until it showed 3 stars; reached day 6, 9 purchases.</li>
+<li><b>Japan's player</b> finished chapter 1 and reached day 20 on 19 Nov; chapter 2 took many tries (see Q&amp;A).</li>
+<li><b>Came back:</b> two players from last week returned after 5 and 8 days; one finished day 1, one closed 30 s into it.</li>
+<li><b>Left in the tutorial:</b> at step 1, step 3 and step 6 (one each); one only opened the game.</li>
+<li><b>Ads:</b> between-days ads 3 watched, 2 skipped; two more players watched a Daily Treats ad before the tutorial. Unity Ads 14 to 20 Nov: $0.51 from 88 ads shown.</li>
+<li><b>Downloads</b> (Apple, first time), 14 to 20 Nov: 69 (15, 10, 14, 3, 7, 13, 7). Apple's 19th arrived a day late; the page is up to date again.</li>
+<li>Left out: Apple's review run of 2026.11.20, and today's 14-day play (Next).</li>
+</ul>
+<p style="margin:8px 0 4px"><b>My suggestion:</b> make 3 stars easy on days 1 and 2 (more patience on those two days), so a first-time player does not start with one star.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="an.nov21.day1"> Yes, make days 1 and 2 gentler</label></li>
+<li><label><input type="checkbox" data-id="an.nov21.leave"> Leave them</label></li>
+<li><label><input type="checkbox" data-id="an.nov21.seen"> Seen, remove this</label></li>
+</ul>
+</div>
 
 <h2 id="marketing"><span class="n">7</span>Marketing</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>

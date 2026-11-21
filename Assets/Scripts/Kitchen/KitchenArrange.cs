@@ -50,10 +50,10 @@ public static class KitchenArrange
         new Def { name = "cake",     foot = new Vector2(0.8078f, 0.451f), box = new Vector4(0.21f, 0.03f, 0.875f, 0.775f), fit = new Vector4(0.01f, 0.03f, 0.99f, 0.98f) },
         new Def { name = "coffee",   foot = new Vector2(0.2694f, 0.6859f),box = new Vector4(0.20f, 0.25f, 0.80f, 0.90f),   fit = new Vector4(0.07f, 0.10f, 0.92f, 0.90f) },
         // the choux plate (20 November 2026, KitchenFlow), made by this file: on the table at a free place (FirstCheck); this foot, the opening under the counter, is the fallback
-        new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.04f, 0.20f, 0.96f, 0.98f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.98f), size = new Vector2(200f, 142f) },   // the baking tray, squarer, choux 2 x 2 (453 x 322; owner, 20 November 2026)
+        new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.04f, 0.20f, 0.96f, 0.98f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.98f), size = new Vector2(205f, 149f) },   // the baking tray, squarer, choux 2 x 2, with the fruit board's hard shadow (464 x 338; owner, 20-21 November 2026)
         // the mixer set on its stand (20 November 2026), made by this file when choux or cake is on the menu; it takes the whisk's place then.
         // Its box is its foot. On the table at a free place (FirstCheck); this foot, the opening under the counter's right place, is the fallback
-        new Def { name = "mixer", foot = new Vector2(0.40f, 0.2906f), box = new Vector4(0.03f, 0.78f, 0.90f, 0.99f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.99f), size = new Vector2(170f, 215f) },
+        new Def { name = "mixer", foot = new Vector2(0.40f, 0.2906f), box = new Vector4(0.10f, 0.80f, 0.98f, 0.99f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.99f), size = new Vector2(154f, 172f) },   // 21 November 2026: the simpler, smaller machine (575 x 645); bowl and blade as wide as before (bowl rim 106 units)
         new Def { name = "juice",    foot = new Vector2(0.1662f, 0.1469f),box = new Vector4(0.15f, 0.30f, 0.85f, 0.98f),   fit = new Vector4(0.13f, 0.07f, 0.87f, 0.98f) },
     };
 

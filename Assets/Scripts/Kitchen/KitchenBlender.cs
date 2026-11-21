@@ -109,7 +109,7 @@ public class BlenderAnim : MonoBehaviour, IPointerClickHandler
         var sx = Mathf.Lerp(1f, c, amount); if (Mathf.Abs(sx) < 0.08f) sx = sx < 0f ? -0.08f : 0.08f;
         blade.rectTransform.localScale = new Vector3(sx, 1f, 1f);
     }
-    public static float StepSeconds = 1.1f;      // per flavour (owner, 18 November 2026: "slower"; was 0.7); a test recipe can slow it down for captures
+    public static float StepSeconds = 0.6f;      // per flavour (owner, 21 November 2026: "make blender for ice cream finish faster"; 1.1 since 18 November, 0.7 before). The blade and the ice keep their slower turn; only the run is shorter: 1.8 s with two flavours, 3.0 s with four (was 2.8 and 5.0). A test recipe can slow it down for captures
     public bool IsBlending { get; private set; }
     private Vector2 restPos;
 
