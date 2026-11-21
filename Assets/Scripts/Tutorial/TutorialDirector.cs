@@ -45,6 +45,7 @@ public class TutorialDirector : MonoBehaviour
     public void Begin2(LevelManager lm, GamePhaseManager gpm, OrderSystem os, CustomerManager cm)
     {
         levelManager = lm; phaseManager = gpm; orderSystem = os; customerManager = cm; chapter2 = true;
+        PatienceMeter.HoldFourth = SessionManager.Instance != null && SessionManager.Instance.Chapter2GiftDue;   // this customer is handed the fourth flower (FlowerGift)
         if (os != null) os.maxConcurrentOrders = 1;   // a demo like chapter 1's: one customer, no clock, coins given back at the end (owner, 26 October 2026)
         ReplayRequested2 = false;
         if (lm != null && lm.levelInfoText != null) lm.levelInfoText.text = "Tutorial";
@@ -58,8 +59,6 @@ public class TutorialDirector : MonoBehaviour
     private IEnumerator Run2()
     {
         yield return null;
-        // chapter 2's gift comes first, once (owner, 21 November 2026: "this happens before chapter 2 tutorial")
-        if (SessionManager.Instance != null && SessionManager.Instance.Chapter2GiftDue) yield return FlowerGift();
         if (phaseManager.GetCurrentPhase() == GamePhase.ARRANGEMENT) phaseManager.OnDoneButtonClicked();   // like chapter 1's demo: straight into play
         var station = FindObjectOfType<IceCreamStation>();
         if (station == null) { Finish2(); yield break; }
@@ -72,6 +71,7 @@ public class TutorialDirector : MonoBehaviour
         Say("A customer walks up");
         yield return new WaitUntil(() => customerManager.HasCustomerAtService());
         yield return new WaitUntil(() => orderSystem.IsOrderActive());
+        if (PatienceMeter.HoldFourth) yield return FlowerGift();   // chapter 2's gift, once: the customer stands there with three flowers and is handed the fourth
         Say("An ice cream: a waffle bowl with two flavours");
         yield return new WaitForSeconds(2.5f);
 
@@ -460,41 +460,42 @@ public class TutorialDirector : MonoBehaviour
 
     #region Chapter 2 gift
 
-    /// Chapter 2's reward (owner, 21 November 2026: "when chapter 2 starts, show a reward animation, give chapter 2
-    /// customers extra patience flower. this happens before chapter 2 tutorial"): the day paper with three of the
-    /// chapter's flowers; a fourth drops in beside them with a pop and a burst of petals; a cookie button goes on.
-    /// The table is still being arranged behind it, so no customer walks up meanwhile. The fourth flower itself is
-    /// PatienceMeter.Flowers; this card is only the telling, shown once per save.
+    /// Chapter 2's reward (owner, 21 November 2026: "first show tutorial, when customer comes in, still has 3 flowers,
+    /// then pause, and show the reward panel, and the fourth flower flies to customer, the customer shows 4 flowers"):
+    /// the tutorial's customer has ordered with three flowers; the game holds (the tutorial's order clock is frozen
+    /// anyway), the day paper comes up with one big flower; on Let's go the paper goes and the flower flies onto the
+    /// customer's row, which has made room. From then on every chapter 2 customer has four (PatienceMeter.Flowers).
+    /// Shown once per save.
     private IEnumerator FlowerGift()
     {
+        var order = orderSystem != null ? orderSystem.FirstOpenOrder() : null;
         var petal = Resources.Load<Sprite>("Patience/" + PatienceMeter.Chapter2Kind + "_petal"); var centre = Resources.Load<Sprite>("Patience/" + PatienceMeter.Chapter2Kind + "_centre");
         var doily = Resources.Load<Sprite>("Map/day_paper"); var letsGo = Resources.Load<Sprite>("UI/cookie_letsgo");
-        if (petal == null || centre == null || doily == null || letsGo == null) { SessionManager.Instance.MarkChapter2GiftSeen(); yield break; }
+        if (petal == null || centre == null || doily == null || letsGo == null || order == null) { HandOver(order); yield break; }
         var titleFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF"); var handFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/Delius SDF");
         var ink = new Color(0.36f, 0.20f, 0.09f); var soft = new Color(0.47f, 0.31f, 0.20f);
+        yield return new WaitForSecondsRealtime(1.1f);                                   // a look at the customer with three flowers
         var hadCaption = captionBox != null && captionBox.gameObject.activeSelf; if (captionBox != null) captionBox.gameObject.SetActive(false);
 
         var card = new GameObject("FlowerGift", typeof(RectTransform)); card.transform.SetParent(canvasRect, false);
         var cardRect = card.GetComponent<RectTransform>(); Stretch(cardRect);
         var dim = NewImage("Dim", cardRect, new Color(0f, 0f, 0f, 0f)); Stretch(dim.rectTransform);
         var panel = NewImage("Panel", cardRect, Color.white); panel.sprite = doily; panel.rectTransform.sizeDelta = new Vector2(770f, 770f);
+        var group = panel.gameObject.AddComponent<CanvasGroup>();
         var title = NewText("Title", panel.rectTransform, titleFont, 80f, ink);
         title.rectTransform.anchoredPosition = new Vector2(0f, 246f); title.rectTransform.sizeDelta = new Vector2(680f, 120f);
         title.alignment = TextAlignmentOptions.Center; title.text = "A GIFT FOR YOU!";
         var line = NewText("Line", panel.rectTransform, handFont != null ? handFont : titleFont, 37f, soft);
-        line.rectTransform.anchoredPosition = new Vector2(0f, -52f); line.rectTransform.sizeDelta = new Vector2(640f, 110f);
+        line.rectTransform.anchoredPosition = new Vector2(0f, -66f); line.rectTransform.sizeDelta = new Vector2(640f, 110f);
         line.alignment = TextAlignmentOptions.Center; line.text = "One more flower of patience\nfor every beach customer"; line.alpha = 0f;
         var go = NewImage("LetsGo", panel.rectTransform, Color.white); go.sprite = letsGo;
-        go.rectTransform.anchoredPosition = new Vector2(0f, -196f); go.rectTransform.sizeDelta = new Vector2(380f, 380f * letsGo.rect.height / letsGo.rect.width);
+        go.rectTransform.anchoredPosition = new Vector2(0f, -206f); go.rectTransform.sizeDelta = new Vector2(380f, 380f * letsGo.rect.height / letsGo.rect.width);
         var done = false; go.gameObject.AddComponent<Button>().onClick.AddListener(() => done = true);
         go.transform.localScale = Vector3.zero;
+        const float size = 200f; var home = new Vector2(0f, 96f);
+        var flower = UiFlower(panel.rectTransform, petal, centre, size); flower.anchoredPosition = home; flower.localScale = Vector3.zero;
 
-        // the flowers: three as every customer had, the fourth's place kept free at the right
-        const int n = PatienceMeter.Chapter2Flowers; const float size = 150f, gap = 165f, rowY = 92f;
-        var heads = new RectTransform[n];
-        for (var i = 0; i < n; i++) { heads[i] = UiFlower(panel.rectTransform, petal, centre, size); heads[i].anchoredPosition = new Vector2((i - (n - 1) / 2f) * gap, rowY); heads[i].localScale = Vector3.zero; }
-
-        // the card comes in
+        // the paper comes in
         panel.transform.localScale = Vector3.one * 0.6f;
         for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.28f)
         {
@@ -502,49 +503,59 @@ public class TutorialDirector : MonoBehaviour
             yield return null;
         }
         dim.color = new Color(0f, 0f, 0f, 0.55f); panel.transform.localScale = Vector3.one;
-        // the three flowers pop up one after another
-        var pop = Resources.Load<AudioClip>("Audio/pop"); var flowerPop = Resources.Load<AudioClip>("Audio/flower_pop");
-        for (var i = 0; i < n - 1; i++)
-        {
-            if (pop != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(pop);
-            for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.2f) { heads[i].localScale = Vector3.one * Back(Mathf.Clamp01(t), 0f); yield return null; }
-            heads[i].localScale = Vector3.one;
-        }
-        yield return new WaitForSecondsRealtime(0.45f);
-        // the fourth falls in from above, lands with a squash, and throws petals
-        var last = heads[n - 1]; var land = last.anchoredPosition; last.localScale = Vector3.one * 1.25f;
-        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.34f)
-        {
-            var k = Mathf.Clamp01(t); last.anchoredPosition = land + new Vector2(0f, 330f * (1f - k * k)); last.localRotation = Quaternion.Euler(0f, 0f, 200f * (1f - k));
-            yield return null;
-        }
-        last.anchoredPosition = land; last.localRotation = Quaternion.identity;
+        // the flower opens with a pop and throws petals
+        var flowerPop = Resources.Load<AudioClip>("Audio/flower_pop");
         if (flowerPop != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(flowerPop);
         Haptics.Tap();
-        StartCoroutine(PetalBurst(panel.rectTransform, petal, land));
-        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.5f)
+        StartCoroutine(PetalBurst(panel.rectTransform, petal, home));
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.45f)
         {
-            var k = Mathf.Clamp01(t); last.localScale = Vector3.one * (1f + 0.45f * Mathf.Sin(k * Mathf.PI) * (1f - k * 0.4f));
-            for (var i = 0; i < n - 1; i++) heads[i].localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(k * Mathf.PI * 2f) * 9f * (1f - k));   // the others nod to it
-            line.alpha = k;
+            var k = Mathf.Clamp01(t); flower.localScale = Vector3.one * Back(k, 0f); flower.localRotation = Quaternion.Euler(0f, 0f, -90f * (1f - k)); line.alpha = k;
             yield return null;
         }
-        last.localScale = Vector3.one; line.alpha = 1f;
+        flower.localScale = Vector3.one; flower.localRotation = Quaternion.identity; line.alpha = 1f;
         for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.25f) { go.transform.localScale = Vector3.one * Back(Mathf.Clamp01(t), 0f); yield return null; }
         go.transform.localScale = Vector3.one;
-        // the new flower keeps a slow pulse until the player goes on
         var w = 0f;
-        while (!done) { w += Time.unscaledDeltaTime; last.localScale = Vector3.one * (1f + 0.07f * Mathf.Sin(w * 4f)); yield return null; }
+        while (!done) { w += Time.unscaledDeltaTime; flower.localScale = Vector3.one * (1f + 0.06f * Mathf.Sin(w * 4f)); yield return null; }
+
+        // the paper goes; the flower stays and flies to the customer's row, which makes room for it
         SessionManager.Instance.MarkChapter2GiftSeen();
-        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.2f)
+        flower.SetParent(cardRect, true); flower.localScale = Vector3.one;
+        var from = flower.anchoredPosition; var to = from; var endScale = 0.4f;
+        if (PatienceMeter.MakeRoom(order, out var world) && Camera.main != null)
         {
-            var k = Mathf.Clamp01(t); dim.color = new Color(0f, 0f, 0f, 0.55f * (1f - k)); panel.transform.localScale = Vector3.one * (1f - 0.4f * k);
-            var cg = panel.GetComponent<CanvasGroup>(); if (cg == null) cg = panel.gameObject.AddComponent<CanvasGroup>(); cg.alpha = 1f - k;
+            var cam = Camera.main; var sp = cam.WorldToScreenPoint(world);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(cardRect, sp, null, out to);
+            var across = (cam.WorldToScreenPoint(world + Vector3.right * PatienceMeter.FlowerWorldSize(petal)) - sp).magnitude;   // one flower's width on the screen
+            endScale = across * (cardRect.rect.width / Mathf.Max(1f, Screen.width)) / size;
+        }
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.7f)
+        {
+            var k = Mathf.Clamp01(t); var fade = Mathf.Clamp01(k / 0.3f);
+            group.alpha = 1f - fade; panel.transform.localScale = Vector3.one * (1f - 0.25f * fade); dim.color = new Color(0f, 0f, 0f, 0.55f * (1f - k));
+            var e = Mathf.SmoothStep(0f, 1f, k);
+            flower.anchoredPosition = Vector2.Lerp(from, to, e) + new Vector2(0f, 150f * Mathf.Sin(k * Mathf.PI));    // a soft arc
+            flower.localScale = Vector3.one * Mathf.Lerp(1f, endScale, e); flower.localRotation = Quaternion.Euler(0f, 0f, 360f * e);
             yield return null;
         }
+        HandOver(order);
+        if (flowerPop != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(flowerPop);
+        Haptics.Tap();
         Destroy(card);
+        yield return new WaitForSecondsRealtime(0.8f);                                   // the four flowers, before the next caption
         if (captionBox != null) captionBox.gameObject.SetActive(hadCaption);
     }
+
+    /// The fourth flower is the customer's now: their order grows by one flower, and every later customer has four
+    private void HandOver(OrderSystem.ActiveOrder order)
+    {
+        PatienceMeter.HoldFourth = false;
+        if (orderSystem != null && order != null) orderSystem.GrantExtraFlower(order);
+        if (SessionManager.Instance != null) SessionManager.Instance.MarkChapter2GiftSeen();
+    }
+
+    private void OnDestroy() { PatienceMeter.HoldFourth = false; }   // a tutorial left half way must not leave later customers at three flowers
 
     private static float Back(float k, float from) { var c = 1.70158f; var e = 1f + (c + 1f) * Mathf.Pow(k - 1f, 3f) + c * Mathf.Pow(k - 1f, 2f); return from + (1f - from) * e; }   // a little past, then back
 

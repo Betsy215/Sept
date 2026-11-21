@@ -618,6 +618,17 @@ public class OrderSystem : MonoBehaviour
         return true;
     }
 
+    /// Chapter 2's gift handed to the customer who is waiting (TutorialDirector.FlowerGift, 21 November 2026): the open
+    /// order gets a fourth flower as long as each of its three, full, and its meter grows by one.
+    public ActiveOrder FirstOpenOrder() { foreach (var o in orders) if (o.active) return o; return null; }
+    public void GrantExtraFlower(ActiveOrder o)
+    {
+        if (o == null || !o.active || o.displayTime <= 0f) return;
+        var per = o.displayTime / PatienceMeter.BaseFlowers;
+        o.displayTime += per; o.timer = Mathf.Min(o.displayTime, o.timer + per);
+        PatienceMeter.AddFlower(o);
+    }
+
     /// A pop when a flower grows back, from a candy or the yoga lady (owner, 15 November 2026). One pop per gift, also
     /// when the yoga lady gives to several customers at once. Resources/Audio/flower_pop; silent while the file is absent.
     private static void PlayFlowerPop()

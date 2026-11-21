@@ -274,7 +274,7 @@ public class CustomerManager : MonoBehaviour
         // The flower pots (decor, owner 16 October): each one bought gives every customer 15 percent more time
         var decorBonus = SessionManager.Instance != null ? SessionManager.Instance.PatienceMultiplier : 1f;
         // Chapter 2 (owner, 26 October 2026: "make chapter 2 patience go down slightly slower because ice cream is hard to serve")
-        var chapterBonus = SessionManager.Instance != null && Chapter.Of(SessionManager.Instance.GetCurrentLevelIndex()) >= 2 ? Chapter2Patience : 1f;
+        var chapterBonus = SessionManager.Instance != null && Chapter.Of(SessionManager.Instance.GetCurrentLevelIndex()) >= 2 ? (float)PatienceMeter.Flowers / PatienceMeter.BaseFlowers : 1f;   // a third more with the fourth flower; none yet for the tutorial's customer, who is handed it (PatienceMeter.HoldFourth)
         var displayTime = patience * customer.OrderTimeMultiplier * decorBonus * chapterBonus;
         var petals = Mathf.Max(1, Mathf.RoundToInt(patience));
         DebugLog($"{customer.name}: min items {minItems}, time {displayTime:F1}s, tip x{customer.TipMultiplier}");

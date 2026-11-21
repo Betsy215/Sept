@@ -15,7 +15,12 @@ public class PatienceMeter : MonoBehaviour
     /// animation, give chapter 2 customers extra patience flower"). Each flower lasts as long as before, so the
     /// order's whole time grows with it (CustomerManager.Chapter2Patience = 4/3).
     public const int BaseFlowers = 3, Chapter2Flowers = 4;
-    public static int Flowers => SessionManager.CurrentChapter >= 2 ? Chapter2Flowers : BaseFlowers;
+    public static int Flowers => SessionManager.CurrentChapter >= 2 && !HoldFourth ? Chapter2Flowers : BaseFlowers;
+    /// The chapter 2 tutorial's customer walks up with three flowers and is handed the fourth in front of the player
+    /// (owner, 21 November 2026: "when customer comes in, still has 3 flowers, then pause, and show the reward panel,
+    /// and the fourth flower flies to customer, the customer shows 4 flowers"). True from that tutorial's start until
+    /// the flower lands (TutorialDirector sets and clears it).
+    public static bool HoldFourth;
     const float Spacing = 0.45f;           // between flower centres, world units
     const float PetalRadius = 0.15f;
     const float FallSeconds = 0.8f;
@@ -59,7 +64,8 @@ public class PatienceMeter : MonoBehaviour
     }
 
     OrderSystem.ActiveOrder order;
-    readonly Flower[] flowers = new Flower[Flowers];
+    Flower[] flowers;
+    int slots;                             // places in the row: one more than the flowers while room is made for a new one
     float sway;
 
     class Flower
@@ -109,51 +115,93 @@ public class PatienceMeter : MonoBehaviour
     }
 
     /// Patience as fills per flower, 1 = fresh, 0 = gone, from the order's time left
-    static float Fill(OrderSystem.ActiveOrder o, int i)
+    static float Fill(OrderSystem.ActiveOrder o, int i, int count)
     {
         var total = Mathf.Max(o.displayTime, 0.01f);
-        var per = total / Flowers;
+        var per = total / count;
         return Mathf.Clamp01((o.timer - i * per) / per);
     }
 
     void Build()
     {
         LoadPainted(); PickKind();
-        var hand = painted || kind != "daisy";   // painted petals get the hand-drawn turn and size
-        for (var i = 0; i < flowers.Length; i++)
-        {
-            var f = new Flower();
-            f.root = new GameObject("Flower" + i).transform;
-            f.root.SetParent(transform, false);
-            f.root.localPosition = new Vector3((i - (flowers.Length - 1) / 2f) * Spacing, 0f, 0f);
-            f.head = new GameObject("Head").transform;
-            f.head.SetParent(f.root, false);
-            f.head.localPosition = new Vector3(0f, 0.04f, 0f);
-            f.petals = new SpriteRenderer[petalCount];
-            f.petalSize = new float[petalCount];
-            var rng = new System.Random(order != null ? order.slot * 31 + i * 7 : i);   // a hand-drawn daisy: every petal turned and sized a little differently
-            for (var k = 0; k < petalCount; k++)
-            {
-                var angle = 90f - 360f / petalCount * k;
-                var p = new GameObject("Petal" + k);
-                p.transform.SetParent(f.head, false);
-                var rad = angle * Mathf.Deg2Rad;
-                p.transform.localPosition = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f) * petalRadius;
-                var turn = hand ? (float)(rng.NextDouble() * 14.0 - 7.0) : 0f;
-                f.petalSize[k] = hand ? 0.92f + (float)rng.NextDouble() * 0.16f : 1f;
-                p.transform.localRotation = Quaternion.Euler(0f, 0f, angle - 90f + turn);
-                var sr = p.AddComponent<SpriteRenderer>();
-                sr.sprite = kindPetal != null ? kindPetal : PetalSprite(); sr.sortingOrder = 5;
-                f.petals[k] = sr;
-            }
-            var c = new GameObject("Centre");
-            c.transform.SetParent(f.head, false);
-            f.centre = c.AddComponent<SpriteRenderer>();
-            f.centre.sprite = kindCentre != null ? kindCentre : CentreSprite(); f.centre.sortingOrder = 6;
-            f.centre.color = hand ? Color.white : new Color(1f, 0.82f, 0.25f);
-            flowers[i] = f;
-        }
+        flowers = new Flower[Flowers]; slots = flowers.Length;
+        for (var i = 0; i < flowers.Length; i++) flowers[i] = MakeFlower(i);
     }
+
+    Vector3 SlotPlace(int i) => new Vector3((i - (slots - 1) / 2f) * Spacing, 0f, 0f);
+
+    Flower MakeFlower(int i)
+    {
+        var hand = painted || kind != "daisy";   // painted petals get the hand-drawn turn and size
+        var f = new Flower();
+        f.root = new GameObject("Flower" + i).transform;
+        f.root.SetParent(transform, false);
+        f.root.localPosition = SlotPlace(i);
+        f.head = new GameObject("Head").transform;
+        f.head.SetParent(f.root, false);
+        f.head.localPosition = new Vector3(0f, 0.04f, 0f);
+        f.petals = new SpriteRenderer[petalCount];
+        f.petalSize = new float[petalCount];
+        var rng = new System.Random(order != null ? order.slot * 31 + i * 7 : i);   // a hand-drawn daisy: every petal turned and sized a little differently
+        for (var k = 0; k < petalCount; k++)
+        {
+            var angle = 90f - 360f / petalCount * k;
+            var p = new GameObject("Petal" + k);
+            p.transform.SetParent(f.head, false);
+            var rad = angle * Mathf.Deg2Rad;
+            p.transform.localPosition = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f) * petalRadius;
+            var turn = hand ? (float)(rng.NextDouble() * 14.0 - 7.0) : 0f;
+            f.petalSize[k] = hand ? 0.92f + (float)rng.NextDouble() * 0.16f : 1f;
+            p.transform.localRotation = Quaternion.Euler(0f, 0f, angle - 90f + turn);
+            var sr = p.AddComponent<SpriteRenderer>();
+            sr.sprite = kindPetal != null ? kindPetal : PetalSprite(); sr.sortingOrder = 5;
+            f.petals[k] = sr;
+        }
+        var c = new GameObject("Centre");
+        c.transform.SetParent(f.head, false);
+        f.centre = c.AddComponent<SpriteRenderer>();
+        f.centre.sprite = kindCentre != null ? kindCentre : CentreSprite(); f.centre.sortingOrder = 6;
+        f.centre.color = hand ? Color.white : new Color(1f, 0.82f, 0.25f);
+        return f;
+    }
+
+    /// Room for one more flower at the right end: the row slides over, and `world` is where the new one will stand.
+    /// False when the order has no meter.
+    public static bool MakeRoom(OrderSystem.ActiveOrder order, out Vector3 world)
+    {
+        world = Vector3.zero;
+        if (order == null || !meters.TryGetValue(order, out var m) || m == null) return false;
+        m.slots = m.flowers.Length + 1; m.StartCoroutine(m.Slide());
+        world = m.transform.TransformPoint(m.SlotPlace(m.flowers.Length) + new Vector3(0f, 0.04f, 0f));
+        return true;
+    }
+
+    System.Collections.IEnumerator Slide()
+    {
+        var from = new Vector3[flowers.Length]; for (var i = 0; i < flowers.Length; i++) from[i] = flowers[i].root.localPosition;
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.3f)
+        {
+            var k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t));
+            for (var i = 0; i < from.Length && i < flowers.Length; i++) flowers[i].root.localPosition = Vector3.Lerp(from[i], SlotPlace(i), k);
+            yield return null;
+        }
+        for (var i = 0; i < flowers.Length; i++) flowers[i].root.localPosition = SlotPlace(i);
+    }
+
+    /// One more flower on this order's meter, fresh, with the refill's bounce and sparkle (the order's time is
+    /// OrderSystem.GrantExtraFlower's part)
+    public static void AddFlower(OrderSystem.ActiveOrder order)
+    {
+        if (order == null || !meters.TryGetValue(order, out var m) || m == null) return;
+        var grown = new Flower[m.flowers.Length + 1]; m.flowers.CopyTo(grown, 0);
+        m.slots = grown.Length; var f = m.MakeFlower(grown.Length - 1); grown[grown.Length - 1] = f; m.flowers = grown;
+        for (var i = 0; i < grown.Length; i++) grown[i].root.localPosition = m.SlotPlace(i);
+        f.bounce = 0.45f; m.StartCoroutine(m.Sparkle(f.root.position));
+    }
+
+    /// The size of one flower in world units, tip to tip (for a card's flower that flies onto the meter)
+    public static float FlowerWorldSize(Sprite petal) => 2f * (0.115f + (petal != null ? petal.bounds.extents.y : 0.1f)) * Scale;
 
     void Update()
     {
@@ -162,7 +210,7 @@ public class PatienceMeter : MonoBehaviour
         for (var i = 0; i < flowers.Length; i++)
         {
             var f = flowers[i];
-            var target = Fill(order, i);
+            var target = Fill(order, i, flowers.Length);
             // the picture eases toward the real fill: a slow wilt, a quick fill-up
             f.shown = target > f.shown ? Mathf.MoveTowards(f.shown, target, Time.deltaTime * 3f) : Mathf.MoveTowards(f.shown, target, Time.deltaTime * 1.2f);
             var s = f.shown;
@@ -210,7 +258,7 @@ public class PatienceMeter : MonoBehaviour
         for (var i = flowers.Length - 1; i >= 0; i--)
         {
             var f = flowers[i];
-            var target = Fill(order, i);
+            var target = Fill(order, i, flowers.Length);
             if (target >= 0.999f && f.shown < 0.98f)
             {
                 f.bounce = 0.45f;
