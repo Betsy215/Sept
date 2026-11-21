@@ -76,11 +76,6 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="who p1"><h3>You</h3>
 <p><b>Pick a tutorial arrow</b> (Current) and <b>the chapter 2 ideas you want</b> (Q&amp;A).</p>
 <p><b>Test build:</b> Xcode still has no Apple account sign-in. Open <b>Xcode, Settings, Accounts</b>, sign in (I cannot type your password) and tell me; I then build with today's changes and upload.</p>
-<p><b>Was the 14-day play today, 11:29 to 12:01, yours?</b> (App Store copy, new player, all 3 stars.) I left it out of the numbers.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="next.nov21.mine"> Yes, that was me</label></li>
-<li><label><input type="checkbox" data-id="next.nov21.notmine"> Not me</label></li>
-</ul>
 </div>
 <div class="who p2"><h3>Me</h3>
 <p>Done today: tray shadow, simpler mixer, kitchen cooks without pauses, faster blender, player analysis. After your picks: the arrow in the game, the chapter 2 tuning, the test build.</p>
@@ -88,9 +83,17 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>Does the time of my test play match? Where is today's data from, when App Store Connect has none yet? (21 Nov)</h3>
+<ul>
+<li><b>Yes, it matches.</b> Your TestFlight play is in the test data: today 12:09 to 12:16, days 13 and 14, one star each, then the shop. It is kept apart from the players and never counted.</li>
+<li><b>So the 11:29 to 12:01 play was not you.</b> It is a real new player in the US on the App Store copy: all 14 days in 32 minutes, 3 stars on every day, nearly everything bought. They are in the numbers now (Analysis).</li>
+<li><b>Where today's data comes from:</b> Unity Analytics, not App Store Connect. The game itself sends its events (tutorial steps, days, stars, purchases, ads) to Unity within about a minute. App Store copies go to "production", TestFlight and my editor to "development". Apple's own numbers (downloads) come a day later; they end on 20 Nov.</li>
+</ul>
+<ul class="checks"><li><label><input type="checkbox" data-id="qa.today.seen"> Seen</label></li></ul>
+</div>
 <div class="q"><h3>Chapter 2 is much harder: ways to tune it (21 Nov)</h3>
 <ul>
-<li><b>The data agrees.</b> The player from Japan got mostly 3 stars in chapter 1; in chapter 2 they got 0 stars on day 13 and needed 2 to 5 tries on each of days 15 to 19. All 11 of their restarts were in chapter 2.</li>
+<li><b>The data agrees.</b> The player from Japan got mostly 3 stars in chapter 1; in chapter 2 they got 0 stars on day 13 and needed 2 to 5 tries on each of days 15 to 19. All 11 of their restarts were in chapter 2. Your own test today: one star on day 13 and on day 14. (Today's US player got 3 stars on both, so it can be done, but not by most.)</li>
 <li><b>Why:</b> customers come at the same pace as chapter 1, but an ice cream is up to four taps, and the scoops and waffle bowls run out fast (4 scoops a well), so the kitchen trips pile up.</li>
 </ul>
 <p style="margin:8px 0 4px"><b>Ideas</b> (tick any; my pick is 1, 2 and 3: make the ice cream lighter, leave the customers alone):</p>
@@ -196,15 +199,16 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="card">
 <p style="margin-top:0"><b>Players, 19 to 21 November</b> (since the last read; times UTC).</p>
 <ul>
-<li><b>10 new players</b> (Philippines 3, Indonesia 2, Germany 2, Malaysia, UK, US). Opened 10, started the tutorial 9, finished it 6, finished day 1: 5, day 2: 2, day 3 or later: 1.</li>
-<li><b>Day 1 now gives one star to most new players.</b> Since the star rule changed (stars by customers served, live 18 Nov), 4 of 7 first tries at day 1 ended with 1 star; before, everyone got 3. Three of those four quit within two minutes and did not return; the fourth got 0 stars on day 2 and left.</li>
+<li><b>11 new players</b> (Philippines 3, Indonesia 2, Germany 2, US 2, Malaysia, UK). Opened 11, started the tutorial 10, finished it 7, finished day 1: 6, day 2: 3, day 3 or later: 2.</li>
+<li><b>Today's best player</b> (US, App Store copy 2026.11.20, 11:29 to 12:01 our time): days 1 to 14 in one sitting, 3 stars on every day, 24 purchases, chapter 2 opened and its tutorial done. No between-days ad was shown to them in 14 day ends: either they bought Remove Ads (it would be the first sale; Apple shows it tomorrow, I will look) or no ad was ready.</li>
+<li><b>Day 1 now gives one star to most new players.</b> Since the star rule changed (stars by customers served, live 18 Nov), 4 of 8 first tries at day 1 ended with 1 star; before, everyone got 3. Three of those four quit within two minutes and did not return; the fourth got 0 stars on day 2 and left.</li>
 <li><b>The stars do bring replays:</b> one player (Indonesia) came back three times and replayed day 4 six times until it showed 3 stars; reached day 6, 9 purchases.</li>
 <li><b>Japan's player</b> finished chapter 1 and reached day 20 on 19 Nov; chapter 2 took many tries (see Q&amp;A).</li>
 <li><b>Came back:</b> two players from last week returned after 5 and 8 days; one finished day 1, one closed 30 s into it.</li>
 <li><b>Left in the tutorial:</b> at step 1, step 3 and step 6 (one each); one only opened the game.</li>
 <li><b>Ads:</b> between-days ads 3 watched, 2 skipped; two more players watched a Daily Treats ad before the tutorial. Unity Ads 14 to 20 Nov: $0.51 from 88 ads shown.</li>
 <li><b>Downloads</b> (Apple, first time), 14 to 20 Nov: 69 (15, 10, 14, 3, 7, 13, 7). Apple's 19th arrived a day late; the page is up to date again.</li>
-<li>Left out: Apple's review run of 2026.11.20, and today's 14-day play (Next).</li>
+<li>Left out: Apple's review run of 2026.11.20.</li>
 </ul>
 <p style="margin:8px 0 4px"><b>My suggestion:</b> make 3 stars easy on days 1 and 2 (more patience on those two days), so a first-time player does not start with one star.</p>
 <ul class="checks">
