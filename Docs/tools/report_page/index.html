@@ -75,6 +75,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>Test build 2026.11.21 (0) is in TestFlight</b> with everything of today. <b>Visuals</b> is recaptured from it.</p>
+<p><b>New in Current:</b> the mixing and cutting animations, and 8 + 8 sounds to pick from.</p>
 <p><b>Players today</b> are in Analysis, with three ad choices to tick.</p>
 <p><b>Still open:</b> the tray on the counter (Current), the chapter 2 ideas (Q&amp;A).</p>
 </div>
@@ -138,7 +139,49 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul class="checks"><li><label><input type="checkbox" data-id="qa.ktimes2.seen"> Seen</label></li></ul>
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">Made 21 November; in test build 2026.11.21 (0).</p>
+<p class="sub" style="margin:0 0 8px">Made 21 November. The tray is in test build 2026.11.21 (0); the animations are not in a build yet.</p>
+<div class="card">
+<p style="margin-top:0"><b>Mixing and cutting animations.</b></p>
+<figure><img src="kitchen_anim.gif" alt="The kitchen counter moving: the hand mixer over its bowl, the whisk spinning, the bowl rocking and drops of cream jumping; then a small knife chopping on the fruit board between the strawberries and the lemon, bits of fruit jumping at each chop"><figcaption>Kitchen, in the game: the mixer, then the knife on the fruit board (9 seconds, recorded at full speed).</figcaption></figure>
+<ul>
+<li><b>Mixer:</b> the whisk spins on its own axis and stirs a little, the bowl rocks on its foot, and drops of cream jump. The machine body holds still, as you said, so your new handle can go in later without touching the animation.</li>
+<li><b>Board:</b> a knife (Gemini, painted after the board and the whisk) chops four times a second, moving along the board; each chop gives the board a small bump and throws bits of lemon and strawberry.</li>
+<li>Both stop with the pause, like the rest of the kitchen.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.anim21.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.anim21.change"> Changes (I will say what)</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Pick a mixing sound and a cutting sound.</b> <small>From Pixabay, each cut to the step's length (mixing 2.5 s, cutting 2 s), all at the same loudness. The ones you do not pick are deleted.</small></p>
+<p style="margin:6px 0 2px"><b>Mixing</b></p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.sfx21.mix1"> 1. FOOD MIXER <small>(freesound_community)</small></label><br><audio controls preload="none" src="sfx_mix1.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.mix2"> 2. Slow Speed Cake Mixer <small>(Fronbondi_Skegs)</small></label><br><audio controls preload="none" src="sfx_mix2.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.mix3"> 3. High Speed Cake Mixer <small>(Fronbondi_Skegs)</small></label><br><audio controls preload="none" src="sfx_mix3.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.mix4"> 4. Electric whisk, frothing milk <small>(Fronbondi_Skegs)</small></label><br><audio controls preload="none" src="sfx_mix4.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.mix5"> 5. Food mixer motor <small>(freesound_community)</small></label><br><audio controls preload="none" src="sfx_mix5.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.mix6"> 6. KitchenAid mixer, bread dough <small>(freesound_community)</small></label><br><audio controls preload="none" src="sfx_mix6.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.mix7"> 7. Egg beating (by hand) <small>(freesound_community)</small></label><br><audio controls preload="none" src="sfx_mix7.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.mix8"> 8. Whisking eggs (by hand) <small>(AudioPapkin)</small></label><br><audio controls preload="none" src="sfx_mix8.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.mixnone"> None of these</label></li>
+</ul>
+<p style="margin:10px 0 2px"><b>Cutting</b></p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.sfx21.cut1"> 1. Chopping onion <small>(AudioPapkin)</small></label><br><audio controls preload="none" src="sfx_cut1.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.cut2"> 2. Vegetable chopping on a wooden board <small>(Pixabay)</small></label><br><audio controls preload="none" src="sfx_cut2.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.cut3"> 3. Chopping lettuce <small>(freesound_community)</small></label><br><audio controls preload="none" src="sfx_cut3.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.cut4"> 4. To cut on a cutting board 1 <small>(Mary_Mastiff)</small></label><br><audio controls preload="none" src="sfx_cut4.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.cut5"> 5. Knife and chopping board <small>(Martsfx)</small></label><br><audio controls preload="none" src="sfx_cut5.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.cut6"> 6. Cutting vegetables <small>(49603404)</small></label><br><audio controls preload="none" src="sfx_cut6.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.cut7"> 7. To cut on a cutting board 2 <small>(Mary_Mastiff)</small></label><br><audio controls preload="none" src="sfx_cut7.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.cut8"> 8. Celery chopping <small>(freesound_community)</small></label><br><audio controls preload="none" src="sfx_cut8.mp3" style="height:30px;width:260px"></audio></li>
+<li><label><input type="checkbox" data-id="cur.sfx21.cutnone"> None of these</label></li>
+</ul>
+</div>
+
 <div class="card">
 <p style="margin-top:0"><b>The baking tray lies fully on the counter top.</b></p>
 <figure><img src="tray_counter.jpg" alt="The kitchen counter twice. The baking tray lies at the front left of the counter, in front of the mixer and left of the fruit board, its whole body on the wooden top: empty on the left, with four baked choux on the right"><figcaption>Kitchen: the tray's new place, empty and with the baked choux.</figcaption></figure>

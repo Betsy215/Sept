@@ -73,8 +73,16 @@ public static class KitchenFlow
         }
     }
 
-    private static void StartMix(string f) { mixing = f; Of(f).working = true; Refresh(); Host.StartCoroutine(Step(f, MixSeconds, Stage.Creamed, true)); }
-    private static void StartCut(string f) { cutting = f; Of(f).working = true; Refresh(); Host.StartCoroutine(Step(f, CutSeconds, Stage.Done, false)); }
+    private static void StartMix(string f) { mixing = f; Of(f).working = true; Refresh(); Sound("Kitchen/mixer_mix"); Host.StartCoroutine(Step(f, MixSeconds, Stage.Creamed, true)); }
+    private static void StartCut(string f) { cutting = f; Of(f).working = true; Refresh(); Sound("Kitchen/board_cut"); Host.StartCoroutine(Step(f, CutSeconds, Stage.Done, false)); }
+
+    /// The mixing and the cutting sound (owner, 21 November 2026: "find several sound effects on line for mixing and
+    /// cutting, show me and i will pick"): silent until the picked sample is in Resources, then once per step.
+    private static void Sound(string path)
+    {
+        var clip = Resources.Load<AudioClip>(path);
+        if (clip != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(clip);
+    }
 
     public static void TapMixer()
     {
@@ -206,12 +214,27 @@ public static class KitchenFlow
     }
 }
 
-/// A tap on the mixer or on the fruit board, and their little motion while they work (placeholder: the whisk rocks,
-/// the board hops).
+/// A tap on the mixer or on the fruit board, and their motion while they work (owner, 21 November 2026: "add animation
+/// for mixing, do that to the bowl and mixing blade ... the mixer handle ... won't need to be involved in the mixing
+/// animation"; "also work on the cutting animation for fruit board").
+///   Mixer: the running picture comes apart into its layers (Resources/Kitchen/flow/mixer_run_bowl, _whisk, _body, all on
+///   the same canvas, from Store/redesign/mixer_hand_2026-11-20/compose_lean.py). The whisk spins about its own upright
+///   axis (seen as a narrowing and a flip), the bowl rocks a little on its foot, and drops of cream jump from the whisk.
+///   The body holds still.
+///   Board: Gemini's knife (Resources/Kitchen/flow/knife) chops along the strawberries and the lemon, rocking on its
+///   handle; each chop gives the board a small bump and throws a few bits of fruit.
+/// Everything runs on the kitchen clock, so a pause stops it.
 public class KitchenFlowTap : MonoBehaviour, IPointerClickHandler
 {
     public bool isMixer;
     private Vector3 restScale; private bool kept;
+    private float t;                       // seconds of work, kitchen clock
+
+    // the running mixer's layers, as shares of the picture (compose_lean.py prints them): turning points
+    private static readonly Vector2 WhiskAxis = new Vector2(0.2325f, 0.88f), BowlFoot = new Vector2(0.2318f, 0f), WhiskTip = new Vector2(0.2325f, 0.36f);
+    private RectTransform bowl, whisk, body; private Image own; private Color ownColour;
+    private RectTransform knife; private float lastChop = -1f;
+    private static Sprite dot;
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -221,15 +244,117 @@ public class KitchenFlowTap : MonoBehaviour, IPointerClickHandler
 
     private void Update()
     {
-        if (!kept) { restScale = transform.localScale; kept = true; }
+        if (!kept) { restScale = transform.localScale; own = GetComponent<Image>(); if (own != null) ownColour = own.color; kept = true; }
         var working = isMixer ? KitchenFlow.Mixing : KitchenFlow.Cutting;
-        if (working && !KitchenClock.Paused)
+        if (!working) { if (t > 0f) Stop(); return; }
+        t += KitchenClock.Delta;
+        if (isMixer) { if (name == "mixer" && Layers()) Mix(); else if (name != "mixer") transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t * 28f) * 14f); }
+        else Cut();
+    }
+
+    private void Stop()
+    {
+        t = 0f; lastChop = -1f;
+        transform.localRotation = Quaternion.identity; transform.localScale = restScale;
+        foreach (var r in new[] { bowl, whisk, body }) if (r != null) Destroy(r.gameObject);
+        bowl = whisk = body = null;
+        if (own != null) own.color = ownColour;
+        if (knife != null) { Destroy(knife.gameObject); knife = null; }
+    }
+
+    // ---- mixer ----
+
+    private bool Layers()
+    {
+        if (bowl != null) return true;
+        var b = Resources.Load<Sprite>("Kitchen/flow/mixer_run_bowl"); var w = Resources.Load<Sprite>("Kitchen/flow/mixer_run_whisk"); var h = Resources.Load<Sprite>("Kitchen/flow/mixer_run_body");
+        if (b == null || w == null || h == null || own == null) return false;
+        bowl = Layer("MixBowl", b, BowlFoot); whisk = Layer("MixWhisk", w, WhiskAxis); body = Layer("MixBody", h, new Vector2(0.5f, 0.5f));
+        own.color = new Color(ownColour.r, ownColour.g, ownColour.b, 0f);   // the whole picture hides; it still takes the taps
+        return true;
+    }
+
+    private RectTransform Layer(string n, Sprite s, Vector2 pivot)
+    {
+        var go = new GameObject(n, typeof(RectTransform), typeof(Image)); go.layer = gameObject.layer;
+        var rt = (RectTransform)go.transform; rt.SetParent(transform, false);
+        rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.pivot = pivot; rt.offsetMin = rt.offsetMax = Vector2.zero;
+        var img = go.GetComponent<Image>(); img.sprite = s; img.preserveAspect = true; img.raycastTarget = false;
+        return rt;
+    }
+
+    private void Mix()
+    {
+        var turn = Mathf.Cos(t * 2f * Mathf.PI * 3.2f);                                      // three turns a second
+        whisk.localScale = new Vector3(Mathf.Sign(turn) * Mathf.Max(0.22f, Mathf.Abs(turn)), 1f, 1f);
+        whisk.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t * 9f) * 2.5f);              // and it stirs round the bowl a little
+        bowl.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t * 13f) * 1.6f);
+        bowl.localScale = new Vector3(1f + 0.012f * Mathf.Sin(t * 26f), 1f - 0.012f * Mathf.Sin(t * 26f), 1f);
+        if (Mathf.Repeat(t, 0.22f) < KitchenClock.Delta && KitchenClock.Delta > 0f) StartCoroutine(Drop(WhiskTip, new Color(1f, 0.975f, 0.9f), Random.Range(-1f, 1f) * 55f, Random.Range(70f, 120f), 0.045f));
+    }
+
+    // ---- board ----
+
+    private void Cut()
+    {
+        var rt = (RectTransform)transform; var size = rt.rect.size;
+        if (knife == null)
         {
-            var t = Time.unscaledTime;
-            if (isMixer && name == "mixer") transform.localScale = restScale * (1f + 0.02f * Mathf.Sin(t * 40f));   // the set trembles
-            else if (isMixer) transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t * 28f) * 14f);
-            else transform.localScale = restScale * (1f + 0.05f * Mathf.Abs(Mathf.Sin(t * 14f)));
+            var s = Resources.Load<Sprite>("Kitchen/flow/knife"); if (s == null) { transform.localScale = restScale * (1f + 0.05f * Mathf.Abs(Mathf.Sin(t * 14f))); return; }
+            var go = new GameObject("Knife", typeof(RectTransform), typeof(Image)); go.layer = gameObject.layer;
+            knife = (RectTransform)go.transform; knife.SetParent(transform, false);
+            var img = go.GetComponent<Image>(); img.sprite = s; img.preserveAspect = true; img.raycastTarget = false;
+            var w = size.x * 0.62f; knife.sizeDelta = new Vector2(w, w * s.rect.height / s.rect.width);
+            knife.anchorMin = knife.anchorMax = new Vector2(0.5f, 0.5f); knife.pivot = new Vector2(0.92f, 0.5f);   // it rocks on its handle
         }
-        else if (!working) { transform.localRotation = Quaternion.identity; transform.localScale = restScale; }
+        // four chops a second; the knife works from the strawberries along to the lemon
+        const float rate = 4f; var phase = Mathf.Repeat(t * rate, 1f); var lift = phase < 0.55f ? Mathf.Sin(phase / 0.55f * Mathf.PI) : 0f;
+        var along = Mathf.PingPong(t * 0.18f, 0.22f);
+        knife.anchoredPosition = new Vector2(size.x * (0.19f + along), size.y * (0.02f + 0.06f * lift));
+        knife.localRotation = Quaternion.Euler(0f, 0f, -14f * lift);
+        knife.localScale = Vector3.one * (1f + 0.06f * lift);                                  // nearer the eye when lifted
+        var chop = Mathf.Floor(t * rate);
+        if (phase >= 0.55f && chop != lastChop)
+        {
+            lastChop = chop;
+            transform.localScale = restScale * 1.025f;
+            var tip = new Vector2(0.5f + (0.19f + along - 0.92f * 0.62f + 0.08f) , 0.5f);      // where the blade meets the board, as shares
+            for (var i = 0; i < 3; i++)
+            {
+                var c = Random.value < 0.5f ? new Color(0.98f, 0.82f, 0.25f) : new Color(0.9f, 0.25f, 0.22f);
+                StartCoroutine(Drop(tip, c, Random.Range(-1f, 1f) * 70f, Random.Range(50f, 95f), 0.03f));
+            }
+        }
+        else transform.localScale = Vector3.Lerp(transform.localScale, restScale, 0.35f);
+    }
+
+    // ---- bits ----
+
+    /// A small round bit (cream or fruit) jumps from `at` (shares of this piece) and falls back, fading.
+    private IEnumerator Drop(Vector2 at, Color colour, float vx, float vy, float sizeShare)
+    {
+        var rt0 = (RectTransform)transform; var size = rt0.rect.size;
+        var go = new GameObject("Bit", typeof(RectTransform), typeof(Image)); go.layer = gameObject.layer;
+        var rt = (RectTransform)go.transform; rt.SetParent(transform, false); rt.anchorMin = rt.anchorMax = at;
+        var img = go.GetComponent<Image>(); img.sprite = Dot(); img.color = colour; img.raycastTarget = false;
+        var d = Mathf.Max(4f, size.x * sizeShare * Random.Range(0.7f, 1.2f)); rt.sizeDelta = new Vector2(d, d * Random.Range(0.8f, 1f));
+        var p = Vector2.zero; var v = new Vector2(vx, vy) * (size.x / 200f);
+        for (var a = 0f; a < 0.45f; a += KitchenClock.Delta)
+        {
+            if (rt == null) yield break;
+            var dt = KitchenClock.Delta; v.y -= 520f * (size.x / 200f) * dt; p += v * dt; rt.anchoredPosition = p;
+            img.color = new Color(colour.r, colour.g, colour.b, 1f - a / 0.45f);
+            yield return null;
+        }
+        if (go != null) Destroy(go);
+    }
+
+    private static Sprite Dot()
+    {
+        if (dot != null) return dot;
+        const int n = 32; var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear }; var px = new Color[n * n];
+        for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) { var r = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(n / 2f, n / 2f)) / (n / 2f); var shade = Mathf.Lerp(1f, 0.86f, Mathf.Clamp01((x - y) / (float)n + 0.3f)); px[y * n + x] = new Color(shade, shade, shade, Mathf.Clamp01((1f - r) * 6f)); }
+        tex.SetPixels(px); tex.Apply(); dot = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+        return dot;
     }
 }
