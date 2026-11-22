@@ -74,17 +74,25 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 2026.11.21 (0) is built with everything of today, but Apple refused the upload again:</b> Xcode has no Apple account sign-in. Please open <b>Xcode, Settings, Accounts</b>, sign in (I cannot type your password), and tell me; the upload then takes two minutes.</p>
-<p><b>Look at</b> the thinking dots and the mixer (Current); both are in the build as shown.</p>
+<p><b>The test build needs one thing from you:</b> open <b>Xcode, Settings, Accounts</b> and sign in to your Apple account (I cannot type your password). Then tell me, and the build is in TestFlight a few minutes later. See the first Q&amp;A entry.</p>
+<p><b>Look at</b> the tray on the counter and chapter 2's first-day orders (Current).</p>
 <p><b>Still open:</b> the chapter 2 ideas (Q&amp;A).</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>In the build today: chapter 2 gift, hand pointer with its glow, tray shadow, lean handheld mixer, kitchen without pauses, faster blender, smaller thinking dots.</p>
+<p>Approved today and in the build: thinking dots, lean mixer, hand pointer, gift card, tray shadow, kitchen without pauses, faster blender.</p>
 <p><b>Tomorrow (22 Nov):</b> Apple's sales for 21 Nov (a Remove Ads sale?), and whether today's US player came back.</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>I don't see a test build for today, the latest is the 20th. Didn't I ask for one? (21 Nov)</h3>
+<ul>
+<li><b>You did, and it is built</b> (2026.11.21 build 0, with everything of today). <b>Apple refuses the upload:</b> "Failed to Use Accounts". Xcode on this Mac has lost its Apple account sign-in, and the upload uses that sign-in.</li>
+<li>It has failed the same way since last night. I said so in Next, but only there; I should have told you more plainly.</li>
+<li><b>What fixes it:</b> Xcode, Settings, Accounts: sign in again. That takes your password, so only you can do it. After that I upload at once; Apple needs about ten minutes to process it.</li>
+</ul>
+<ul class="checks"><li><label><input type="checkbox" data-id="qa.nobuild.signedin"> I have signed in, upload it</label></li></ul>
+</div>
 <div class="q"><h3>No between-days ads: was that player me, since TestFlight does not ask for ads? (21 Nov)</h3>
 <ul>
 <li><b>No, I am fairly sure it was not you.</b> The game makes one check, "TestFlight or App Store copy?", and uses it for both things: a TestFlight copy skips the ads <i>and</i> sends its data to the test set. That play arrived in the App Store set, so the game on that phone was the App Store copy, where ads are not skipped.</li>
@@ -167,46 +175,31 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul class="checks"><li><label><input type="checkbox" data-id="qa.ktimes2.seen"> Seen</label></li></ul>
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">Made 21 November; all of it is in the new test build.</p>
+<p class="sub" style="margin:0 0 8px">Made 21 November; both are in the build that waits for the sign-in.</p>
 <div class="card">
-<p style="margin-top:0"><b>Thinking dots: smaller, and centred in every bubble.</b></p>
-<figure><img src="think_dots.jpg" alt="Four order bubbles while the customer thinks, two narrow ones and two large ones, each with three small brown dots in the middle of the bubble, about half as wide as the bubble's inside"><figcaption>Table, chapter 1: the dots in the narrow bubble (top) and in the large bubble (bottom).</figcaption></figure>
+<p style="margin-top:0"><b>The baking tray lies fully on the counter top.</b></p>
+<figure><img src="tray_counter.jpg" alt="The kitchen counter twice. The baking tray lies at the front left of the counter, in front of the mixer and left of the fruit board, its whole body on the wooden top: empty on the left, with four baked choux on the right"><figcaption>Kitchen: the tray's new place, empty and with the baked choux.</figcaption></figure>
 <ul>
-<li>The dots are now sized from the bubble itself: the row of three is about half as wide as the bubble's inside, in every bubble. In the large bubble they are a little smaller than before; tick if you want them bigger.</li>
-<li>They sit in the middle of the bubble's inside (before, in the middle of the foods to come, which is off-centre in some bubbles).</li>
+<li>The tray's footprint is now its whole body, and all of it must be on the counter's top. Before, only its lower edge had to be, so its top could stand past the counter's back edge.</li>
+<li>The same holds while arranging: a place where part of the tray is off the counter turns it red.</li>
+<li>With the board, the cake and the mixer on the counter, the free place for it is the front left.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.dots2.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.dots2.bigger"> A little bigger</label></li>
-<li><label><input type="checkbox" data-id="cur.dots2.smaller"> A little smaller</label></li>
+<li><label><input type="checkbox" data-id="cur.trayon.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.trayon.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
 <div class="card">
-<p style="margin-top:0"><b>Mixer: lean body, your own whisk as the blade.</b></p>
-<figure><img src="mixer_lean.jpg" alt="Top: the two mixer frames. At rest the bowl of cream with a slim green hand mixer standing beside it, leaning a little, the kitchen's blue whisk hanging from its front. Running: the mixer level above the bowl, the whisk in the cream. Bottom: the kitchen counter in the game with each frame at the counter's left end"><figcaption>Kitchen: the mixer's two frames, and each in the game (at rest; running).</figcaption></figure>
+<p style="margin-top:0"><b>Chapter 2, first day: every ice cream is a waffle bowl with one or two scoops.</b></p>
+<figure><img src="c2_day1.jpg" alt="Two moments of chapter 2's first day: order bubbles with ice creams, each one in a waffle bowl with a single scoop, beside an order of bread and juice"><figcaption>Table, chapter 2's first day: the ice creams ordered, all in waffle bowls.</figcaption></figure>
 <ul>
-<li><b>Body</b> (ChatGPT): a slim curved body with a thin handle, shorter than the bowl is wide.</li>
-<li><b>Blade:</b> the kitchen's own whisk, its pixels only turned and made smaller; its handle sits up inside the body.</li>
-<li><b>At rest</b> it stands beside the bowl the same way up, leaning 12 degrees; <b>running</b> it is level over the bowl.</li>
-<li><b>In iCloud</b> ("FoodTruckCafe art"): mixer_bowl, mixer_machine (body alone), mixer_machine_with_whisk, mixer_original_whisk (the kitchen's whisk), plus the two game frames mixer_rest and mixer_running.</li>
+<li>Checked on 400 orders: first day 400 of 400 with a waffle bowl, half with one scoop and half with two, none with three.</li>
+<li>From the second day on as before: one to three scoops, half of them in a waffle bowl.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.mixer4.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.mixer4.change"> Changes (I will say what)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Built from your picks: the hand pointer with its glaze glow; the gift card's new words.</b></p>
-<figure><img src="pointer_hand.jpg" alt="Three moments of the chapter 2 tutorial: the white hand cookie points down at the waffle machine with a gold glow round it, bouncing a little between the pictures"><figcaption>Table, chapter 2 tutorial: the hand pointer (three moments of its bounce).</figcaption></figure>
-<figure><img src="gift_card_text.jpg" alt="The gift card: A gift for you, one big pink flower, the words Extra patience flower for beach customers, and the Let's go cookie button"><figcaption>Table, chapter 2 tutorial: the gift card with your words.</figcaption></figure>
-<ul>
-<li><b>Pointer:</b> Gemini's hand cookie (drawn again large), a gold glow that beats, and a band of light that passes over the icing every second and a half. Every tutorial arrow is this hand now, the kitchen swipe hints too.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.hand.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.hand.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.c2day1.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.c2day1.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
@@ -214,9 +207,10 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p class="sub" style="margin:0 0 8px">Next release: the kitchen remodel and the small fixes. Everything changed since release 2026.11.20:</p>
 <ul>
 <li><b>Kitchen flow:</b> choux and cake are made in steps. The oven bakes them onto the baking tray or the cake plate in the kitchen, the mixer adds the cream, the fruit board adds the fruit, then they fly to the table. The kitchen does every step by itself, with no pause.</li>
-<li><b>New kitchen pieces:</b> the baking tray (four choux, two by two, four stages, with a shadow), the cake plate's stages (empty, sponge, cream, finished), the lean handheld mixer with its bowl and the kitchen's whisk as its blade (at rest and running). All can be arranged; the tray starts on the kitchen table.</li>
+<li><b>New kitchen pieces:</b> the baking tray (four choux, two by two, four stages, with a shadow), the cake plate's stages (empty, sponge, cream, finished), the lean handheld mixer with its bowl and the kitchen's whisk as its blade (at rest and running). All can be arranged; the tray starts on the kitchen table and always lies fully on its top.</li>
 <li><b>Kitchen times:</b> bread bakes 5 s; choux, cake and cookies 3 s. The ice cream blender runs 3 s (1.8 s with two flavours). Pausing the game stops the kitchen too.</li>
 <li><b>Chapter 2 opens after day 9</b> of chapter 1 (the player chooses when to go). On the map day 9 is a big glowing star with a dotted path to the arrow; finishing it gives a star and the truck drives to chapter 2.</li>
+<li><b>Chapter 2, first day:</b> every ice cream is a waffle bowl with one or two scoops; normal orders from the second day.</li>
 <li><b>Chapter 2 gift:</b> a fourth patience flower for every chapter 2 customer; in the tutorial a reward card shows it and it flies to the first customer.</li>
 <li><b>Map:</b> today's day card opens by itself.</li>
 <li><b>Customers:</b> they think for 2 s (three dots in the middle of the bubble) before the order shows.</li>
