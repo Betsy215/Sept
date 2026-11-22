@@ -421,12 +421,15 @@ public class IceCreamStation : MonoBehaviour
     public string Variant() => selected >= 0 ? Variant(dishes[selected]) : "";
     private static string Variant(Dish d) { var l = new List<char>(); foreach (var f in d.flavours) l.Add(Letters[f]); l.Sort(); var s = new string(l.ToArray()); return d.waffle ? s + WaffleLetter : s; }
 
-    /// An order's ice cream: one to three scoops of open flavours, with a waffle bowl half the time
+    /// An order's ice cream: one to three scoops of open flavours, with a waffle bowl half the time.
+    /// On chapter 2's first day every ice cream comes in a waffle bowl with one or two scoops (owner, 21 November 2026:
+    /// "for chapter 2, for first day, all orders are with waffle and 1 or 2 scoops, after that orders are normal").
     public static string RandomVariant()
     {
-        var n = Random.Range(1, MaxScoops + 1); var l = new List<char>();
+        var sm = SessionManager.Instance; var firstDay = sm != null && sm.GetCurrentLevelIndex() == Chapter.FirstDay(2);
+        var n = Random.Range(1, (firstDay ? 2 : MaxScoops) + 1); var l = new List<char>();
         for (var i = 0; i < n; i++) l.Add(Letters[Random.Range(0, ActiveFlavours)]);   // orders ask only for open flavours
-        l.Sort(); var s = new string(l.ToArray()); return Random.value < 0.5f ? s + WaffleLetter : s;
+        l.Sort(); var s = new string(l.ToArray()); return firstDay || Random.value < 0.5f ? s + WaffleLetter : s;
     }
 
     private void Serve(int index)

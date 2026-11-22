@@ -30,6 +30,7 @@ public static class KitchenArrange
         public Vector4 box, fit;                      // no-overlap box and visible bounds: x0, y0 (from the top), x1, y1 as shares of the picture
         public Vector2 stretch;                       // the blender is sized as a share of the kitchen picture; zero: the scene's fixed size
         public Vector2 size;                          // fixed size for a piece this file makes (the whisk)
+        public bool flat;                             // lies flat on the counter: its whole box must be on the counter's top, not only its lower edge
         public float BoxMidX => (box.x + box.z) * 0.5f;
     }
 
@@ -50,7 +51,7 @@ public static class KitchenArrange
         new Def { name = "cake",     foot = new Vector2(0.8078f, 0.451f), box = new Vector4(0.21f, 0.03f, 0.875f, 0.775f), fit = new Vector4(0.01f, 0.03f, 0.99f, 0.98f) },
         new Def { name = "coffee",   foot = new Vector2(0.2694f, 0.6859f),box = new Vector4(0.20f, 0.25f, 0.80f, 0.90f),   fit = new Vector4(0.07f, 0.10f, 0.92f, 0.90f) },
         // the choux plate (20 November 2026, KitchenFlow), made by this file: on the table at a free place (FirstCheck); this foot, the opening under the counter, is the fallback
-        new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.04f, 0.20f, 0.96f, 0.98f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.98f), size = new Vector2(205f, 149f) },   // the baking tray, squarer, choux 2 x 2, with the fruit board's hard shadow (464 x 338; owner, 20-21 November 2026)
+        new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.02f, 0.02f, 0.97f, 0.95f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.98f), size = new Vector2(205f, 149f), flat = true },   // the baking tray, squarer, choux 2 x 2, with the fruit board's hard shadow (464 x 338; owner, 20-21 November 2026). It lies flat: its whole body is its footprint and must be on the counter's top (owner, 21 November: "the footage of tray is its whole body, i see the top of tray is out side of table top")
         // the mixer set on its stand (20 November 2026), made by this file when choux or cake is on the menu; it takes the whisk's place then.
         // Its box is its foot. On the table at a free place (FirstCheck); this foot, the opening under the counter's right place, is the fallback
         new Def { name = "mixer", foot = new Vector2(0.40f, 0.2906f), box = new Vector4(0.02f, 0.72f, 0.98f, 0.99f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.99f), size = new Vector2(229f, 188f) },   // 21 November 2026: the lean handheld mixer with the kitchen's own whisk as its blade (686 x 563, compose_lean.py): at rest it stands beside the bowl, leaning; running it is over the bowl; bowl rim 106 units as before
@@ -244,6 +245,7 @@ public static class KitchenArrange
     {
         if (foot.y < TableLow - 0.004f || foot.y > TableHigh + 0.004f) return false;
         var b = Part(p, foot, p.def.box);
+        if (p.def.flat && b.yMax > TableHigh * AreaSize.y + 2f) return false;   // a flat thing's far edge stays on the counter too
         return b.xMin >= -2f && b.xMax <= AreaSize.x + 2f;
     }
 
@@ -310,6 +312,8 @@ public static class KitchenArrange
     private static readonly List<string> needSpot = new List<string>();
     private static readonly float[] MiddleFirst = { 0.5f, 0.4f, 0.6f, 0.3f, 0.7f, 0.2f, 0.8f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.15f, 0.85f };
     private static readonly float[] LeftFirst = { 0.11f, 0.14f, 0.18f, 0.22f, 0.26f, 0.3f, 0.35f, 0.4f, 0.45f, 0.5f, 0.55f, 0.6f, 0.7f, 0.8f };   // the mixer: where the whisk lay, at the table's left end
+    // a flat piece needs its whole body on the counter, so the few places that fit are narrow: every hundredth, the middle first
+    private static readonly float[] FineMiddleFirst = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.OrderBy(System.Linq.Enumerable.Select(System.Linq.Enumerable.Range(8, 85), i => i / 100f), x => Mathf.Abs(x - 0.5f)));
     private static bool DessertOnMenu() { var sm = SessionManager.Instance; return sm != null && (sm.IsFoodItemActive("Choux") || sm.IsFoodItemActive("Cake")); }
 
     /// A free place on the kitchen table for a piece: its box on the table's top and on no other table piece's box,
@@ -318,7 +322,7 @@ public static class KitchenArrange
     {
         foot = p.def.foot; if (AreaSize.x <= 0f) return false;
         for (var y = TableLow + 0.004f; y <= TableHigh; y += 0.01f)
-            foreach (var x in p.def.name == "mixer" ? LeftFirst : MiddleFirst)
+            foreach (var x in p.def.name == "mixer" ? LeftFirst : p.def.flat ? FineMiddleFirst : MiddleFirst)
             {
                 var f = new Vector2(x, y); if (!OnTable(p, f)) continue;
                 var r = Part(p, f, p.def.box); var free = true;
