@@ -54,7 +54,7 @@ public static class KitchenArrange
         new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.02f, 0.02f, 0.97f, 0.95f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.98f), size = new Vector2(205f, 149f), flat = true },   // the baking tray, squarer, choux 2 x 2, with the fruit board's hard shadow (464 x 338; owner, 20-21 November 2026). It lies flat: its whole body is its footprint and must be on the counter's top (owner, 21 November: "the footage of tray is its whole body, i see the top of tray is out side of table top")
         // the mixer set on its stand (20 November 2026), made by this file when choux or cake is on the menu; it takes the whisk's place then.
         // Its box is its foot. On the table at a free place (FirstCheck); this foot, the opening under the counter's right place, is the fallback
-        new Def { name = "mixer", foot = new Vector2(0.40f, 0.2906f), box = new Vector4(0.02f, 0.72f, 0.98f, 0.99f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.99f), size = new Vector2(207f, 180f) },   // 21 November 2026: the hand mixer with the owner's own body and the kitchen's whisk as its blade (620 x 539, compose_lean.py): at rest it stands beside the bowl, leaning; running it is over the bowl; bowl rim 106 units as before
+        new Def { name = "mixer", foot = new Vector2(0.40f, 0.2906f), box = new Vector4(0.02f, 0.72f, 0.98f, 0.99f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.99f), size = new Vector2(118f, 166f) },   // 21 November 2026 evening: the hand mixer (owner's body, the kitchen's whisk) resting in its empty bowl, running in the cream, the bowl with the basket's kind of shadow (353 x 499, compose_lean.py); bowl rim 106 units as before
         new Def { name = "juice",    foot = new Vector2(0.1662f, 0.1469f),box = new Vector4(0.15f, 0.30f, 0.85f, 0.98f),   fit = new Vector4(0.13f, 0.07f, 0.87f, 0.98f) },
     };
 
@@ -321,9 +321,13 @@ public static class KitchenArrange
     private static bool FreeTableSpot(Piece p, out Vector2 foot)
     {
         foot = p.def.foot; if (AreaSize.x <= 0f) return false;
-        for (var y = TableLow + 0.004f; y <= TableHigh; y += 0.01f)
-            foreach (var x in p.def.name == "mixer" ? LeftFirst : p.def.flat ? FineMiddleFirst : MiddleFirst)
+        // the mixer keeps to the counter's left end whatever the depth (it was its whisk's place); the rest go front first
+        var spots = new List<Vector2>();
+        if (p.def.name == "mixer") { foreach (var x in LeftFirst) for (var y = TableLow + 0.004f; y <= TableHigh; y += 0.01f) spots.Add(new Vector2(x, y)); }
+        else for (var y = TableLow + 0.004f; y <= TableHigh; y += 0.01f) foreach (var x in p.def.flat ? FineMiddleFirst : MiddleFirst) spots.Add(new Vector2(x, y));
+        foreach (var spot in spots)
             {
+                var x = spot.x; var y = spot.y;
                 var f = new Vector2(x, y); if (!OnTable(p, f)) continue;
                 var r = Part(p, f, p.def.box); var free = true;
                 foreach (var o in pieces)
