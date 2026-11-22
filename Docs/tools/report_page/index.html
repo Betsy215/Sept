@@ -67,14 +67,14 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <body><main>
 
 <h1>Food Truck Cafe</h1>
-<p class="sub">21 November. 2026.11.20 is live on the App Store; test build 2026.11.21 (0) is in TestFlight.</p>
+<p class="sub">21 November. 2026.11.20 is live on the App Store; test build 2026.11.21 (1) is in TestFlight.</p>
 
 <nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#qa"><b>2</b>Q&amp;A</a><a href="#current"><b>3</b>Current</a><a href="#mvp"><b>4</b>MVP</a><a href="#backlog"><b>5</b>Backlog</a><a href="#analysis"><b>6</b>Analysis</a><a href="#marketing"><b>7</b>Marketing</a><a href="visuals.html" class="page">Visuals</a><a href="cchapter.html" class="page">C chapter</a><span id="saved"></span></nav>
 
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 2026.11.21 (0) is in TestFlight</b> with everything of today. <b>Visuals</b> is recaptured from it.</p>
+<p><b>Test build 2026.11.21 (1) was uploaded at 19:16</b> with everything of tonight (kitchen pictures and animations, the sounds, the mixer at rest, basket and blender smaller, the larger mixing set). It shows in TestFlight about ten minutes later.</p>
 <p><b>New in Current:</b> the basket and blender smaller, the mixer at rest (your way, the whisk inside the bowl's wall), your sound picks in, iCloud cleaned up.</p>
 <p><b>Players today</b> are in Analysis, with three ad choices to tick.</p>
 <p><b>Still open:</b> the tray on the counter (Current), the chapter 2 ideas (Q&amp;A).</p>
@@ -86,6 +86,26 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>The Finance page always shows $0 unpaid balance. When will it show one? (21 Nov)</h3>
+<ul>
+<li><b>Not yet, and that is expected so far.</b> The balance is not live: Unity books a month's ad money as an invoice after the month has ended, and only then does it count in the unpaid balance ("updated periodically"). The Invoices tab is still empty today.</li>
+<li><b>Our months so far:</b> October had only its last five days with ads on the store copy (a few cents). November so far is about $1.50 (the reporting page). So the first balance to expect is November's, after 30 November: look in early to mid December.</li>
+<li><b>If it is still $0 by mid-December</b> while the reporting page shows November money, ask Unity's ad support (support-ads.unity.com, Contact us); Unity's own help pages do not say how small amounts are handled, and one forum user saw a $2.40 balance drop to $0 without an answer. I will look in December and tell you.</li>
+<li>The payout itself comes only when the balance reaches $100.</li>
+</ul>
+<ul class="checks"><li><label><input type="checkbox" data-id="qa.finance0.seen"> Seen</label></li></ul>
+</div>
+<div class="q"><h3>Why does Unity Analytics' Revenue page show all zero? Which page shows the daily ad income? (21 Nov)</h3>
+<ul>
+<li><b>Analytics, Revenue</b> only adds up money the game itself reports to Analytics with Unity's own revenue events: a "transaction" event for each purchase and an "adImpression" event, with its value, for each ad. Our game sends only its own events (days, stars, shop, tutorial, ads watched), none of those two, so that page stays at zero. The ad money is real; it just is not on that page.</li>
+<li><b>For the daily ad income:</b> Unity dashboard, <b>Unity Ads Monetization, Unity Ads reporting</b> (left column, under "Current project"). Est. Revenue per day, with Requests, Impressions and eCPM. Days are UTC and the numbers lag about two hours. "Viewing options" sets the range: "Today" gives the hours, "Last 7 days" the days.</li>
+<li><b>Does the zero mean the ads do not count for the payout? No.</b> The payout is worked out from Unity Ads' own count of the ads shown, the same count as on the Unity Ads reporting page (about $0.51 from 88 ads in the week of 14 to 20 Nov). The Analytics pages are a separate tool for looking at players and never feed the payout.</li>
+<li><b>Money paid to you:</b> Unity dashboard, Organization, <b>Finance</b>. Unity pays once the unpaid balance reaches $100, monthly, 60 days after the month ends; the tax hold cleared on 14 Nov.</li>
+<li><b>Purchases</b> (Remove Ads, star packs) are counted by Apple: App Store Connect, Sales and Trends / Payments.</li>
+<li><b>What "each ad's value" means:</b> when an ad plays, Unity Ads only tells the game "it started", "it finished" or "it was skipped". It never tells the game what that one ad earned: Unity works the money out later on its own side (which advertiser won, the country, whether the player tapped) and shows only the totals on its reporting page. Some ad systems (Unity's LevelPlay, Google AdMob) do hand the game an estimate per ad, which could be passed on to Analytics. Ours does not, so Analytics cannot know. Not worth changing: the Unity Ads page has the numbers.</li>
+</ul>
+<ul class="checks"><li><label><input type="checkbox" data-id="qa.adincome.seen"> Seen</label></li></ul>
+</div>
 <div class="q"><h3>Chapter 2 is much harder: ways to tune it (21 Nov)</h3>
 <ul>
 <li><b>The data agrees.</b> The player from Japan got mostly 3 stars in chapter 1; in chapter 2 they got 0 stars on day 13 and needed 2 to 5 tries on each of days 15 to 19. All 11 of their restarts were in chapter 2. Your own test today: one star on day 13 and on day 14. (Today's US player got 3 stars on both, so it can be done, but not by most.)</li>
