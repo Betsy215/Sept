@@ -20,7 +20,8 @@ public static class KitchenFlow
     /// How a finished dessert leaves its plate (owner, 21 November 2026: "remove the flying animation when done, replace
     /// with something else, show me a few different proposals"): 0 = the old flight to the handle; 1 = sparkles, the
     /// dessert fades; 2 = a gold shine passes over it, then it sinks away; 3 = a "Ready!" tag pops above it; 4 = a happy
-    /// hop, then a puff of cream hides it. The owner picks one.
+    /// hop, then a puff of cream hides it. The owner picked 1 for the choux and the cake ("use 1. sparkles for finished
+    /// items, choux/cake"); the others stay here in case.
     public static int DoneStyle = 1;
     /// The gold "next step" glow on the mixer and the board; off for now (owner, 21 November 2026: "remove the next
     /// actional effect on kitchen item for now, the yellow glow").
