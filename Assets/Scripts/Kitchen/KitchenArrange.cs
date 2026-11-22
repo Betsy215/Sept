@@ -30,6 +30,7 @@ public static class KitchenArrange
         public Vector4 box, fit;                      // no-overlap box and visible bounds: x0, y0 (from the top), x1, y1 as shares of the picture
         public Vector2 stretch;                       // the blender is sized as a share of the kitchen picture; zero: the scene's fixed size
         public Vector2 size;                          // fixed size for a piece this file makes (the whisk)
+        public float scale;                           // a scene-sized piece drawn smaller or larger than the scene has it (0 = as is); its boxes are shares, so they follow
         public bool flat;                             // lies flat on the counter: its whole box must be on the counter's top, not only its lower edge
         public float BoxMidX => (box.x + box.z) * 0.5f;
     }
@@ -44,17 +45,17 @@ public static class KitchenArrange
     // further right and lower than it did, the baskets about 35 px further right; nothing else differs.
     private static readonly Def[] Defs =
     {
-        new Def { name = "Blender",  foot = new Vector2(0.145f, 0.5035f), box = new Vector4(0.09f, 0.06f, 0.98f, 0.98f),   fit = new Vector4(0.09f, 0.06f, 0.98f, 0.98f), stretch = new Vector2(0.2157f, 0.1485f) },
+        new Def { name = "Blender",  foot = new Vector2(0.145f, 0.5035f), box = new Vector4(0.09f, 0.06f, 0.98f, 0.98f),   fit = new Vector4(0.09f, 0.06f, 0.98f, 0.98f), stretch = new Vector2(0.2157f * 0.88f, 0.1485f * 0.88f) },   // 0.88: "resize blender to be slightly smaller" (owner, 21 November 2026); its glow and parts are shares of it
         new Def { name = "cutboard", foot = new Vector2(0.385f, 0.428f),  box = new Vector4(0.02f, 0.01f, 0.98f, 0.98f),   fit = new Vector4(0.02f, 0.01f, 0.98f, 0.98f) },
         new Def { name = "whisk",    foot = new Vector2(0.0505f, 0.437f), box = new Vector4(0.20f, 0.20f, 0.80f, 0.95f),   fit = new Vector4(0.04f, 0.03f, 0.96f, 0.95f), size = new Vector2(98f, 128f) },
-        new Def { name = "basket",   foot = new Vector2(0.56f, 0.5177f),  box = new Vector4(0.20f, 0.25f, 0.80f, 0.95f),   fit = new Vector4(0.01f, 0.03f, 0.98f, 0.95f) },
+        new Def { name = "basket",   foot = new Vector2(0.56f, 0.5177f),  box = new Vector4(0.20f, 0.25f, 0.80f, 0.95f),   fit = new Vector4(0.01f, 0.03f, 0.98f, 0.95f), scale = 0.88f },   // "resize the basket to be slightly smaller" (owner, 21 November 2026)
         new Def { name = "cake",     foot = new Vector2(0.8078f, 0.451f), box = new Vector4(0.21f, 0.03f, 0.875f, 0.775f), fit = new Vector4(0.01f, 0.03f, 0.99f, 0.98f) },
         new Def { name = "coffee",   foot = new Vector2(0.2694f, 0.6859f),box = new Vector4(0.20f, 0.25f, 0.80f, 0.90f),   fit = new Vector4(0.07f, 0.10f, 0.92f, 0.90f) },
         // the choux plate (20 November 2026, KitchenFlow), made by this file: on the table at a free place (FirstCheck); this foot, the opening under the counter, is the fallback
         new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.02f, 0.02f, 0.97f, 0.95f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.98f), size = new Vector2(205f, 149f), flat = true },   // the baking tray, squarer, choux 2 x 2, with the fruit board's hard shadow (464 x 338; owner, 20-21 November 2026). It lies flat: its whole body is its footprint and must be on the counter's top (owner, 21 November: "the footage of tray is its whole body, i see the top of tray is out side of table top")
         // the mixer set on its stand (20 November 2026), made by this file when choux or cake is on the menu; it takes the whisk's place then.
         // Its box is its foot. On the table at a free place (FirstCheck); this foot, the opening under the counter's right place, is the fallback
-        new Def { name = "mixer", foot = new Vector2(0.40f, 0.2906f), box = new Vector4(0.02f, 0.72f, 0.98f, 0.99f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.99f), size = new Vector2(125f, 180f) },   // 21 November 2026 evening: the hand mixer (owner's body, the kitchen's whisk) resting in its empty bowl, running in the cream, the bowl with the basket's kind of shadow (353 x 499, compose_lean.py); bowl rim 106 units as before
+        new Def { name = "mixer", foot = new Vector2(0.40f, 0.2906f), box = new Vector4(0.02f, 0.72f, 0.98f, 0.99f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.99f), size = new Vector2(123f, 180f) },   // 21 November 2026 evening: the hand mixer (owner's body, the kitchen's whisk) resting in its empty bowl, running in the cream, the bowl with the basket's kind of shadow (353 x 499, compose_lean.py); bowl rim 106 units as before
         new Def { name = "juice",    foot = new Vector2(0.1662f, 0.1469f),box = new Vector4(0.15f, 0.30f, 0.85f, 0.98f),   fit = new Vector4(0.13f, 0.07f, 0.87f, 0.98f) },
     };
 
@@ -166,7 +167,7 @@ public static class KitchenArrange
                 if (rt == null) continue;
                 var size = rt.sizeDelta;                 // the scene's size (kept); the blender's comes from its share of the picture
                 rt.SetParent(area, false);
-                if (d.stretch == Vector2.zero) rt.sizeDelta = size;
+                if (d.stretch == Vector2.zero) rt.sizeDelta = size * (d.scale > 0f ? d.scale : 1f);
             }
             rt.pivot = new Vector2(0.5f, 0.5f); rt.localRotation = Quaternion.identity; rt.localScale = Vector3.one;
             var piece = new Piece { def = d, rt = rt, image = rt.GetComponent<Image>() };
