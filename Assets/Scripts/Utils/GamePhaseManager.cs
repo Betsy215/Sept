@@ -206,8 +206,11 @@ public class GamePhaseManager : MonoBehaviour
         }
     }
 
-    private Vector3 hintCardHome, hintTextHome; private bool hintHomeKept;
-    private const float KitchenHintFromTop = 0.653f;   // the middle of the big opening under the counter (KitchenArrange's cabinet 2)
+    private Vector3 hintCardHome, hintTextHome, hintCardScale = Vector3.one, hintTextScale = Vector3.one; private bool hintHomeKept;
+    // On the kitchen floor, between the lower cabinets and the Ready button on the rug (owner, 21 November 2026: "drag to
+    // arrangement your kitchen banner is in the way ... position it on the kitchen floor"); it was over the big
+    // opening under the counter (0.653), where things are dragged into the cabinets. A little smaller there.
+    private const float KitchenHintFromTop = 0.86f, KitchenHintScale = 0.75f;
 
     /// The card and its words at their own place on the table; in the kitchen lower, over the opening under the
     /// counter, so the coffee bags' shelf and the kitchen table stay clear (owner, 19 November 2026).
@@ -215,13 +218,15 @@ public class GamePhaseManager : MonoBehaviour
     {
         var words = tutorialText != null ? tutorialText.rectTransform : null;
         if (card == null) return;
-        if (!hintHomeKept) { hintCardHome = card.localPosition; if (words != null) hintTextHome = words.localPosition; hintHomeKept = true; }
+        if (!hintHomeKept) { hintCardHome = card.localPosition; hintCardScale = card.localScale; if (words != null) { hintTextHome = words.localPosition; hintTextScale = words.localScale; } hintHomeKept = true; }
         card.localPosition = hintCardHome; if (words != null) words.localPosition = hintTextHome;
+        card.localScale = hintCardScale; if (words != null) words.localScale = hintTextScale;
         var canvas = arrangmentUI != null ? arrangmentUI.transform as RectTransform : null;
         if (!inKitchen || canvas == null) return;
         var want = canvas.TransformPoint(new Vector3(0f, canvas.rect.yMax - KitchenHintFromTop * canvas.rect.height, 0f)).y;
         var move = new Vector3(0f, want - card.position.y, 0f);
         card.position += move; if (words != null) words.position += move;
+        card.localScale = hintCardScale * KitchenHintScale; if (words != null) words.localScale = hintTextScale * KitchenHintScale;
     }
 
     /// The kitchen opened or closed while arranging (KitchenArrangeRunner): the Ready button goes down onto the
@@ -239,7 +244,7 @@ public class GamePhaseManager : MonoBehaviour
             {
                 // on the rug: its own height (the button is drawn at scale 2) and the phone's home-bar strip above the bottom edge
                 var safeBottom = Screen.height > 0 ? Screen.safeArea.yMin / Screen.height * canvas.rect.height : 0f;
-                rt.anchoredPosition = new Vector2(0f, -canvas.rect.height / 2f + safeBottom + rt.rect.height * Mathf.Abs(rt.localScale.y) / 2f + 60f);
+                rt.anchoredPosition = new Vector2(0f, -canvas.rect.height / 2f + safeBottom + rt.rect.height * Mathf.Abs(rt.localScale.y) / 2f + 24f);   // 24 (was 60): room for the hint above it on the floor
             }
             else rt.anchoredPosition = doneButtonHome;
         }

@@ -38,7 +38,14 @@ public class ShopManager : MonoBehaviour
     private void Start()
     {
         if (playerScoreText != null)
+        {
+            // the EARNED line in the Daily Treats title's letters: beachday, plain (no rim), dark brown (owner, 21 November
+            // 2026: "change the fonts to use the same color and style of 'daily treat' in daily treat panel")
+            var font = Resources.Load<TMPro.TMP_FontAsset>("Fonts & Materials/beachday SDF"); if (font != null) playerScoreText.font = font;
+            var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) playerScoreText.fontSharedMaterial = plain;
+            playerScoreText.color = new Color(0.36f, 0.20f, 0.10f);
             playerScoreOriginalColor = playerScoreText.color;
+        }
 
         ShopCookies.Reset();
         SetupButtonListeners();

@@ -87,6 +87,24 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>Does buying the Chef unlock the chef in the star tab? (21 Nov)</h3>
+<ul>
+<li><b>No.</b> The star tab's chef card is locked for everyone and says "Coming soon", whatever is bought, as you asked on 20 November ("lock him for now, we won't unlock for now until later release"). The dining table card is the same.</li>
+<li>Only the star Yoga works that way today: buying the Yoga lady as a customer unlocks her star card (and the tab shows NEW).</li>
+<li>If you want the chef to open like the Yoga lady (buy him as a customer first), tick below; it is a small change.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.chef.likeyoga"> Yes: unlock the star chef once the Chef is bought</label></li>
+<li><label><input type="checkbox" data-id="qa.chef.keep"> Keep him locked for now</label></li>
+</ul>
+</div>
+<div class="q"><h3>Which days show the "Drag to arrange your kitchen" banner? (21 Nov)</h3>
+<ul>
+<li>Only on <b>day 2</b> of a new game: the first day the player arranges (day 1 comes arranged, and every later day has no banner). It shows on the table, and in the kitchen when the player opens it while arranging.</li>
+<li>Moved onto the kitchen floor, see Current.</li>
+</ul>
+<ul class="checks"><li><label><input type="checkbox" data-id="qa.kbanner.seen"> Seen</label></li></ul>
+</div>
 <div class="q"><h3>The Finance page always shows $0 unpaid balance. When will it show one? (21 Nov)</h3>
 <ul>
 <li><b>Not yet, and that is expected so far.</b> The balance is not live: Unity books a month's ad money as an invoice after the month has ended, and only then does it count in the unpaid balance ("updated periodically"). The Invoices tab is still empty today.</li>
@@ -161,6 +179,27 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
 <p class="sub" style="margin:0 0 8px">Made 21 November. The tray on the counter is in test build 2026.11.21 (0); your new pictures and the animations are not in a build yet.</p>
+<div class="card">
+<p style="margin-top:0"><b>Small fixes of 21 November.</b> <small>Checked in the game; not in a test build yet.</small></p>
+<figure><img src="fix_banner_handle.jpg" alt="Kitchen while arranging, before and now: the banner Drag to arrange your kitchen was over the big opening under the counter, now it lies on the kitchen floor just above the Ready button. Table, before and now: the pull handle at the left edge is a little bigger"><figcaption>Kitchen and table on day 2: the kitchen banner on the floor; the pull handle a little bigger.</figcaption></figure>
+<ul>
+<li><b>Pull handle</b> (table and kitchen): 12 % bigger, knob, stick and the area that takes the tap.</li>
+<li><b>"Drag to arrange your kitchen":</b> now on the kitchen floor, above the Ready button and a little smaller, clear of the counter and the openings things are dragged into. (It shows only on day 2, see Q&amp;A.)</li>
+</ul>
+<figure><img src="fix_earned.jpg" alt="The shop's top line, before and now: EARNED in white rimmed letters before, now in the dark brown plain letters of the Daily Treats title"><figcaption>Shop: the EARNED line, before and now.</figcaption></figure>
+<ul><li><b>EARNED line</b> in the shop: the same letters and dark brown as the "DAILY TREATS" title.</li></ul>
+<figure><img src="fix_blender_tut.jpg" alt="Chapter 2 tutorial in the kitchen: the hand cookie points at the blender with the banner Tap the blender to refill the ice cream; after the tap the blender runs, pink, and the banner says The blender refills the ice cream when it runs low"><figcaption>Chapter 2 tutorial, kitchen: the hand on the blender, then the blend after the tap.</figcaption></figure>
+<ul><li><b>Blender in the chapter 2 tutorial</b> is now a step to do: the hand points at it, the tutorial waits for the tap, then the blender runs (sound, colours) and the wells fill; then back to the table.</li></ul>
+<figure><img src="fix_wells.jpg" alt="The ice cream station's four wells at three fill levels, before and now: before the lower heaps ran over the wells' left walls and front lips, now each heap sits inside its well"><figcaption>Table, chapter 2: the wells at 3, 2 and 1 scoops, before and now.</figcaption></figure>
+<ul><li><b>Ice cream in the wells:</b> the lower heaps ran over the wells' walls and front lips (each well's inside sits a little right of the picture's middle). Every level is now a little narrower and set into its well.</li></ul>
+<figure><img src="fix_mixer_dip.jpg" alt="The mixer running in the kitchen, its whisk deeper in the bowl of cream"><figcaption>Kitchen: the mixer running, whisk deeper in the cream.</figcaption></figure>
+<ul><li><b>Mixer:</b> while it runs it sits lower, the whisk deeper in the cream.</li></ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.fix21b.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.fix21b.change"> Changes (I will say what)</label></li>
+</ul>
+</div>
+
 <div class="card">
 <p style="margin-top:0"><b>Basket and blender a little smaller.</b></p>
 <figure><img src="basket_blender.jpg" alt="Two rows of before and now. Chapter 1 kitchen: the stacked baskets on the counter are a little smaller now. Chapter 2 kitchen: the blender at the left and the baskets are a little smaller now"><figcaption>Kitchen, chapter 1 and chapter 2: before and now.</figcaption></figure>

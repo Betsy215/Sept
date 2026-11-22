@@ -28,10 +28,13 @@ public class PullHandle : MonoBehaviour, IPointerDownHandler, IBeginDragHandler,
     // half the size, make the stick half the lenth too". The knob is the vanilla donut with red drizzle.
     // Their tick on that the same afternoon: "A little bigger": 65 became 80, the stick thicker with it. Then, after
     // build 33: "make the handles slightly larger": 80 became 92. After build 34: "make the handle bigger": 112.
-    private const float Knob = 112f, FromEdge = 101f;                    // the knob's size, and its middle from the screen's edge (45 of stick show)
-    private const float TapWide = 170f, TapHigh = 130f;                // the area that takes the tap: bigger than the small knob, out to the edge
+    // 21 November 2026: "make the pulling handle in both kitchen and game scene slightly bigger": everything x1.12
+    // (knob 112 -> 125, the stick and the tap area with it, the knob's middle a little further in so as much stick shows).
+    private const float Grow = 1.12f;
+    private const float Knob = 112f * Grow, FromEdge = 101f * 1.06f;    // the knob's size, and its middle from the screen's edge
+    private const float TapWide = 170f * Grow, TapHigh = 130f * Grow;  // the area that takes the tap: bigger than the small knob, out to the edge
     public const float TableHenAnchor = 262f;                          // where the truck button's right edge was: the hen keeps its place by it (MoneyFlipClock)
-    private const float StickHigh = 40f, StickLong = 152f, StickEndsBeforeMiddle = 32f;   // it ends under the ring, not in the donut's hole
+    private const float StickHigh = 40f * Grow, StickLong = 152f * Grow, StickEndsBeforeMiddle = 32f * Grow;   // it ends under the ring, not in the donut's hole
     private const float PullOut = 46f, PullSeconds = 0.07f, SpringSeconds = 0.36f, SpringFade = 8f, SpringTurns = 4.2f;
     // The kitchen moves once the handle has sprung back and swung out once more: loading the kitchen stops the
     // picture for a moment and then covers the table, so a bounce that ran alongside it was never seen (measured in

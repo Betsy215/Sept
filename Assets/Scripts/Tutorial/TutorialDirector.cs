@@ -92,11 +92,28 @@ public class TutorialDirector : MonoBehaviour
             KitchenSceneManager.Instance.OpenKitchen();
             yield return new WaitUntil(() => SceneManager.GetSceneByName("KitchenScene").isLoaded);
             yield return new WaitForSeconds(0.8f);
+            // the blender is a step to do too, not only to look at (owner, 21 November 2026: "put a hand there too and wait
+            // for player to click on blender, play the blender animation after they click, ... a interactive tutorial")
             var blender = FindInScene("KitchenScene", "Blender");
-            Say("The blender refills the ice cream when it runs low");
-            if (blender != null) yield return PointAtRect(blender.GetComponent<RectTransform>());
-            yield return new WaitForSeconds(4.5f);                                // about half the bake
-            HideHand();
+            var anim = blender != null ? blender.GetComponent<BlenderAnim>() : null;
+            if (blender != null && anim != null)
+            {
+                var brt = blender.GetComponent<RectTransform>();
+                Say("Tap the blender to refill the ice cream");
+                yield return PointAtRect(brt);
+                yield return WaitForTapOnRect(brt);
+                HideHand();
+                anim.Blend();                                                       // its whirr, the colours, and the wells full again
+                Say("The blender refills the ice cream when it runs low");
+                yield return new WaitForSeconds(0.3f);
+                while (anim != null && anim.IsBlending) yield return null;
+                yield return new WaitForSeconds(0.6f);
+            }
+            else
+            {
+                Say("The blender refills the ice cream when it runs low");
+                yield return new WaitForSeconds(3f);
+            }
             KitchenSceneManager.Instance.CloseKitchen();
             captionBox.gameObject.SetActive(false);                                 // no banner back at the table (owner, 26 October: "remove back to the table banner")
             yield return new WaitForSeconds(0.6f);

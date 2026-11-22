@@ -363,7 +363,7 @@ public class KitchenFlowTap : MonoBehaviour, IPointerClickHandler
     private float t;                       // seconds of work, kitchen clock
 
     // the running mixer's layers, as shares of the picture (compose_lean.py prints them): turning points
-    private static readonly Vector2 WhiskAxis = new Vector2(0.4307f, 0.85f), BowlFoot = new Vector2(0.4321f, 0.0389f), WhiskTip = new Vector2(0.4307f, 0.418f);   // 21 Nov evening: the whisk in the cream, the bowl with its shadow   // with the owner's body (21 Nov)
+    private static readonly Vector2 WhiskAxis = new Vector2(0.4307f, 0.845f), BowlFoot = new Vector2(0.4321f, 0.0405f), WhiskTip = new Vector2(0.4307f, 0.434f);   // 21 Nov evening: the whisk in the cream, the bowl with its shadow   // with the owner's body (21 Nov)
     private RectTransform bowl, whisk, front, body; private Image own; private Color ownColour;   // front: the cream and the bowl's front wall, over the whisk
     private RectTransform knife; private float lastChop = -1f;
     private static Sprite dot;
