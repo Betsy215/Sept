@@ -54,7 +54,7 @@ public static class KitchenArrange
         new Def { name = "chouxplate", foot = new Vector2(0.2861f, 0.2906f), box = new Vector4(0.02f, 0.02f, 0.97f, 0.95f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.98f), size = new Vector2(205f, 149f), flat = true },   // the baking tray, squarer, choux 2 x 2, with the fruit board's hard shadow (464 x 338; owner, 20-21 November 2026). It lies flat: its whole body is its footprint and must be on the counter's top (owner, 21 November: "the footage of tray is its whole body, i see the top of tray is out side of table top")
         // the mixer set on its stand (20 November 2026), made by this file when choux or cake is on the menu; it takes the whisk's place then.
         // Its box is its foot. On the table at a free place (FirstCheck); this foot, the opening under the counter's right place, is the fallback
-        new Def { name = "mixer", foot = new Vector2(0.40f, 0.2906f), box = new Vector4(0.02f, 0.72f, 0.98f, 0.99f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.99f), size = new Vector2(229f, 188f) },   // 21 November 2026: the lean handheld mixer with the kitchen's own whisk as its blade (686 x 563, compose_lean.py): at rest it stands beside the bowl, leaning; running it is over the bowl; bowl rim 106 units as before
+        new Def { name = "mixer", foot = new Vector2(0.40f, 0.2906f), box = new Vector4(0.02f, 0.72f, 0.98f, 0.99f), fit = new Vector4(0.02f, 0.02f, 0.98f, 0.99f), size = new Vector2(207f, 180f) },   // 21 November 2026: the hand mixer with the owner's own body and the kitchen's whisk as its blade (620 x 539, compose_lean.py): at rest it stands beside the bowl, leaning; running it is over the bowl; bowl rim 106 units as before
         new Def { name = "juice",    foot = new Vector2(0.1662f, 0.1469f),box = new Vector4(0.15f, 0.30f, 0.85f, 0.98f),   fit = new Vector4(0.13f, 0.07f, 0.87f, 0.98f) },
     };
 
@@ -128,7 +128,7 @@ public static class KitchenArrange
             var kept = SessionManager.Instance != null ? SessionManager.Instance.GetKitchenPlaces() : null;
             foreach (var d in Defs) working[d.name] = kept != null && kept.TryGetValue(d.name, out var p) ? p : d.foot;
             needSpot.Clear();   // never placed by the player: they start on the table
-            foreach (var n in new[] { "mixer", "chouxplate" }) if (kept == null || !kept.ContainsKey(n)) needSpot.Add(n);
+            foreach (var n in new[] { "chouxplate", "mixer" }) if (kept == null || !kept.ContainsKey(n)) needSpot.Add(n);   // the flat tray first: it needs the most room on the counter
             fresh = true;
         }
 
