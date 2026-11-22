@@ -69,7 +69,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h1>Food Truck Cafe</h1>
 <p class="sub">The Christmas chapter: its own page, kept apart from the report (clearing the report leaves it as it is).</p>
 
-<nav class="toc" aria-label="Pages"><a href="index.html" class="page">Report</a><a href="visuals.html" class="page">Visuals</a><a href="cchapter.html" class="page">C chapter</a></nav>
+<nav class="toc" aria-label="Pages"><a href="index.html" class="page">Report</a><a href="visuals.html" class="page">Visuals</a><a href="cchapter.html" class="page">C chapter</a><span id="saved"></span></nav>
 
 <h2 id="cchapter">C chapter</h2>
 <p class="sub" style="margin:0 0 8px">The Christmas chapter. Your ideas, kept here as the plan grows.</p>
@@ -83,5 +83,41 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 <p style="margin:6px 0">From your plan of 15 November: out by mid-December, behind the chapter switch until then.</p>
 </div>
+
+<div class="card">
+<p style="margin-top:0"><b>Scene drafts by Gemini, 21 November.</b> <small>Painted from our chapter 1 and chapter 2 screens, same layout and look; drafts for the feel only, not game pictures yet.</small></p>
+<figure><img src="visuals/cchapter_scenes.jpg" alt="Three drafts of a winter game screen. 1: a snowy park with snowy pine trees, a lamp post with a wreath and fairy lights, a girl in a dark coat, knitted hat and scarf, and a small girl looking up; pink and white checked tablecloth with a cookie jar, gingerbread, hot chocolate, tea, a latte, a coffee machine. 2: a snowy village street at dusk with glowing windows and wreaths, a girl in a red puffer coat with earmuffs and a scarf; the same pink checked cloth with cookies, a teapot and hot drinks. 3: a snowy pine forest by a frozen lake in a pink morning, a log cabin with smoke, an older man in a knitted sweater, coat and bobble hat; a pink cloth with white dots, a cookie jar, snowflake and mitten cookies, hot chocolate, tea, apple cider with cinnamon, honey milk"><figcaption>1. Snowy park. 2. Village street at dusk. 3. Forest cabin by a frozen lake, morning.</figcaption></figure>
+<ul>
+<li>All three keep pink and white on the table (checks in 1 and 2; Gemini did not do the stripes I asked for in 2; white dots in 3) and snow everywhere, with only a little Christmas (a wreath, a few lights, a garland).</li>
+<li>Customers in winter clothes: coats, scarves, knitted hats, earmuffs.</li>
+<li>Foods and drinks drawn: cookie jars, gingerbread, snowflake and mitten cookies, hot chocolate with marshmallows, tea with lemon, latte, apple cider, honey milk.</li>
+<li>Next, once you pick a direction: the background on its own at our size, then the tablecloth, then each new food and drink as its own picture in our kitchen style.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cc.scene21.1"> 1. Snowy park</label></li>
+<li><label><input type="checkbox" data-id="cc.scene21.2"> 2. Village street at dusk</label></li>
+<li><label><input type="checkbox" data-id="cc.scene21.3"> 3. Forest cabin, morning</label></li>
+<li><label><input type="checkbox" data-id="cc.scene21.mix"> A mix (I will say which parts)</label></li>
+<li><label><input type="checkbox" data-id="cc.scene21.more"> More drafts</label></li>
+</ul>
+</div>
 </main>
+<script>
+(async()=>{
+  const boxes=[...document.querySelectorAll('input[type=checkbox][data-id]')];
+  const saved=document.getElementById('saved');
+  const db=await claude.use("db");
+  if(!db){ saved.textContent='ticks not saved: signed out'; return; }
+  const ref=db.doc("ticks/state");
+  let state={};
+  try{ const snap=await ref.get(); const d=snap&&typeof snap.data==='function'?snap.data():snap; if(d&&typeof d==='object'&&d.exists!==false) state=Object.assign({},d); }catch(e){}
+  for(const b of boxes) b.checked=state[b.dataset.id]===true;
+  let busy=false, dirty=false;
+  async function flush(){ if(busy){ dirty=true; return; } busy=true; dirty=false;
+    try{ await ref.set(state); saved.textContent='ticks saved '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+    catch(e){ saved.textContent='tick not saved'; }
+    busy=false; if(dirty) flush(); }
+  for(const b of boxes) b.addEventListener('change',()=>{ state[b.dataset.id]=b.checked; state[b.dataset.id+'@']=new Date().toISOString(); flush(); });
+})();
+</script>
 </body></html>
