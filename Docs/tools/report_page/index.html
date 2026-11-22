@@ -74,46 +74,17 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 2026.11.21 (0) is in TestFlight</b> (uploaded 16:18, ready by 16:30). It holds everything of today. <b>Visuals</b> is recaptured from it.</p>
-<p><b>Look at</b> the tray on the counter and chapter 2's first-day orders (Current).</p>
-<p><b>Still open:</b> the chapter 2 ideas (Q&amp;A).</p>
+<p><b>Test build 2026.11.21 (0) is in TestFlight</b> with everything of today. <b>Visuals</b> is recaptured from it.</p>
+<p><b>Players today</b> are in Analysis, with three ad choices to tick.</p>
+<p><b>Still open:</b> the tray on the counter (Current), the chapter 2 ideas (Q&amp;A).</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>Approved today and in the build: thinking dots, lean mixer, hand pointer, gift card, tray shadow, kitchen without pauses, faster blender.</p>
-<p><b>Tomorrow (22 Nov):</b> Apple's sales for 21 Nov (a Remove Ads sale?), and whether today's US player came back.</p>
+<p>Seen your ticks: chapter 2's first day, the hand pointer and the dots approved; the US player is a real player.</p>
+<p><b>Tomorrow (22 Nov):</b> Apple's numbers for 21 Nov (downloads, any Remove Ads sale).</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>No between-days ads: was that player me, since TestFlight does not ask for ads? (21 Nov)</h3>
-<ul>
-<li><b>No, I am fairly sure it was not you.</b> The game makes one check, "TestFlight or App Store copy?", and uses it for both things: a TestFlight copy skips the ads <i>and</i> sends its data to the test set. That play arrived in the App Store set, so the game on that phone was the App Store copy, where ads are not skipped.</li>
-<li><b>Your own play is recorded separately</b> in the test set: your iPhone, today 12:09 to 12:16, days 13 and 14, one star each.</li>
-<li><b>The other play</b> was a brand-new game: the tutorial from its first step, then days 1 to 14 in order, 3 stars on every one, 11:29 to 12:01. It ended 8 minutes before yours began.</li>
-<li><b>The one way it could be you:</b> if you also played a new game from the tutorial to day 14 in that half hour on the App Store copy (another device, or after deleting the game). If you did not, it is a real player.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.wasme.no"> I did not play that; it is a real player</label></li>
-<li><label><input type="checkbox" data-id="qa.wasme.yes"> That was me too</label></li>
-</ul>
-</div>
-<div class="q"><h3>Why was no between-days ad shown to that player? (21 Nov)</h3>
-<ul>
-<li><b>Their phone never asked Unity for an ad.</b> Unity's hourly report shows 0 ad requests in the two hours they played (11:00 to 13:00 our time). Every other player's visit today shows 1 to 4 requests.</li>
-<li><b>It is not Remove Ads:</b> with Remove Ads the game still loads an ad in the background, so a request would show.</li>
-<li><b>Most likely</b> the phone blocks ad servers (an ad blocker, a private DNS or a VPN). The game then simply goes on without ads.</li>
-<li><b>Not a fault of the new release:</b> another player on the same version was shown an ad today.</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.noad.seen"> Seen</label></li></ul>
-</div>
-<div class="q"><h3>Does a skipped between-days ad still count at Unity? (21 Nov)</h3>
-<ul>
-<li><b>Yes.</b> Unity counts an ad as shown the moment it starts. Skipping it, or even closing the game during it, does not take it back.</li>
-<li><b>Income:</b> most ads pay per showing, so a skipped ad usually still earns. Some advertisers pay only when the player taps or installs; those earn nothing when skipped.</li>
-<li><b>Seen in today's numbers:</b> Unity counted 4 ads shown, the game logged none as finished. At least two were players who closed the game during the ad right after day 1.</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.skipcount.seen"> Seen</label></li></ul>
-</div>
 <div class="q"><h3>Chapter 2 is much harder: ways to tune it (21 Nov)</h3>
 <ul>
 <li><b>The data agrees.</b> The player from Japan got mostly 3 stars in chapter 1; in chapter 2 they got 0 stars on day 13 and needed 2 to 5 tries on each of days 15 to 19. All 11 of their restarts were in chapter 2. Your own test today: one star on day 13 and on day 14. (Today's US player got 3 stars on both, so it can be done, but not by most.)</li>
@@ -167,7 +138,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul class="checks"><li><label><input type="checkbox" data-id="qa.ktimes2.seen"> Seen</label></li></ul>
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">Made 21 November; both are in test build 2026.11.21 (0).</p>
+<p class="sub" style="margin:0 0 8px">Made 21 November; in test build 2026.11.21 (0).</p>
 <div class="card">
 <p style="margin-top:0"><b>The baking tray lies fully on the counter top.</b></p>
 <figure><img src="tray_counter.jpg" alt="The kitchen counter twice. The baking tray lies at the front left of the counter, in front of the mixer and left of the fruit board, its whole body on the wooden top: empty on the left, with four baked choux on the right"><figcaption>Kitchen: the tray's new place, empty and with the baked choux.</figcaption></figure>
@@ -179,19 +150,6 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.trayon.good"> Good</label></li>
 <li><label><input type="checkbox" data-id="cur.trayon.change"> Changes (I will say what)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Chapter 2, first day: every ice cream is a waffle bowl with one or two scoops.</b></p>
-<figure><img src="c2_day1.jpg" alt="Two moments of chapter 2's first day: order bubbles with ice creams, each one in a waffle bowl with a single scoop, beside an order of bread and juice"><figcaption>Table, chapter 2's first day: the ice creams ordered, all in waffle bowls.</figcaption></figure>
-<ul>
-<li>Checked on 400 orders: first day 400 of 400 with a waffle bowl, half with one scoop and half with two, none with three.</li>
-<li>From the second day on as before: one to three scoops, half of them in a waffle bowl.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.c2day1.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.c2day1.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
@@ -217,27 +175,21 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="analysis"><span class="n">6</span>Analysis</h2>
 <div class="card">
-<p style="margin-top:0"><b>Players, 19 to 21 November</b> (since the last read; times UTC).</p>
+<p style="margin-top:0"><b>Players today, 21 November</b> (our time, read at 16:45).</p>
 <ul>
-<li><b>11 new players</b> (Philippines 3, Indonesia 2, Germany 2, US 2, Malaysia, UK). Opened 11, started the tutorial 10, finished it 7, finished day 1: 6, day 2: 3, day 3 or later: 2.</li>
-<li><b>Today's best player</b> (US, played today 21 Nov, 11:29 to 12:01 our time, on game version 2026.11.20 from the App Store): days 1 to 14 in one sitting, 3 stars on every day, 24 purchases, chapter 2 opened and its tutorial done. No ad was shown in 14 day ends: their phone never asked Unity for one (see Q&amp;A).</li>
-<li><b>Day 1 now gives one star to most new players.</b> Since the star rule changed (stars by customers served, live 18 Nov), 4 of 8 first tries at day 1 ended with 1 star; before, everyone got 3. Three of those four quit within two minutes and did not return; the fourth got 0 stars on day 2 and left.</li>
-<li><b>The stars do bring replays:</b> one player (Indonesia) came back three times and replayed day 4 six times until it showed 3 stars; reached day 6, 9 purchases.</li>
-<li><b>Japan's player</b> finished chapter 1 and reached day 20 on 19 Nov; chapter 2 took many tries (see Q&amp;A).</li>
-<li><b>Came back:</b> two players from last week returned after 5 and 8 days; one finished day 1, one closed 30 s into it.</li>
-<li><b>Left in the tutorial:</b> at step 1, step 3 and step 6 (one each); one only opened the game.</li>
-<li><b>Ads:</b> between-days ads 3 watched, 2 skipped; two more players watched a Daily Treats ad before the tutorial. Unity Ads 14 to 20 Nov: $0.51 from 88 ads shown. Today so far: 20 requests, 4 shown, $0.05.</li>
-<li><b>Quitting in the first ad:</b> at least two players today closed the game during the ad right after day 1 and did not return. The game only logs an ad when it ends, so these were invisible until I compared with Unity's hours.</li>
-<li><b>Downloads</b> (Apple, first time), 14 to 20 Nov: 69 (15, 10, 14, 3, 7, 13, 7). Apple's 19th arrived a day late; the page is up to date again.</li>
-<li>Left out: Apple's review run of 2026.11.20.</li>
+<li><b>6 new players</b> (Germany 3, US 2, Bulgaria 1): opened 6, started the tutorial 5, finished it 3, finished day 1: 2, none on day 2 yet. One of them is on an old version (26.11.13) and stopped at step 3; another only opened the game.</li>
+<li><b>Day 1:</b> 3 of the 4 first tries today got 2 stars, one got 3. <b>Two new players closed the game within a minute of finishing day 1</b>, at the moment the first between-days ad plays.</li>
+<li><b>The US player came back</b> at 14:40 and played days 15 to 22 in half an hour, 3 stars on every day (day 18 restarted once). They bought candies 7 times and 8 stars for coins (999 coins each); now on day 22 of 28.</li>
+<li><b>Ads for that player:</b> this time every day end showed one: 8 ads, 1 watched to the end, 7 skipped. So their phone does not block ads; <b>my earlier guess was wrong.</b> In their first visit the game asked Unity for no ad at all. Most likely Unity Ads failed to start when the game was first opened, and the game does not try again until it is opened again. That would cost ads for any player whose first start fails.</li>
+<li><b>Came back after days away:</b> two earlier players (Philippines from 16 Nov, US from 13 Nov) started a new game: one finished day 1 (2 stars), one left during day 1.</li>
+<li><b>Unity Ads today</b> (UTC day 21 Nov): 53 requests, 13 shown, $0.10. 9 of the 13 were in the last two hours, most of them the US player.</li>
+<li><b>Downloads</b> (Apple, first time), 14 to 20 Nov: 69. Today's come tomorrow.</li>
 </ul>
-<p style="margin:8px 0 4px"><b>My suggestion:</b> make 3 stars easy on days 1 and 2 (more patience on those two days), so a first-time player does not start with one star.</p>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="an.nov21.day1"> Yes, make days 1 and 2 gentler</label></li>
-<li><label><input type="checkbox" data-id="an.nov21.leave"> Leave them</label></li>
+<li><label><input type="checkbox" data-id="an.nov21.adretry"> Fix: if ads fail to start, try again during the same visit</label></li>
 <li><label><input type="checkbox" data-id="an.nov21.ad3"> No between-days ad after days 1 and 2 (first one after day 3)</label></li>
 <li><label><input type="checkbox" data-id="an.nov21.adstart"> Log when an ad starts, so quitting in an ad shows in the data</label></li>
-<li><label><input type="checkbox" data-id="an.nov21.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="an.nov21b.seen"> Seen, remove this</label></li>
 </ul>
 </div>
 
