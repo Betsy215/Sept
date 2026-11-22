@@ -1,0 +1,2 @@
+var g = GameObject.Find("FlowerGift"); var os = UnityEngine.Object.FindObjectOfType<OrderSystem>(); var o = os != null ? os.FirstOpenOrder() : null;
+return "card " + (g != null) + " hold " + PatienceMeter.HoldFourth + " flowers " + PatienceMeter.Flowers + " order " + (o != null ? o.displayTime.ToString("0.0") + "/" + o.timer.ToString("0.0") : "none") + " meterFlowers " + GameObject.FindObjectsOfType<SpriteRenderer>().Length;
