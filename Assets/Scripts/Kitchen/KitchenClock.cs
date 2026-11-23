@@ -17,3 +17,20 @@ public static class KitchenClock
     /// Waits the given kitchen seconds (stands still while paused).
     public static IEnumerator Wait(float seconds) { var end = Now + seconds; while (Now < end) yield return null; }
 }
+
+/// The day is over, or it is given up (restart, back to the menu): everything the kitchen was doing stops (owner,
+/// 23 November 2026: "if day ends, then all action should be canceled or terminated in the kitchen etc."). No oven
+/// ding, no mixer or knife sound, no dessert turning up after the day; the next day starts with empty ovens, empty
+/// plates and full trees. Before this the ovens and the dessert steps ran on (they live on objects that outlast the
+/// scene), so their sounds could play over the day-end panel or in the shop.
+public static class KitchenDay
+{
+    public static void End()
+    {
+        KitchenTimerHelper.CancelAll();                    // ovens, regrowing fruit: stopped, their callbacks dropped
+        CooldownRegistry.ClearAll();
+        OvenKitchenBase.Recipes.Clear();
+        AppleInKitchen.Count = AppleInKitchen.Full; CoconutInKitchen.Count = CoconutInKitchen.Full;
+        KitchenFlow.Reset();                               // a dessert at the mixer or the board: dropped
+    }
+}

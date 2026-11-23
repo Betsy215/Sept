@@ -54,6 +54,7 @@ public class MapScreen : MonoBehaviour
         // since chapter 2 opens after day 9 (20 November 2026)
         var on0 = sm0 != null ? Chapter.Of(sm0.GetCurrentLevelIndex()) : 1;
         page = Mathf.Clamp(Mathf.Min(on0, SessionManager.ChaptersOpen) - 1, 0, Chapter.Count - 1);
+        if (sm0 != null && sm0.Chapter2CeremonyDue) page = 0;   // day 9's star still waits: chapter 1's page, whatever day the player is on (23 November 2026)
         Build();
         // today's day card opens by itself once the map is up (owner, 20 November 2026: "Show the day start panel
         // automatically when the level map shows up"); Cancel closes it and the map is there as before
@@ -122,8 +123,9 @@ public class MapScreen : MonoBehaviour
             arrowImage.sprite = Load("arrow_right") ?? arrowImage.sprite; arrowImage.name = "NextChapter"; arrowImage.raycastTarget = true;
             for (var t = 0f; t < 0.35f; t += Time.unscaledDeltaTime) { var k = t / 0.35f; arrowImage.rectTransform.localScale = Vector3.one * (1f + 0.3f * Mathf.Sin(k * Mathf.PI)); yield return null; }
             arrowImage.rectTransform.localScale = Vector3.one;
-            var ab = arrowImage.gameObject.GetComponent<Button>(); if (ab == null) ab = arrowImage.gameObject.AddComponent<Button>();
-            ab.transition = Selectable.Transition.None; ab.onClick.AddListener(() => ShowPage(page + 1));
+            var ab = arrowImage.gameObject.GetComponent<Button>();
+            if (ab == null) { ab = arrowImage.gameObject.AddComponent<Button>(); ab.onClick.AddListener(() => ShowPage(page + 1)); }   // an arrow that was open already (the star taken late) has its listener
+            ab.transition = Selectable.Transition.None;
             NewTag.OnUI(arrowImage.rectTransform); GlowFx.Shine(arrowImage);
         }
         ceremonyRunning = false;
@@ -265,7 +267,7 @@ public class MapScreen : MonoBehaviour
             else if (played && dayStars >= 3) dot.color = new Color(1f, 0.98f, 0.9f);
             Place(dot.rectTransform, pos, new Vector2(size, size));
             if (isToday) { dot.gameObject.AddComponent<MapTodayBounce>(); GlowFx.Shine(dot); }   // today's circle bounces (owner, 13 October) and shines (C, 18 November 2026)
-            var label = NewText("Number", dot.rectTransform, (first + i + 1).ToString(), special ? 62f : isToday ? 38f : 30f,
+            var label = NewText("Number", dot.rectTransform, (i + 1).ToString(),   /* the day inside this chapter: every chapter starts at 1 (23 November 2026) */ special ? 62f : isToday ? 38f : 30f,
                 special ? new Color(0.43f, 0.24f, 0.08f) : isToday ? new Color(1f, 0.98f, 0.92f) : played ? new Color(0.43f, 0.24f, 0.08f) : new Color(0.47f, 0.43f, 0.39f));
             Stretch(label.rectTransform);
             label.rectTransform.offsetMax = new Vector2(0, 4f);
@@ -410,7 +412,7 @@ public class MapScreen : MonoBehaviour
         board.raycastTarget = false;
         var up = paper != null ? 70f : 0f;   // on the square card: the day at 180, the stars at 345, the buttons at 545 of its 740
 
-        var title = NewText("DayTitle", board.rectTransform, "Day " + (day + 1), 110f, paper != null ? new Color(0.36f, 0.20f, 0.10f) : new Color(1f, 0.965f, 0.886f));
+        var title = NewText("DayTitle", board.rectTransform, "Day " + Chapter.DayInChapter(day), 110f, paper != null ? new Color(0.36f, 0.20f, 0.10f) : new Color(1f, 0.965f, 0.886f));
         if (paper == null) { title.outlineWidth = 0.3f; title.outlineColor = new Color32(110, 60, 20, 255); }
         title.rectTransform.anchorMin = title.rectTransform.anchorMax = new Vector2(0.5f, 1f);
         title.rectTransform.anchoredPosition = new Vector2(0f, -250f + up);

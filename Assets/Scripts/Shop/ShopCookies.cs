@@ -475,7 +475,7 @@ public static class ShopCookies
                     var stamp = Child(leaves[k], "DayStamp", new Vector2(0.5f, 0.5f), new Vector2(150f, 150f) * unit, at);
                     var sti = stamp.gameObject.AddComponent<Image>(); sti.sprite = Resources.Load<Sprite>("Journal/day_stamp"); sti.raycastTarget = false; sti.enabled = sti.sprite != null;
                     stamp.localRotation = Quaternion.Euler(0f, 0f, tag.z);
-                    var dl = Label(stamp, "Day", "DAY\n" + day, titleFont, 34f * unit, Vector2.zero, new Vector2(140f, 120f) * unit);
+                    var dl = Label(stamp, "Day", "DAY\n" + Chapter.DayInChapter(day - 1), titleFont,   /* stored as the running day; shown inside its chapter (23 November 2026) */ 34f * unit, Vector2.zero, new Vector2(140f, 120f) * unit);
                     dl.color = red; dl.lineSpacing = -30f;
                 }
             }

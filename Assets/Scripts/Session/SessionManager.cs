@@ -269,7 +269,11 @@ public class SessionManager : MonoBehaviour
     /// Day 9 is finished and its star has not been taken on the map yet: the map plays the little scene that opens
     /// chapter 2 (owner, 20 November 2026: a tap on day 9, "a star show up and flies up (reward player a star ...), and
     /// then the trucks icon drives along the dot line, to the arrow, unlocks chapter 2").
-    public bool Chapter2CeremonyDue => currentSession != null && Chapter.Count >= 2 && !currentSession.chapter2Claimed && ChaptersStarted < 2 && DaysDoneIn(1) >= Chapter2OpensAfterDays;
+    /// Whoever has finished day 9 gets the star, however they got there (owner, 23 November 2026: "we should give player
+    /// who reaches day 9 a star however they reach it"): also a player who played on to day 12 without tapping day 9, and
+    /// a player who was already in chapter 2 before this release. The scene stays due until the star is taken, and the
+    /// map opens on chapter 1 while it is (MapScreen.Start). It was lost once chapter 2 had started (ChaptersStarted < 2).
+    public bool Chapter2CeremonyDue => currentSession != null && Chapter.Count >= 2 && !currentSession.chapter2Claimed && DaysDoneIn(1) >= Chapter2OpensAfterDays;
     /// The star is the player's and chapter 2 is open (saved at once, so leaving mid-scene loses nothing).
     public void ClaimChapter2()
     {

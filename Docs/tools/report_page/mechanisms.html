@@ -69,7 +69,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h1>Food Truck Cafe</h1>
 <p class="sub">Mechanisms: how the game works, in numbers. Kept for good (clearing the report leaves this page as it is).</p>
 
-<nav class="toc" aria-label="Pages"><a href="index.html" class="page">Report</a><a href="visuals.html" class="page">Visuals</a><a href="cchapter.html" class="page">C chapter</a><a href="mechanisms.html" class="page">Mechanisms</a><a href="#prices"><b>1</b>Sale prices</a><a href="#times"><b>2</b>Kitchen times</a></nav>
+<nav class="toc" aria-label="Pages"><a href="index.html" class="page">Report</a><a href="visuals.html" class="page">Visuals</a><a href="cchapter.html" class="page">C chapter</a><a href="mechanisms.html" class="page">Mechanisms</a><a href="#prices"><b>1</b>Sale prices</a><a href="#times"><b>2</b>Kitchen times</a><a href="#days"><b>3</b>Days and chapters</a><a href="#update"><b>4</b>Update card</a></nav>
 
 <h2 id="prices"><span class="n">1</span>Sale prices</h2>
 <div class="card"><p style="margin-top:0"><b>The sale price of each item</b></p>
@@ -98,5 +98,25 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 </div>
 
+<h2 id="days"><span class="n">3</span>Days and chapters</h2>
+<div class="card"><ul>
+<li><b>Chapter 1:</b> 12 days. <b>Chapter 2:</b> 16 days. 28 in all.</li>
+<li><b>Day numbers</b> restart at 1 in every chapter for the player (map, day card, play, day-end card, journal stamps). The save keeps one running number: chapter 2's first day is the 13th. The analytics use the running number.</li>
+<li><b>Chapter 2 opens</b> when day 9 of chapter 1 is finished and its big star on the map is tapped: one extra star, the truck drives to the arrow. The star waits for anyone who has finished day 9 and not taken it; the map opens on chapter 1 while it waits. Days 10 to 12 stay playable.</li>
+<li><b>Chapter 2's first day:</b> a tutorial (waffle machine, blender, ice cream) with the gift of a fourth patience flower; every ice cream that day is a waffle bowl with one or two scoops.</li>
+<li><b>Patience:</b> three flowers in chapter 1, four in chapter 2, each lasting as long (a third more time in chapter 2).</li>
+<li><b>Thinking:</b> a customer thinks 2 s (three dots) before the order shows; nothing can be served meanwhile and patience starts after.</li>
+<li><b>Stars for a day:</b> 3 = every customer served whole, 2 = 90 % (rounded), 1 = more than half.</li>
+<li><b>A day's end, restart or leaving</b> stops the whole kitchen: ovens, mixer and board are cleared, trees are full again.</li>
+<li><b>Map:</b> when a new day has been finished the truck drives along the line to the next day, then the day card opens.</li>
+</ul></div>
+
+<h2 id="update"><span class="n">4</span>Update card</h2>
+<div class="card"><ul>
+<li>Once per start the game asks the App Store which version is out (it sends only our app's number).</li>
+<li>If the store's version is newer than the copy and has been out at least 36 hours, a card with one UPDATE button covers the screen; it opens our store page. No way round it.</li>
+<li>No network or no clear answer: no card. Never over a running day (it waits for the start menu, map or shop).</li>
+<li>In every copy from release 2026.11.23 on; older copies have no check.</li>
+</ul></div>
 </main>
 </body></html>

@@ -38,6 +38,12 @@ public static class Chapter
         return DaysPerChapter.Length;
     }
 
+    /// The day's number inside its own chapter, from 1: what the player sees (owner, 23 November 2026: "we will have more
+    /// chapters, i don't want to keep counting days ... reset this every chapter, so day 1 of chapter 2 shows day 1 in
+    /// day modals. but in our storage, we can store however is the best way"). The save, the stars list and the
+    /// analytics keep the one running day index (chapter 2's first day is index 12); only what is shown restarts.
+    public static int DayInChapter(int dayIndex) => Mathf.Max(0, dayIndex) - FirstDay(Of(dayIndex)) + 1;
+
     /// True when the day index is the last day of its chapter.
     public static bool IsLastDay(int dayIndex) => dayIndex + 1 == FirstDay(Of(dayIndex)) + DaysIn(Of(dayIndex));
 

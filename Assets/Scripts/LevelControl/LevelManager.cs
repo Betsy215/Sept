@@ -348,7 +348,7 @@ public class LevelManager : MonoBehaviour
         if (scoreManager != null) restartPayFactor = scoreManager.payFactor;
 
         // Universal restart method - handles both pause and level complete cases
-        Time.timeScale = 1f; KitchenClock.Resume();
+        Time.timeScale = 1f; KitchenClock.Resume(); KitchenDay.End();   // a restarted day starts with a clean kitchen
         isPaused = false;
 
         // Clear score popup when restarting
@@ -592,7 +592,7 @@ public class LevelManager : MonoBehaviour
     private void UpdateLevelInfoDisplay()
     {
         if (levelInfoText != null && currentLevelData != null)
-            levelInfoText.text = $"Day {currentLevelIndex + 1}";   // the day by its place, like the map (26 October 2026: chapter 2's first day is Day 13; its asset is still named Day 17)
+            levelInfoText.text = $"Day {Chapter.DayInChapter(currentLevelIndex)}";   // counted inside its chapter since 23 November 2026;   // the day by its place, like the map (26 October 2026: chapter 2's first day is Day 13; its asset is still named Day 17)
     }
 
     private void StartLevel()
@@ -671,6 +671,7 @@ public class LevelManager : MonoBehaviour
             finalRunIsNewRecord = SessionManager.Instance.CheckAndSaveHighScore();
 
         isLevelEnding = true;
+        KitchenDay.End();   // the kitchen stops with the day (23 November 2026)
         var totalAfter = SessionManager.Instance.GetTotalScore();
 
         customerManager.enabled = false;
@@ -890,6 +891,7 @@ public class LevelManager : MonoBehaviour
         Debug.Log("🎉 All levels completed! Session finished!");
 
         isLevelEnding = true; // no pause during the 3 s before the popup on this path either
+        KitchenDay.End();
 
         if (SessionManager.Instance != null)
         {
@@ -909,7 +911,7 @@ public class LevelManager : MonoBehaviour
             AudioManager.Instance.StopMusic();
 
         // IMPORTANT: Ensure time is restored and pause state cleared before scene change
-        Time.timeScale = 1f; KitchenClock.Resume();
+        Time.timeScale = 1f; KitchenClock.Resume(); KitchenDay.End();
         isPaused = false;
 
         SceneTransitionManager.Instance.TransitionToScene(mainMenuSceneName);
@@ -993,7 +995,7 @@ public class LevelManager : MonoBehaviour
         var title = go.GetComponent<TextMeshProUGUI>();
         if (totalEarned != null) title.font = totalEarned.font; if (plain != null) title.fontSharedMaterial = plain;
         title.fontSize = 80f; title.color = DayEndInk; title.alignment = TextAlignmentOptions.Center; title.enableWordWrapping = false; title.raycastTarget = false;
-        title.text = "DAY " + (currentLevelIndex + 1) + " DONE!";
+        title.text = "DAY " + Chapter.DayInChapter(currentLevelIndex) + " DONE!";   // the day inside its chapter (23 November 2026)
     }
 
     public IEnumerator AnimateFullTransfer(

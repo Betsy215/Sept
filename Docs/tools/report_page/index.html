@@ -74,22 +74,43 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 2026.11.23 (0) is in TestFlight</b> (ready 09:45).</p>
-<p><b>Your three test notes are done</b> (Current, top): the map truck drives, the thinking dots always show, the apple step in the tutorial waits for a tap.</p>
-<p><b>Before the release, read Current:</b> the scan found four small bugs (fixed) and a list of things for you to decide or test.</p>
-<p><b>None of this is in build (0).</b> Say "build" for 2026.11.23 (1) with all seven changes.</p>
-<p><b>Q&amp;A:</b> Header and Search Results, with pictures of both and drafts for our page.</p>
-<p><b>New tab, Mechanisms:</b> the sale prices and kitchen times live there now, for good.</p>
-<p><b>C chapter tab:</b> your reference picture and three scene drafts by ChatGPT built on it, to pick from.</p>
+<p><b>To review in Current</b> (nothing is in a build; none will be made until you say so):</p>
+<p>1. <b>Four more changes:</b> days count inside each chapter; day 9's star for everyone who finished day 9; the update card; the kitchen stops when the day ends.</p>
+<p>2. <b>Your three test notes:</b> the cookie truck drives on the map; thinking dots on every order; the apple step in the tutorial.</p>
+<p>3. <b>The scan:</b> four small bugs fixed, and a short list for you to decide or test.</p>
+<p><b>Q&amp;A:</b> forcing an update (what is and is not possible), the day numbers, Header and Search Results.</p>
+<p><b>Other tabs:</b> C chapter (your picture, three ChatGPT scenes to pick from); Mechanisms (prices, kitchen times, days and chapters).</p>
 <p><b>Still open:</b> the three ad choices (Analysis).</p>
 </div>
 <div class="who p2"><h3>Me</h3>
+<p>Waiting for your review; then one build, 2026.11.23 (1), with everything.</p>
 <p>The release itself (version, What's New, submission) waits for your yes.</p>
 <p><b>Early December:</b> look at Unity's Finance page for November's balance.</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>Can we force an update for every existing download? (23 Nov)</h3>
+<ul>
+<li><b>Not the copies that are out now.</b> Apple has no switch for it, and a game can only stop itself if it carries the check. Versions up to 2026.11.20 do not, so they keep running until the phone updates them (most phones do that by themselves within a few days).</li>
+<li><b>From this release on, yes.</b> The check is built (Current): every later release will be enforced on every copy from this one up.</li>
+<li><b>Old copies stay safe meanwhile:</b> their saves load in the new version unchanged (scan in Current), and an old copy never sees anything the new one wrote differently.</li>
+<li>If you would rather have a softer card (an Update button and a Later button), say so.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.force23.hard"> Keep it hard: no way round the card</label></li>
+<li><label><input type="checkbox" data-id="qa.force23.soft"> Softer: add "Later"</label></li>
+</ul>
+</div>
+<div class="q"><h3>Days restarting in every chapter: what is the best way? (23 Nov)</h3>
+<ul>
+<li><b>Show it per chapter, store it as one line.</b> What the player sees restarts at 1 in each chapter. Underneath, a day keeps one running number (chapter 2's first day is the 13th), plus a count of finished days per chapter, as today.</li>
+<li><b>Why not change the storage:</b> every existing save, the stars list, replay pay and the analytics already use the running number. Leaving it means no save has to be converted and nothing can be lost; a new chapter is one more number in a list (its length in days).</li>
+<li><b>Done</b> (Current): map, day card, the day's label in play, the day-end card, journal stamps.</li>
+<li><b>One thing to know:</b> the analytics keep the running day, so my player reports will say "chapter 2 day 1 (day 13)".</li>
+</ul>
+<ul class="checks"><li><label><input type="checkbox" data-id="qa.daynum23.seen"> Seen</label></li></ul>
+</div>
 <div class="q"><h3>Header and Search Results: what does a player see with and without them? (23 Nov)</h3>
 <ul>
 <li><b>What they are:</b> two optional pictures (or silent looping videos, 5 to 30 s) Apple added this autumn. Only iPhones and iPads on iOS 27 show them. Each can be added or left empty on its own.</li>
@@ -116,6 +137,28 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <p class="sub" style="margin:0 0 8px">23 November. Test build 2026.11.23 (0) is in TestFlight; nothing below is in it.</p>
+<div class="card">
+<p style="margin-top:0"><b>Four more changes from your notes, 23 November.</b> <small>Checked in the game; no build until you have reviewed.</small></p>
+<figure><img src="daynum.jpg" alt="Chapter 2's map with its days numbered 1 to 16, today's day 3 in red with the cookie truck beside it; and the day card saying DAY 3"><figcaption>Map, chapter 2: its days count from 1; the card says DAY 3 (it was day 15).</figcaption></figure>
+<ul>
+<li><b>Days count inside each chapter.</b> Chapter 2's first day is Day 1 on its map, on the day card, in play and on "DAY 1 DONE!"; the journal's stamps too. A new chapter needs no renumbering. The save keeps one running count underneath, so nobody's progress or stars change (details in Q&amp;A).</li>
+</ul>
+<figure><img src="day9_late.jpg" alt="A player already in chapter 2 opens the map: it shows chapter 1 with the big day 9 star and the truck beside it; after the tap the truck stands at the glowing arrow"><figcaption>Map, for a player already in chapter 2 who never took day 9's star: chapter 1 shows first with the star waiting; after the tap (53 stars became 54).</figcaption></figure>
+<ul>
+<li><b>Day 9's star for everyone who finished day 9,</b> however they got there: also after playing on to day 12 without tapping it, and for players who were already in chapter 2 before this release. The star waits until it is taken, and the map opens on chapter 1 while it does.</li>
+</ul>
+<figure><img src="update_card.jpg" alt="A paper card over a dimmed screen: NEW VERSION! Food Truck Cafe has an update. Please update to keep playing. One gold button: UPDATE"><figcaption>Start menu, map or shop: the update card (drawn here by a test call).</figcaption></figure>
+<ul>
+<li><b>Update card.</b> From this release on, the game asks the App Store once per start which version is out. If a newer one has been out for a day and a half, this card covers the screen with one button that opens our store page; there is no way round it. It never shows without a network answer, and never over a running day.</li>
+<li><b>The limit:</b> copies already on phones (2026.11.20 and older) have no such check, so nothing can force them; they update by the phone's own automatic updates. See Q&amp;A.</li>
+<li><b>The kitchen stops with the day.</b> When a day ends, is restarted or left, every oven, the mixer and the board stop at once: no ding or mixing sound over the day-end card, and the next day starts with empty ovens, empty plates and full trees. Tried: a choux at the mixer when the day ended was dropped at once.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.more23.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.more23.change"> Changes (I will say what)</label></li>
+</ul>
+</div>
+
 <div class="card">
 <p style="margin-top:0"><b>Your test notes, 23 November.</b> <small>Checked in the game; not in a test build yet.</small></p>
 <figure><img src="map_truck_drive.jpg" alt="The chapter 1 map in three moments after day 4 is finished: the cookie truck beside day 4, then on the line between day 4 and day 5 facing the way it drives, then parked beside day 5"><figcaption>Map: the cookie truck leaves day 4, drives along the line, and parks at day 5.</figcaption></figure>
@@ -147,16 +190,12 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul>
 <li><b>This release is not small.</b> It holds the new kitchen flow, chapter 2 opening after day 9, the thinking time and the fourth flower. Worth testing on the phone: updating over the App Store copy with your own save, the day 9 star, the chapter 2 tutorial with the gift, a choux and a cake through the kitchen with a pause and a restart in the middle.</li>
 <li><b>Thinking dots and difficulty:</b> every customer now takes 2 s before anything can be served. Live players do not have this yet, and the star rule (3 stars = every customer served) was not measured again with it. Your "chapter 2 is much harder" came from a build that had it.</li>
-<li><b>Day 9 star can be missed:</b> a player who never taps the glowing day 9 and plays on to day 12 never gets the scene or its extra star.</li>
 <li><b>After the day 9 star is taken,</b> day 9 keeps bouncing and the truck stays at the arrow until the map is opened again.</li>
 <li><b>Players already in chapter 2</b> get the fourth flower without the gift card (they have done that tutorial).</li>
 <li><b>Updating players' kitchens:</b> the new tray and mixer take a free place on the counter as they arranged it; on a full counter they go to the opening under it. Not tried with a full counter.</li>
-<li><b>Sounds:</b> if the day ends with a dessert half made, the mixer or knife sound may still play a few seconds later. Not confirmed.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.scan23.build"> Build 2026.11.23 (1) with the four fixes</label></li>
 <li><label><input type="checkbox" data-id="cur.scan23.measure"> Measure the stars with the thinking time before the release (robot run)</label></li>
-<li><label><input type="checkbox" data-id="cur.scan23.day9late"> Offer the day 9 star later too, if it was missed</label></li>
 <li><label><input type="checkbox" data-id="cur.scan23.day9calm"> Stop day 9's bounce once its star is taken</label></li>
 <li><label><input type="checkbox" data-id="cur.scan23.fine"> The rest is fine as it is</label></li>
 </ul>
@@ -177,7 +216,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><b>Shop:</b> NEW on a tab that holds something new; locked items stay visible with a padlock (cookies and coconut until chapter 2, the star Yoga until she is hired); two new locked star cards, Chef (20) and Dining table (25); cards aligned; the extra cup reads "One more plate for brewed coffee."</li>
 <li><b>Look:</b> a taller hen on the table; the tutorial's "Ready to go?" card on paper with cookie buttons.</li>
 </ul>
-<p style="margin:8px 0 4px"><b>Since test build 2026.11.21 (1):</b> pull handles 12 % bigger; the shop's EARNED line in the Daily Treats letters; the chapter 2 tutorial waits for a tap on the blender; the tutorial hand moves up and down; no arrange banner in the chapter 2 tutorial; the mixer set larger, its whisk deeper in the cream and kept wide while it turns. All of it is in test build 2026.11.23 (0). After it: the four small fixes of the scan; the cookie truck driving on the map; thinking dots on every order; the apple step in the tutorial.</p>
+<p style="margin:8px 0 4px"><b>Since test build 2026.11.21 (1):</b> pull handles 12 % bigger; the shop's EARNED line in the Daily Treats letters; the chapter 2 tutorial waits for a tap on the blender; the tutorial hand moves up and down; no arrange banner in the chapter 2 tutorial; the mixer set larger, its whisk deeper in the cream and kept wide while it turns. All of it is in test build 2026.11.23 (0). After it: the four small fixes of the scan; the cookie truck driving on the map; thinking dots on every order; the apple step in the tutorial; days counted inside each chapter; day 9's star for everyone who finished day 9; the update card; the kitchen stopping with the day.</p>
 <p style="margin:8px 0 4px"><b>Not in yet:</b> the chapter 2 tuning (your picks); a sound for the day 9 scene.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
