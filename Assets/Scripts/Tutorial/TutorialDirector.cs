@@ -506,7 +506,7 @@ public class TutorialDirector : MonoBehaviour
         title.alignment = TextAlignmentOptions.Center; title.text = "A GIFT FOR YOU!";
         var line = NewText("Line", panel.rectTransform, handFont != null ? handFont : titleFont, 37f, soft);
         line.rectTransform.anchoredPosition = new Vector2(0f, -66f); line.rectTransform.sizeDelta = new Vector2(640f, 110f);
-        line.alignment = TextAlignmentOptions.Center; line.text = "Extra patience flower\nfor beach customers";   // the owner's words (21 November 2026) line.alpha = 0f;
+        line.alignment = TextAlignmentOptions.Center; line.text = "Extra patience flower\nfor beach customers"; line.alpha = 0f;   // the owner's words (21 November 2026); hidden until the flower opens (the alpha had slipped into this comment: the line showed, vanished and faded in)
         var go = NewImage("LetsGo", panel.rectTransform, Color.white); go.sprite = letsGo;
         go.rectTransform.anchoredPosition = new Vector2(0f, -206f); go.rectTransform.sizeDelta = new Vector2(380f, 380f * letsGo.rect.height / letsGo.rect.width);
         var done = false; go.gameObject.AddComponent<Button>().onClick.AddListener(() => done = true);

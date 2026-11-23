@@ -155,7 +155,7 @@ public class OvenPicker : MonoBehaviour
             trt.anchoredPosition = new Vector2(-rowW * 0.5f + Tile * 0.5f + col * (Tile + Gap), -(Pad + Tile * 0.5f + row * (Tile + Gap)));
             trt.localRotation = Quaternion.Euler(0f, 0f, ((i * 7 + 3) % 9 - 4) * 1.5f);   // a small tilt each, as in the carousel
             var img = tile.GetComponent<Image>(); img.sprite = OvenAssigner.NoteFor(recipe); img.preserveAspect = true;
-            var busy = OvenKitchenBase.IsRecipeBaking(recipe);
+            var busy = OvenKitchenBase.IsRecipeBaking(recipe) || KitchenFlow.Busy(recipe);   // also while its bake is still at the mixer or the board: StartBake refuses it then, so the note must not look pickable (23 November 2026)
             img.color = busy ? new Color(1f, 1f, 1f, 0.35f) : Color.white;
             var btn = tile.GetComponent<Button>(); btn.interactable = !busy;
             var chosen = recipe;

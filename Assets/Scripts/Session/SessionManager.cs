@@ -922,7 +922,7 @@ public class SessionManager : MonoBehaviour
         FillJournal();
         if (!wasFilled) currentSession.journal.RemoveAll(e => e.StartsWith(id + "|"));
         foreach (var e in currentSession.journal) if (e.StartsWith(id + "|")) return false;
-        if (day < 0) day = currentSession.levelsCompleted + 1;
+        if (day < 0) day = currentSession.currentLevel + 1;   // the day being played (levelsCompleted + 1 until chapter 2 could open after day 9: a first ice cream on day 13 was filed as day 10)
         currentSession.journal.Add(id + "|" + day);
         if (currentSession.journalNew == null) currentSession.journalNew = new List<string>();
         currentSession.journalNew.Add(id);

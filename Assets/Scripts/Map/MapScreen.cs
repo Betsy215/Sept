@@ -132,8 +132,9 @@ public class MapScreen : MonoBehaviour
     private int todayDay = -1;
     private System.Collections.IEnumerator OpenTodaySoon(int day)
     {
+        var shown = page;
         yield return new WaitForSeconds(0.45f);   // the map shows first, then the card
-        if (popup == null && !leaving) OpenDay(day);
+        if (popup == null && !leaving && page == shown) OpenDay(day);   // not over another chapter's page, if the arrow was tapped meanwhile
     }
 
     private void ShowPage(int p)

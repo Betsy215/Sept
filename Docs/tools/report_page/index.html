@@ -69,76 +69,79 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h1>Food Truck Cafe</h1>
 <p class="sub">21 November. 2026.11.20 is live on the App Store; test build 2026.11.21 (1) is in TestFlight.</p>
 
-<nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#qa"><b>2</b>Q&amp;A</a><a href="#current"><b>3</b>Current</a><a href="#mvp"><b>4</b>MVP</a><a href="#backlog"><b>5</b>Backlog</a><a href="#analysis"><b>6</b>Analysis</a><a href="#marketing"><b>7</b>Marketing</a><a href="visuals.html" class="page">Visuals</a><a href="cchapter.html" class="page">C chapter</a><span id="saved"></span></nav>
+<nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#qa"><b>2</b>Q&amp;A</a><a href="#current"><b>3</b>Current</a><a href="#mvp"><b>4</b>MVP</a><a href="#backlog"><b>5</b>Backlog</a><a href="#analysis"><b>6</b>Analysis</a><a href="#marketing"><b>7</b>Marketing</a><a href="visuals.html" class="page">Visuals</a><a href="cchapter.html" class="page">C chapter</a><a href="mechanisms.html" class="page">Mechanisms</a><span id="saved"></span></nav>
 
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 2026.11.23 (0)</b> is being built and uploaded; this line changes when it is in TestFlight.</p>
-<p><b>In it since 2026.11.21 (1):</b> bigger pull handles, the shop's EARNED line, the blender step and the moving hand in the chapter 2 tutorial, no arrange banner there, the larger mixer set, the whisk kept wide while it runs.</p>
-<p><b>Still open:</b> the three ad choices (Analysis); the chapter 2 ideas and the store page's Header pictures (Q&amp;A); the winter scene drafts (C chapter tab).</p>
+<p><b>Test build 2026.11.23 (0) is in TestFlight</b> (ready 09:45).</p>
+<p><b>Before the release, read Current:</b> the scan found four small bugs (fixed, not in build 0) and a list of things for you to decide or test. A build (1) with the fixes waits for your tick or word.</p>
+<p><b>Q&amp;A:</b> Header and Search Results, with pictures of both and drafts for our page.</p>
+<p><b>New tab, Mechanisms:</b> the sale prices and kitchen times live there now, for good.</p>
+<p><b>Still open:</b> the three ad choices (Analysis); the C chapter tab.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>Report cleaned; Analysis kept as you asked.</p>
+<p>The release itself (version, What's New, submission) waits for your yes.</p>
+<p>C chapter: your reference picture goes on its tab and ChatGPT gets a brief built on it.</p>
 <p><b>Early December:</b> look at Unity's Finance page for November's balance.</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>Chapter 2 is much harder: ways to tune it (21 Nov)</h3>
+<div class="q"><h3>Header and Search Results: what does a player see with and without them? (23 Nov)</h3>
 <ul>
-<li><b>The data agrees.</b> The player from Japan got mostly 3 stars in chapter 1; in chapter 2 they got 0 stars on day 13 and needed 2 to 5 tries on each of days 15 to 19. All 11 of their restarts were in chapter 2. Your own test today: one star on day 13 and on day 14. (Today's US player got 3 stars on both, so it can be done, but not by most.)</li>
-<li><b>Why:</b> customers come at the same pace as chapter 1, but an ice cream is up to four taps, and the scoops and waffle bowls run out fast (4 scoops a well), so the kitchen trips pile up.</li>
+<li><b>What they are:</b> two optional pictures (or silent looping videos, 5 to 30 s) Apple added this autumn. Only iPhones and iPads on iOS 27 show them. Each can be added or left empty on its own.</li>
+<li><b>Header, with:</b> a banner above our icon, name and Get button, about a third of the first screen. Nothing is taken away; the screenshots move down. <b>Without</b> (today): the page starts with the icon and name, the screenshots show higher up.</li>
+<li><b>Search Results, with:</b> <b>one wide picture replaces our three screenshots</b> in the search list. <b>Without</b> (today): search shows our first three screenshots, as now.</li>
 </ul>
-<p style="margin:8px 0 4px"><b>Ideas</b> (tick any; my pick is 1, 2 and 3: make the ice cream lighter, leave the customers alone):</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.ch2tune.scoops"> 1. Smaller ice creams at first: 1 or 2 scoops on days 13 to 15, 3 scoops from day 16 (now 1 to 3 from the start)</label></li>
-<li><label><input type="checkbox" data-id="qa.ch2tune.bowls"> 2. Fewer waffle bowls at first: one ice cream in four asks for one, rising to half (now half from the start)</label></li>
-<li><label><input type="checkbox" data-id="qa.ch2tune.refills"> 3. Bigger refills: 6 scoops a well (now 4) and one bake fills the whole bowl holder, so fewer kitchen trips</label></li>
-<li><label><input type="checkbox" data-id="qa.ch2tune.patience"> 4. More patience: chapter 2 customers wait 40 % longer than chapter 1 (now 20 %)</label></li>
-<li><label><input type="checkbox" data-id="qa.ch2tune.pace"> 5. Slower arrivals on the first days: a customer every 6 s (now 5)</label></li>
-<li><label><input type="checkbox" data-id="qa.ch2tune.orders"> 6. Smaller orders on days 13 to 15: 1 to 3 items (now 2 to 4)</label></li>
-<li><label><input type="checkbox" data-id="qa.ch2tune.stars"> 7. Softer stars in chapter 2: 3 stars at 90 % of customers served, 2 at 75 % (now all / 90 %)</label></li>
-<li><label><input type="checkbox" data-id="qa.ch2tune.robot"> 8. Tune by measurement: the test robot plays as an average player (slower taps) and I set the numbers until it gets 2 stars first try on every chapter 2 day</label></li>
-</ul>
-</div>
-<div class="q"><h3>What are "Header" and "Search Results" on the release page? They are empty for our game.</h3>
+<figure><img src="mock_page.jpg" alt="Two phone drawings of our App Store page. Left, today: the page starts with the icon, Food Truck Cafe, the Get button, then the screenshots. Right, with a header: a banner of the red truck under the trees with the game's name fills the top third, the icon and the screenshots sit lower"><figcaption>Our store page, drawn after Apple's layout: today, and with a simple header draft.</figcaption></figure>
+<figure><img src="mock_search.jpg" alt="Two phone drawings of an App Store search. Left, today: our game with its first three screenshots in a row. Right, with a search picture: one wide picture with the words Bake, Serve, Grow your cafe and a tilted phone showing the table replaces the three screenshots"><figcaption>Our game in a search, drawn after Apple's layout: today, and with a simple search picture draft.</figcaption></figure>
+<figure><img src="hdr_apple_header.jpg" alt="Apple's picture of three store pages with headers: Forest Explorer with a green forest banner, Airline with a window banner, and the game The Coast with a lighthouse banner; each banner sits above the icon, name and Get button"><figcaption>Apple's own picture: three store pages with a Header (the third is a game). Source: developer.apple.com/app-store/asset-best-practices.</figcaption></figure>
+<figure><img src="hdr_apple_search.jpg" alt="Apple's picture of three searches where the result shows one wide picture under the app's name instead of screenshots"><figcaption>Apple's own picture: three searches with a Search Results picture.</figcaption></figure>
+<figure><img src="hdr_indie.jpg" alt="A small pixel-art game's two pictures: a wide banner of a walking machine with the game's name, and a search picture showing its gameplay with a short caption"><figcaption>A real small game (Hardpoint Idle): its Header (left) and its Search Results picture (right). Source: vbgnt.com/blog/app-store-and-google-play-assets.</figcaption></figure>
 <ul>
-<li>They are new, optional slots from Apple ("creative assets", shown from iOS 27): a picture or short looping video at the very top of our store page (<b>Header</b>), and a picture shown beside the game in search (<b>Search Results</b>).</li>
-<li><b>Empty is fine:</b> the page looks as it does now, and search keeps showing our video and screenshots. Nothing is missing from the release.</li>
-<li>They are a chance to look better: one clear picture of the truck and the table, no prices, readable small. Apple gives templates with safe areas. They go through review like screenshots.</li>
+<li><b>Real pages with and without:</b> I cannot capture them from the Mac: Apple's web store does not show these slots, only the App Store app on iOS 27. On your iPhone, search any big game: a result with one wide picture has the search slot filled, one with three screenshots has not; open a game and a banner above the icon is its header.</li>
+<li><b>An upright iPhone shows only the middle of the header</b> (the picture is very wide, 21:9); the truck and name must sit in the middle, as in the draft.</li>
+<li><b>My view:</b> a Header only adds, so it is worth one good picture when there is time. The Search Results picture is a trade: one picture instead of three screenshots that already show the game well; I would leave it empty, or try it later with Apple's A/B test.</li>
+<li><b>Not needed for today's release.</b> Both can be added any day without a new version (Apple reviews the picture alone).</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="qa.header.drafts"> Make drafts for both</label></li>
-<li><label><input type="checkbox" data-id="qa.header.leave"> Leave them empty</label></li>
+<li><label><input type="checkbox" data-id="qa.hdr23.header"> Make a real Header picture (after the release)</label></li>
+<li><label><input type="checkbox" data-id="qa.hdr23.search"> Make a Search Results picture too</label></li>
+<li><label><input type="checkbox" data-id="qa.hdr23.none"> Leave both empty</label></li>
 </ul>
 </div>
-<div class="q"><h3>The sale price of each item</h3>
-<ul>
-<li><b>Chapter 1:</b> coffee $10, bread $15, apple $20, juice $20, cookies $30, strawberry cake $35 a slice, choux $35.</li>
-<li><b>Chapter 2:</b> coconut $30, ice cream $15 per scoop (a three-scoop glass is $45).</li>
-<li><b>Plus a tip:</b> price × seconds left on the order × 10 % (some customers tip more). A $30 order served with 6 seconds left pays $18 in tips.</li>
-<li>A replayed day pays only part of this (unchanged).</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.prices.seen"> Seen</label></li></ul>
-</div>
-<div class="q"><h3>The time for each item after the kitchen redesign (21 Nov)</h3>
-<ul>
-<li><b>Bread:</b> 5 s in the oven.</li>
-<li><b>Cookies:</b> 3 s in the oven.</li>
-<li><b>Choux:</b> about 9 s from the oven tap to the table: oven 3 s, mixer 2.5 s, fruit board 2 s, shown finished 0.9 s, flight 0.6 s. No taps after the oven.</li>
-<li><b>Strawberry cake:</b> the same, about 9 s.</li>
-<li>Choux and cake share the mixer and the board: if both are cooking, the second waits its turn (up to 2.5 s more).</li>
-<li><b>Apples</b> and <b>coconuts:</b> back 8 s after the last one is picked.</li>
-<li><b>Ice cream blender:</b> 3 s with four flavours, 1.8 s with two.</li>
-<li><b>Waffle machine:</b> about 2.4 s.</li>
-<li><b>Coffee bags, juice:</b> at once.</li>
-<li><b>With the Kitchen upgrade</b> (15 stars) all of it is a quarter shorter: bread 3.8 s, cookies 2.3 s, choux and cake about 7 s.</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.ktimes2.seen"> Seen</label></li></ul>
-</div>
+
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">Nothing open. Everything approved is in test build 2026.11.23 (0).</p>
+<p class="sub" style="margin:0 0 8px">23 November. Test build 2026.11.23 (0) is in TestFlight; the four fixes below are not in it.</p>
+<div class="card">
+<p style="margin-top:0"><b>Scan of everything changed since release 2026.11.20</b> (two readers: I read the kitchen, tutorial, flowers and orders; a second reader the saves, map and shop).</p>
+<p style="margin:8px 0 4px"><b>Saves:</b> no way found for an updating player to lose progress, get stuck or see a wrong day (traced for 0 to 8, 9 to 11, 12, 13 to 27 and all 28 days done). Read from the code, not run on a device.</p>
+<p style="margin:8px 0 4px"><b>Fixed, four small bugs</b> (compiled; need one more build):</p>
+<ul>
+<li><b>Gift card:</b> the line "Extra patience flower for beach customers" showed, vanished, then faded in. My slip when the words changed.</li>
+<li><b>Oven picker:</b> while a choux or cake batch is still at the mixer or the board the oven refuses a second one, but its note looked pickable and a tap did nothing. It is greyed now.</li>
+<li><b>Map:</b> tapping the chapter arrow in the first half second could bring up today's day card over the other chapter's page.</li>
+<li><b>Journal:</b> with chapter 2 open after day 9, a page earned there got the wrong day (a first ice cream on day 13 was filed as day 10).</li>
+</ul>
+<p style="margin:8px 0 4px"><b>For you to decide or test</b> (nothing changed):</p>
+<ul>
+<li><b>This release is not small.</b> It holds the new kitchen flow, chapter 2 opening after day 9, the thinking time and the fourth flower. Worth testing on the phone: updating over the App Store copy with your own save, the day 9 star, the chapter 2 tutorial with the gift, a choux and a cake through the kitchen with a pause and a restart in the middle.</li>
+<li><b>Thinking dots and difficulty:</b> every customer now takes 2 s before anything can be served. Live players do not have this yet, and the star rule (3 stars = every customer served) was not measured again with it. Your "chapter 2 is much harder" came from a build that had it.</li>
+<li><b>Day 9 star can be missed:</b> a player who never taps the glowing day 9 and plays on to day 12 never gets the scene or its extra star.</li>
+<li><b>After the day 9 star is taken,</b> day 9 keeps bouncing and the truck stays at the arrow until the map is opened again.</li>
+<li><b>Players already in chapter 2</b> get the fourth flower without the gift card (they have done that tutorial).</li>
+<li><b>Updating players' kitchens:</b> the new tray and mixer take a free place on the counter as they arranged it; on a full counter they go to the opening under it. Not tried with a full counter.</li>
+<li><b>Sounds:</b> if the day ends with a dessert half made, the mixer or knife sound may still play a few seconds later. Not confirmed.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.scan23.build"> Build 2026.11.23 (1) with the four fixes</label></li>
+<li><label><input type="checkbox" data-id="cur.scan23.measure"> Measure the stars with the thinking time before the release (robot run)</label></li>
+<li><label><input type="checkbox" data-id="cur.scan23.day9late"> Offer the day 9 star later too, if it was missed</label></li>
+<li><label><input type="checkbox" data-id="cur.scan23.day9calm"> Stop day 9's bounce once its star is taken</label></li>
+<li><label><input type="checkbox" data-id="cur.scan23.fine"> The rest is fine as it is</label></li>
+</ul>
+</div>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
 <p class="sub" style="margin:0 0 8px">Next release: the kitchen remodel and the small fixes. Everything changed since release 2026.11.20:</p>
@@ -155,7 +158,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><b>Shop:</b> NEW on a tab that holds something new; locked items stay visible with a padlock (cookies and coconut until chapter 2, the star Yoga until she is hired); two new locked star cards, Chef (20) and Dining table (25); cards aligned; the extra cup reads "One more plate for brewed coffee."</li>
 <li><b>Look:</b> a taller hen on the table; the tutorial's "Ready to go?" card on paper with cookie buttons.</li>
 </ul>
-<p style="margin:8px 0 4px"><b>Since test build 2026.11.21 (1):</b> pull handles 12 % bigger; the shop's EARNED line in the Daily Treats letters; the chapter 2 tutorial waits for a tap on the blender; the tutorial hand moves up and down; no arrange banner in the chapter 2 tutorial; the mixer set larger, its whisk deeper in the cream and kept wide while it turns. All of it is in test build 2026.11.23 (0).</p>
+<p style="margin:8px 0 4px"><b>Since test build 2026.11.21 (1):</b> pull handles 12 % bigger; the shop's EARNED line in the Daily Treats letters; the chapter 2 tutorial waits for a tap on the blender; the tutorial hand moves up and down; no arrange banner in the chapter 2 tutorial; the mixer set larger, its whisk deeper in the cream and kept wide while it turns. All of it is in test build 2026.11.23 (0). After it: the four small fixes of the scan (Current).</p>
 <p style="margin:8px 0 4px"><b>Not in yet:</b> the chapter 2 tuning (your picks); a sound for the day 9 scene.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
