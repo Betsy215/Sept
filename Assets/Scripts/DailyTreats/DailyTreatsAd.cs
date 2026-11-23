@@ -78,7 +78,7 @@ public class DailyTreatsAd : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
         if (adReady || loading) return;
         loading = true;
         if (Application.isEditor) { loading = false; adReady = true; return; }       // simulated in the editor
-        if (!Advertisement.isInitialized) { loading = false; return; }
+        if (!Advertisement.isInitialized) { loading = false; AdsInitializer.Ensure(); return; }   // not started (or its start failed): tried again now; the tap's wait calls this again
         Advertisement.Load(AdUnitId, this);
     }
 

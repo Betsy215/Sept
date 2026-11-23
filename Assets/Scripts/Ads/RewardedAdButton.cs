@@ -73,6 +73,7 @@ public class RewardedAdButton : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
     private IEnumerator LoadWhenInitialized()
     {
         // Ads are initialized in the main menu; wait briefly in case that is still in flight.
+        AdsInitializer.Ensure();          // or its start failed: have it tried again now
         var waited = 0f;
         while (!Advertisement.isInitialized && waited < 15f)
         {
@@ -80,15 +81,17 @@ public class RewardedAdButton : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsS
             waited += 0.5f;
         }
 
-        _loadRoutine = null;
-
         if (!Advertisement.isInitialized)
         {
-            Debug.LogWarning("[RewardedAdButton] Unity Ads is not initialized; button stays disabled.");
+            // The button says so, but it does not give up for this visit to the shop any more (23 November 2026):
+            // AdsInitializer keeps trying, and the ad is loaded as soon as Unity Ads has started.
+            Debug.LogWarning("[RewardedAdButton] Unity Ads is not started yet; the button waits for it.");
             SetButtonReady(false, "Ads unavailable");
-            yield break;
+            while (!Advertisement.isInitialized) yield return new WaitForSecondsRealtime(2f);
+            SetButtonReady(false);
         }
 
+        _loadRoutine = null;
         Advertisement.Load(_adUnitId, this);
     }
 

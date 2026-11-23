@@ -96,4 +96,8 @@ public static class AnalyticsLog
     public static void DayLeft(int levelIndex, string reason) { Record("dayLeft", ("day", Day(levelIndex)), ("reason", reason)); Send(); }
     public static void ShopPurchase(string item, int price) { Record("shopPurchase", ("itemName", item ?? ""), ("price", price)); Send(); }
     public static void AdWatched(string adType, bool completed) => Record("adWatched", ("adType", adType), ("completed", completed));
+    /// Unity Ads has started: how many tries it took and how many seconds after the first try (23 November 2026, to see
+    /// in the data how often the start needs a retry). Needs the event "adsStarted" (tries: integer, seconds: integer)
+    /// in the dashboard's Event Manager; until it is defined there Unity drops it, which harms nothing.
+    public static void AdsStarted(int tries, float seconds) => Record("adsStarted", ("tries", tries), ("seconds", Mathf.RoundToInt(seconds)));
 }

@@ -27,7 +27,9 @@ public class InterstitialAdService : MonoBehaviour, IUnityAdsLoadListener, IUnit
     public static float MinSecondsBetweenAds = 45f;
 
     private const float ShowTimeoutSeconds = 12f;
-    private const float RetryDelaySeconds = 10f;
+    private const float RetryDelaySeconds = 10f;      // after the first failed load; doubles up to MaxRetryDelaySeconds
+    private const float MaxRetryDelaySeconds = 120f;
+    private const float LoadTimeoutSeconds = 30f;     // a load that never answers counts as failed
 
     private static InterstitialAdService instance;
 
@@ -48,6 +50,8 @@ public class InterstitialAdService : MonoBehaviour, IUnityAdsLoadListener, IUnit
 
     private bool adReady;
     private bool loading;
+    private int loadFailures;             // in a row: stretches the wait before the next load
+    private int loadId;                   // the load that is out (an answer to an older one is not waited for any more)
     private int levelsSinceLastAd;
     private float lastAdShownAt = -999f;
     private Action pendingContinuation;
@@ -65,6 +69,7 @@ public class InterstitialAdService : MonoBehaviour, IUnityAdsLoadListener, IUnit
     private IEnumerator LoadWhenInitialized()
     {
         loading = true;
+        AdsInitializer.Ensure();          // Unity Ads not started yet (or its start failed): have it tried again now
 
         var waited = 0f;
         while (!Advertisement.isInitialized && waited < 20f)
@@ -75,12 +80,24 @@ public class InterstitialAdService : MonoBehaviour, IUnityAdsLoadListener, IUnit
 
         if (!Advertisement.isInitialized)
         {
+            // Not for the whole visit any more (23 November 2026): AdsInitializer keeps trying, and calls Preload
+            // itself when Unity Ads starts; every day's end asks again too.
             loading = false;
-            Debug.LogWarning("[Interstitial] Unity Ads not initialized; no interstitials this session.");
+            Debug.LogWarning("[Interstitial] Unity Ads not started yet; the ad loads when it is.");
             yield break;
         }
 
+        var id = ++loadId;
         Advertisement.Load(AdUnitId, this);
+
+        // a load that never answers must not leave `loading` set for good (no further load would ever start)
+        yield return new WaitForSecondsRealtime(LoadTimeoutSeconds);
+        if (loading && id == loadId)
+        {
+            loading = false;
+            Debug.LogWarning("[Interstitial] Load did not answer in time.");
+            StartCoroutine(RetryLoad());
+        }
     }
 
     public void OnUnityAdsAdLoaded(string adUnitId)
@@ -88,6 +105,7 @@ public class InterstitialAdService : MonoBehaviour, IUnityAdsLoadListener, IUnit
         if (adUnitId != AdUnitId) return;
         loading = false;
         adReady = true;
+        loadFailures = 0;
         Debug.Log("[Interstitial] Ad ready.");
     }
 
@@ -96,14 +114,27 @@ public class InterstitialAdService : MonoBehaviour, IUnityAdsLoadListener, IUnit
         if (adUnitId != AdUnitId) return;
         loading = false;
         adReady = false;
-        Debug.LogWarning($"[Interstitial] Load failed: {error} - {message}. Retrying in {RetryDelaySeconds:F0}s.");
+        loadId++;                         // this load is answered: its timeout has nothing to do
+        Debug.LogWarning($"[Interstitial] Load failed: {error} - {message}.");
         StartCoroutine(RetryLoad());
     }
 
+    /// The next load after a failed one: 10 s, then 20, 40, 80, and every 120 s from there (it was every 10 s without
+    /// end, which asks Unity for nothing useful while there is no ad or no network).
     private IEnumerator RetryLoad()
     {
-        yield return new WaitForSecondsRealtime(RetryDelaySeconds);
+        var wait = Mathf.Min(RetryDelaySeconds * Mathf.Pow(2f, Mathf.Min(loadFailures, 6)), MaxRetryDelaySeconds);
+        loadFailures++;
+        yield return new WaitForSecondsRealtime(wait);
         Preload();
+    }
+
+    /// Back in the game after a while in the background: Unity Ads is looked after again, and a missing ad is loaded.
+    private void OnApplicationPause(bool paused)
+    {
+        if (paused) return;
+        AdsInitializer.Ensure();
+        if (Advertisement.isInitialized) Preload();
     }
 
     #endregion
