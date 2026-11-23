@@ -75,6 +75,8 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>Release 2026.11.23 is with Apple</b> (submitted 23 November, 13:20). It goes out by itself once approved.</p>
+<p><b>C chapter tab:</b> three cabin scenes from your new direction (pink, white, mint; cabin with a big window onto a ski resort), to pick from.</p>
+<p><b>Ads fix built</b> (not in a build; the release is with Apple): see Current.</p>
 <p><b>Open:</b> Header and Search Results (Q&amp;A).</p>
 </div>
 <div class="who p2"><h3>Me</h3>
@@ -108,7 +110,23 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">Nothing open.</p>
+<div class="card">
+<p style="margin-top:0"><b>Ads that fail to start: fixed for the next release.</b> <small>23 November; not in a build (release 2026.11.23 is with Apple).</small></p>
+<ul>
+<li><b>What I found in our code:</b> Unity Ads was started once, at the start menu. If that one start failed (no network in the first seconds, Unity not answering, a filtering network), nothing ever tried again: the between-days ad waited 20 s and gave up for the whole visit, the shop's coin ad said "Ads unavailable", the Daily Treats ad could not play. That is what the US player's two ad-less visits looked like: not a single request.</li>
+<li><b>Also found:</b> an ad that failed to load was asked for again every 10 s without end; a load that never answered left the between-days ad stuck until the game was closed.</li>
+<li><b>The fix:</b> the start is kept up for as long as the game runs. A failed start is tried again after 5, 15, 30 and 60 seconds, then every 2 minutes (every 5 minutes if Unity reports an ad blocker). With no network no try is spent; the next one goes when the network is back.</li>
+<li>Anything that wants an ad (a day's end, the shop's coin ad, the Daily Treats ad) and coming back to the game bring the next try forward, at most once every 5 seconds. As soon as the start works, the between-days ad is loaded.</li>
+<li>Failed ad loads now wait longer each time (10 s up to 2 min), and a load that does not answer within 30 s counts as failed. The shop's coin button waits for the start instead of giving up.</li>
+<li><b>Safe:</b> nothing waits on an ad or blocks the game; a player who never gets ads plays as before. Unity's own SDK accepts a second start after a failed one. Checked in the editor: the normal start, a failed start reported by Unity (counted, next try in 5 s), a full day to the shop with the ad ready. A real failure can only happen on a phone; it shows in the data from the next release.</li>
+<li><b>To see it work:</b> a new analytics event "adsStarted" (how many tries, how many seconds). It needs one line in Unity's Event Manager; until then Unity ignores it, which harms nothing.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.adsfix23.good"> Good, into the next release</label></li>
+<li><label><input type="checkbox" data-id="cur.adsfix23.event"> Add the adsStarted event in Unity's dashboard</label></li>
+</ul>
+</div>
+
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open. Release 2026.11.23 is submitted.</p>
