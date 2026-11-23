@@ -683,6 +683,7 @@ public class LevelManager : MonoBehaviour
     {
         // Wait for the specified delay
         yield return new WaitForSeconds(3f);
+        KitchenDay.End();   // an oven tapped in these three seconds stops with the rest (the kitchen stays open until the card shows)
 
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlayLevelCompleteMusic();
@@ -859,7 +860,7 @@ public class LevelManager : MonoBehaviour
     public void LoadNextLevel()
     {
         // Never carry a paused time scale into the Shop scene
-        Time.timeScale = 1f; KitchenClock.Resume();
+        Time.timeScale = 1f; KitchenClock.Resume(); KitchenDay.End();   // nothing baked after the day's end follows into the shop
         isPaused = false;
 
         if (AudioManager.Instance != null)
@@ -880,7 +881,7 @@ public class LevelManager : MonoBehaviour
     {
         if (AudioManager.Instance != null)
             AudioManager.Instance.StopMusic();
-        Time.timeScale = 1f; KitchenClock.Resume();
+        Time.timeScale = 1f; KitchenClock.Resume(); KitchenDay.End();   // the pause menu's Home leaves the day: the kitchen stops too (scan, 23 November 2026)
         isPaused = false;
         MapScreen.CameFromDay = false;
         SceneTransitionManager.Instance.TransitionToScene(MapScreen.SceneName);

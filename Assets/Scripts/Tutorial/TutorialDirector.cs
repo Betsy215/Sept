@@ -312,7 +312,9 @@ public class TutorialDirector : MonoBehaviour
                     Say("Fruits grow here, tap to pick them!");
                     yield return PointAtRect(trt);
                     yield return WaitForTapOnRect(trt);
-                    if (apples != null) apples.Take();        // into the basket when it has room; a full basket leaves the apple on the tree with a small pop
+                    // into the basket when it has room; a full basket leaves the apple on the tree with a small pop, and the
+                    // tap still gets its sound
+                    if (apples != null && !apples.Take() && apples.interactSound != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(apples.interactSound);
                     HideHand();
                     yield return new WaitForSeconds(0.8f);
                 }

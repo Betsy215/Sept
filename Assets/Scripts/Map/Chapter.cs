@@ -42,7 +42,8 @@ public static class Chapter
     /// chapters, i don't want to keep counting days ... reset this every chapter, so day 1 of chapter 2 shows day 1 in
     /// day modals. but in our storage, we can store however is the best way"). The save, the stars list and the
     /// analytics keep the one running day index (chapter 2's first day is index 12); only what is shown restarts.
-    public static int DayInChapter(int dayIndex) => Mathf.Max(0, dayIndex) - FirstDay(Of(dayIndex)) + 1;
+    /// An index past the last day (the save's next day once every day is done) counts as the last day.
+    public static int DayInChapter(int dayIndex) { var c = Of(dayIndex); return Mathf.Clamp(Mathf.Max(0, dayIndex) - FirstDay(c), 0, DaysIn(c) - 1) + 1; }
 
     /// True when the day index is the last day of its chapter.
     public static bool IsLastDay(int dayIndex) => dayIndex + 1 == FirstDay(Of(dayIndex)) + DaysIn(Of(dayIndex));
