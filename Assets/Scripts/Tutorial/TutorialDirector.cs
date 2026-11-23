@@ -864,7 +864,7 @@ public class TutorialDirector : MonoBehaviour
         if (captionBox == null || canvasRect == null || !captionBox.gameObject.activeSelf) return;
         var top = canvasRect.rect.yMax;
         var boxTop = top + captionBox.anchoredPosition.y; var boxBottom = boxTop - captionBox.sizeDelta.y;
-        var arrowTop = arrowFoot.y + hand.sizeDelta.y + 28f;                        // its height and the bob
+        var arrowTop = arrowFoot.y + hand.sizeDelta.y + 52f;                        // its height and the bob
         if (arrowFoot.y >= boxTop || arrowTop <= boxBottom) return;                  // no overlap: the banner stays put
         var newBottom = arrowTop + 24f;
         var y = newBottom + captionBox.sizeDelta.y - top;
@@ -876,8 +876,10 @@ public class TutorialDirector : MonoBehaviour
         var t = 0f;
         while (true)
         {
-            t += Time.unscaledDeltaTime * 5f;
-            hand.anchoredPosition = handBase + new Vector2(0f, 14f + 14f * Mathf.Sin(t));
+            // a clear up-and-down tap (owner, 22 November 2026: "for the hand icon in tutorial, make it move up and down");
+            // it was a 28 px drift, too small to read as moving
+            t += Time.unscaledDeltaTime * 6.5f;
+            hand.anchoredPosition = handBase + new Vector2(0f, 26f + 26f * Mathf.Sin(t));
             yield return null;
         }
     }

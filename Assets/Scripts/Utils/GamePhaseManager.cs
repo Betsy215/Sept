@@ -55,7 +55,10 @@ public class GamePhaseManager : MonoBehaviour
     /// arrangement banner the first time player needs to do this, that is level 2. for the other levels we won't show").
     /// In the kitchen the card sits low, over the opening under the counter, clear of the coffee bags and the table.
     public bool HintDue => SessionManager.Instance != null && SessionManager.Instance.ArrangeTutorialDue && !SkipsArrangement
-                           && currentPhase == GamePhase.ARRANGEMENT && FindObjectOfType<TutorialDirector>() == null;
+                           && currentPhase == GamePhase.ARRANGEMENT && FindObjectOfType<TutorialDirector>() == null
+                           // never in the chapter 2 tutorial: our Start can run before LevelManager adds the director
+                           // (owner, 22 November 2026: "just don't show it in chapter2 tutorial")
+                           && !TutorialDirector.IsDue2(SessionManager.Instance);
 
     /// Day 1 comes pre-arranged: no drag, no Ready; the arrangement is taught on day 2 (owner, 31 October 2026).
     /// The tutorial day (level 0 while the tutorial is due) keeps its own flow.
@@ -207,10 +210,9 @@ public class GamePhaseManager : MonoBehaviour
     }
 
     private Vector3 hintCardHome, hintTextHome, hintCardScale = Vector3.one, hintTextScale = Vector3.one; private bool hintHomeKept;
-    // On the kitchen floor, between the lower cabinets and the Ready button on the rug (owner, 21 November 2026: "drag to
-    // arrangement your kitchen banner is in the way ... position it on the kitchen floor"); it was over the big
-    // opening under the counter (0.653), where things are dragged into the cabinets. A little smaller there.
-    private const float KitchenHintFromTop = 0.86f, KitchenHintScale = 0.75f;
+    // over the big opening under the counter (owner, 22 November 2026: back here from the kitchen floor, "put the drag to
+    // arrange your kitchen banner in the previous location")
+    private const float KitchenHintFromTop = 0.653f, KitchenHintScale = 1f;
 
     /// The card and its words at their own place on the table; in the kitchen lower, over the opening under the
     /// counter, so the coffee bags' shelf and the kitchen table stay clear (owner, 19 November 2026).
@@ -244,7 +246,7 @@ public class GamePhaseManager : MonoBehaviour
             {
                 // on the rug: its own height (the button is drawn at scale 2) and the phone's home-bar strip above the bottom edge
                 var safeBottom = Screen.height > 0 ? Screen.safeArea.yMin / Screen.height * canvas.rect.height : 0f;
-                rt.anchoredPosition = new Vector2(0f, -canvas.rect.height / 2f + safeBottom + rt.rect.height * Mathf.Abs(rt.localScale.y) / 2f + 24f);   // 24 (was 60): room for the hint above it on the floor
+                rt.anchoredPosition = new Vector2(0f, -canvas.rect.height / 2f + safeBottom + rt.rect.height * Mathf.Abs(rt.localScale.y) / 2f + 60f);
             }
             else rt.anchoredPosition = doneButtonHome;
         }

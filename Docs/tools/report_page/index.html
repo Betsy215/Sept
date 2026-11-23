@@ -74,57 +74,17 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 2026.11.21 (1) is in TestFlight</b> (ready 19:18) with everything of tonight (kitchen pictures and animations, the sounds, the mixer at rest, basket and blender smaller, the larger mixing set).</p>
-<p><b>C chapter</b> (its own tab): three winter scene drafts by Gemini to pick from.</p>
-<p><b>New in Current:</b> the basket and blender smaller, the mixer at rest (your way, the whisk inside the bowl's wall), your sound picks in, iCloud cleaned up.</p>
-<p><b>Players today</b> are in Analysis, with three ad choices to tick.</p>
-<p><b>Still open:</b> the tray on the counter (Current), the chapter 2 ideas (Q&amp;A).</p>
+<p><b>Analysis:</b> players of 22 and 23 November, with three ad choices to tick. The US player finished all 28 days; a second keen player (Philippines) reached chapter 2; no purchase yet.</p>
+<p><b>Current:</b> the whisk while running (three choices), the larger mixer set, the small fixes with your changes of today (banner back, hand moving, ice cream undone).</p>
+<p><b>Still open:</b> the chapter 2 ideas and the store page's Header pictures (Q&amp;A); the winter scene drafts (C chapter tab).</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>Seen your ticks: chapter 2's first day, the hand pointer and the dots approved; the US player is a real player.</p>
-<p><b>Tomorrow (22 Nov):</b> Apple's numbers for 21 Nov (downloads, any Remove Ads sale).</p>
+<p>Report cleaned: your ticked items are out (the chef stays locked). Nothing of 22 and 23 November is in a test build; say "build" when you want one.</p>
+<p><b>Early December:</b> look at Unity's Finance page for November's balance.</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>Does buying the Chef unlock the chef in the star tab? (21 Nov)</h3>
-<ul>
-<li><b>No.</b> The star tab's chef card is locked for everyone and says "Coming soon", whatever is bought, as you asked on 20 November ("lock him for now, we won't unlock for now until later release"). The dining table card is the same.</li>
-<li>Only the star Yoga works that way today: buying the Yoga lady as a customer unlocks her star card (and the tab shows NEW).</li>
-<li>If you want the chef to open like the Yoga lady (buy him as a customer first), tick below; it is a small change.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.chef.likeyoga"> Yes: unlock the star chef once the Chef is bought</label></li>
-<li><label><input type="checkbox" data-id="qa.chef.keep"> Keep him locked for now</label></li>
-</ul>
-</div>
-<div class="q"><h3>Which days show the "Drag to arrange your kitchen" banner? (21 Nov)</h3>
-<ul>
-<li>Only on <b>day 2</b> of a new game: the first day the player arranges (day 1 comes arranged, and every later day has no banner). It shows on the table, and in the kitchen when the player opens it while arranging.</li>
-<li>Moved onto the kitchen floor, see Current.</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.kbanner.seen"> Seen</label></li></ul>
-</div>
-<div class="q"><h3>The Finance page always shows $0 unpaid balance. When will it show one? (21 Nov)</h3>
-<ul>
-<li><b>Not yet, and that is expected so far.</b> The balance is not live: Unity books a month's ad money as an invoice after the month has ended, and only then does it count in the unpaid balance ("updated periodically"). The Invoices tab is still empty today.</li>
-<li><b>Our months so far:</b> October had only its last five days with ads on the store copy (a few cents). November so far is about $1.50 (the reporting page). So the first balance to expect is November's, after 30 November: look in early to mid December.</li>
-<li><b>If it is still $0 by mid-December</b> while the reporting page shows November money, ask Unity's ad support (support-ads.unity.com, Contact us); Unity's own help pages do not say how small amounts are handled, and one forum user saw a $2.40 balance drop to $0 without an answer. I will look in December and tell you.</li>
-<li>The payout itself comes only when the balance reaches $100.</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.finance0.seen"> Seen</label></li></ul>
-</div>
-<div class="q"><h3>Why does Unity Analytics' Revenue page show all zero? Which page shows the daily ad income? (21 Nov)</h3>
-<ul>
-<li><b>Analytics, Revenue</b> only adds up money the game itself reports to Analytics with Unity's own revenue events: a "transaction" event for each purchase and an "adImpression" event, with its value, for each ad. Our game sends only its own events (days, stars, shop, tutorial, ads watched), none of those two, so that page stays at zero. The ad money is real; it just is not on that page.</li>
-<li><b>For the daily ad income:</b> Unity dashboard, <b>Unity Ads Monetization, Unity Ads reporting</b> (left column, under "Current project"). Est. Revenue per day, with Requests, Impressions and eCPM. Days are UTC and the numbers lag about two hours. "Viewing options" sets the range: "Today" gives the hours, "Last 7 days" the days.</li>
-<li><b>Does the zero mean the ads do not count for the payout? No.</b> The payout is worked out from Unity Ads' own count of the ads shown, the same count as on the Unity Ads reporting page (about $0.51 from 88 ads in the week of 14 to 20 Nov). The Analytics pages are a separate tool for looking at players and never feed the payout.</li>
-<li><b>Money paid to you:</b> Unity dashboard, Organization, <b>Finance</b>. Unity pays once the unpaid balance reaches $100, monthly, 60 days after the month ends; the tax hold cleared on 14 Nov.</li>
-<li><b>Purchases</b> (Remove Ads, star packs) are counted by Apple: App Store Connect, Sales and Trends / Payments.</li>
-<li><b>What "each ad's value" means:</b> when an ad plays, Unity Ads only tells the game "it started", "it finished" or "it was skipped". It never tells the game what that one ad earned: Unity works the money out later on its own side (which advertiser won, the country, whether the player tapped) and shows only the totals on its reporting page. Some ad systems (Unity's LevelPlay, Google AdMob) do hand the game an estimate per ad, which could be passed on to Analytics. Ours does not, so Analytics cannot know. Not worth changing: the Unity Ads page has the numbers.</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.adincome.seen"> Seen</label></li></ul>
-</div>
 <div class="q"><h3>Chapter 2 is much harder: ways to tune it (21 Nov)</h3>
 <ul>
 <li><b>The data agrees.</b> The player from Japan got mostly 3 stars in chapter 1; in chapter 2 they got 0 stars on day 13 and needed 2 to 5 tries on each of days 15 to 19. All 11 of their restarts were in chapter 2. Your own test today: one star on day 13 and on day 14. (Today's US player got 3 stars on both, so it can be done, but not by most.)</li>
@@ -178,101 +138,51 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul class="checks"><li><label><input type="checkbox" data-id="qa.ktimes2.seen"> Seen</label></li></ul>
 </div>
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">Made 21 November. The tray on the counter is in test build 2026.11.21 (0); your new pictures and the animations are not in a build yet.</p>
+<p class="sub" style="margin:0 0 8px">Made 21 to 23 November, after test build 2026.11.21 (1). Not in a test build yet.</p>
 <div class="card">
-<p style="margin-top:0"><b>Small fixes of 21 November.</b> <small>Checked in the game; not in a test build yet.</small></p>
-<figure><img src="fix_banner_handle.jpg" alt="Kitchen while arranging, before and now: the banner Drag to arrange your kitchen was over the big opening under the counter, now it lies on the kitchen floor just above the Ready button. Table, before and now: the pull handle at the left edge is a little bigger"><figcaption>Kitchen and table on day 2: the kitchen banner on the floor; the pull handle a little bigger.</figcaption></figure>
+<p style="margin-top:0"><b>The whisk while the mixer runs.</b></p>
+<figure><img src="whisk_running.jpg" alt="Five moments of the mixer running in the kitchen: the whisk in the cream is drawn at different widths, from about a quarter of its width to nearly full, as it turns"><figcaption>Kitchen: five moments of the running mixer.</figcaption></figure>
 <ul>
-<li><b>Pull handle</b> (table and kitchen): 12 % bigger, knob, stick and the area that takes the tap.</li>
-<li><b>"Drag to arrange your kitchen":</b> now on the kitchen floor, above the Ready button and a little smaller, clear of the counter and the openings things are dragged into. (It shows only on day 2, see Q&amp;A.)</li>
+<li><b>Why it looks slim:</b> the spin is drawn by squeezing the whisk's width, three turns a second, down to about a fifth of its width. So most moments show it narrower than your whisk; only now and then at full width.</li>
+<li>Its lower part is also inside the cream, deeper since your last note.</li>
 </ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.whisk.wide"> Keep it wide: squeeze only a little (to about two thirds), so it always reads as the whisk</label></li>
+<li><label><input type="checkbox" data-id="cur.whisk.bigger"> Make the whisk itself bigger</label></li>
+<li><label><input type="checkbox" data-id="cur.whisk.fine"> Fine as it is</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Mixer set larger.</b></p>
+<figure><img src="mixer_bigger.jpg" alt="The kitchen counter twice: the mixer resting in its empty bowl at the left end, and the mixer running over the bowl of cream; the set is a little larger than before, beside the tray, the fruit board and the cake plate"><figcaption>Kitchen: the mixer at rest and running, at its new size.</figcaption></figure>
+<ul>
+<li>The whole set is 9 % larger again (22 % over the first size); its arranging box grew with it. It still fits the counter's left end beside the tray.</li>
+<li>Running, it sits lower: the whisk goes deeper into the cream.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.mix23.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.mix23.bigger"> Bigger still</label></li>
+<li><label><input type="checkbox" data-id="cur.mix23.smaller"> A little smaller</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Small fixes.</b></p>
+<figure><img src="fix_handle.jpg" alt="The table's top part, before and now: the round pull handle at the left edge is a little bigger now"><figcaption>Table: the pull handle, before and now.</figcaption></figure>
+<ul><li><b>Pull handle</b> (table and kitchen): 12 % bigger, knob, stick and the area that takes the tap.</li></ul>
 <figure><img src="fix_earned.jpg" alt="The shop's top line, before and now: EARNED in white rimmed letters before, now in the dark brown plain letters of the Daily Treats title"><figcaption>Shop: the EARNED line, before and now.</figcaption></figure>
 <ul><li><b>EARNED line</b> in the shop: the same letters and dark brown as the "DAILY TREATS" title.</li></ul>
 <figure><img src="fix_blender_tut.jpg" alt="Chapter 2 tutorial in the kitchen: the hand cookie points at the blender with the banner Tap the blender to refill the ice cream; after the tap the blender runs, pink, and the banner says The blender refills the ice cream when it runs low"><figcaption>Chapter 2 tutorial, kitchen: the hand on the blender, then the blend after the tap.</figcaption></figure>
-<ul><li><b>Blender in the chapter 2 tutorial</b> is now a step to do: the hand points at it, the tutorial waits for the tap, then the blender runs (sound, colours) and the wells fill; then back to the table.</li></ul>
-<figure><img src="fix_wells.jpg" alt="The ice cream station's four wells at three fill levels, before and now: before the lower heaps ran over the wells' left walls and front lips, now each heap sits inside its well"><figcaption>Table, chapter 2: the wells at 3, 2 and 1 scoops, before and now.</figcaption></figure>
-<ul><li><b>Ice cream in the wells:</b> the lower heaps ran over the wells' walls and front lips (each well's inside sits a little right of the picture's middle). Every level is now a little narrower and set into its well.</li></ul>
-<figure><img src="fix_mixer_dip.jpg" alt="The mixer running in the kitchen, its whisk deeper in the bowl of cream"><figcaption>Kitchen: the mixer running, whisk deeper in the cream.</figcaption></figure>
-<ul><li><b>Mixer:</b> while it runs it sits lower, the whisk deeper in the cream.</li></ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.fix21b.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.fix21b.change"> Changes (I will say what)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Basket and blender a little smaller.</b></p>
-<figure><img src="basket_blender.jpg" alt="Two rows of before and now. Chapter 1 kitchen: the stacked baskets on the counter are a little smaller now. Chapter 2 kitchen: the blender at the left and the baskets are a little smaller now"><figcaption>Kitchen, chapter 1 and chapter 2: before and now.</figcaption></figure>
 <ul>
-<li>Both at 88 % of their size. Their arranging boxes (what may not overlap, what must stand on the table) are parts of each picture, so they shrank with them; the blender's glow and moving parts too.</li>
-<li>They keep their places: each stands on the same spot of the table as before.</li>
+<li><b>Blender in the chapter 2 tutorial</b> is a step to do: the hand points at it, the tutorial waits for the tap, then the blender runs and the wells fill.</li>
+<li><b>Tutorial hand:</b> it moves up and down clearly now (about twice as far as before, and a little quicker), on every step it points at.</li>
+<li><b>"Drag to arrange your kitchen":</b> back at its earlier place over the counter's opening. It never shows in the chapter 2 tutorial now (it could, when chapter 2 was reached without ever arranging, as with the test button).</li>
+<li><b>Ice cream in the wells:</b> my change is undone; the pictures are the earlier ones again.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.bb21.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.bb21.smaller"> Smaller still</label></li>
-<li><label><input type="checkbox" data-id="cur.bb21.bigger"> A little bigger again</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>The mixer at rest, and running.</b></p>
-<figure><img src="mixer_rest.jpg" alt="Top: the mixer at rest, leaning to the right in its empty bowl, the back of its handle sitting on the bowl's right rim, the whisk and its metal stem inside the bowl; the mixer running, level over the bowl of cream with the whisk in it; the resting mixer on the kitchen counter. Below: the whole counter with the mixer at its left end, the tray, the board and the cake plate"><figcaption>Kitchen: at rest, running, and on the counter.</figcaption></figure>
-<ul>
-<li><b>At rest:</b> the head tilts right, the whisk points left into the bowl, and the bottom of the handle sits on the bowl's right rim. The whole whisk stays inside the bowl.</li>
-<li><b>The bowl's wall:</b> the white rim is the wall's thickness, so the whisk's wires now stay inside the opening and go behind the front of the wall; only the metal stem passes over the rim, where the mixer leans on it.</li>
-<li><b>More whisk:</b> your kitchen whisk is now shown bigger (three quarters of its own size, up from 0.72 with a third hidden) and much more of its metal stem shows under the body. At its full size it is longer than the bowl is deep, so it could not rest inside; three quarters is the most that fits.</li>
-<li><b>Bowl shadow:</b> wider and blending out over a wide soft edge, like the basket's.</li>
-<li><b>Mixing sound:</b> your pick 5 ("cream") is in; the other samples are deleted.</li>
-<li><b>Larger:</b> the whole mixing set is now 12 % larger on the counter (its arranging box too).</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.mixrest.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.mixrest.change"> Changes (I will say what)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>iCloud ("FoodTruckCafe art") cleaned up.</b></p>
-<ul>
-<li><b>New, separate:</b> mixer_bowl_empty, mixer_bowl_cream, mixer_with_whisk (the mixer alone, with the whisk), mixer_original_whisk (the kitchen whisk); plus the game frames mixer_rest and mixer_running. Your own mixer body stays in Updates.</li>
-<li><b>Moved to the Mac's Trash</b> (folder "FoodTruckCafe art, old 2026-11-21", so you can put any back): 32 old pictures: the earlier mixer pictures, the waffle machine drafts you did not pick (cast iron, cream), the October 23 ice cream station and fill sets and their "_small" copies, the lid, the truck light test.</li>
-<li><b>Kept:</b> everything else, including pictures I could not be sure are old (blender frames, coconut, palm, waffle machine in black, characters, table liner), the Updates folder (yours) and bugs.</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="cur.icloud21.seen"> Seen</label></li><li><label><input type="checkbox" data-id="cur.icloud21.more"> Clean more (I will say what)</label></li></ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Kitchen: your pictures, the whisk in the cream, the mixer resting in its empty bowl, the served choux on the tray.</b></p>
-<figure><img src="kitchen_new.jpg" alt="Three pictures. The hand mixer at rest leaning in an empty bowl, its whisk inside, the bowl with a soft brown shadow. The mixer running: level over the bowl full of cream, the whisk's lower part in the cream. The finished baking tray: four choux exactly as served on the table, blueberry, strawberry, the plain one and the lemon one"><figcaption>Kitchen pictures: the mixer at rest, the mixer running, the finished tray.</figcaption></figure>
-<figure><img src="kitchen_anim.gif" alt="The kitchen counter moving: the mixer running in its bowl with the whisk turning in the cream, then the knife chopping on the fruit board"><figcaption>Kitchen, in the game (9 seconds): mixing, then cutting.</figcaption></figure>
-<ul>
-<li><b>Whisk in the cream:</b> the whisk now goes half way into the cream; its lower part is hidden by the cream and the bowl's front wall, and it turns in there.</li>
-<li><b>At rest:</b> the bowl is empty (Gemini painted it from our bowl) and the mixer sits in it, the whisk inside, the whole mixer within the bowl's edges (it overhung the left edge before; now it leans only a little and stands over the middle). The cream appears when it runs.</li>
-<li><b>Bowl shadow:</b> like the basket's on the kitchen table: the same flat brown oval under the foot, measured on the basket.</li>
-<li><b>Finished tray:</b> the four choux are the served pictures (the same as on the table's platter), on your tray, at the places of the old ones.</li>
-<li><b>Your pictures</b> (tray, cake plate, mixer body) are used as painted; the later tray and cake stages are built on them.</li>
-<li><b>Finished choux and cake:</b> no more flight; your pick 1, sparkles: a burst of gold sparkles, a little pop, then the dessert fades and goes to the table.</li>
-<li><b>Yellow "next step" glow:</b> off on the mixer and the board.</li>
-<li><b>Sounds:</b> cutting = your pick 2, mixing = your pick 5 ("cream").</li>
-<li>The mixer keeps to the counter's left end; the tray takes the front left.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.kit22.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.kit22.change"> Changes (I will say what)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>The baking tray lies fully on the counter top.</b></p>
-<figure><img src="tray_counter.jpg" alt="The kitchen counter twice. The baking tray lies at the front left of the counter, in front of the mixer and left of the fruit board, its whole body on the wooden top: empty on the left, with four baked choux on the right"><figcaption>Kitchen: the tray's new place, empty and with the baked choux.</figcaption></figure>
-<ul>
-<li>The tray's footprint is now its whole body, and all of it must be on the counter's top. Before, only its lower edge had to be, so its top could stand past the counter's back edge.</li>
-<li>The same holds while arranging: a place where part of the tray is off the counter turns it red.</li>
-<li>With the board, the cake and the mixer on the counter, the free place for it is the front left.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.trayon.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.trayon.change"> Changes (I will say what)</label></li>
+<li><label><input type="checkbox" data-id="cur.fix23.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.fix23.change"> Changes (I will say what)</label></li>
 </ul>
 </div>
 
@@ -291,28 +201,32 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><b>Shop:</b> NEW on a tab that holds something new; locked items stay visible with a padlock (cookies and coconut until chapter 2, the star Yoga until she is hired); two new locked star cards, Chef (20) and Dining table (25); cards aligned; the extra cup reads "One more plate for brewed coffee."</li>
 <li><b>Look:</b> a taller hen on the table; the tutorial's "Ready to go?" card on paper with cookie buttons.</li>
 </ul>
-<p style="margin:8px 0 4px"><b>Not in yet:</b> the chapter 2 tuning (your picks); the cutting animation (the board hops for now); a sound for the day 9 scene.</p>
+<p style="margin:8px 0 4px"><b>Since test build 2026.11.21 (1):</b> pull handles 12 % bigger; the shop's EARNED line in the Daily Treats letters; the chapter 2 tutorial waits for a tap on the blender; the tutorial hand moves up and down; no arrange banner in the chapter 2 tutorial; the mixer set larger, its whisk deeper in the cream.</p>
+<p style="margin:8px 0 4px"><b>Not in yet:</b> the chapter 2 tuning (your picks); a sound for the day 9 scene.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
 <h2 id="analysis"><span class="n">6</span>Analysis</h2>
 <div class="card">
-<p style="margin-top:0"><b>Players today, 21 November</b> (our time, read at 16:45).</p>
+<p style="margin-top:0"><b>Players, 22 and 23 November</b> (everything since the evening of 21 November; times are ours; read 23 November, about 9:00).</p>
 <ul>
-<li><b>6 new players</b> (Germany 3, US 2, Bulgaria 1): opened 6, started the tutorial 5, finished it 3, finished day 1: 2, none on day 2 yet. One of them is on an old version (26.11.13) and stopped at step 3; another only opened the game.</li>
-<li><b>Day 1:</b> 3 of the 4 first tries today got 2 stars, one got 3. <b>Two new players closed the game within a minute of finishing day 1</b>, at the moment the first between-days ad plays.</li>
-<li><b>The US player came back</b> at 14:40 and played days 15 to 22 in half an hour, 3 stars on every day (day 18 restarted once). They bought candies 7 times and 8 stars for coins (999 coins each); now on day 22 of 28.</li>
-<li><b>Ads for that player:</b> this time every day end showed one: 8 ads, 1 watched to the end, 7 skipped. So their phone does not block ads; <b>my earlier guess was wrong.</b> In their first visit the game asked Unity for no ad at all. Most likely Unity Ads failed to start when the game was first opened, and the game does not try again until it is opened again. That would cost ads for any player whose first start fails.</li>
-<li><b>Came back after days away:</b> two earlier players (Philippines from 16 Nov, US from 13 Nov) started a new game: one finished day 1 (2 stars), one left during day 1.</li>
-<li><b>Unity Ads today</b> (UTC day 21 Nov): 53 requests, 13 shown, $0.10. 9 of the 13 were in the last two hours, most of them the US player.</li>
-<li><b>Downloads</b> (Apple, first time), 14 to 20 Nov: 69. Today's come tomorrow.</li>
+<li><b>8 new players</b>, all from Asia (Philippines 2, China 2, Vietnam, Cambodia, Pakistan, Indonesia): opened 8, started the tutorial 7, finished it 5, finished day 1: 4, went on to day 2: 1.</li>
+<li><b>Day 1, the same picture as before:</b> three of the four got 2 stars and left within a minute or two of the day's end; the one who got 3 stars stayed. Over the last three days: 7 new players finished day 1; the 5 with 2 stars all left right there, the 2 with 3 stars both played on into chapter 2. The first between-days ad plays at that same moment.</li>
+<li><b>A second keen player</b> (Philippines, new on 23 Nov, 01:21 to 05:42 in four visits): days 1 to 12, 3 stars on eleven of them, 23 things bought (all foods, all staff, both ovens, two star cards, cookies, coconut, ice cream upgrade), now on day 13, chapter 2's first day. Ads worked in every visit: 12 between-days ads (2 watched to the end, 10 skipped) and 1 Daily Treat ad.</li>
+<li><b>The US player finished the game:</b> a third visit on 21 Nov, 17:44 to 18:10: days 23 to 28, 3 stars on each. About an hour and a half of play for all 28 days. Not seen since.</li>
+<li><b>Their ads again:</b> in that third visit Unity got no ad request at all from them (none in those two hours), like in their first visit. So two of their three visits had no ads; only the second showed them (8). This fits ads failing to start on some launches and the game not trying again. At US ad prices those two visits were worth more than a normal day of ours.</li>
+<li><b>Chapter 2 is still too hard for the Indonesian player</b> (an older version): back on 22 Nov, 0 stars on day 17, 0 stars on day 13, left day 13 half way.</li>
+<li><b>Other returns:</b> a US player on an older version played half an hour on 21 Nov evening: days 1 to 6 with 0 stars each, then day 1 ten more times (1 to 3 stars). A Malaysian player came back, watched a Daily Treat ad to the end and played day 2 twice (2 stars). A new Pakistani player finished the tutorial, watched a Daily Treat ad, and did not start day 1.</li>
+<li><b>Unity Ads</b> (UTC days): 22 Nov: 13 requests, 9 shown, $0.12. 23 Nov so far: 52 requests, 17 shown, $0.01: ads shown in the Philippines pay under a tenth of US ones. Last seven days: $0.57.</li>
+<li><b>Downloads</b> (Apple, first time): 21 Nov 6, 22 Nov 8; the seven days to 22 Nov: 59 (37 the week before). <b>No purchase yet</b> (no Remove Ads, no Stars).</li>
 </ul>
+<p style="margin:8px 0 4px"><b>What I would do</b> (the first two got stronger with these two days):</p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="an.nov21.adretry"> Fix: if ads fail to start, try again during the same visit</label></li>
 <li><label><input type="checkbox" data-id="an.nov21.ad3"> No between-days ad after days 1 and 2 (first one after day 3)</label></li>
 <li><label><input type="checkbox" data-id="an.nov21.adstart"> Log when an ad starts, so quitting in an ad shows in the data</label></li>
-<li><label><input type="checkbox" data-id="an.nov21b.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="an.nov23.seen"> Seen, remove this</label></li>
 </ul>
 </div>
 
