@@ -74,45 +74,15 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Test build 2026.11.23 (2) is in TestFlight</b> (ready 11:50). It is the release candidate: everything of today, the truck fixes and the tip levels included.</p>
-<p><b>Release 2026.11.23 is submitted to Apple</b> (13:20): build (2), your What's New, the new screenshots. It goes out by itself once Apple approves it.</p>
-<p><b>The last manual test:</b></p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="test23.update"> <b>Update over your save:</b> install this build over the copy you play. Coins, stars, days and purchases as before; in the kitchen the baking tray and the mixer stand at free places on your counter, nothing red</label></li>
-<li><label><input type="checkbox" data-id="test23.day9"> <b>Day 9 star:</b> if yours was never taken, the map opens on chapter 1 with the big star; a tap gives one star, the truck drives to the arrow, day 9 stops bouncing</label></li>
-<li><label><input type="checkbox" data-id="test23.tutorial"> <b>New game, tutorial:</b> the hand moves up and down; the apple tree waits for your tap; the "Ready to go?" card</label></li>
-<li><label><input type="checkbox" data-id="test23.truck"> <b>Map:</b> after a finished day the cookie truck drives to the next day, then the day card opens; a tap on an earlier day sends it there first; it follows you past day 9 too</label></li>
-<li><label><input type="checkbox" data-id="test23.kitchen"> <b>Choux and cake:</b> oven, mixer (wide whisk, sound), board (knife, sound), sparkles, the table is refilled</label></li>
-<li><label><input type="checkbox" data-id="test23.pause"> <b>Pause</b> while the mixer runs: everything stands still, then goes on</label></li>
-<li><label><input type="checkbox" data-id="test23.picker"> <b>Second choux</b> while its tray is busy: its note is greyed in the oven picker</label></li>
-<li><label><input type="checkbox" data-id="test23.dayend"> <b>End a day with a dessert half made</b> (and restart one): no kitchen sound afterwards; the next day starts with empty ovens</label></li>
-<li><label><input type="checkbox" data-id="test23.dots"> <b>Thinking dots</b> on every order, also the ones that start with bread</label></li>
-<li><label><input type="checkbox" data-id="test23.ch2"> <b>Chapter 2, first day:</b> the gift card (its text does not flicker), the fourth flower flies to the customer; the waffle machine; the blender waits for your tap</label></li>
-<li><label><input type="checkbox" data-id="test23.days"> <b>Day numbers:</b> chapter 2 starts at Day 1 on the map, the day card, in play and on "DAY 1 DONE!"</label></li>
-<li><label><input type="checkbox" data-id="test23.shop"> <b>Shop:</b> the EARNED line; NEW on tabs; locked cards</label></li>
-<li><label><input type="checkbox" data-id="test23.handles"> <b>Pull handles</b> on the table and in the kitchen: a little bigger, easy to hit</label></li>
-<li><label><input type="checkbox" data-id="test23.tips"> <b>Receipts:</b> green PERFECT!, yellow NICE!, plain grey, by the flowers left when the order is done</label></li>
-</ul>
-<p><b>Cannot be tested yet:</b> the update card (it needs a newer version on the store).</p>
-<p><b>Still open:</b> Header and Search Results (Q&amp;A); the three ad choices (Analysis); the C chapter scenes (its tab).</p>
+<p><b>Release 2026.11.23 is with Apple</b> (submitted 23 November, 13:20). It goes out by itself once approved.</p>
+<p><b>Open:</b> Header and Search Results (Q&amp;A).</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>I watch Apple's review and tell you when it is approved. If your last test finds something, say so: the submission can be pulled back and a new build put in.</p>
-<p><b>Early December:</b> look at Unity's Finance page for November's balance.</p>
+<p>I watch the review and tell you when the release is live.</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>What might cause the ads to fail to load? (23 Nov)</h3>
-<ul>
-<li><b>What the numbers say:</b> in the US player's two ad-less visits Unity got no request at all from the phone. So the ads did not fail one by one; the ad system never started in those visits.</li>
-<li><b>How that happens in our code:</b> the game starts Unity Ads once, at the start menu. If that start fails, nothing tries again for the whole visit; each day end only waits 20 seconds for it and then goes on without an ad.</li>
-<li><b>What makes the start fail:</b> no or weak network in the first seconds after opening the game (lift, underground, Wi-Fi still connecting, a Wi-Fi that wants a log-in page); Unity's servers not answering in time; a network or app that filters ad addresses (some VPNs, DNS filters, school or work Wi-Fi). On the very first launch the start also waits for the tracking question, up to 15 seconds.</li>
-<li><b>Not causes:</b> saying no to tracking (ads still come), Remove Ads (the game still asks Unity then), the release itself (other players on the same version get ads).</li>
-<li><b>The fix</b> is the first box in Analysis: try the start again during the visit.</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.adfail23.seen"> Seen</label></li></ul>
-</div>
 <div class="q"><h3>Header and Search Results: what does a player see with and without them? (23 Nov)</h3>
 <ul>
 <li><b>What they are:</b> two optional pictures (or silent looping videos, 5 to 30 s) Apple added this autumn. Only iPhones and iPads on iOS 27 show them. Each can be added or left empty on its own.</li>
@@ -138,66 +108,20 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">23 November. Everything approved today is in test build 2026.11.23 (2).</p>
-<div class="card">
-<p style="margin-top:0"><b>Release 2026.11.23 is submitted</b> (23 November, 13:20, on your word). <small>Waiting for Apple's review.</small></p>
-<ul>
-<li><b>In it:</b> build 2026.11.23 (2), your What's New, the new screenshots on iPhone and iPad.</li>
-<li><b>It goes out by itself once Apple approves it</b> (set on your word, 23 November).</li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Tip levels, as built.</b> <small>In build (2).</small></p>
-<figure><img src="tips_game.jpg" alt="Three receipts from the game. A green PERFECT! tag with green tips; a yellow NICE! tag with yellow tips edged in brown; a receipt with grey-brown tips and no tag"><figcaption>Table: the three receipts in the game.</figcaption></figure>
-<ul>
-<li><b>One thing differs from the drawing's rule, and you should know it:</b> every item you serve already fills the customer's patience up to the next whole flower. So an order always ends on whole flowers, and "less than a third left" could never happen. The level is therefore read from the flowers left when the order is finished:</li>
-<li><b>Perfect:</b> all flowers (chapter 2: three or four). <b>Nice:</b> two flowers. <b>Just OK:</b> one flower.</li>
-<li>The money is unchanged. The "perfect" sound and the double tap now go with PERFECT! (they came a little more often before, from half the patience left).</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.tips23b.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.tips23b.change"> Changes (I will say what)</label></li>
-</ul>
-</div>
+<p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Release 2026.11.23, submitted 23 November. Everything changed since release 2026.11.20:</p>
-<ul>
-<li><b>Kitchen flow:</b> choux and cake are made in steps. The oven bakes them onto the baking tray or the cake plate in the kitchen, the mixer adds the cream, the fruit board adds the fruit, then they fly to the table. The kitchen does every step by itself, with no pause.</li>
-<li><b>New kitchen pieces:</b> the baking tray (four choux, two by two, four stages, with a shadow), the cake plate's stages (empty, sponge, cream, finished), the lean handheld mixer with its bowl and the kitchen's whisk as its blade (at rest and running). All can be arranged; the tray starts on the kitchen table and always lies fully on its top.</li>
-<li><b>Kitchen times:</b> bread bakes 5 s; choux, cake and cookies 3 s. The ice cream blender runs 3 s (1.8 s with two flavours). Pausing the game stops the kitchen too.</li>
-<li><b>Chapter 2 opens after day 9</b> of chapter 1 (the player chooses when to go). On the map day 9 is a big glowing star with a dotted path to the arrow; finishing it gives a star and the truck drives to chapter 2.</li>
-<li><b>Chapter 2, first day:</b> every ice cream is a waffle bowl with one or two scoops; normal orders from the second day.</li>
-<li><b>Chapter 2 gift:</b> a fourth patience flower for every chapter 2 customer; in the tutorial a reward card shows it and it flies to the first customer.</li>
-<li><b>Map:</b> today's day card opens by itself.</li>
-<li><b>Customers:</b> they think for 2 s (three dots in the middle of the bubble) before the order shows.</li>
-<li><b>Tutorial:</b> the pointer is a hand cookie with a gold glaze glow.</li>
-<li><b>Shop:</b> NEW on a tab that holds something new; locked items stay visible with a padlock (cookies and coconut until chapter 2, the star Yoga until she is hired); two new locked star cards, Chef (20) and Dining table (25); cards aligned; the extra cup reads "One more plate for brewed coffee."</li>
-<li><b>Look:</b> a taller hen on the table; the tutorial's "Ready to go?" card on paper with cookie buttons.</li>
-</ul>
-<p style="margin:8px 0 4px"><b>Since test build 2026.11.21 (1):</b> pull handles 12 % bigger; the shop's EARNED line in the Daily Treats letters; the chapter 2 tutorial waits for a tap on the blender; the tutorial hand moves up and down; no arrange banner in the chapter 2 tutorial; the mixer set larger, its whisk deeper in the cream and kept wide while it turns. All of it is in test build 2026.11.23 (0). After it: the four small fixes of the scan; the cookie truck driving on the map; thinking dots on every order; the apple step in the tutorial; days counted inside each chapter; day 9's star for everyone who finished day 9; the update card; the kitchen stopping with the day; day 9 calm once its star is taken (all in test build 2026.11.23 (1)); then the truck following every day and driving to a tapped day, the second scan's small fixes, and the tip levels on the receipt (all in build 2).</p>
-<p style="margin:8px 0 4px"><b>Not in yet:</b> the chapter 2 tuning (your picks); a sound for the day 9 scene.</p>
+<p class="sub" style="margin:0 0 8px">Nothing open. Release 2026.11.23 is submitted.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
 <h2 id="analysis"><span class="n">6</span>Analysis</h2>
-<div class="card">
-<p style="margin-top:0"><b>Open from the players of 21 to 23 November:</b> three ad choices.</p>
-<ul>
-<li>The US player who finished the game got no ads in two of three visits: ads seem to fail to start on some launches and are not tried again.</li>
-<li>All five new players with 2 stars on day 1 left at the day's end, where the first ad plays.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="an.nov21.adretry"> Fix: if ads fail to start, try again during the same visit</label></li>
-<li><label><input type="checkbox" data-id="an.nov21.ad3"> No between-days ad after days 1 and 2 (first one after day 3)</label></li>
-<li><label><input type="checkbox" data-id="an.nov21.adstart"> Log when an ad starts, so quitting in an ad shows in the data</label></li>
-</ul>
-</div>
+<p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
 <h2 id="marketing"><span class="n">7</span>Marketing</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>
+
 </main>
 <script>
 (async()=>{
