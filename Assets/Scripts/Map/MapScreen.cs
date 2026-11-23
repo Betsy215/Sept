@@ -85,6 +85,13 @@ public class MapScreen : MonoBehaviour
     {
         ceremonyRunning = true;
         SessionManager.Instance.ClaimChapter2();
+        // the star is taken: day 9 stops asking for a tap (owner's tick, 23 November 2026: "Stop day 9's bounce once its star is taken")
+        if (day9Rect != null)
+        {
+            var bounce = day9Rect.GetComponent<MapTodayBounce>();
+            if (bounce != null) { bounce.enabled = false; Destroy(bounce); day9Rect.anchoredPosition = P(StarsOf(0)[SpecialDay]); day9Rect.localScale = Vector3.one; }
+            var d9 = day9Rect.GetComponent<Image>(); if (d9 != null) GlowFx.Remove(d9);
+        }
         if (day9Rect != null && starSprite != null)
         {
             var star = NewImage("RewardStar", canvasRect, starSprite); star.raycastTarget = false;
