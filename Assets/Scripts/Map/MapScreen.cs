@@ -54,7 +54,9 @@ public class MapScreen : MonoBehaviour
         // since chapter 2 opens after day 9 (20 November 2026)
         var on0 = sm0 != null ? Chapter.Of(sm0.GetCurrentLevelIndex()) : 1;
         page = Mathf.Clamp(Mathf.Min(on0, SessionManager.ChaptersOpen) - 1, 0, Chapter.Count - 1);
-        if (sm0 != null && sm0.Chapter2CeremonyDue) page = 0;   // day 9's star still waits: chapter 1's page, whatever day the player is on (23 November 2026)
+        // day 9's star still waits: chapter 1's page first, once per run of the game, whatever day the player is on; after
+        // that the map opens on the player's own chapter again (23 November 2026)
+        if (sm0 != null && sm0.Chapter2CeremonyDue && !starPageShown) { starPageShown = true; page = 0; }
         Build();
         // today's day card opens by itself once the map is up (owner, 20 November 2026: "Show the day start panel
         // automatically when the level map shows up"); Cancel closes it and the map is there as before
@@ -65,6 +67,7 @@ public class MapScreen : MonoBehaviour
     // ---- day 9, the day that opens chapter 2 (owner, 20 November 2026) ----
     private const int SpecialDay = 8;                     // day 9's place in chapter 1
     private bool skipAutoCard, ceremonyRunning;
+    private static bool starPageShown;
     private RectTransform day9Rect, truckRect; private Image arrowImage;
     private Vector2 curveA, curveB, curveC;               // the dotted line: from day 9, to the arrow, its bend
     private readonly System.Collections.Generic.List<Image> curveDots = new System.Collections.Generic.List<Image>();
@@ -73,9 +76,13 @@ public class MapScreen : MonoBehaviour
 
     private void TapDay(int day, bool special)
     {
-        if (popup != null || leaving || ceremonyRunning) return;
+        if (popup != null || leaving || ceremonyRunning || truckDriving) return;
         var sm = SessionManager.Instance;
         if (special && sm != null && sm.Chapter2CeremonyDue) { StartCoroutine(Chapter2Ceremony()); return; }
+        // the truck drives to the day that was picked, then its card opens (owner, 23 November 2026: "when i goes back and
+        // replay, i want the truck to drive to that level first ... only after truck arrives, then we show day picker")
+        var place = day - Chapter.FirstDay(page + 1);
+        if (truckRect != null && truckSpot >= 0 && place != truckSpot && place >= 0 && place < StarsOf(page).Length) { StartCoroutine(DriveThenOpen(place, day)); return; }
         OpenDay(day);
     }
 
@@ -135,21 +142,50 @@ public class MapScreen : MonoBehaviour
             ab.transition = Selectable.Transition.None;
             NewTag.OnUI(arrowImage.rectTransform); GlowFx.Shine(arrowImage);
         }
+        truckSpot = -1;   // it stands at the arrow now: a day tapped next opens at once (the page puts it back at today's day when it is shown again)
         ceremonyRunning = false;
     }
 
     // ---- the truck drives to today's day ----
     private static readonly int[] truckStoodAt = { -1, -1, -1, -1 };   // per page: where the truck stood when the page last showed (kept while the game runs)
     private bool truckDriving;
+    private int truckSpot = -1, truckDays; private float truckW;   // where it stands on this page now (a day's place, or `truckDays` for the spot above the last day)
+
+    /// A new game: the truck has stood nowhere yet (it must not drive in from the old game's day).
+    public static void ForgetTruck() { for (var i = 0; i < truckStoodAt.Length; i++) truckStoodAt[i] = -1; }
+
+    /// The truck's resting place beside a day (or above the last day once the chapter is done), as an offset from the day's star.
+    private Vector2 Rest(int spot)
+    {
+        if (spot >= truckDays) return new Vector2(0f, 110f);
+        var a = P(StarsOf(page)[Mathf.Clamp(spot, 0, StarsOf(page).Length - 1)]);
+        return a.x < 370f ? new Vector2(44f + truckW / 2f, -80f) : new Vector2(540f - 10f - truckW / 2f - a.x, -140f);   // as in Build
+    }
+
+    /// The stars from one place to another, either way.
+    private List<Vector2> PathBetween(int from, int to)
+    {
+        var stars = StarsOf(page); int a = Mathf.Clamp(from, 0, stars.Length - 1), b = Mathf.Clamp(to, 0, stars.Length - 1);
+        var path = new List<Vector2>(); for (var i = a; ; i += b >= a ? 1 : -1) { path.Add(P(stars[i])); if (i == b) break; }
+        if (path.Count == 1) path.Add(path[0]);
+        return path;
+    }
+
+    private System.Collections.IEnumerator DriveThenOpen(int place, int day)
+    {
+        var shown = page; var from = truckSpot; truckDriving = true; truckSpot = place; if (page < truckStoodAt.Length) truckStoodAt[page] = place;
+        yield return Drive(truckRect, PathBetween(from, place), Rest(from), Rest(place), 0f);
+        if (popup == null && !leaving && page == shown) OpenDay(day);
+    }
 
     /// Along the line from day to day, its wheels on the line, with the small bounce of the day 9 drive; it leaves its
     /// place beside the old day and settles beside the new one. Turned round while it goes left.
-    private System.Collections.IEnumerator Drive(RectTransform truck, List<Vector2> path, Vector2 restFrom, Vector2 restTo)
+    private System.Collections.IEnumerator Drive(RectTransform truck, List<Vector2> path, Vector2 restFrom, Vector2 restTo, float wait)
     {
         var total = 0f; for (var i = 1; i < path.Count; i++) total += Vector2.Distance(path[i - 1], path[i]);
         var dur = Mathf.Clamp(total / 380f, 0.9f, 2.4f); var lift = new Vector2(0f, truck.sizeDelta.y * 0.35f);
         var scale = truck.localScale; truck.anchoredPosition = path[0] + restFrom;
-        yield return new WaitForSecondsRealtime(0.4f);   // the map shows first
+        if (wait > 0f) yield return new WaitForSecondsRealtime(wait);   // when the map has just come up: it shows first
         for (var t = 0f; t < dur; t += Time.unscaledDeltaTime)
         {
             if (truck == null) { truckDriving = false; yield break; }   // the page was changed meanwhile
@@ -228,7 +264,9 @@ public class MapScreen : MonoBehaviour
         // day 9 of chapter 1 is the day that opens chapter 2: bigger, a glowing star, a dotted line to the arrow
         var hasSpecial = page == 0 && Chapter.Count >= 2 && Stars.Length > SpecialDay;
         var ceremonyDue = hasSpecial && sm != null && sm.Chapter2CeremonyDue;
-        skipAutoCard = ceremonyDue || (hasSpecial && todayHere && !allDone && today == SpecialDay);
+        // No card by itself at day 9 (the player taps the big star day), nor right after day 9 is finished, when its star
+        // waits. Later the card comes as on any day, star taken or not (23 November 2026).
+        skipAutoCard = hasSpecial && todayHere && !allDone && (today == SpecialDay || (ceremonyDue && today == SpecialDay + 1));
         day9Rect = null; truckRect = null; arrowImage = null; curveDots.Clear();
 
         // Lines between the stars: bright up to today, faint after
@@ -305,29 +343,28 @@ public class MapScreen : MonoBehaviour
         // The truck beside today's star (beside day 16 once the chapter is done); on a page ahead of today there is no truck
         if (truckSprite != null && (todayHere || allDone))
         {
-            var stand = ceremonyDue ? SpecialDay : allDone ? days - 1 : today;   // it waits at day 9 until its star is taken
+            // The truck always stands at the player's next day (owner, 23 November 2026: "when the truck arrives at day 9,
+            // even i played day 10, it still at day 9, truck not moving"): it used to wait at day 9 until the star was taken.
+            var stand = allDone ? days - 1 : today;
             var at = P(Stars[stand]);
             var truck = NewImage("Truck", canvasRect, truckSprite); truckRect = truck.rectTransform;
             var h = 120f; var w = h * truckSprite.rect.width / truckSprite.rect.height;
             // beside today's star; above day 16 once the chapter is done (to its right it would cover day 11)
             System.Func<Vector2, Vector2> beside = a => a.x < 370f ? new Vector2(44f + w / 2f, -80f)   // 370: with the 1.15 map, day 4 at x 387 clipped the truck on the right
                 : new Vector2(540f - 10f - w / 2f - a.x, -140f);                                       // day 5 sits near the right edge: tuck the truck below it
-            var offset = allDone && !ceremonyDue ? new Vector2(0f, 110f) : beside(at);
+            var offset = allDone ? new Vector2(0f, 110f) : beside(at);
             Place(truck.rectTransform, at + offset, new Vector2(w, h));
             truck.raycastTarget = false;
             // It drives here from where it stood the last time this page showed, when the day has moved on (owner,
             // 23 November 2026: "make it move along the path when player finishes a level, when level map shows up, first
             // show the truck moving, once arrived, then show the day start panel automatically"). Not after a new game
             // or a first look (nothing to drive from).
-            var spot = allDone && !ceremonyDue ? days : stand;   // "days": the place above the last day
+            var spot = allDone ? days : stand;   // "days": the place above the last day
             var was = page < truckStoodAt.Length ? truckStoodAt[page] : -1;
             if (page < truckStoodAt.Length) truckStoodAt[page] = spot;
-            if (was >= 0 && was < spot && was < Stars.Length)
-            {
-                var path = new List<Vector2>(); for (var i = was; i <= stand; i++) path.Add(P(Stars[i]));
-                if (path.Count == 1) path.Add(path[0]);
-                truckDriving = true; StartCoroutine(Drive(truck.rectTransform, path, beside(path[0]), offset));
-            }
+            truckW = w; truckDays = days; truckSpot = spot;
+            // from wherever it stood, forwards or back (after a replayed day it comes back to today's day)
+            if (was >= 0 && was != spot && was <= days) { truckDriving = true; StartCoroutine(Drive(truck.rectTransform, PathBetween(was, spot), Rest(was), offset, 0.4f)); }
         }
 
         // Title, one line

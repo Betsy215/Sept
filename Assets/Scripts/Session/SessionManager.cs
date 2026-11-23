@@ -508,6 +508,7 @@ public class SessionManager : MonoBehaviour
         KitchenTimerHelper.CancelAll();
         CooldownRegistry.ClearAll();
         CoconutInKitchen.Count = CoconutInKitchen.Full;   // the palm's coconuts are static too (21 October)
+        MapScreen.ForgetTruck();                         // and the map's truck: it does not drive in from the old game's day
 
         Debug.Log("New session started!");
 
