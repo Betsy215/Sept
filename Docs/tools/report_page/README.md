@@ -24,6 +24,9 @@ is history only.
 8. **C chapter** (owner, 18 November 2026: "Put a section on report for c chapter (Christmas chapter), I will call it c
    chapter for short"): the Christmas chapter's plan, starting from the owner's ideas (pink cloth and white snow, winter
    clothes, cookies, hot drinks). Always present while the chapter is being made.
+Mechanisms (`mechanisms.html`; owner, 23 November 2026: "add this tab and keep it forever, call it mechanisms, this is the
+tab we keep game data and information etc."): game data in numbers (sale prices, kitchen times, ...). Never cleared with the
+report; keep its numbers current.
 Visuals (`visuals.html`): real captures of the live build in the Claude Doc's order
 (Store page, Menu and maps, Chapter 1 day, Chapter 2 tutorial, Chapter 2 day, Chapter change, Screen sizes).
 
