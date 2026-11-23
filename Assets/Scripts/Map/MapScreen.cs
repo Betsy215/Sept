@@ -129,11 +129,45 @@ public class MapScreen : MonoBehaviour
         ceremonyRunning = false;
     }
 
+    // ---- the truck drives to today's day ----
+    private static readonly int[] truckStoodAt = { -1, -1, -1, -1 };   // per page: where the truck stood when the page last showed (kept while the game runs)
+    private bool truckDriving;
+
+    /// Along the line from day to day, its wheels on the line, with the small bounce of the day 9 drive; it leaves its
+    /// place beside the old day and settles beside the new one. Turned round while it goes left.
+    private System.Collections.IEnumerator Drive(RectTransform truck, List<Vector2> path, Vector2 restFrom, Vector2 restTo)
+    {
+        var total = 0f; for (var i = 1; i < path.Count; i++) total += Vector2.Distance(path[i - 1], path[i]);
+        var dur = Mathf.Clamp(total / 380f, 0.9f, 2.4f); var lift = new Vector2(0f, truck.sizeDelta.y * 0.35f);
+        var scale = truck.localScale; truck.anchoredPosition = path[0] + restFrom;
+        yield return new WaitForSecondsRealtime(0.4f);   // the map shows first
+        for (var t = 0f; t < dur; t += Time.unscaledDeltaTime)
+        {
+            if (truck == null) { truckDriving = false; yield break; }   // the page was changed meanwhile
+            var k = Mathf.SmoothStep(0f, 1f, t / dur); var left = k * total; var p = path[path.Count - 1]; var dir = Vector2.right;
+            for (var i = 1; i < path.Count; i++)
+            {
+                var seg = Vector2.Distance(path[i - 1], path[i]);
+                if (left <= seg || i == path.Count - 1) { p = seg > 0.01f ? Vector2.Lerp(path[i - 1], path[i], Mathf.Clamp01(left / seg)) : path[i]; dir = path[i] - path[i - 1]; break; }
+                left -= seg;
+            }
+            var mid = Mathf.Clamp01(Mathf.Min(k, 1f - k) / 0.2f);          // 0 at both ends, 1 on the road
+            var off = Vector2.Lerp(k < 0.5f ? restFrom : restTo, lift, Mathf.SmoothStep(0f, 1f, mid));
+            truck.anchoredPosition = p + off + new Vector2(0f, Mathf.Abs(Mathf.Sin(t * 22f)) * 4f * mid);
+            truck.localScale = new Vector3((dir.x < -1f && mid > 0.5f ? -1f : 1f) * Mathf.Abs(scale.x), scale.y, scale.z);
+            yield return null;
+        }
+        if (truck != null) { truck.anchoredPosition = path[path.Count - 1] + restTo; truck.localScale = scale; }
+        truckDriving = false;
+    }
+
     private int todayDay = -1;
     private System.Collections.IEnumerator OpenTodaySoon(int day)
     {
-        var shown = page;
+        var shown = page; var drove = truckDriving;
         yield return new WaitForSeconds(0.45f);   // the map shows first, then the card
+        while (truckDriving) yield return null;   // and the truck arrives first (owner, 23 November 2026: "once arrived, then show the day start panel automatically")
+        if (drove) yield return new WaitForSecondsRealtime(0.3f);
         if (popup == null && !leaving && page == shown) OpenDay(day);   // not over another chapter's page, if the arrow was tapped meanwhile
     }
 
@@ -262,15 +296,29 @@ public class MapScreen : MonoBehaviour
         // The truck beside today's star (beside day 16 once the chapter is done); on a page ahead of today there is no truck
         if (truckSprite != null && (todayHere || allDone))
         {
-            var at = P(Stars[ceremonyDue ? SpecialDay : allDone ? days - 1 : today]);   // it waits at day 9 until its star is taken
+            var stand = ceremonyDue ? SpecialDay : allDone ? days - 1 : today;   // it waits at day 9 until its star is taken
+            var at = P(Stars[stand]);
             var truck = NewImage("Truck", canvasRect, truckSprite); truckRect = truck.rectTransform;
             var h = 120f; var w = h * truckSprite.rect.width / truckSprite.rect.height;
             // beside today's star; above day 16 once the chapter is done (to its right it would cover day 11)
-            var offset = allDone && !ceremonyDue ? new Vector2(0f, 110f)
-                : at.x < 370f ? new Vector2(44f + w / 2f, -80f)   // 370: with the 1.15 map, day 4 at x 387 clipped the truck on the right
-                : new Vector2(540f - 10f - w / 2f - at.x, -140f); // day 5 sits near the right edge: tuck the truck below it
+            System.Func<Vector2, Vector2> beside = a => a.x < 370f ? new Vector2(44f + w / 2f, -80f)   // 370: with the 1.15 map, day 4 at x 387 clipped the truck on the right
+                : new Vector2(540f - 10f - w / 2f - a.x, -140f);                                       // day 5 sits near the right edge: tuck the truck below it
+            var offset = allDone && !ceremonyDue ? new Vector2(0f, 110f) : beside(at);
             Place(truck.rectTransform, at + offset, new Vector2(w, h));
             truck.raycastTarget = false;
+            // It drives here from where it stood the last time this page showed, when the day has moved on (owner,
+            // 23 November 2026: "make it move along the path when player finishes a level, when level map shows up, first
+            // show the truck moving, once arrived, then show the day start panel automatically"). Not after a new game
+            // or a first look (nothing to drive from).
+            var spot = allDone && !ceremonyDue ? days : stand;   // "days": the place above the last day
+            var was = page < truckStoodAt.Length ? truckStoodAt[page] : -1;
+            if (page < truckStoodAt.Length) truckStoodAt[page] = spot;
+            if (was >= 0 && was < spot && was < Stars.Length)
+            {
+                var path = new List<Vector2>(); for (var i = was; i <= stand; i++) path.Add(P(Stars[i]));
+                if (path.Count == 1) path.Add(path[0]);
+                truckDriving = true; StartCoroutine(Drive(truck.rectTransform, path, beside(path[0]), offset));
+            }
         }
 
         // Title, one line

@@ -302,7 +302,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 024dacd9a1ca94f439003df6931611bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  truckSprite: {fileID: 21300000, guid: 36ed7150722734642ac26ac2502ddf14, type: 3}
+  truckSprite: {fileID: 21300000, guid: f7d93fdc464224aca9bce8bf5f3757c1, type: 3}
   boardSprite: {fileID: 21300000, guid: 86e870e5911c84a6ea3fa0f52b375cb7, type: 3}
   starSprite: {fileID: 21300000, guid: dcf6345af9ffd40b79971739a82e22c2, type: 3}
   darkStarSprite: {fileID: 21300000, guid: b63ce51086eb9424f9a1fd14ddec4214, type: 3}

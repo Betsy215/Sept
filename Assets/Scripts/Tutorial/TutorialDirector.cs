@@ -302,14 +302,19 @@ public class TutorialDirector : MonoBehaviour
                     beansShown = true;
                 }
 
-                // The apple tree in the kitchen window: just show it (owner, 14 October)
+                // The apple tree in the kitchen window: the player picks one apple, like the coffee bags (owner, 23 November
+                // 2026: "let player click on apple just like coffee tutorial, just one click is fine, then show the next
+                // tutorial banner"; it was only pointed at since 14 October)
                 var tree = FindInScene("KitchenScene", "apples");
-                if (tree != null)
+                if (tree != null && tree.activeInHierarchy)
                 {
-                    Say("Fruits grow here, you can pick them!");
-                    yield return PointAtRect(tree.GetComponent<RectTransform>());
-                    yield return new WaitForSeconds(2.5f);
+                    var trt = tree.GetComponent<RectTransform>(); var apples = tree.GetComponentInChildren<AppleInKitchen>();
+                    Say("Fruits grow here, tap to pick them!");
+                    yield return PointAtRect(trt);
+                    yield return WaitForTapOnRect(trt);
+                    if (apples != null) apples.Take();        // into the basket when it has room; a full basket leaves the apple on the tree with a small pop
                     HideHand();
+                    yield return new WaitForSeconds(0.8f);
                 }
 
                 // While it bakes, point at every other kitchen section the player can unlock later

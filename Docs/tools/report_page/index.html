@@ -75,7 +75,9 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>Test build 2026.11.23 (0) is in TestFlight</b> (ready 09:45).</p>
-<p><b>Before the release, read Current:</b> the scan found four small bugs (fixed, not in build 0) and a list of things for you to decide or test. A build (1) with the fixes waits for your tick or word.</p>
+<p><b>Your three test notes are done</b> (Current, top): the map truck drives, the thinking dots always show, the apple step in the tutorial waits for a tap.</p>
+<p><b>Before the release, read Current:</b> the scan found four small bugs (fixed) and a list of things for you to decide or test.</p>
+<p><b>None of this is in build (0).</b> Say "build" for 2026.11.23 (1) with all seven changes.</p>
 <p><b>Q&amp;A:</b> Header and Search Results, with pictures of both and drafts for our page.</p>
 <p><b>New tab, Mechanisms:</b> the sale prices and kitchen times live there now, for good.</p>
 <p><b>C chapter tab:</b> your reference picture and three scene drafts by ChatGPT built on it, to pick from.</p>
@@ -113,7 +115,24 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">23 November. Test build 2026.11.23 (0) is in TestFlight; the four fixes below are not in it.</p>
+<p class="sub" style="margin:0 0 8px">23 November. Test build 2026.11.23 (0) is in TestFlight; nothing below is in it.</p>
+<div class="card">
+<p style="margin-top:0"><b>Your test notes, 23 November.</b> <small>Checked in the game; not in a test build yet.</small></p>
+<figure><img src="map_truck_drive.jpg" alt="The chapter 1 map in three moments after day 4 is finished: the cookie truck beside day 4, then on the line between day 4 and day 5 facing the way it drives, then parked beside day 5"><figcaption>Map: the cookie truck leaves day 4, drives along the line, and parks at day 5.</figcaption></figure>
+<ul>
+<li><b>Map truck:</b> it is the truck cookie from the start menu now. It was not moving before (only in the day 9 scene). Now, when the map comes up after a finished day, the truck drives along the line from the old day to the new one, facing the way it goes; when it has arrived, the day card opens. Opening the map without a new day done: no drive, the card opens as before.</li>
+</ul>
+<figure><img src="dots_bread.jpg" alt="Two customers at the table: the small girl's bubble shows three dark thinking dots, the other customer's bubble shows a coffee, a bread and an apple"><figcaption>Table: the kid thinking over an order that starts with bread; the dots show now.</figcaption></figure>
+<ul>
+<li><b>Thinking dots:</b> found it. An order whose first item was <b>bread</b> thought with no dots (the bread's order picture is not ready on its first moment, and the dots took their size from it). Any customer could have it; the kid's orders just started with bread often. The dots no longer depend on the foods' pictures.</li>
+<li><b>Chapter 1 tutorial, apple tree:</b> the hand points at the tree, the banner says "Fruits grow here, tap to pick them!", and the tutorial waits for one tap; an apple is picked, then the next banner comes. Tried in the game: it waits, takes the tap, and goes on to "Ding! Fresh bread".</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.test23.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.test23.change"> Changes (I will say what)</label></li>
+</ul>
+</div>
+
 <div class="card">
 <p style="margin-top:0"><b>Scan of everything changed since release 2026.11.20</b> (two readers: I read the kitchen, tutorial, flowers and orders; a second reader the saves, map and shop).</p>
 <p style="margin:8px 0 4px"><b>Saves:</b> no way found for an updating player to lose progress, get stuck or see a wrong day (traced for 0 to 8, 9 to 11, 12, 13 to 27 and all 28 days done). Read from the code, not run on a device.</p>
@@ -158,7 +177,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><b>Shop:</b> NEW on a tab that holds something new; locked items stay visible with a padlock (cookies and coconut until chapter 2, the star Yoga until she is hired); two new locked star cards, Chef (20) and Dining table (25); cards aligned; the extra cup reads "One more plate for brewed coffee."</li>
 <li><b>Look:</b> a taller hen on the table; the tutorial's "Ready to go?" card on paper with cookie buttons.</li>
 </ul>
-<p style="margin:8px 0 4px"><b>Since test build 2026.11.21 (1):</b> pull handles 12 % bigger; the shop's EARNED line in the Daily Treats letters; the chapter 2 tutorial waits for a tap on the blender; the tutorial hand moves up and down; no arrange banner in the chapter 2 tutorial; the mixer set larger, its whisk deeper in the cream and kept wide while it turns. All of it is in test build 2026.11.23 (0). After it: the four small fixes of the scan (Current).</p>
+<p style="margin:8px 0 4px"><b>Since test build 2026.11.21 (1):</b> pull handles 12 % bigger; the shop's EARNED line in the Daily Treats letters; the chapter 2 tutorial waits for a tap on the blender; the tutorial hand moves up and down; no arrange banner in the chapter 2 tutorial; the mixer set larger, its whisk deeper in the cream and kept wide while it turns. All of it is in test build 2026.11.23 (0). After it: the four small fixes of the scan; the cookie truck driving on the map; thinking dots on every order; the apple step in the tutorial.</p>
 <p style="margin:8px 0 4px"><b>Not in yet:</b> the chapter 2 tuning (your picks); a sound for the day 9 scene.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>

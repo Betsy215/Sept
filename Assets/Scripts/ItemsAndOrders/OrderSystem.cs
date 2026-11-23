@@ -408,8 +408,12 @@ public class OrderSystem : MonoBehaviour
             if (icon == null) icon = go.GetComponentInChildren<SpriteRenderer>(true);
             go.SetActive(false);
         }
-        if (n == 0 || icon == null || icon.sprite == null || s.container == null) return;
-        var wide = icon.sprite.bounds.size.x * Mathf.Abs(icon.transform.lossyScale.x) / Mathf.Max(0.0001f, Mathf.Abs(s.container.lossyScale.x));   // one food picture, in the container's units
+        if (n == 0 || s.container == null) return;
+        // The dots never depend on the first food's picture (23 November 2026: the bread's order picture gets its sprite a
+        // frame later, so an order that began with bread thought with no dots at all; the owner: "the thinking dots
+        // doesn't show up all the time"). A picture, when there is one, only gives a fallback size.
+        var hasPic = icon != null && icon.sprite != null;
+        var wide = hasPic ? icon.sprite.bounds.size.x * Mathf.Abs(icon.transform.lossyScale.x) / Mathf.Max(0.0001f, Mathf.Abs(s.container.lossyScale.x)) : 0.6f / Mathf.Max(0.0001f, Mathf.Abs(s.container.lossyScale.x));   // one food picture, in the container's units
         var size = wide * 0.42f; var at = mid / n;
         // Sized and centred from the bubble itself (owner, 21 November 2026: "the dots looks fine on bigger bubble, but
         // on small bubble it looks too big. resize and center the dots in bubbles"): the middle of the bubble's inside
@@ -432,7 +436,8 @@ public class OrderSystem : MonoBehaviour
             var d = new GameObject("Dot" + i); d.transform.SetParent(root.transform, false);
             d.transform.localPosition = new Vector3((i - 1) * size * 1.55f, 0f, 0f); d.transform.localScale = Vector3.one * size;
             var sr = d.AddComponent<SpriteRenderer>(); sr.sprite = DotSprite(); sr.color = new Color(0.24f, 0.16f, 0.12f);
-            sr.sortingLayerID = icon.sortingLayerID; sr.sortingOrder = icon.sortingOrder;
+            if (icon != null) { sr.sortingLayerID = icon.sortingLayerID; sr.sortingOrder = icon.sortingOrder; }
+            else if (body != null) { sr.sortingLayerID = body.sortingLayerID; sr.sortingOrder = body.sortingOrder + 1; }   // over the bubble at least
         }
         order.thinkDots = root;
     }
