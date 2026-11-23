@@ -206,7 +206,8 @@ public class ScoreManager : MonoBehaviour
         if (starProgressBar != null)
             starProgressBar.UpdateDisplay(currentScore);
 
-        StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints * payFactor, tip * payFactor));
+        var tipLevel = SimpleScorePopup.PendingTip; SimpleScorePopup.PendingTip = SimpleScorePopup.TipLevel.None;   // the finished order's level, for its receipt
+        StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints * payFactor, tip * payFactor, tipLevel));
         PlayBonusSound();
 
         currentOrderItemPoints = 0;
@@ -218,13 +219,15 @@ public class ScoreManager : MonoBehaviour
     }
 
     // NEW: Show one combined popup after order completion
-    private IEnumerator DelayedCombinedPopup(float itemPoints, float timeBonus)
+    private IEnumerator DelayedCombinedPopup(float itemPoints, float timeBonus, SimpleScorePopup.TipLevel tipLevel = SimpleScorePopup.TipLevel.None)
     {
         // Wait for served item animation to finish
         yield return new WaitForSeconds(0.2f);
 
         // Show combined popup
+        SimpleScorePopup.NextTip = tipLevel;
         ShowScorePopup(itemPoints, timeBonus);
+        SimpleScorePopup.NextTip = SimpleScorePopup.TipLevel.None;   // not left over for another popup when this one was not shown
     }
 
     public void ApplyOrderExpiredPenalty()

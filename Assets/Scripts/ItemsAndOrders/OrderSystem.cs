@@ -729,12 +729,21 @@ public class OrderSystem : MonoBehaviour
         var bubbleRoot = slots != null && order.slot >= 0 && order.slot < slots.Length ? slots[order.slot].root : null;
         if (bubbleRoot != null) SimpleScorePopup.NextAtScreen = SimpleScorePopup.ScreenPointOf(bubbleRoot);
 
+        // The tip's level, by the flowers left now that the last item is served (23 November 2026): all of them (three
+        // or four in chapter 2) = Perfect, two = Nice, one = Just OK; the receipt shows it (SimpleScorePopup)
+        var tipLevel = SimpleScorePopup.LevelFor(order.timer, order.displayTime);
+
         // Award completion bonus: the tip from this order's time left, points and customer
         if (scoreManager != null)
+        {
+            SimpleScorePopup.PendingTip = tipLevel;
             scoreManager.AwardOrderCompletionBonus(order.timer, order.basePoints, order.tipMultiplier);
+            SimpleScorePopup.PendingTip = SimpleScorePopup.TipLevel.None;
+        }
 
-        // Perfect = finished with at least perfectTimeFraction of the display time still remaining
-        var isPerfect = order.timer >= order.displayTime * perfectTimeFraction;
+        // Perfect: its sound and the double tap go with the receipt's PERFECT! (they came at half the patience left before;
+        // perfectTimeFraction is no longer read)
+        var isPerfect = tipLevel == SimpleScorePopup.TipLevel.Perfect;
         if (isPerfect) Haptics.DoubleTap(this); else Haptics.Tap();   // two taps for a fast order, one otherwise (owner, 31 October 2026)
 
         // Count as completed

@@ -60,6 +60,79 @@ public class SimpleScorePopup : MonoBehaviour
         if (canvasGroup == null) canvasGroup = gameObject.AddComponent<CanvasGroup>();
     }
 
+    // ---- tip levels (owner, 23 November 2026: "for tips, i want different colors to mean different things so we have
+    // three levels - perfect, fast, just ok"; then "use nice instead of fast", green for Perfect and yellow for Nice,
+    // each with a filled stamp). The level is the customer's patience when the order is finished, as the flowers show
+    // it: every served item fills the meter up to the next whole flower, so an order always ends on whole flowers.
+    // Chapter 1 (three flowers): all three = Perfect, two = Nice, one = Just OK. Chapter 2 (four): three or four =
+    // Perfect, two = Nice, one = Just OK. As shares of the full time: Perfect from 0.7, Nice from 0.4 (the lines lie
+    // between the flower steps, so they hold for three and for four flowers). The money is not changed; the receipt names it:
+    // the tips line takes the level's colour and a small tag sits on the paper's corner (none for Just OK).
+    // Proposal and colours: Store/ui/tip_levels_2026-11-23.
+    public enum TipLevel { None = -1, Ok = 0, Nice = 1, Perfect = 2 }
+    public const float PerfectShare = 0.7f, NiceShare = 0.4f;
+    /// Set by the order that was just finished (OrderSystem); ScoreManager hands it to the receipt it opens.
+    public static TipLevel PendingTip = TipLevel.None, NextTip = TipLevel.None;
+    public static TipLevel LevelFor(float timeLeft, float fullTime)
+    {
+        if (fullTime <= 0f) return TipLevel.Ok;
+        var share = timeLeft / fullTime;
+        return share >= PerfectShare ? TipLevel.Perfect : share >= NiceShare ? TipLevel.Nice : TipLevel.Ok;
+    }
+    private static readonly Color TipGreen = new Color32(38, 150, 84, 255), TipGreenDark = new Color32(20, 104, 56, 255),
+        TipYellow = new Color32(236, 172, 18, 255), TipYellowDark = new Color32(150, 96, 8, 255), TipGrey = new Color32(120, 100, 88, 255);
+
+    /// The tips line in its level's colour, as a second text laid exactly over the first (same words, the other line
+    /// see-through in each), so the yellow can carry its own brown rim: plain yellow does not read on the white paper.
+    private void ColourTips(float basePoints, float bonusPoints, TipLevel level)
+    {
+        var total = $" ${basePoints:F2}"; var tips = $" Tips: $ {bonusPoints:F2}";
+        textComponent.text = total + "\n<alpha=#00>" + tips;
+        var go = new GameObject("TipsLine", typeof(RectTransform)); go.transform.SetParent(textComponent.transform.parent, false);
+        var rt = (RectTransform)go.transform; var from = textComponent.rectTransform;
+        rt.anchorMin = from.anchorMin; rt.anchorMax = from.anchorMax; rt.offsetMin = from.offsetMin; rt.offsetMax = from.offsetMax; rt.anchoredPosition = from.anchoredPosition;
+        var line = go.AddComponent<TextMeshProUGUI>();
+        line.font = textComponent.font; line.fontSize = textComponent.fontSize; line.fontStyle = textComponent.fontStyle; line.alignment = textComponent.alignment; line.raycastTarget = false;
+        line.text = "<alpha=#00>" + total + "\n<alpha=#FF>" + tips;
+        line.color = level == TipLevel.Perfect ? TipGreen : level == TipLevel.Nice ? TipYellow : TipGrey;
+        if (level == TipLevel.Nice) line.fontMaterial.SetColor(ShaderUtilities.ID_OutlineColor, TipYellowDark);   // its own copy of the material
+    }
+
+    /// The level's tag on the paper's top right corner: a filled rounded label, a little turned.
+    private void AddTipTag(TipLevel level)
+    {
+        if (level != TipLevel.Perfect && level != TipLevel.Nice) return;
+        var perfect = level == TipLevel.Perfect;
+        var go = new GameObject("TipTag", typeof(RectTransform), typeof(Image)); go.transform.SetParent(transform, false);
+        var rt = (RectTransform)go.transform; rt.anchorMin = rt.anchorMax = new Vector2(1f, 1f); rt.pivot = new Vector2(1f, 1f);
+        rt.sizeDelta = new Vector2(perfect ? 122f : 88f, 46f); rt.anchoredPosition = new Vector2(12f, 4f); rt.localRotation = Quaternion.Euler(0f, 0f, -8f);
+        var img = go.GetComponent<Image>(); img.sprite = TagSprite(); img.type = Image.Type.Sliced; img.color = perfect ? TipGreen : TipYellow; img.raycastTarget = false;
+        var edge = go.AddComponent<Outline>(); edge.effectColor = perfect ? TipGreenDark : TipYellowDark; edge.effectDistance = new Vector2(2f, -2f);
+        var word = new GameObject("Word", typeof(RectTransform)); word.transform.SetParent(rt, false);
+        var wrt = (RectTransform)word.transform; wrt.anchorMin = Vector2.zero; wrt.anchorMax = Vector2.one; wrt.offsetMin = wrt.offsetMax = Vector2.zero;
+        var t = word.AddComponent<TextMeshProUGUI>(); t.font = textComponent != null ? textComponent.font : null;
+        var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null && t.font != null && t.font.name.StartsWith("beachday")) t.fontSharedMaterial = plain;
+        t.text = perfect ? "PERFECT!" : "NICE!"; t.fontSize = 25f; t.alignment = TextAlignmentOptions.Center; t.enableWordWrapping = false; t.raycastTarget = false;
+        t.color = perfect ? new Color32(255, 250, 235, 255) : new Color32(110, 66, 6, 255);
+    }
+
+    private static Sprite tagSprite;
+    private static Sprite TagSprite()
+    {
+        if (tagSprite != null) return tagSprite;
+        const int S = 48, R = 14;
+        var tex = new Texture2D(S, S, TextureFormat.RGBA32, false); var px = new Color[S * S];
+        for (var y = 0; y < S; y++)
+            for (var x = 0; x < S; x++)
+            {
+                var cx = Mathf.Clamp(x, R, S - 1 - R); var cy = Mathf.Clamp(y, R, S - 1 - R);
+                px[y * S + x] = new Color(1f, 1f, 1f, Mathf.Clamp01(R - Vector2.Distance(new Vector2(x, y), new Vector2(cx, cy)) + 0.5f));
+            }
+        tex.SetPixels(px); tex.Apply();
+        tagSprite = Sprite.Create(tex, new Rect(0, 0, S, S), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, new Vector4(R, R, R, R));
+        return tagSprite;
+    }
+
     public void ShowCombinedPopup(float basePoints, float bonusPoints = 0)
     {
         // Destroy previous popup if it exists
@@ -100,6 +173,8 @@ public class SimpleScorePopup : MonoBehaviour
         // Set text content and color
         textComponent.text = popupText;
         textComponent.color = textColor;
+        var level = NextTip; NextTip = TipLevel.None;
+        if (bonusPoints > 0 && level != TipLevel.None) { ColourTips(basePoints, bonusPoints, level); AddTipTag(level); }
 
         // Store starting position
         startPosition = rectTransform.anchoredPosition;
