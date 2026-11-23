@@ -419,7 +419,8 @@ public class KitchenFlowTap : MonoBehaviour, IPointerClickHandler
     private void Mix()
     {
         var turn = Mathf.Cos(t * 2f * Mathf.PI * 3.2f);                                      // three turns a second
-        whisk.localScale = new Vector3(Mathf.Sign(turn) * Mathf.Max(0.22f, Mathf.Abs(turn)), 1f, 1f);
+        // squeezed only to two thirds (owner, 23 November 2026: at a fifth "the whisk ... looks kind of too slim"; their tick: keep it wide)
+        whisk.localScale = new Vector3(Mathf.Sign(turn) * Mathf.Lerp(0.66f, 1f, Mathf.Abs(turn)), 1f, 1f);
         whisk.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t * 9f) * 2.5f);              // and it stirs round the bowl a little
         bowl.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t * 13f) * 1.6f);
         bowl.localScale = new Vector3(1f + 0.012f * Mathf.Sin(t * 26f), 1f - 0.012f * Mathf.Sin(t * 26f), 1f);
