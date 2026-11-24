@@ -105,15 +105,15 @@ public class MapScreen : MonoBehaviour
         {
             var star = NewImage("RewardStar", canvasRect, starSprite); star.raycastTarget = false;
             var from = day9Rect.anchoredPosition; Place(star.rectTransform, from, new Vector2(130f, 130f));
-            for (var t = 0f; t < 0.4f; t += Time.unscaledDeltaTime)          // it pops out
+            for (var t = 0f; t < 0.4f; t += Time.deltaTime)          // it pops out
             {
                 var k = t / 0.4f; var e = 1f - (1f - k) * (1f - k);
                 star.rectTransform.localScale = Vector3.one * Mathf.LerpUnclamped(0f, 1f, e * (1f + 0.35f * (1f - k)));
                 star.rectTransform.anchoredPosition = from + new Vector2(0f, 110f * e); yield return null;
             }
-            yield return new WaitForSecondsRealtime(0.3f);
+            yield return new WaitForSeconds(0.3f);
             var mid = from + new Vector2(0f, 110f); var top = new Vector2(from.x * 0.3f, canvasRect.rect.height * 0.5f - 320f);
-            for (var t = 0f; t < 0.8f; t += Time.unscaledDeltaTime)          // and flies up
+            for (var t = 0f; t < 0.8f; t += Time.deltaTime)          // and flies up
             {
                 var k = t / 0.8f; var e = k * k;
                 star.rectTransform.anchoredPosition = Vector2.Lerp(mid, top, e); star.rectTransform.localScale = Vector3.one * Mathf.Lerp(1f, 0.55f, e);
@@ -124,8 +124,8 @@ public class MapScreen : MonoBehaviour
         if (truckRect != null)
         {
             var start = truckRect.anchoredPosition; var lift = new Vector2(0f, truckRect.sizeDelta.y * 0.35f);   // its wheels on the line
-            for (var t = 0f; t < 0.35f; t += Time.unscaledDeltaTime) { truckRect.anchoredPosition = Vector2.Lerp(start, curveA + lift, t / 0.35f); yield return null; }
-            for (var t = 0f; t < 1.7f; t += Time.unscaledDeltaTime)          // along the dotted line, which lights up behind it
+            for (var t = 0f; t < 0.35f; t += Time.deltaTime) { truckRect.anchoredPosition = Vector2.Lerp(start, curveA + lift, t / 0.35f); yield return null; }
+            for (var t = 0f; t < 1.7f; t += Time.deltaTime)          // along the dotted line, which lights up behind it
             {
                 var k = Mathf.SmoothStep(0f, 1f, t / 1.7f);
                 truckRect.anchoredPosition = Curve(k) + lift + new Vector2(0f, Mathf.Abs(Mathf.Sin(t * 22f)) * 4f);
@@ -137,7 +137,8 @@ public class MapScreen : MonoBehaviour
         if (arrowImage != null)
         {
             arrowImage.sprite = Load("arrow_right") ?? arrowImage.sprite; arrowImage.name = "NextChapter"; arrowImage.raycastTarget = true;
-            for (var t = 0f; t < 0.35f; t += Time.unscaledDeltaTime) { var k = t / 0.35f; arrowImage.rectTransform.localScale = Vector3.one * (1f + 0.3f * Mathf.Sin(k * Mathf.PI)); yield return null; }
+            PlayChime("chime_fin3");   // chapter 2 is open (24 November 2026)
+            for (var t = 0f; t < 0.35f; t += Time.deltaTime) { var k = t / 0.35f; arrowImage.rectTransform.localScale = Vector3.one * (1f + 0.3f * Mathf.Sin(k * Mathf.PI)); yield return null; }
             arrowImage.rectTransform.localScale = Vector3.one;
             var ab = arrowImage.gameObject.GetComponent<Button>();
             if (ab == null) { ab = arrowImage.gameObject.AddComponent<Button>(); ab.onClick.AddListener(() => ShowPage(page + 1)); }   // an arrow that was open already (the star taken late) has its listener
@@ -554,18 +555,18 @@ public class MapScreen : MonoBehaviour
         var go = NewImage("LetsGo", panel.rectTransform, Resources.Load<Sprite>("UI/cookie_letsgo")); Place(go.rectTransform, new Vector2(0f, -262f), new Vector2(340f, 122f)); go.transform.localScale = Vector3.zero;
         var pressed = false; go.gameObject.AddComponent<Button>().onClick.AddListener(() => pressed = true);
         panel.transform.localScale = Vector3.one * 0.6f;
-        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.28f) { var k = Mathf.Clamp01(t); dim.color = new Color(0f, 0f, 0f, 0.55f * k); panel.transform.localScale = Vector3.one * Mathf.LerpUnclamped(0.6f, 1f, BackOut(k)); yield return null; }
+        for (var t = 0f; t < 1f; t += Time.deltaTime / 0.28f) { var k = Mathf.Clamp01(t); dim.color = new Color(0f, 0f, 0f, 0.55f * k); panel.transform.localScale = Vector3.one * Mathf.LerpUnclamped(0.6f, 1f, BackOut(k)); yield return null; }
         PlayChime("chime_fin2"); Haptics.Tap();
-        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.45f) { var k = Mathf.Clamp01(t); star.transform.localScale = Vector3.one * BackOut(k); star.transform.localRotation = Quaternion.Euler(0f, 0f, -90f * (1f - k)); line.alpha = k; yield return null; }
-        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.25f) { go.transform.localScale = Vector3.one * BackOut(Mathf.Clamp01(t)); yield return null; }
+        for (var t = 0f; t < 1f; t += Time.deltaTime / 0.45f) { var k = Mathf.Clamp01(t); star.transform.localScale = Vector3.one * BackOut(k); star.transform.localRotation = Quaternion.Euler(0f, 0f, -90f * (1f - k)); line.alpha = k; yield return null; }
+        for (var t = 0f; t < 1f; t += Time.deltaTime / 0.25f) { go.transform.localScale = Vector3.one * BackOut(Mathf.Clamp01(t)); yield return null; }
         var w = 0f; var auto = GiftAutoSeconds > 0f ? GiftAutoSeconds : float.MaxValue;
-        while (!pressed && w < auto) { w += Time.unscaledDeltaTime; star.transform.localScale = Vector3.one * (1f + 0.06f * Mathf.Sin(w * 4f)); yield return null; }
+        while (!pressed && w < auto) { w += Time.deltaTime; star.transform.localScale = Vector3.one * (1f + 0.06f * Mathf.Sin(w * 4f)); yield return null; }
         if (SessionManager.Instance != null) SessionManager.Instance.GiveDay9Star();
         // the paper goes; the star flies up and away (into the player's stars)
         var group = panel.gameObject.AddComponent<CanvasGroup>();
         star.transform.SetParent(cr, true); var from = star.rectTransform.anchoredPosition; var to = new Vector2(0f, canvasRect.rect.height * 0.5f - 200f);
         PlayChime("chime_3");
-        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.7f)
+        for (var t = 0f; t < 1f; t += Time.deltaTime / 0.7f)
         {
             var k = Mathf.Clamp01(t); group.alpha = 1f - Mathf.Clamp01(k / 0.3f); dim.color = new Color(0f, 0f, 0f, 0.55f * (1f - k));
             star.rectTransform.anchoredPosition = Vector2.Lerp(from, to, k * k); star.transform.localScale = Vector3.one * Mathf.Lerp(1f, 0.4f, k);

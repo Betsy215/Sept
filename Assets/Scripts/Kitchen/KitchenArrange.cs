@@ -129,7 +129,18 @@ public static class KitchenArrange
             var kept = SessionManager.Instance != null ? SessionManager.Instance.GetKitchenPlaces() : null;
             foreach (var d in Defs) working[d.name] = kept != null && kept.TryGetValue(d.name, out var p) ? p : d.foot;
             needSpot.Clear();   // never placed by the player: they start on the table
-            foreach (var n in new[] { "chouxplate", "mixer" }) if (kept == null || !kept.ContainsKey(n)) needSpot.Add(n);   // the flat tray first: it needs the most room on the counter
+            // the flat tray first: it needs the most room on the counter. The save keeps every piece's place, also of a piece
+            // not bought yet, at its fallback in the cabinet; so a piece just bought, or still on that untouched fallback,
+            // looks for a place on the table too (owner, 24 November 2026: "the default position for mixer and the tray
+            // should be on the kitchen table instead of in cabinet")
+            var smk = SessionManager.Instance;
+            foreach (var n in new[] { "chouxplate", "mixer" })
+            {
+                var def = System.Array.Find(Defs, x => x.name == n);
+                var isNew = smk != null && (smk.IsNewToArrange("Food:Choux") || (n == "mixer" && smk.IsNewToArrange("Food:Cake")));
+                var untouched = kept != null && kept.TryGetValue(n, out var kp) && def != null && (kp - def.foot).sqrMagnitude < 1e-6f;
+                if (kept == null || !kept.ContainsKey(n) || isNew || untouched) needSpot.Add(n);
+            }
             fresh = true;
         }
 
