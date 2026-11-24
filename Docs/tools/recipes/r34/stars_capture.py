@@ -31,10 +31,12 @@ for i in range(30):
 time.sleep(4); log("card:", ex('var r = GameObject.Find("StarsRow"); return r == null ? "none" : "ok";'))
 STEP = 'UnityEditor.EditorApplication.isPaused = true; Time.timeScale = 2f; UnityEditor.EditorApplication.Step(); return Time.time.ToString("F3") + "|" + StarCelebration.SoundCount + "|" + StarCelebration.LastSound + "|" + StarCelebration.LastSoundAt.ToString("F3");'
 LEN = {1: 2.6, 2: 3.6, 3: 5.0}
-clips = {}
+clips = json.load(open(OUT + "/clips.json")) if os.path.exists(OUT + "/clips.json") else {}
+ONLY = os.environ.get("ONLY", "").split(",") if os.environ.get("ONLY") else None
 for style in (1, 2, 3):
     for n in (1, 2, 3):
         name = f"s{style}_{n}"
+        if ONLY and name not in ONLY: continue
         for f in glob.glob(SHOTS + f"/fx_{name}_*"): os.remove(f)
         ex('UnityEditor.EditorApplication.isPaused = true; Time.timeScale = 2f; return "p";')
         log(name, exf(P + "/Docs/tools/recipes/r34/stars_replay.cs", __STYLE__=style, __N__=n))
