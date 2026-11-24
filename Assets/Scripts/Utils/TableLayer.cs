@@ -15,6 +15,8 @@ public class TableLayer : MonoBehaviour
     public float topReserve = 0.75f;
     [Tooltip("Room kept between the bottom of the screen (its safe area) and the food. Its own, smaller number since 15 November 2026: with the 0.3 of the sides, the ice cream station could not be dragged back down to where it starts (owner: 'it seems larger when i move it up')")]
     public float bottomPadding = 0.1f;
+    [Tooltip("The cloth's front drop (owner, 23 November 2026: the bottom safe area shows the cloth falling over the table's front edge): at least this tall in world units, so it reads on phones without a home bar")]
+    public float frontMinHeight = 0.3f;
 
     [Header("Table Coverage Settings")]
     [Tooltip("What percentage of the screen height should the tablecloth cover from bottom")]
@@ -237,6 +239,8 @@ public class TableLayer : MonoBehaviour
         var minX = Mathf.Max(clothMinX, safeMinX) + tableBoundsPadding;
         var maxX = Mathf.Min(clothMaxX, safeMaxX) - tableBoundsPadding;
         var minY = Mathf.Max(clothMinY, safeMinY) + bottomPadding;
+        // the bottom safe area is the cloth's front drop: the table's front edge sits on the drag area's bottom
+        if (UpdateClothFront(Mathf.Max(minY, clothMinY + frontMinHeight), screenWidth, cameraPos.x)) minY = Mathf.Max(minY, clothMinY + frontMinHeight);
         var maxY = Mathf.Min(clothMaxY - topReserve, safeMaxY - tableBoundsPadding);   // the back band is for the fixed items only
 
         // Degenerate (padding larger than the available area): collapse to the centre line
@@ -264,6 +268,36 @@ public class TableLayer : MonoBehaviour
             Debug.Log($"Tablecloth size: {clothSize.x:F2} x {clothSize.y:F2} (visual)");
             Debug.Log($"Bounds: center {center} size {size.x:F2} x {size.y:F2} (interactive)");
         }
+    }
+
+    private SpriteRenderer clothFront;
+
+    /// The cloth's front drop below the table's front edge at `edgeY` (owner, 23 November 2026: "I want the bottom safe
+    /// area to show that, so our table has more dimensions"). The picture is as wide as the screen, drawn at one scale in
+    /// x and y (its checks are square), its top on the edge, the rest running past the bottom of the screen. Art per
+    /// chapter: Resources/Table/cloth_front (chapter 1), Resources/ChapterN/cloth_front. False when a chapter has none.
+    private bool UpdateClothFront(float edgeY, float screenWidth, float centreX)
+    {
+        var chapter = SessionManager.CurrentChapter;
+        var sprite = chapter <= 1 ? Resources.Load<Sprite>("Table/cloth_front") : Chapter.Art<Sprite>(chapter, "cloth_front");
+        if (sprite == null || tableClothSprite == null)
+        {
+            if (clothFront != null) clothFront.gameObject.SetActive(false);
+            return false;
+        }
+        if (clothFront == null)
+        {
+            clothFront = new GameObject("ClothFront").AddComponent<SpriteRenderer>();
+            clothFront.sortingLayerID = tableClothSprite.sortingLayerID;
+            clothFront.sortingOrder = tableClothSprite.sortingOrder + 1;   // over the cloth's top, under everything on the table
+        }
+        clothFront.gameObject.SetActive(true);
+        clothFront.sprite = sprite;
+        var scale = screenWidth / Mathf.Max(0.0001f, sprite.bounds.size.x);
+        clothFront.transform.localScale = new Vector3(scale, scale, 1f);
+        var z = tableClothSprite.transform.position.z;
+        clothFront.transform.position = new Vector3(centreX, edgeY - sprite.bounds.max.y * scale, z);   // its top edge on the table's edge
+        return true;
     }
 
     #region Public Methods for Food Item Management
