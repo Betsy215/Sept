@@ -126,6 +126,7 @@ public class LevelManager : MonoBehaviour
 
         // Level 0: a self-playing tutorial before the first real day (or a requested replay)
         CandyJar.Ensure();                                                              // the candy jar on the table's back band (owner, 26 October 2026)
+        if (CandyGift.Due) CandyGift.HideJarForShow(FindObjectOfType<CandyJar>());     // day 3: it arrives when the day begins (24 November 2026)
         if (currentLevelIndex == 0 && TutorialDirector.IsDue(SessionManager.Instance))
             gameObject.AddComponent<TutorialDirector>().Begin(this, gamePhaseManager, orderSystem, customerManager);
         else if (TutorialDirector.IsDue2(SessionManager.Instance))   // chapter 2, first day: the waffle machine, the blender, serving an ice cream (owner, 26 October 2026)

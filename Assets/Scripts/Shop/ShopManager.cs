@@ -606,6 +606,7 @@ public class ShopManager : MonoBehaviour
     private static bool IsHeldBackCard(ShopItemController card) =>
         card != null && (SessionManager.IsHeldBack(card.itemName?.Trim()) || SessionManager.IsHeldBack(card.upgradeFoodType?.Trim()) || SessionManager.IsHeldBack(card.gameObject.name)
                          || (card.itemName == StarPackCardName && !StarPack.Available)   // only while the App Store offers it
+                         || (card.itemName == "Candies" && !CandyGift.ShopOpen)        // candies are sold once day 3 is done (24 November 2026)
                          || System.Array.IndexOf(RemovedCards, card.itemName?.Trim()) >= 0);
 
     // Scroll bounds of the card container, set by LayoutCards (16 October); before that the cards were placed by hand

@@ -322,6 +322,7 @@ public class GamePhaseManager : MonoBehaviour
         NewTag.ClearWorld(); GlowFx.ClearWorld();
         // seen: not new tomorrow. The demos (both tutorials) skip the arrangement, so what is new waits for the next one.
         if (SessionManager.Instance != null && FindObjectOfType<TutorialDirector>() == null) SessionManager.Instance.ClearNewToArrange();
+        if (CandyGift.Due && FindObjectOfType<TutorialDirector>() == null) StartCoroutine(CandyGift.Run());   // day 3: the candy jar arrives with two candies
     }
 
     /// <summary>

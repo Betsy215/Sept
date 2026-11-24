@@ -193,10 +193,22 @@ public static class KitchenArrange
             if (gate.keepVisible || food == "" || !sm.IsNewToArrange("Food:" + food) || !sm.IsFoodItemActive(food)) continue;
             NewTag.OnUI(gate.transform as RectTransform); GlowFx.New(gate.GetComponent<Image>());
         }
+        // the baking tray and the mixer set are made by this file, not gated in the scene, so they were never tagged
+        // (owner, 24 November 2026: "when choux is first unlocked, the baking tray and mixer set is also new, but i only
+        // see new label on the fruit board"): the tray with choux, the mixer with choux or cake
+        TagPiece("chouxplate", sm.IsNewToArrange("Food:Choux"));
+        TagPiece("mixer", sm.IsNewToArrange("Food:Choux") || sm.IsNewToArrange("Food:Cake"));
         if (sm.IsNewToArrange("Food:IceCream") || sm.IsNewToArrange("Upgrade:IceCream")) { var blender = Find("Blender"); if (blender != null && blender.rt != null && blender.rt.gameObject.activeInHierarchy) { NewTag.OnUI(blender.rt); GlowFx.New(blender.image); } }
         if (sm.IsNewToArrange("Upgrade:Oven"))
             foreach (var t in bg.GetComponentsInChildren<Transform>(true))
                 if (t.name == "spot" + sm.OvensOwned && t.childCount > 0) { NewTag.OnUI(t.GetChild(0) as RectTransform); GlowFx.New(t.GetChild(0).GetComponent<Image>()); break; }
+    }
+
+    private static void TagPiece(string name, bool isNew)
+    {
+        if (!isNew) return;
+        var p = Find(name); if (p == null || p.rt == null || !p.rt.gameObject.activeInHierarchy) return;
+        NewTag.OnUI(p.rt); if (p.image != null) GlowFx.New(p.image);
     }
 
     private static void Place(Piece p, Vector2 foot)

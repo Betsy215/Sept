@@ -17,6 +17,7 @@ public class CandyJar : MonoBehaviour, IPointerClickHandler
     public static void Ensure()
     {
         if (FindObjectOfType<CandyJar>() != null) return;
+        if (!CandyGift.JarOnTable) return;   // not before day 3 (owner, 24 November 2026)
         var decor = GameObject.Find("TableDecor"); if (decor == null) return;
         var pot = decor.transform.Find("PotFlowers"); var potSr = pot != null ? pot.GetComponent<SpriteRenderer>() : null;
         var go = new GameObject("CandyJar", typeof(SpriteRenderer), typeof(BoxCollider), typeof(CandyJar)); go.transform.SetParent(decor.transform, false);
