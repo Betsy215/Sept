@@ -645,9 +645,8 @@ public class OrderSystem : MonoBehaviour
         ActiveOrder low = null; var lowest = float.MaxValue;
         foreach (var o in orders) { if (!o.active || o.displayTime <= 0f) continue; var k = o.timer / o.displayTime; if (k < lowest) { lowest = k; low = o; } }
         if (low == null) return false;
-        var per = low.displayTime / PatienceMeter.Flowers;
         var before = low.timer;
-        low.timer = Mathf.Min(low.displayTime, low.timer + per);
+        low.timer = low.displayTime;   // all flowers back (owner, 24 November 2026: "candy make the lowest customer to full"; was one flower)
         PatienceMeter.OnItemServed(low);
         if (low.timer > before + 0.01f) PlayFlowerPop();
         return true;
@@ -681,7 +680,7 @@ public class OrderSystem : MonoBehaviour
         {
             if (!o.active || o.displayTime <= 0f) continue;
             var before = o.timer;
-            o.timer = Mathf.Min(o.displayTime, o.timer + o.displayTime / PatienceMeter.Flowers);
+            o.timer = o.displayTime;   // everyone to full (owner, 24 November 2026: "she sets all customers to full"; was one flower each)
             PatienceMeter.OnItemServed(o);
             if (o.timer > before + 0.01f) grew = true;
             n++;
