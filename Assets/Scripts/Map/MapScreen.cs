@@ -77,7 +77,7 @@ public class MapScreen : MonoBehaviour
 
     private void TapDay(int day, bool special)
     {
-        if (popup != null || leaving || ceremonyRunning || truckDriving) return;
+        if (popup != null || leaving || ceremonyRunning || truckDriving || pendingDay9Gift || pendingChapter2) return;   // nor while day 9's moments wait (review, 24 November 2026)
         var sm = SessionManager.Instance;
         if (special && sm != null && sm.Chapter2CeremonyDue) { StartCoroutine(Chapter2Ceremony()); return; }   // a fallback: it runs by itself now
         // the truck drives to the day that was picked, then its card opens (owner, 23 November 2026: "when i goes back and
@@ -225,7 +225,7 @@ public class MapScreen : MonoBehaviour
 
     private void ShowPage(int p)
     {
-        if (popup != null || leaving || ceremonyRunning || truckDriving) return;   // not while the truck drives: the old page's drive would end the new page's
+        if (popup != null || leaving || ceremonyRunning || truckDriving || pendingDay9Gift || pendingChapter2) return;   // not while the truck drives: the old page's drive would end the new page's
         page = Mathf.Clamp(p, 0, Chapter.Count - 1);
         if (canvasRect != null) Destroy(canvasRect.gameObject);
         Build();
@@ -550,7 +550,7 @@ public class MapScreen : MonoBehaviour
         var title = NewText("Title", panel.rectTransform, "A GIFT FOR YOU!", 78f, ink); Place(title.rectTransform, new Vector2(0f, 262f), new Vector2(700f, 120f)); title.alignment = TextAlignmentOptions.Center;
         var star = NewImage("Star", panel.rectTransform, starSprite); Place(star.rectTransform, new Vector2(0f, 60f), new Vector2(240f, 240f)); star.transform.localScale = Vector3.zero;
         var hand = Resources.Load<TMP_FontAsset>("Fonts & Materials/Delius SDF");
-        var line = NewText("Line", panel.rectTransform, "A star for reaching day 9!\nFinish day 9 to open chapter 2", 38f, soft); Place(line.rectTransform, new Vector2(0f, -122f), new Vector2(680f, 150f));
+        var line = NewText("Line", panel.rectTransform, pendingChapter2 ? "A star for day 9!\nChapter 2 is opening" : "A star for reaching day 9!\nFinish day 9 to open chapter 2", 38f, soft);   // an older save past day 9 (review, 24 November 2026) Place(line.rectTransform, new Vector2(0f, -122f), new Vector2(680f, 150f));
         if (hand != null) line.font = hand; line.alignment = TextAlignmentOptions.Center; line.enableWordWrapping = true; line.alpha = 0f;
         var go = NewImage("LetsGo", panel.rectTransform, Resources.Load<Sprite>("UI/cookie_letsgo")); Place(go.rectTransform, new Vector2(0f, -262f), new Vector2(340f, 122f)); go.transform.localScale = Vector3.zero;
         var pressed = false; go.gameObject.AddComponent<Button>().onClick.AddListener(() => pressed = true);
@@ -573,7 +573,7 @@ public class MapScreen : MonoBehaviour
             star.transform.localRotation = Quaternion.Euler(0f, 0f, 360f * k); star.color = new Color(1f, 1f, 1f, 1f - Mathf.Clamp01((k - 0.7f) / 0.3f)); yield return null;
         }
         Destroy(card);
-        if (day9Rect != null) { var bounce = day9Rect.GetComponent<MapTodayBounce>(); if (bounce != null) Destroy(bounce); }
+        if (day9Rect != null) { var bounce = day9Rect.GetComponent<MapTodayBounce>(); if (bounce != null) { bounce.enabled = false; Destroy(bounce); day9Rect.anchoredPosition = P(StarsOf(0)[SpecialDay]); day9Rect.localScale = Vector3.one; } }   // not left mid-hop (review)
         ceremonyRunning = false;
     }
     public static float GiftAutoSeconds;   // recordings: Let's go by itself after this many seconds (0 = waits for the tap)

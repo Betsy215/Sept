@@ -75,6 +75,7 @@ public class SessionData
     public bool chapter2Claimed;   // day 9's star was taken on the map: chapter 2 is open
     public bool day9StarGiven;     // day 9's star came on its gift card when day 9 was reached (24 November 2026)
     public bool chapter2MapSeen;   // chapter 2's map page had its first-time welcome (24 November 2026)
+    public List<string> kitchenAutoPlaced;   // kitchen pieces that had their one look for a place on the table (review, 24 November 2026)
     // Chapters whose three bonus days were revealed on the map (24 November 2026); null in older saves
     public List<int> bonusShown;
     // The star shop (14 November 2026): what was bought with stars, and how many stars that took. The stars a player
@@ -292,6 +293,13 @@ public class SessionManager : MonoBehaviour
     public bool Day9StarDue => currentSession != null && Chapter.Count >= 2 && !currentSession.day9StarGiven && !currentSession.chapter2Claimed && DaysDoneIn(1) >= Chapter2OpensAfterDays - 1;
     /// Chapter 2's map page shown for the first time, before any chapter 2 day is played (owner, 24 November 2026)
     public bool Chapter2WelcomeDue => currentSession != null && !currentSession.chapter2MapSeen && DaysDoneIn(2) == 0;
+    public bool KitchenAutoPlaced(string piece) => currentSession != null && currentSession.kitchenAutoPlaced != null && currentSession.kitchenAutoPlaced.Contains(piece);
+    public void MarkKitchenAutoPlaced(string piece)
+    {
+        if (currentSession == null || KitchenAutoPlaced(piece)) return;
+        if (currentSession.kitchenAutoPlaced == null) currentSession.kitchenAutoPlaced = new List<string>();
+        currentSession.kitchenAutoPlaced.Add(piece); SaveSession();
+    }
     public void MarkChapter2MapSeen() { if (currentSession == null || currentSession.chapter2MapSeen) return; currentSession.chapter2MapSeen = true; SaveSession(); }
     public void GiveDay9Star()
     {

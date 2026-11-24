@@ -138,7 +138,9 @@ public static class KitchenArrange
             {
                 var def = System.Array.Find(Defs, x => x.name == n);
                 var isNew = smk != null && (smk.IsNewToArrange("Food:Choux") || (n == "mixer" && smk.IsNewToArrange("Food:Cake")));
-                var untouched = kept != null && kept.TryGetValue(n, out var kp) && def != null && (kp - def.foot).sqrMagnitude < 1e-6f;
+                // only once per piece: the mixer's fallback is also a cabinet snap point, so a mixer the player put there
+                // later must stay there (review, 24 November 2026)
+                var untouched = kept != null && kept.TryGetValue(n, out var kp) && def != null && (kp - def.foot).sqrMagnitude < 1e-6f && (smk == null || !smk.KitchenAutoPlaced(n));
                 if (kept == null || !kept.ContainsKey(n) || isNew || untouched) needSpot.Add(n);
             }
             fresh = true;
@@ -372,8 +374,9 @@ public static class KitchenArrange
         foreach (var n in needSpot)
         {
             var piece = Find(n);
-            if (piece != null && piece.rt != null && piece.rt.gameObject.activeInHierarchy && FreeTableSpot(piece, out var spot))
-            { piece.def.foot = spot; working[n] = spot; Place(piece, spot); Sort(); }
+            if (piece == null || piece.rt == null || !piece.rt.gameObject.activeInHierarchy) continue;
+            if (FreeTableSpot(piece, out var spot)) { piece.def.foot = spot; working[n] = spot; Place(piece, spot); Sort(); }
+            SessionManager.Instance?.MarkKitchenAutoPlaced(n);
         }
         needSpot.Clear();
         Check();
