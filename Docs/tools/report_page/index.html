@@ -76,7 +76,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="who p1"><h3>You</h3>
 <p><b>Release 2026.11.23 is with Apple</b> (submitted 23 November, 13:20). It goes out by itself once approved.</p>
 <p><b>C chapter tab:</b> three cabin scenes from your new direction (pink, white, mint; cabin with a big window onto a ski resort), to pick from.</p>
-<p><b>Table drag area:</b> sizes and the bottom safe area for both chapters, in Current.</p>
+<p><b>Table start places fixed</b> (whole box out of the safe area): Current.</p>
 <p><b>Ads fix:</b> approved; in the next build.</p>
 <p><b>Header and Search Results:</b> four proposals in Q&amp;A, pick one.</p>
 </div>
@@ -104,18 +104,17 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Table drag area and the bottom safe area, chapters 1 and 2.</b> <small>23 November; iPhone 6.9 inch (440 x 956 pt); both chapters use the same table, so the sizes match.</small></p>
-<figure><img src="tb_c1.jpg" alt="Chapter 1 table during arranging with overlays: a green frame marks the drag area, 383 by 406 points; a blue band under the Ready button is the back band, 29 points; a red band at the very bottom is the home bar safe area, 34 points, with an orange 10-point gap above it; white boxes mark each food; the coffee cups' box reaches into the red band"><figcaption>Chapter 1. Green: where food can be dragged. Red: the home bar safe area. White: each food's own box.</figcaption></figure>
-<figure><img src="tb_c2.jpg" alt="Chapter 2 beach table with the same overlays: the green drag area 383 by 406 points; the ice cream station's box with its glasses reaches into the red home bar band at the bottom"><figcaption>Chapter 2, same rule.</figcaption></figure>
+<p style="margin-top:0"><b>Table drag area: every food now starts inside it.</b> <small>23 November; not in a build yet. iPhone 6.9 inch (440 x 956 pt), with the phone's home bar simulated in the editor; both chapters use the same table.</small></p>
+<figure><img src="tb_c1.jpg" alt="Chapter 1 table with overlays: green frame, the drag area of 383 by 406 points; blue back band of 29 points under Ready; at the bottom a red home bar band of 34 points with an orange 10-point gap above it; white boxes around each food; the coffee machine, cups and bread all sit inside the green frame, above the gap"><figcaption>Chapter 1 after the fix: the coffee station sits 10 pt higher, its whole box inside the green.</figcaption></figure>
+<figure><img src="tb_c2.jpg" alt="Chapter 2 beach table with the same overlays: the ice cream station with its glasses and waffle machine, the coconuts, juice and bread all inside the green frame, the glasses resting on its bottom edge above the gap and the red home bar band"><figcaption>Chapter 2: the ice cream station and its glasses stand on the bottom edge of the green.</figcaption></figure>
 <ul>
-<li><b>The rule:</b> the cloth is the full screen width and the bottom half of the screen. Food can be dragged inside it, minus 29 pt on each side, a 29 pt back band (hen, pots, Ready), and at the bottom <b>the phone's home bar safe area (34 pt on every Face ID iPhone) plus a 10 pt gap</b>, 44 pt in all.</li>
-<li><b>Sizes:</b> iPhone 6.9 inch 383 x 406 pt; iPhone 15/16 342 x 358 pt; iPhone 13 mini 326 x 340 pt; iPhone SE (no home bar, 10 pt gap only) 335 x 307 pt; iPad 13 inch 949 x 613 pt.</li>
-<li><b>Found:</b> dragging keeps a food's whole box inside the green frame, but the places a food starts in are only checked by its centre. So the <b>coffee cups</b> (chapter 1) and the <b>ice cream glasses</b> (chapter 2) start partly inside the home bar band until they are moved. Fix: check the whole box at the start too (a small change).</li>
+<li><b>Bottom safe area:</b> the home bar strip (34 pt on every Face ID iPhone) plus a 10 pt gap; the sides keep 29 pt, the back band 29 pt.</li>
+<li><b>Sizes:</b> iPhone 6.9 inch 383 x 406 pt; iPhone 15/16 342 x 358 pt; iPhone 13 mini 326 x 340 pt; iPhone SE (no home bar) 335 x 307 pt; iPad 13 inch 949 x 613 pt.</li>
+<li><b>Correction:</b> my first pictures were taken in the editor, which has no home bar, so they showed the glasses and cups lower than a phone does. On a phone the ice cream station was already kept inside; the coffee cups' box started 10 pt low, in the gap; other foods were checked by their centre only.</li>
+<li><b>Fixed:</b> the coffee station (machine, cups, tray) moves up together until its lowest box is inside, and every other food starts with its whole box inside, as a drag keeps it.</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.tb23.fix"> Fix the start places (whole box out of the safe area)</label></li>
-<li><label><input type="checkbox" data-id="cur.tb23.bigger"> Make the bottom safe area bigger (say how much)</label></li>
-<li><label><input type="checkbox" data-id="cur.tb23.good"> Good as it is</label></li>
+<li><label><input type="checkbox" data-id="cur.tb23b.good"> Good</label></li>
 </ul>
 </div>
 

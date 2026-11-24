@@ -128,6 +128,14 @@ public class GamePhaseManager : MonoBehaviour
         LoadSavedFoodPositions();
         FixedStation.Place(tableLayer, allFoodItems);   // the chapter's fixed food on its station, bottom left (owner, 16 October)
         FixedStation.PushOthersOff(tableLayer, allFoodItems);   // nothing may sit on the station (owner, 18 October)
+        // every other food starts with its whole box inside the drag area, as a drag keeps it; saved and scene places
+        // were checked by the centre only, so a box could start in the phone's home bar gap (owner, 23 November 2026)
+        if (allFoodItems != null)
+            foreach (var item in allFoodItems)
+            {
+                if (item == null || !item.gameObject.activeInHierarchy || FixedStation.IsFixed(item)) continue;
+                var drag = item.GetComponent<DraggableFood>(); if (drag != null) drag.KeepRectOnTable();
+            }
         EnableArrangementMode();
         DisableGameplaySystems();
         arrangmentUI.gameObject.SetActive(true);

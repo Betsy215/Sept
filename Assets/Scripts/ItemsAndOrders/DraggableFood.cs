@@ -604,6 +604,13 @@ public class DraggableFood : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         SetRestPosition(ClampRectToTable(transform.position));
     }
 
+    /// The bottom edge of the item's drag rectangle, in world units (fresh measure)
+    public float RectBottom()
+    {
+        CalculateItemRadius();
+        return transform.position.y + centreOffset.y - halfSize.y;
+    }
+
     public void SetRestPosition(Vector3 world)
     {
         world.z = transform.position.z;

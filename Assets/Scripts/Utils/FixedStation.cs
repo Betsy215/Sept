@@ -86,6 +86,28 @@ public static class FixedStation
             }
         }
 
+        // the whole row above the bottom of the drag area (owner, 23 November 2026: the cups' box started about 10 pt
+        // into the phone's home bar gap): the lowest box decides, the machine, the cups and the tray go up together
+        if (fixedFood != "IceCream")
+        {
+            var lift = 0f;
+            foreach (var t in row)
+            {
+                var d = t != null ? t.GetComponent<DraggableFood>() : null;
+                if (d != null) lift = Mathf.Max(lift, bounds.min.y - d.RectBottom());
+            }
+            if (lift > 0f)
+            {
+                foreach (var t in row)
+                {
+                    if (t == null) continue;
+                    var p = t.position + new Vector3(0f, lift, 0f); var d = t.GetComponent<DraggableFood>();
+                    if (d != null) d.SetRestPosition(p); else t.position = p;
+                }
+                floorY += lift; top += lift;
+            }
+        }
+
         // the station: a wooden tray under the row, a little wider than it, its floor at the row's floor.
         // Chapter 2's ice cream box stands on its own (owner, 17 October: no board under it); an old tray object goes
         if (fixedFood == "IceCream")
