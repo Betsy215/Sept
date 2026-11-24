@@ -879,7 +879,7 @@ public class LevelManager : MonoBehaviour
         // show shop before the level map after a level is finished"; it was paper, map, ad, Shop since 10 October)
         MapScreen.CameFromDay = false;
         System.Action toShop = () => { if (SceneTransitionManager.Instance != null) SceneTransitionManager.Instance.TransitionToScene("Shop"); };
-        if (InterstitialAdService.Instance != null) InterstitialAdService.Instance.ShowAfterLevelThen(toShop); else toShop();
+        toShop();   // the between-days ad moved to the day's start, after Play on the day card (owner, 24 November 2026)
     }
 
     public void GoToMap()

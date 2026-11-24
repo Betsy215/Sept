@@ -76,13 +76,10 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="who p1"><h3>You</h3>
 <p><b>Release 2026.11.23 is approved and out</b> (24 November; it can take some hours to reach every country's store).</p>
 <p><b>Your App Store session:</b> your phone is player ec14c6 (the same as on TestFlight), on 2026.11.23. So far: the tutorial in 42 s (captions 2, 3, 11 and 14 never logged), day 1 started 10:37:52; the day's end has not reached Unity yet. Tell me when you are done.</p>
-<p><b>Order sounds by speed</b> (Current) and <b>an ad at the day start</b> (Q&amp;A): new.</p>
-<p><b>Test build 2026.11.23 (3) is in TestFlight</b> with everything in MVP: ready to test.</p>
+<p><b>Done from your ticks:</b> Cookie sprinkles stars, the ad at every day's start, bonus days and bigger stickers are in (MVP). Order sounds: more difference and library options in Current.</p>
+<p><b>Test build 2026.11.23 (3) is in TestFlight</b> with the first four items in MVP; the rest go into the next build.</p>
 <p><b>Header:</b> your review continues (Q&amp;A).</p>
-<p><b>Menu stickers larger:</b> before and after in Current.</p>
 <p><b>Your store test session:</b> a plan in Q&amp;A.</p>
-<p><b>Day-end star effects:</b> three proposals as videos with sound, in Current.</p>
-<p><b>Bonus days on the map:</b> videos in Current.</p>
 <p><b>C chapter:</b> three new ChatGPT drafts (fewer rules, watercolor, pink cloth) on its tab.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
@@ -91,20 +88,6 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>Show the ad when a day starts, right after Play on the day card? (24 Nov)</h3>
-<ul>
-<li><b>Yes, easily.</b> Today the between-days ad comes after the day-end paper, before the shop. It can move to the moment the player taps Play on the day card: the ad, then the day.</li>
-<li><b>For it:</b> the end of a day (stars, paper, shop) stays a reward with no break. The ad comes at a natural loading moment, when the player has already chosen to play on.</li>
-<li><b>Against:</b> a player who stops after a day never sees that day's ad, so a little fewer ads. And the ad stands between the player and the fun they just asked for.</li>
-<li><b>My suggestion:</b> move it, but no ad before day 1 and day 2. Our data shows new players leaving at the first ad, so let them get to like the game first. Keep one ad per day at most, at least 45 seconds apart, as now.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.adstart24.move"> Move it to the day start, none before day 3</label></li>
-<li><label><input type="checkbox" data-id="qa.adstart24.moveall"> Move it to the day start, every day</label></li>
-<li><label><input type="checkbox" data-id="qa.adstart24.keep"> Keep it after the day</label></li>
-</ul>
-</div>
-
 <div class="q"><h3>Why was Unity's income so low on the 22nd, and who played that day? (24 Nov)</h3>
 <ul>
 <li><b>The $0.01 day is Unity's 23 November (UTC).</b> The overview chart shows it as the 22nd because it draws each UTC day at midnight UTC, which is 4 pm the day before in Pacific time. That day runs from 22 Nov 4 pm to 23 Nov 4 pm, Pacific. Unity's real 22 November was the best day of the week: $0.12.</li>
@@ -220,88 +203,42 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
-<p style="margin-top:0"><b>Order sounds by speed: OK, Nice, Perfect.</b> <small>24 November; not in a build. Tuned from the game's own two sounds.</small></p>
-<p style="margin:6px 0 2px"><b>Now</b></p>
-<div style="margin:4px 0"><span style="display:inline-block;width:190px;font-size:14px">Order done (cash register)</span><audio controls preload="none" src="sounds/before_order.mp3" style="height:32px;vertical-align:middle"></audio></div>
-<div style="margin:4px 0"><span style="display:inline-block;width:190px;font-size:14px">Perfect order (cha-ching)</span><audio controls preload="none" src="sounds/before_perfect.mp3" style="height:32px;vertical-align:middle"></audio></div>
-<p style="margin:10px 0 2px"><b>New</b> (the same speed rule as the receipt's tags)</p>
-<div style="margin:4px 0"><span style="display:inline-block;width:190px;font-size:14px">OK (grey)</span><audio controls preload="none" src="sounds/order_ok.mp3" style="height:32px;vertical-align:middle"></audio></div>
-<div style="margin:4px 0"><span style="display:inline-block;width:190px;font-size:14px">Nice (yellow)</span><audio controls preload="none" src="sounds/order_nice.mp3" style="height:32px;vertical-align:middle"></audio></div>
-<div style="margin:4px 0"><span style="display:inline-block;width:190px;font-size:14px">Perfect (green)</span><audio controls preload="none" src="sounds/order_perfect.mp3" style="height:32px;vertical-align:middle"></audio></div>
+<p style="margin-top:0"><b>Order sounds by speed: a version with more difference, and library sounds to compare.</b> <small>24 November.</small></p>
+<p style="margin:6px 0 2px"><b>Now in the game</b></p>
+<div style="margin:4px 0"><span style="display:inline-block;width:200px;font-size:14px">Order done (cash register)</span><audio controls preload="none" src="sounds/before_order.mp3" style="height:32px;vertical-align:middle"></audio></div>
+<div style="margin:4px 0"><span style="display:inline-block;width:200px;font-size:14px">Perfect (cha-ching)</span><audio controls preload="none" src="sounds/before_perfect.mp3" style="height:32px;vertical-align:middle"></audio></div>
+<p style="margin:10px 0 2px"><b>Mine, first try</b></p>
+<div style="margin:4px 0"><span style="display:inline-block;width:200px;font-size:14px">OK</span><audio controls preload="none" src="sounds/order_ok.mp3" style="height:32px;vertical-align:middle"></audio></div><div style="margin:4px 0"><span style="display:inline-block;width:200px;font-size:14px">Nice</span><audio controls preload="none" src="sounds/order_nice.mp3" style="height:32px;vertical-align:middle"></audio></div><div style="margin:4px 0"><span style="display:inline-block;width:200px;font-size:14px">Perfect</span><audio controls preload="none" src="sounds/order_perfect.mp3" style="height:32px;vertical-align:middle"></audio></div>
+<p style="margin:10px 0 2px"><b>Mine, more difference</b></p>
+<div style="margin:4px 0"><span style="display:inline-block;width:200px;font-size:14px">OK: short, low, soft</span><audio controls preload="none" src="sounds/v2_order_ok.mp3" style="height:32px;vertical-align:middle"></audio></div><div style="margin:4px 0"><span style="display:inline-block;width:200px;font-size:14px">Nice: brighter, two bells</span><audio controls preload="none" src="sounds/v2_order_nice.mp3" style="height:32px;vertical-align:middle"></audio></div><div style="margin:4px 0"><span style="display:inline-block;width:200px;font-size:14px">Perfect: cha-ching, five-bell sparkle</span><audio controls preload="none" src="sounds/v2_order_perfect.mp3" style="height:32px;vertical-align:middle"></audio></div>
+<p style="margin:10px 0 2px"><b>Free library sounds</b> (Pixabay licence: free in apps, no credit needed). Listen on their pages; I download only the ones you tick.</p>
 <ul>
-<li><b>OK:</b> the cash register as now, a little shorter and softer.</li>
-<li><b>Nice:</b> the same register two notes brighter, with one small bell on top.</li>
-<li><b>Perfect:</b> today's cha-ching with a quick rising sparkle of four bells.</li>
-<li>Each one gets a little brighter, so you can hear how fast you were without looking.</li>
+<li>OK: <a href="https://pixabay.com/sound-effects/money-collect-1-101476/">Money Collect 1</a> (1 s, a coin)</li>
+<li>Nice: <a href="https://pixabay.com/sound-effects/film-special-effects-collect-points-190037/">Collect Points</a> (1 s, a bright chime)</li>
+<li>Perfect: <a href="https://pixabay.com/sound-effects/film-special-effects-short-success-sound-glockenspiel-treasure-video-game-6346/">Short Success, glockenspiel</a> (3 s) or <a href="https://pixabay.com/sound-effects/film-special-effects-cute-level-up-2-189851/">Cute Level Up 2</a> (2 s)</li>
+<li>A different register: <a href="https://pixabay.com/sound-effects/film-special-effects-cash-register-purchase-87313/">Cash Register Purchase</a> (3 s, cha-ching and drawer)</li>
 </ul>
 <ul class="checks">
-<li><label><input type="checkbox" data-id="cur.osnd24.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.osnd24.more"> More difference between them</label></li>
-<li><label><input type="checkbox" data-id="cur.osnd24.web"> Try sounds from a free sound library instead</label></li>
+<li><label><input type="checkbox" data-id="cur.osnd24b.v1"> Use mine, first try</label></li>
+<li><label><input type="checkbox" data-id="cur.osnd24b.v2"> Use mine, more difference</label></li>
+<li><label><input type="checkbox" data-id="cur.osnd24b.lib"> Download the library set above (Money Collect 1, Collect Points, Short Success)</label></li>
+<li><label><input type="checkbox" data-id="cur.osnd24b.lib2"> Library set with Cute Level Up 2 for Perfect</label></li>
 </ul>
 </div>
-
-<div class="card">
-<p style="margin-top:0"><b>Bonus days: each chapter's last three days hide, then appear with a show.</b> <small>24 November; not in a build. Videos with sound (tap to play).</small></p>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-<div><div style="font-size:13px;margin:0 0 3px">Before: day 8 next, days 10 to 12 hidden</div><img src="bonus/before.jpg" alt="Chapter 1 map with day 8 next; the road ends at day 9, no days 10 to 12 yet" style="width:100%;border-radius:8px"></div>
-<div><div style="font-size:13px;margin:0 0 3px">Chapter 1, reaching day 9</div><video src="bonus/c1.mp4" poster="bonus/c1.jpg" controls playsinline preload="none" style="width:100%;border-radius:8px"></video></div>
-<div><div style="font-size:13px;margin:0 0 3px">Chapter 2, reaching day 13</div><video src="bonus/c2.mp4" poster="bonus/c2.jpg" controls playsinline preload="none" style="width:100%;border-radius:8px"></video></div>
-</div>
-<ul>
-<li><b>Hidden:</b> chapter 1's days 10, 11 and 12 and chapter 2's days 14, 15 and 16 are not on the map at first, and neither is the road to them.</li>
-<li><b>The show</b> (once per chapter, when the day before them becomes the next day: day 9, or day 13 in chapter 2): that day flares with a warm light and sparkles, a "BONUS DAYS!" banner pops up, then the road grows out day by day and each bonus day pops in with a rising chime. In chapter 2 the day card opens after it, as usual.</li>
-<li><b>Afterwards</b> the bonus days stay, each with a small gold star badge, and play like any day.</li>
-<li>Players already past that point see the days without the show.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.bonus24.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.bonus24.ch2"> Chapter 2: show it at a different day (say which)</label></li>
-<li><label><input type="checkbox" data-id="cur.bonus24.more"> More show (bigger, longer)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Day-end stars: three proposals, each bigger with more stars.</b> <small>24 November; videos with sound (tap to play, sound on). Recorded in the editor; on the phone each also gives a light tap per star and a double tap for three.</small></p>
-<p style="margin:10px 0 4px"><b>A. Chimes and sparkles</b></p><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"><div><div style="font-size:13px;margin:0 0 3px">1 star</div><video src="stars/s1_1.mp4" poster="stars/s1_1.jpg" controls playsinline preload="none" style="width:100%;border-radius:8px"></video></div><div><div style="font-size:13px;margin:0 0 3px">2 stars</div><video src="stars/s1_2.mp4" poster="stars/s1_2.jpg" controls playsinline preload="none" style="width:100%;border-radius:8px"></video></div><div><div style="font-size:13px;margin:0 0 3px">3 stars</div><video src="stars/s1_3.mp4" poster="stars/s1_3.jpg" controls playsinline preload="none" style="width:100%;border-radius:8px"></video></div></div>
-<p style="margin:10px 0 4px"><b>B. Cookie sprinkles</b></p><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"><div><div style="font-size:13px;margin:0 0 3px">1 star</div><video src="stars/s2_1.mp4" poster="stars/s2_1.jpg" controls playsinline preload="none" style="width:100%;border-radius:8px"></video></div><div><div style="font-size:13px;margin:0 0 3px">2 stars</div><video src="stars/s2_2.mp4" poster="stars/s2_2.jpg" controls playsinline preload="none" style="width:100%;border-radius:8px"></video></div><div><div style="font-size:13px;margin:0 0 3px">3 stars</div><video src="stars/s2_3.mp4" poster="stars/s2_3.jpg" controls playsinline preload="none" style="width:100%;border-radius:8px"></video></div></div>
-<p style="margin:10px 0 4px"><b>C. Fireworks</b></p><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"><div><div style="font-size:13px;margin:0 0 3px">1 star</div><video src="stars/s3_1.mp4" poster="stars/s3_1.jpg" controls playsinline preload="none" style="width:100%;border-radius:8px"></video></div><div><div style="font-size:13px;margin:0 0 3px">2 stars</div><video src="stars/s3_2.mp4" poster="stars/s3_2.jpg" controls playsinline preload="none" style="width:100%;border-radius:8px"></video></div><div><div style="font-size:13px;margin:0 0 3px">3 stars</div><video src="stars/s3_3.mp4" poster="stars/s3_3.jpg" controls playsinline preload="none" style="width:100%;border-radius:8px"></video></div></div>
-<ul>
-<li><b>A. Chimes and sparkles:</b> each star rings a higher bell note and bursts sparkles in a glow ring. Two stars twinkle together with a soft chord. Three stars: golden rays turn behind the middle star, tiny gold stars fall over the card, a bell fanfare.</li>
-<li><b>B. Cookie sprinkles:</b> each star lands with a crumbly pop and a burst of sprinkles in our pink, mint and yellow. Two stars float hearts up. Three stars: hearts, a sprinkle shower over the card, an icing shine across the stars, a marimba jingle.</li>
-<li><b>C. Fireworks:</b> each star bursts like a firework with a pop and crackle. Two stars send one firework over the card. Three stars send three (mint, pink, gold) with confetti and a big chord.</li>
-<li>All sounds are made by me (no outside sounds). Easy to mix: e.g. B's sprinkles with A's bells.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.starfx24.a"> A. Chimes</label></li>
-<li><label><input type="checkbox" data-id="cur.starfx24.b"> B. Cookie sprinkles</label></li>
-<li><label><input type="checkbox" data-id="cur.starfx24.c"> C. Fireworks</label></li>
-<li><label><input type="checkbox" data-id="cur.starfx24.mix"> A mix (I will say which parts)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Menu stickers at the top: larger.</b> <small>24 November; not in a build. iPhone 6.9 inch.</small></p>
-<figure><img src="mb_stickers.jpg" alt="Four phone screens with the menu open, before and after for chapters 1 and 2. Before, the stickers of the foods not on the menu sit small along the top under the settings and pause buttons. After, the same stickers are about a third larger: chapter 1's Choux sticker and chapter 2's Apple, Choux, Cake and Coffee stickers are clearly bigger, still above the menu paper"><figcaption>Before and after, chapters 1 and 2.</figcaption></figure>
-<ul>
-<li>The stickers you can add are 29 % larger on phones (360 instead of 280), still overlapping a little like a pile. More stickers than fit scroll sideways, as before.</li>
-<li>iPads keep the old size: there the open menu paper reaches up to the row.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.mbig24.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.mbig24.more"> Larger still</label></li>
-</ul>
-</div>
-
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">The next release, after 2026.11.23. All in test build 2026.11.23 (3).</p>
+<p class="sub" style="margin:0 0 8px">The next release, after 2026.11.23 (live). The first four are in test build 2026.11.23 (3); the rest are on main, in the next build.</p>
 <ul>
-<li><b>Ads keep starting:</b> a failed Unity Ads start is tried again (5 s up to every 2 min); slow ad loads time out and back off.</li>
-<li><b>The table's front:</b> the cloth falls over the table's edge in the bottom safe area, chapters 1 and 2.</li>
-<li><b>Food starts on the table:</b> every food's whole box starts inside the drag area (the coffee station 10 pt higher).</li>
-<li><b>Bug fixes:</b> the update card never asks for an update the phone cannot install; the day card waits for day 9's star scene; no page change while the truck drives; the tutorial no longer carries its kitchen into day 1.</li>
-<li><b>Open:</b> the adsStarted analytics event needs one entry in Unity's Event Manager (optional; until then Unity ignores it).</li>
+<li><b>Ads keep starting:</b> a failed Unity Ads start is tried again; slow loads time out and back off.</li>
+<li><b>The table's front:</b> the cloth falls over the table's edge in the bottom safe area.</li>
+<li><b>Food starts on the table:</b> every food's whole box starts inside the drag area.</li>
+<li><b>Bug fixes:</b> update card and iOS versions; day card and day 9's star; page change while the truck drives; tutorial kitchen into day 1.</li>
+<li><b>Menu stickers larger</b> on phones (approved).</li>
+<li><b>Day-end stars: Cookie sprinkles</b> (your pick B): sprinkles and a crumbly pop per star, hearts for two, a sprinkle shower, shine and jingle for three.</li>
+<li><b>Bonus days:</b> each chapter's last three days appear with a show when the day before them is reached (approved).</li>
+<li><b>The between-days ad moves to the day's start:</b> right after Play on the day card, every day (your pick). The end of a day goes straight to the shop.</li>
+<li><b>Order sounds by speed:</b> waits for your pick in Current.</li>
+<li><b>Open:</b> the adsStarted analytics event needs one entry in Unity's Event Manager (optional).</li>
 </ul>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>

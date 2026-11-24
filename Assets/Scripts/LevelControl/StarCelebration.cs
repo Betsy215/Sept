@@ -16,7 +16,7 @@ using UnityEngine.UI;
 public static class StarCelebration
 {
     public enum Style { Classic = 0, Chimes = 1, Cookie = 2, Fireworks = 3 }
-    public static Style Current = Style.Classic;
+    public static Style Current = Style.Cookie;   // the owner's pick, 24 November 2026 ("B. Cookie sprinkles")
 
     private static readonly Color Gold = new Color(1f, 0.83f, 0.33f), Cream = new Color(1f, 0.97f, 0.88f);
     private static readonly Color Pink = new Color(0.92f, 0.65f, 0.66f), Mint = new Color(0.49f, 0.78f, 0.67f), Yellow = new Color(0.96f, 0.75f, 0.33f);

@@ -628,7 +628,14 @@ public class MapScreen : MonoBehaviour
             CameFromDay = false;
             InterstitialAdService.Instance.ShowAfterLevelThen(() => SceneTransitionManager.Instance.TransitionToScene("Shop"));
         }
-        else SceneTransitionManager.Instance.TransitionToScene("GameSceneOne");
+        else
+        {
+            // the between-days ad plays here, right after Play, then the day (owner, 24 November 2026: "show the ad after
+            // player start on a new day, right after they click the start button on the start day panel"; every day).
+            // Its own pacing still applies: Remove Ads, TestFlight, at least 45 s between ads, only when one is loaded.
+            System.Action toDay = () => SceneTransitionManager.Instance.TransitionToScene("GameSceneOne");
+            if (InterstitialAdService.Instance != null) InterstitialAdService.Instance.ShowAfterLevelThen(toDay); else toDay();
+        }
     }
 
     private void GoHome()
