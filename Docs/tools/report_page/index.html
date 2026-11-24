@@ -88,7 +88,24 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<p class="sub" style="margin:0 0 8px">Nothing open.</p>
+<div class="q"><h3>Why are the baking tray and mixer set made by code, not placed in the kitchen picture? (24 Nov)</h3>
+<ul>
+<li><b>How it came about:</b> they arrived with the new kitchen flow (20 November), after the movable kitchen of 16 November. They were added the same way as that kitchen's moving parts: built in code when choux or cake is on the menu.</li>
+<li><b>Pros:</b>
+<ul>
+<li>They only exist when needed. The mixer set appears with choux or cake and takes the whisk's place; without them the kitchen keeps the plain whisk.</li>
+<li>They are found a free spot on the counter the first time, so they never land on another piece.</li>
+<li>Their size, shadow and look can be changed in code. Editing the kitchen scene file directly is risky: a slip there can break links in the scene.</li>
+<li>The kitchen flow (choux and cake stages, the mixer running) works on them directly.</li>
+</ul></li>
+<li><b>Cons:</b>
+<ul>
+<li>The rules attached to the scene's pieces (the NEW tag, show and hide by menu) do not reach them by themselves. That is how the NEW tag was missed.</li>
+<li>They do not show in the Unity editor until the game runs.</li>
+</ul></li>
+<li><b>My view:</b> keep them in code. The NEW tag is now given to them directly, and I checked the other scene-only rules: show and hide by menu is already in their code. Moving them into the scene would mean redoing the free-spot search and the flow links for little gain.</li>
+</ul>
+</div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <div class="card">
