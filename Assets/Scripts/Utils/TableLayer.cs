@@ -15,8 +15,10 @@ public class TableLayer : MonoBehaviour
     public float topReserve = 0.75f;
     [Tooltip("Room kept between the bottom of the screen (its safe area) and the food. Its own, smaller number since 15 November 2026: with the 0.3 of the sides, the ice cream station could not be dragged back down to where it starts (owner: 'it seems larger when i move it up')")]
     public float bottomPadding = 0.1f;
-    [Tooltip("The cloth's front drop (owner, 23 November 2026: the bottom safe area shows the cloth falling over the table's front edge): at least this tall in world units, so it reads on phones without a home bar")]
-    public float frontMinHeight = 0.3f;
+    /// The cloth's front drop (owner, 23 November 2026: the bottom safe area shows the cloth falling over the table's
+    /// front edge): the edge sits at this share of the cloth's height on every device, the height the drop pictures
+    /// were made for (Docs/tools/cloth_front.py EDGE), so the pattern joins; a Face ID iPhone's home bar + gap is the same.
+    private const float FrontEdgeShare = 0.456f / 5f;
 
     [Header("Table Coverage Settings")]
     [Tooltip("What percentage of the screen height should the tablecloth cover from bottom")]
@@ -240,7 +242,8 @@ public class TableLayer : MonoBehaviour
         var maxX = Mathf.Min(clothMaxX, safeMaxX) - tableBoundsPadding;
         var minY = Mathf.Max(clothMinY, safeMinY) + bottomPadding;
         // the bottom safe area is the cloth's front drop: the table's front edge sits on the drag area's bottom
-        if (UpdateClothFront(Mathf.Max(minY, clothMinY + frontMinHeight), screenWidth, cameraPos.x)) minY = Mathf.Max(minY, clothMinY + frontMinHeight);
+        var edge = clothMinY + clothSize.y * FrontEdgeShare;
+        if (UpdateClothFront(edge, screenWidth, cameraPos.x)) minY = Mathf.Max(minY, edge);
         var maxY = Mathf.Min(clothMaxY - topReserve, safeMaxY - tableBoundsPadding);   // the back band is for the fixed items only
 
         // Degenerate (padding larger than the available area): collapse to the centre line
