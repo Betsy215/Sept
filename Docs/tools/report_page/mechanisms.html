@@ -69,7 +69,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h1>Food Truck Cafe</h1>
 <p class="sub">Mechanisms: how the game works, in numbers. Kept for good (clearing the report leaves this page as it is).</p>
 
-<nav class="toc" aria-label="Pages"><a href="index.html" class="page">Report</a><a href="visuals.html" class="page">Visuals</a><a href="cchapter.html" class="page">C chapter</a><a href="mechanisms.html" class="page">Mechanisms</a><a href="#prices"><b>1</b>Sale prices</a><a href="#times"><b>2</b>Kitchen times</a><a href="#days"><b>3</b>Days and chapters</a><a href="#update"><b>4</b>Update card</a><a href="#customers"><b>5</b>Customers per day</a></nav>
+<nav class="toc" aria-label="Pages"><a href="index.html" class="page">Report</a><a href="visuals.html" class="page">Visuals</a><a href="cchapter.html" class="page">C chapter</a><a href="mechanisms.html" class="page">Mechanisms</a><a href="#prices"><b>1</b>Sale prices</a><a href="#times"><b>2</b>Kitchen times</a><a href="#days"><b>3</b>Days and chapters</a><a href="#update"><b>4</b>Update card</a><a href="#customers"><b>5</b>Customers per day</a><a href="#economy"><b>6</b>Day lengths</a></nav>
 
 <h2 id="prices"><span class="n">1</span>Sale prices</h2>
 <div class="card"><p style="margin-top:0"><b>The sale price of each item</b></p>
@@ -122,7 +122,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul></div>
 </main>
 <h2 id="customers"><span class="n">5</span>Customers per day</h2>
-<p class="sub" style="margin:0 0 8px">24 November. <b>A day ends on its clock, not on an order count.</b> A customer comes every few seconds while the clock runs, at most two waiting at once, and a new one only when a place is free; the day ends when the clock is out and the last customer has left. So a quick player meets more customers than a slow one. Each customer orders a few items.</p>
+<p class="sub" style="margin:0 0 8px">24 November. <b>A day ends on its clock, not on an order count.</b> (Table below: before 24 November's new lengths; see 6.) A customer comes every few seconds while the clock runs, at most two waiting at once, and a new one only when a place is free; the day ends when the clock is out and the last customer has left. So a quick player meets more customers than a slow one. Each customer orders a few items.</p>
 <table style="font-size:14px;border-collapse:collapse;width:100%"><tr style="text-align:left"><th style="padding:3px 6px">Day</th><th>Day length</th><th>A customer every</th><th>Most customers (quick player)</th><th>Order count in the day's data</th><th>Items per order</th><th>Patience</th></tr>
 <tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 1</td><td>48 s</td><td>4 s</td><td>13</td><td>9</td><td>1 to 2</td><td>7 s</td></tr>
 <tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 2</td><td>48 s</td><td>4 s</td><td>13</td><td>9</td><td>1 to 3</td><td>7 s</td></tr>
@@ -155,5 +155,46 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 16 (bonus)</td><td>140 s</td><td>5 s</td><td>29</td><td>20</td><td>2 to 4</td><td>5 s</td></tr>
 </table>
 <p style="font-size:13px">The "order count in the day's data" is a number each day still has (9 to 20). Since 13 October it no longer ends the day or limits the customers; it only sets when dusk begins (dusk starts about two orders before that count). Switching days back to an order count is a small change if you want it. The real number of customers each day is not logged yet.</p>
+
+<h2 id="economy"><span class="n">6</span>Day lengths and money, 24 November</h2>
+<p class="sub" style="margin:0 0 8px">Money comes per customer served, so a day's money follows its most customers. Your App Store session earned about $100 a customer by day 9 (day 9: $2,051 for 19 customers); the three test players earned $290 to $2,050 a day in chapter 1.</p>
+<ul>
+<li><b>To open chapter 2</b> (days 1 to 9): 136 → 131 customers, <b>4 % less</b>. Days 3 and 4 get longer, 6 to 9 shorter: it evens out.</li>
+<li><b>All of chapter 1:</b> 194 → 176 customers, 9 % less; the bonus days 10 to 12 pay about a quarter less each.</li>
+<li><b>Chapter 2:</b> 386 → 320 customers, <b>17 % less</b>; every day now pays like its day 1 (about $2,000 for a good player). Its shop (coconut 700, ice cream station 900, third oven 500, more) takes about one more day to buy out.</li>
+<li><b>Stars</b> come from the share of customers served, so they don't get harder or easier.</li>
+<li><b>Verdict:</b> a good balance. Days feel the same length all chapter, the way to chapter 2 is unchanged, and chapter 2's 16 days still leave plenty of time for its shop. If chapter 2 later feels slow on money, raise its prices' pay (food prices) rather than lengthen days.</li>
+</ul>
+<table style="font-size:14px;border-collapse:collapse;width:100%"><tr style="text-align:left"><th style="padding:3px 6px">Day</th><th>Length</th><th>Most customers</th></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 1</td><td>48 s → 48 s</td><td>13 → 13</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 2</td><td>48 s → 48 s</td><td>13 → 13</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 3</td><td>53 s → 58 s</td><td>14 → 15</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 4</td><td>53 s → 58 s</td><td>14 → 15</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 5</td><td>58 s → 58 s</td><td>15 → 15</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 6</td><td>63 s → 58 s</td><td>16 → 15</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 7</td><td>63 s → 58 s</td><td>16 → 15</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 8</td><td>63 s → 58 s</td><td>16 → 15</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 9</td><td>73 s → 58 s</td><td>19 → 15</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 10</td><td>73 s → 58 s</td><td>19 → 15</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 11</td><td>73 s → 58 s</td><td>19 → 15</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 12</td><td>78 s → 58 s</td><td>20 → 15</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 1</td><td>95 s → 95 s</td><td>20 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 2</td><td>98 s → 95 s</td><td>20 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 3</td><td>101 s → 95 s</td><td>21 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 4</td><td>104 s → 95 s</td><td>21 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 5</td><td>107 s → 95 s</td><td>22 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 6</td><td>110 s → 95 s</td><td>23 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 7</td><td>113 s → 95 s</td><td>23 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 8</td><td>116 s → 95 s</td><td>24 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 9</td><td>119 s → 95 s</td><td>24 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 10</td><td>122 s → 95 s</td><td>25 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 11</td><td>125 s → 95 s</td><td>26 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 12</td><td>128 s → 95 s</td><td>26 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 13</td><td>131 s → 95 s</td><td>27 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 14</td><td>134 s → 95 s</td><td>27 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 15</td><td>137 s → 95 s</td><td>28 → 20</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 16</td><td>140 s → 95 s</td><td>29 → 20</td></tr>
+</table>
+
 
 </body></html>
