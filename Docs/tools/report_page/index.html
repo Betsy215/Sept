@@ -77,6 +77,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p><b>Release 2026.11.23 is with Apple</b> (submitted 23 November, 13:20). It goes out by itself once approved.</p>
 <p><b>C chapter tab:</b> three cabin scenes from your new direction (pink, white, mint; cabin with a big window onto a ski resort), to pick from.</p>
 <p><b>Table start places fixed</b> (whole box out of the safe area): Current.</p>
+<p><b>Bug hunt:</b> four small fixes, both chapters played through clean: Current.</p>
 <p><b>Ads fix:</b> approved; in the next build.</p>
 <p><b>Header:</b> four contents on each of the three backgrounds you liked (Q&amp;A), for when you decide; search versions from A below it.</p>
 </div>
@@ -138,6 +139,20 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.tb23b.good"> Good</label></li>
+</ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Bug hunt: four fixes, nothing that crashes.</b> <small>23 November; on main, not in a build.</small></p>
+<ul>
+<li><b>Checked:</b> a full review of every code change since the live 2026.11.20; chapter 1 played through all 12 days and chapter 2 through all 16 in the editor (no errors); TestFlight feedback and crashes (nothing new); the bugs folder (nothing new).</li>
+<li><b>Update card could lock a player out.</b> If a later release ever needs a newer iOS than a player's phone has, the card would ask for an update the phone cannot install, with no way past it. Now no card then. Copies of 2026.11.23 do not have this check, so I noted: keep the minimum iOS at 15.0 for now.</li>
+<li><b>Day card over the day 9 star scene:</b> tapping day 9 just as the map opened could open today's card on top of the star flying. The card now waits.</li>
+<li><b>Truck driving twice:</b> changing the map page while the truck drove could make it jitter. The page arrow now waits for the truck (at most 2 s).</li>
+<li><b>Tutorial carried into day 1:</b> the demo's coffee bag wait and picked apples stayed into the first day. The tutorial now resets the kitchen like every day end.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.hunt23.good"> Good</label></li>
 </ul>
 </div>
 
