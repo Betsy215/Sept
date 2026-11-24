@@ -616,6 +616,8 @@ public class MapScreen : MonoBehaviour
         popup = null;
     }
 
+    private const int FirstAdDay = 2;   // day index: day 3 is the first day that starts with an ad
+
     private void PlayDay(int day)
     {
         if (leaving) return;
@@ -636,7 +638,8 @@ public class MapScreen : MonoBehaviour
             // player start on a new day, right after they click the start button on the start day panel"; every day).
             // Its own pacing still applies: Remove Ads, TestFlight, at least 45 s between ads, only when one is loaded.
             System.Action toDay = () => SceneTransitionManager.Instance.TransitionToScene("GameSceneOne");
-            if (InterstitialAdService.Instance != null) InterstitialAdService.Instance.ShowAfterLevelThen(toDay); else toDay();
+            // none before day 1 or day 2: the first ad comes when day 3 is started (owner, 24 November 2026)
+            if (InterstitialAdService.Instance != null && day >= FirstAdDay) InterstitialAdService.Instance.ShowAfterLevelThen(toDay); else toDay();
         }
     }
 
