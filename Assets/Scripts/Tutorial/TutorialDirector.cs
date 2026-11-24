@@ -652,6 +652,7 @@ public class TutorialDirector : MonoBehaviour
         AnalyticsLog.TutorialFinished(saidCount);
 
         // Day 0 is over: on to the map, where day 1 is the next star (12 October; it used to reload into day 1)
+        KitchenDay.End();   // the demo's coffee bags, apples and ovens do not carry into day 1 (every day starts with the kitchen reset)
         Time.timeScale = 1f;
         if (AudioManager.Instance != null) AudioManager.Instance.StopMusic();
         if (SceneTransitionManager.Instance != null)
@@ -674,6 +675,7 @@ public class TutorialDirector : MonoBehaviour
 
     private void Reload()
     {
+        KitchenDay.End();
         Time.timeScale = 1f;
         if (AudioManager.Instance != null) AudioManager.Instance.StopMusic();
         if (SceneTransitionManager.Instance != null)

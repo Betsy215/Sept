@@ -104,6 +104,8 @@ The game is live and working. These were reviewed and the owner chose not to cha
 
 ## Known issues (minor, not fixed)
 
+- **Keep the minimum iOS at 15.0 while 2026.11.23 copies are around** (23 November 2026). The update card in 2026.11.23 does not check the store version's minimum iOS (fixed for the next release): if a later release needs a newer iOS than a player's phone has, a 2026.11.23 copy would show the blocking card with an update the phone cannot install. Same if the game leaves a country's store (the lookup asks the US store).
+
 From the 7 to 8 October review (details in `Docs/systems`) and the 13 October play test.
 
 - Double-tapping Next Level while an interstitial is pending can run the Shop transition twice.

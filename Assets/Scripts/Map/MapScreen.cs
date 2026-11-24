@@ -211,14 +211,14 @@ public class MapScreen : MonoBehaviour
     {
         var shown = page; var drove = truckDriving;
         yield return new WaitForSeconds(0.45f);   // the map shows first, then the card
-        while (truckDriving) yield return null;   // and the truck arrives first (owner, 23 November 2026: "once arrived, then show the day start panel automatically")
+        while (truckDriving || ceremonyRunning) yield return null;   // and the truck arrives first (owner, 23 November 2026: "once arrived, then show the day start panel automatically"); never over day 9's star scene
         if (drove) yield return new WaitForSecondsRealtime(0.3f);
-        if (popup == null && !leaving && page == shown) OpenDay(day);   // not over another chapter's page, if the arrow was tapped meanwhile
+        if (popup == null && !leaving && !ceremonyRunning && page == shown) OpenDay(day);   // not over another chapter's page, if the arrow was tapped meanwhile
     }
 
     private void ShowPage(int p)
     {
-        if (popup != null || leaving || ceremonyRunning) return;
+        if (popup != null || leaving || ceremonyRunning || truckDriving) return;   // not while the truck drives: the old page's drive would end the new page's
         page = Mathf.Clamp(p, 0, Chapter.Count - 1);
         if (canvasRect != null) Destroy(canvasRect.gameObject);
         Build();

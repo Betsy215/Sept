@@ -29,7 +29,7 @@ public static class UpdateGate
     private static bool asked, shown;
 
     [System.Serializable] private class Lookup { public int resultCount; public Result[] results; }
-    [System.Serializable] private class Result { public string version; public string currentVersionReleaseDate; }
+    [System.Serializable] private class Result { public string version; public string currentVersionReleaseDate; public string minimumOsVersion; }
 
     private class Runner : MonoBehaviour { }
 
@@ -49,7 +49,7 @@ public static class UpdateGate
             req.timeout = 8;
             yield return req.SendWebRequest();
             if (req.result != UnityWebRequest.Result.Success) { Object.Destroy(host); yield break; }
-            if (!NeedsUpdate(req.downloadHandler.text, Application.version, System.DateTime.UtcNow)) { Object.Destroy(host); yield break; }
+            if (!NeedsUpdate(req.downloadHandler.text, Application.version, System.DateTime.UtcNow, OsVersion())) { Object.Destroy(host); yield break; }
         }
         // never over a running day: wait for a calm screen
         while (!Calm(SceneManager.GetActiveScene().name)) yield return null;
@@ -58,14 +58,27 @@ public static class UpdateGate
 
     private static bool Calm(string scene) => scene == "MainMenu" || scene == "Map" || scene == "Shop";
 
-    /// True when the lookup's answer names a version newer than `mine` that has been on the store long enough.
-    public static bool NeedsUpdate(string json, string mine, System.DateTime nowUtc)
+    /// The phone's iOS version ("18.7.8"); empty when unknown
+    private static string OsVersion()
+    {
+#if UNITY_IOS
+        try { return UnityEngine.iOS.Device.systemVersion ?? ""; } catch (System.Exception) { return ""; }
+#else
+        return "";
+#endif
+    }
+
+    /// True when the lookup's answer names a version newer than `mine` that has been on the store long enough, and that
+    /// this phone can install: a store version needing a newer iOS than `os` would leave the player before a card with no
+    /// way past it, so then no card (a known `os` only).
+    public static bool NeedsUpdate(string json, string mine, System.DateTime nowUtc, string os = "")
     {
         try
         {
             var look = JsonUtility.FromJson<Lookup>(json);
             if (look == null || look.results == null || look.results.Length == 0 || string.IsNullOrEmpty(look.results[0].version)) return false;
             if (Compare(look.results[0].version, mine) <= 0) return false;
+            if (!string.IsNullOrEmpty(os) && !string.IsNullOrEmpty(look.results[0].minimumOsVersion) && Compare(look.results[0].minimumOsVersion, os) > 0) return false;
             if (!System.DateTime.TryParse(look.results[0].currentVersionReleaseDate, System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.AdjustToUniversal | System.Globalization.DateTimeStyles.AssumeUniversal, out var released)) return false;
             return (nowUtc - released).TotalHours >= HoursOnStore;
