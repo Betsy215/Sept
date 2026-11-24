@@ -5,6 +5,7 @@ python3 -I asc_release.py <version> status            what exists for that versi
 python3 -I asc_release.py <version> create            create the version (MANUAL release), copy every text of the live version, set WHATS_NEW
 python3 -I asc_release.py <version> build <n>         attach TestFlight build <n> of that version (must be VALID)
 python3 -I asc_release.py <version> whatsnew <file>  set the version's What's New to the text in <file> (the owner's words)
+python3 -I asc_release.py <version> auto              release by itself once approved (AFTER_APPROVAL; owner's yes, 24 November 2026)
 python3 -I asc_release.py <version> submit            create the review submission with the version and submit it
 python3 -I asc_release.py <version> release           release an approved version (PENDING_DEVELOPER_RELEASE) to the store
 
@@ -17,11 +18,13 @@ APP = "6755611355"
 TOKEN = subprocess.run(["python3", "-I", os.path.join(os.path.dirname(os.path.abspath(__file__)), "asc_token.py")],
                        capture_output=True, text=True).stdout.strip().splitlines()[-1]
 
-WHATS_NEW = "New kitchen flow for baking.\nAdd more kitchen equipments.\nGift for chapter2.\nChapter1 day9 rewards.\nSpeed indicator on receipts."   # 2026.11.23: the owner's words of 23 November 2026 ("What's new: ...")
+WHATS_NEW = "Bonus days;\nNew stamps on receipt;\nAdd table drops;\nCandy jar from day 3;\nCandy and the yoga lady fill flowers to full;\nUnlock chapter2 on day9;\nTune day lengths;\nResize menu stickers;\nBug fixes."   # 2026.11.24: the owner's words of 24 November 2026
+WHATS_NEW_2026_11_23 = "New kitchen flow for baking.\nAdd more kitchen equipments.\nGift for chapter2.\nChapter1 day9 rewards.\nSpeed indicator on receipts."   # 2026.11.23: the owner's words of 23 November 2026 ("What's new: ...")
 WHATS_NEW_2026_11_20 = "New look for shop;\nAdd a journal;\nAdd a new kitchen upgrade;\nNew looks for UI;"   # 2026.11.20: the owner's words of 20 November 2026 (set with `whatsnew`)
 WHATS_NEW_2611_18 = "Add cookies collection.\nNew feature for kitchen, allow customization in kitchen.\nNew design for choux and blender.\nAdd labels for new item."   # 2026.11.18: the owner's words of 18 November 2026 (set with `whatsnew`)
 WHATS_NEW_2611_22 = "Hire new staff.\nNew sound effects.\nRemove ads feature.\nNew swipe gesture and pulling handle for kitchen."   # 26.11.22: the owner's words of 15 November 2026 ("What's new for today's release"). 26.11.21 was "Bug fixes"; 26.11.13: "- Tune balance\n- Night decorations\n- Added star as a currency in shop\n- Sprites tune"
-DESCRIPTION_EDITS = {}  # {"old words": "new words"}; filled only on the owner's tick, e.g. the "two customers" line
+DESCRIPTION_EDITS = {"serve two customers at a time from morning to night": "serve customers from morning to night",
+                     "and invite new regulars to your truck.": "and invite new regulars to your truck. Hire staff with your stars to help keep every customer happy."}  # owner, 24 November 2026  # {"old words": "new words"}; filled only on the owner's tick, e.g. the "two customers" line
 
 
 def api(method, path, body=None):
@@ -125,6 +128,11 @@ if __name__ == "__main__":
         loc = localization(ver["id"])
         api("PATCH", f"/appStoreVersionLocalizations/{loc['id']}", {"data": {"type": "appStoreVersionLocalizations", "id": loc["id"], "attributes": {"whatsNew": text}}})
         print("whatsNew set:", text.replace("\n", " / "))
+
+    elif what == "auto":
+        if not ver: raise SystemExit(f"{v} does not exist")
+        api("PATCH", f"/appStoreVersions/{ver['id']}", {"data": {"type": "appStoreVersions", "id": ver["id"], "attributes": {"releaseType": "AFTER_APPROVAL"}}})
+        print("release type AFTER_APPROVAL for", v)
 
     elif what == "submit":
         if not ver: raise SystemExit(f"{v} does not exist")
