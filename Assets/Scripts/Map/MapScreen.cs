@@ -155,12 +155,16 @@ public class MapScreen : MonoBehaviour
     public static void ForgetTruck() { for (var i = 0; i < truckStoodAt.Length; i++) truckStoodAt[i] = -1; }
 
     /// The truck's resting place beside a day (or above the last day once the chapter is done), as an offset from the day's star.
+    /// The truck parks on top of the day's circle, its wheels just overlapping the circle's top (owner, 24 November
+    /// 2026: "Make the truck icon on level map smaller, always park the truck on top of the day icon, slightly overlap is
+    /// fine"); `days` = the last day once the chapter is done.
     private Vector2 Rest(int spot)
     {
-        if (spot >= truckDays) return new Vector2(0f, 110f);
-        var a = P(StarsOf(page)[Mathf.Clamp(spot, 0, StarsOf(page).Length - 1)]);
-        return a.x < 370f ? new Vector2(44f + truckW / 2f, -80f) : new Vector2(540f - 10f - truckW / 2f - a.x, -140f);   // as in Build
+        var size = page == 0 && Chapter.Count >= 2 && spot == SpecialDay ? 190f : spot == truckToday ? 104f : 84f;   // the circle's size, as in Build
+        return new Vector2(0f, size / 2f + TruckH * 0.34f);
     }
+    private const float TruckH = 84f;   // was 120
+    private int truckToday = -1;
 
     /// The stars from one place to another, either way.
     private List<Vector2> PathBetween(int from, int to)
@@ -367,11 +371,9 @@ public class MapScreen : MonoBehaviour
             var stand = allDone ? days - 1 : today;
             var at = P(Stars[stand]);
             var truck = NewImage("Truck", canvasRect, truckSprite); truckRect = truck.rectTransform;
-            var h = 120f; var w = h * truckSprite.rect.width / truckSprite.rect.height;
-            // beside today's star; above day 16 once the chapter is done (to its right it would cover day 11)
-            System.Func<Vector2, Vector2> beside = a => a.x < 370f ? new Vector2(44f + w / 2f, -80f)   // 370: with the 1.15 map, day 4 at x 387 clipped the truck on the right
-                : new Vector2(540f - 10f - w / 2f - a.x, -140f);                                       // day 5 sits near the right edge: tuck the truck below it
-            var offset = allDone ? new Vector2(0f, 110f) : beside(at);
+            var h = TruckH; var w = h * truckSprite.rect.width / truckSprite.rect.height;
+            truckToday = allDone ? -1 : today;
+            var offset = Rest(stand);   // on top of the day's circle
             Place(truck.rectTransform, at + offset, new Vector2(w, h));
             truck.raycastTarget = false;
             // It drives here from where it stood the last time this page showed, when the day has moved on (owner,

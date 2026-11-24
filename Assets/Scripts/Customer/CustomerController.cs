@@ -71,16 +71,14 @@ public abstract class CustomerController : MonoBehaviour
     }
 
     // SIMPLIFIED: Only called with perfect = true (orders are always completed correctly)
-    private static AudioClip soundOk, soundNice, soundPerfect;
-    /// The tuned order sounds (Resources/Audio/Orders): the game's own cash register and cha-ching, made plainer or brighter
+    private static AudioClip soundPerfect;
+    /// The tuned order sound (Resources/Audio/Orders): a perfect order's cha-ching with a rising sparkle of bells
     private static AudioClip TunedOrderSound(SimpleScorePopup.TipLevel level)
     {
         switch (level)
         {
             case SimpleScorePopup.TipLevel.Perfect: return soundPerfect != null ? soundPerfect : soundPerfect = Resources.Load<AudioClip>("Audio/Orders/order_perfect");
-            case SimpleScorePopup.TipLevel.Nice: return soundNice != null ? soundNice : soundNice = Resources.Load<AudioClip>("Audio/Orders/order_nice");
-            case SimpleScorePopup.TipLevel.Ok: return soundOk != null ? soundOk : soundOk = Resources.Load<AudioClip>("Audio/Orders/order_ok");
-            default: return null;
+            default: return null;   // OK and Nice: the order-done sound as before (owner's pick, 24 November 2026)
         }
     }
 
