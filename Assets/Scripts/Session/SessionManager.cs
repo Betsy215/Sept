@@ -73,6 +73,8 @@ public class SessionData
     // a chapter's count is the larger of the two (older saves have only the run).
     public List<int> chapterDone;
     public bool chapter2Claimed;   // day 9's star was taken on the map: chapter 2 is open
+    public bool day9StarGiven;     // day 9's star came on its gift card when day 9 was reached (24 November 2026)
+    public bool chapter2MapSeen;   // chapter 2's map page had its first-time welcome (24 November 2026)
     // Chapters whose three bonus days were revealed on the map (24 November 2026); null in older saves
     public List<int> bonusShown;
     // The star shop (14 November 2026): what was bought with stars, and how many stars that took. The stars a player
@@ -285,12 +287,24 @@ public class SessionManager : MonoBehaviour
         if (currentSession.bonusShown == null) currentSession.bonusShown = new List<int>();
         if (!currentSession.bonusShown.Contains(chapter)) { currentSession.bonusShown.Add(chapter); SaveSession(); }
     }
+    /// Day 9 reached (day 8 done) and its star not given yet (owner, 24 November 2026: "after finish day 8, day 9 should
+    /// give a star automatically using the gift card modal"); it used to wait for a tap on day 9 after day 9 was played.
+    public bool Day9StarDue => currentSession != null && Chapter.Count >= 2 && !currentSession.day9StarGiven && !currentSession.chapter2Claimed && DaysDoneIn(1) >= Chapter2OpensAfterDays - 1;
+    /// Chapter 2's map page shown for the first time, before any chapter 2 day is played (owner, 24 November 2026)
+    public bool Chapter2WelcomeDue => currentSession != null && !currentSession.chapter2MapSeen && DaysDoneIn(2) == 0;
+    public void MarkChapter2MapSeen() { if (currentSession == null || currentSession.chapter2MapSeen) return; currentSession.chapter2MapSeen = true; SaveSession(); }
+    public void GiveDay9Star()
+    {
+        if (currentSession == null || currentSession.day9StarGiven || currentSession.chapter2Claimed) return;
+        currentSession.day9StarGiven = true; currentSession.starsGranted += 1; SaveSession();
+    }
     public bool Chapter2CeremonyDue => currentSession != null && Chapter.Count >= 2 && !currentSession.chapter2Claimed && DaysDoneIn(1) >= Chapter2OpensAfterDays;
     /// The star is the player's and chapter 2 is open (saved at once, so leaving mid-scene loses nothing).
     public void ClaimChapter2()
     {
         if (currentSession == null || currentSession.chapter2Claimed) return;
-        currentSession.chapter2Claimed = true; currentSession.starsGranted += 1; SaveSession();
+        if (!currentSession.day9StarGiven) currentSession.starsGranted += 1;   // the star once, whichever came first
+        currentSession.day9StarGiven = true; currentSession.chapter2Claimed = true; SaveSession();
     }
     /// The star shop's chef (owner, 20 November 2026: "Add another star item - chef, he is locked, costs 20 stars, lock him
     /// for now, we won't unlock for now until later release").

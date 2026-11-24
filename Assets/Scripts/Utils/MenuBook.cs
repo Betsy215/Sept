@@ -23,7 +23,19 @@ public class MenuBook : MonoBehaviour
     /// Larger on phones (owner, 24 November 2026: "the selection of available stickers on top is a little small, I forgot
     /// it sometimes, make it larger"); an iPad keeps 280, its open paper reaches up to the strip.
     private static bool BigCarousel => Screen.width > 0 && Screen.height / (float)Screen.width >= 1.7f;
-    private static float CarouselSize => BigCarousel ? 360f : CarouselSizeSmall;
+    /// Bigger again (owner, 24 November 2026: "make the menu selection on top even bigger"): as big as the room between
+    /// the top buttons and the open paper allows on this screen, at most 440, never under 280. Worked out from the
+    /// screen as the canvas scaler sees it (1080 x 1920, half width half height).
+    private static float CarouselSize
+    {
+        get
+        {
+            if (!BigCarousel || Screen.width <= 0) return CarouselSizeSmall;
+            var scale = Mathf.Sqrt(Screen.width / 1080f * (Screen.height / 1920f)); var canvasH = Screen.height / Mathf.Max(0.01f, scale);
+            var room = canvasH / 2f - CarouselTop - (-170f + 565f) - 30f;   // from under the top buttons down to the open paper's top
+            return Mathf.Clamp(room - 20f, CarouselSizeSmall, 440f);
+        }
+    }
     private const float FlySeconds = 0.38f;
     private const float CarouselTop = 170f;            // under the settings and pause buttons
     private static readonly Vector2 MiniSpot = new Vector2(0f, -328f);   // the small menu's centre: centred, under the top buttons
@@ -534,7 +546,8 @@ public class MenuBook : MonoBehaviour
         }
         if (greyed) return rt;
         if (parent != board) img.gameObject.AddComponent<Button>().onClick.AddListener(() => OnStickerTapped(food, rt));
-        img.gameObject.AddComponent<Wiggle>().phase = StableHash(food) % 628 / 100f;
+        var wig = img.gameObject.AddComponent<Wiggle>(); wig.phase = StableHash(food) % 628 / 100f;
+        if (parent == carouselContent) { wig.amp = 5f; wig.pulse = 0.05f; }   // the stickers to add wiggle clearly (owner, 24 November 2026)
         return rt;
     }
 
@@ -617,14 +630,15 @@ public class MenuBook : MonoBehaviour
     /// A sticker's gentle idle wiggle (owner, 14 October): a small rock round its own tilt, each on its own beat.
     public class Wiggle : MonoBehaviour
     {
-        public float phase;
-        private float baseRot; private bool started;
+        public float phase, amp = 2.2f, pulse;   // degrees; pulse: a soft grow-and-shrink share (0 = none)
+        private float baseRot; private bool started; private Vector3 baseScale;
         private void OnEnable() { started = false; }
         private void LateUpdate()
         {
-            if (!started) { baseRot = transform.localEulerAngles.z; if (baseRot > 180f) baseRot -= 360f; started = true; }
+            if (!started) { baseRot = transform.localEulerAngles.z; if (baseRot > 180f) baseRot -= 360f; baseScale = transform.localScale; started = true; }
             var t = Time.unscaledTime * 2.2f + phase;
-            transform.localRotation = Quaternion.Euler(0, 0, baseRot + Mathf.Sin(t) * 2.2f + Mathf.Sin(t * 2.7f) * 0.6f);
+            transform.localRotation = Quaternion.Euler(0, 0, baseRot + Mathf.Sin(t) * amp + Mathf.Sin(t * 2.7f) * amp * 0.27f);
+            if (pulse > 0f) transform.localScale = baseScale * (1f + pulse * Mathf.Sin(t * 1.6f));
         }
     }
 

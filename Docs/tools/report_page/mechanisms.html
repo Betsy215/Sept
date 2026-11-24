@@ -69,7 +69,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h1>Food Truck Cafe</h1>
 <p class="sub">Mechanisms: how the game works, in numbers. Kept for good (clearing the report leaves this page as it is).</p>
 
-<nav class="toc" aria-label="Pages"><a href="index.html" class="page">Report</a><a href="visuals.html" class="page">Visuals</a><a href="cchapter.html" class="page">C chapter</a><a href="mechanisms.html" class="page">Mechanisms</a><a href="#prices"><b>1</b>Sale prices</a><a href="#times"><b>2</b>Kitchen times</a><a href="#days"><b>3</b>Days and chapters</a><a href="#update"><b>4</b>Update card</a></nav>
+<nav class="toc" aria-label="Pages"><a href="index.html" class="page">Report</a><a href="visuals.html" class="page">Visuals</a><a href="cchapter.html" class="page">C chapter</a><a href="mechanisms.html" class="page">Mechanisms</a><a href="#prices"><b>1</b>Sale prices</a><a href="#times"><b>2</b>Kitchen times</a><a href="#days"><b>3</b>Days and chapters</a><a href="#update"><b>4</b>Update card</a><a href="#customers"><b>5</b>Customers per day</a></nav>
 
 <h2 id="prices"><span class="n">1</span>Sale prices</h2>
 <div class="card"><p style="margin-top:0"><b>The sale price of each item</b></p>
@@ -121,4 +121,39 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li>In every copy from release 2026.11.23 on; older copies have no check.</li>
 </ul></div>
 </main>
+<h2 id="customers"><span class="n">5</span>Customers per day</h2>
+<p class="sub" style="margin:0 0 8px">How a day fills (24 November). A customer comes every few seconds while the day's clock runs, at most two waiting at once; a new one only comes when a place is free. So a quick player meets the most customers; a slow one fewer. Each customer orders a few items.</p>
+<table style="font-size:14px;border-collapse:collapse;width:100%"><tr style="text-align:left"><th style="padding:3px 6px">Day</th><th>Day length</th><th>A customer every</th><th>Most customers (quick player)</th><th>Items per order</th><th>Patience</th></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 1</td><td>48 s</td><td>4 s</td><td>13</td><td>1 to 2</td><td>7 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 2</td><td>48 s</td><td>4 s</td><td>13</td><td>1 to 3</td><td>7 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 3</td><td>53 s</td><td>4 s</td><td>14</td><td>2 to 3</td><td>7 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 4</td><td>53 s</td><td>4 s</td><td>14</td><td>2 to 4</td><td>7 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 5</td><td>58 s</td><td>4 s</td><td>15</td><td>2 to 4</td><td>7 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 6</td><td>63 s</td><td>4 s</td><td>16</td><td>2 to 4</td><td>6 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 7</td><td>63 s</td><td>4 s</td><td>16</td><td>2 to 4</td><td>6 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 8</td><td>63 s</td><td>4 s</td><td>16</td><td>2 to 4</td><td>6 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 9</td><td>73 s</td><td>4 s</td><td>19</td><td>2 to 4</td><td>6 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 10 (bonus)</td><td>73 s</td><td>4 s</td><td>19</td><td>2 to 4</td><td>6 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 11 (bonus)</td><td>73 s</td><td>4 s</td><td>19</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch1 day 12 (bonus)</td><td>78 s</td><td>4 s</td><td>20</td><td>2 to 4</td><td>5 s</td></tr>
+<tr><td colspan="6" style="padding:6px 6px 2px"><b>Chapter 2</b> (patience has a fourth flower: a third longer than shown)</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 1</td><td>95 s</td><td>5 s</td><td>20</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 2</td><td>98 s</td><td>5 s</td><td>20</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 3</td><td>101 s</td><td>5 s</td><td>21</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 4</td><td>104 s</td><td>5 s</td><td>21</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 5</td><td>107 s</td><td>5 s</td><td>22</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 6</td><td>110 s</td><td>5 s</td><td>23</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 7</td><td>113 s</td><td>5 s</td><td>23</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 8</td><td>116 s</td><td>5 s</td><td>24</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 9</td><td>119 s</td><td>5 s</td><td>24</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 10</td><td>122 s</td><td>5 s</td><td>25</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 11</td><td>125 s</td><td>5 s</td><td>26</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 12</td><td>128 s</td><td>5 s</td><td>26</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 13</td><td>131 s</td><td>5 s</td><td>27</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 14 (bonus)</td><td>134 s</td><td>5 s</td><td>27</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 15 (bonus)</td><td>137 s</td><td>5 s</td><td>28</td><td>2 to 4</td><td>5 s</td></tr>
+<tr style="border-top:1px solid #eadfcd"><td style="padding:3px 6px">Ch2 day 16 (bonus)</td><td>140 s</td><td>5 s</td><td>29</td><td>2 to 4</td><td>5 s</td></tr>
+</table>
+<p style="font-size:13px">The data files also hold an "orders per level" number (9 to 20); since 13 October it no longer decides how many customers come, only when dusk starts. The day's real count is not logged yet; the new logging I suggested can add customers served per day to each day's record.</p>
+
 </body></html>

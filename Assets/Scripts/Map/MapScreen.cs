@@ -61,12 +61,13 @@ public class MapScreen : MonoBehaviour
         // today's day card opens by itself once the map is up (owner, 20 November 2026: "Show the day start panel
         // automatically when the level map shows up"); Cancel closes it and the map is there as before
         // not at day 9: the map shows first, the player taps the big star day themselves (owner, 20 November 2026)
+        if (pendingDay9Gift || pendingChapter2) StartCoroutine(Day9Moments());
         if (todayDay >= 0 && !skipAutoCard) StartCoroutine(OpenTodaySoon(todayDay));
     }
 
     // ---- day 9, the day that opens chapter 2 (owner, 20 November 2026) ----
     private const int SpecialDay = 8;                     // day 9's place in chapter 1
-    private bool skipAutoCard, ceremonyRunning;
+    private bool skipAutoCard, ceremonyRunning, pendingDay9Gift, pendingChapter2;
     private static bool starPageShown;
     private RectTransform day9Rect, truckRect; private Image arrowImage;
     private Vector2 curveA, curveB, curveC;               // the dotted line: from day 9, to the arrow, its bend
@@ -78,7 +79,7 @@ public class MapScreen : MonoBehaviour
     {
         if (popup != null || leaving || ceremonyRunning || truckDriving) return;
         var sm = SessionManager.Instance;
-        if (special && sm != null && sm.Chapter2CeremonyDue) { StartCoroutine(Chapter2Ceremony()); return; }
+        if (special && sm != null && sm.Chapter2CeremonyDue) { StartCoroutine(Chapter2Ceremony()); return; }   // a fallback: it runs by itself now
         // the truck drives to the day that was picked, then its card opens (owner, 23 November 2026: "when i goes back and
         // replay, i want the truck to drive to that level first ... only after truck arrives, then we show day picker")
         var place = day - Chapter.FirstDay(page + 1);
@@ -91,6 +92,7 @@ public class MapScreen : MonoBehaviour
     private System.Collections.IEnumerator Chapter2Ceremony()
     {
         ceremonyRunning = true;
+        var starAlready = SessionManager.Instance.GetCurrentSession() != null && SessionManager.Instance.GetCurrentSession().day9StarGiven;
         SessionManager.Instance.ClaimChapter2();
         // the star is taken: day 9 stops asking for a tap (owner's tick, 23 November 2026: "Stop day 9's bounce once its star is taken")
         if (day9Rect != null)
@@ -99,7 +101,7 @@ public class MapScreen : MonoBehaviour
             if (bounce != null) { bounce.enabled = false; Destroy(bounce); day9Rect.anchoredPosition = P(StarsOf(0)[SpecialDay]); day9Rect.localScale = Vector3.one; }
             var d9 = day9Rect.GetComponent<Image>(); if (d9 != null) GlowFx.Remove(d9);
         }
-        if (day9Rect != null && starSprite != null)
+        if (day9Rect != null && starSprite != null && !starAlready)   // the star flies only if the gift card did not give it
         {
             var star = NewImage("RewardStar", canvasRect, starSprite); star.raycastTarget = false;
             var from = day9Rect.anchoredPosition; Place(star.rectTransform, from, new Vector2(130f, 130f));
@@ -215,7 +217,7 @@ public class MapScreen : MonoBehaviour
     {
         var shown = page; var drove = truckDriving;
         yield return new WaitForSeconds(0.45f);   // the map shows first, then the card
-        while (truckDriving || ceremonyRunning) yield return null;   // and the truck arrives first (owner, 23 November 2026: "once arrived, then show the day start panel automatically"); never over day 9's star scene
+        while (truckDriving || ceremonyRunning || pendingDay9Gift || pendingChapter2) yield return null;   // and the truck arrives first (owner, 23 November 2026: "once arrived, then show the day start panel automatically"); never over day 9's star scene
         if (drove) yield return new WaitForSecondsRealtime(0.3f);
         if (popup == null && !leaving && !ceremonyRunning && page == shown) OpenDay(day);   // not over another chapter's page, if the arrow was tapped meanwhile
     }
@@ -270,7 +272,11 @@ public class MapScreen : MonoBehaviour
         var ceremonyDue = hasSpecial && sm != null && sm.Chapter2CeremonyDue;
         // No card by itself at day 9 (the player taps the big star day), nor right after day 9 is finished, when its star
         // waits. Later the card comes as on any day, star taken or not (23 November 2026).
-        skipAutoCard = hasSpecial && todayHere && !allDone && (today == SpecialDay || (ceremonyDue && today == SpecialDay + 1));
+        // day 9 used to wait for a tap (its star, then chapter 2). Since 24 November 2026 both come by themselves: the
+        // star on a gift card when day 9 is reached, chapter 2's opening when day 9 is done; the day card waits for them.
+        skipAutoCard = false;
+        pendingDay9Gift = hasSpecial && todayHere && sm != null && sm.Day9StarDue;
+        pendingChapter2 = ceremonyDue && todayHere;
         day9Rect = null; truckRect = null; arrowImage = null; curveDots.Clear();
         // the chapter's last three days are bonus days: hidden until the day before them is reached, then they appear
         // once with their animation (owner, 24 November 2026)
@@ -452,7 +458,125 @@ public class MapScreen : MonoBehaviour
         var hb = home.gameObject.AddComponent<Button>();
         hb.onClick.AddListener(GoHome);
         if (revealNow && bonusDots.Count > 0) { ceremonyRunning = true; StartCoroutine(RevealBonus(page + 1)); }
+        else if (page == 1 && sm != null && todayHere && sm.Chapter2WelcomeDue) { ceremonyRunning = true; StartCoroutine(Chapter2Welcome()); }
     }
+
+    // ---- chapter 2's map, the first time (owner, 24 November 2026: "add some effects when chapter 2 level map is opened
+    // up for the first time") ----
+    /// The banner drops in, the road draws itself day by day from day 1 with the circles popping, a burst of sparkles and
+    /// a fanfare, the truck bounces in at day 1. Then the day card, as always.
+    private System.Collections.IEnumerator Chapter2Welcome()
+    {
+        var title = canvasRect.Find("Title") as RectTransform; var truck = truckRect;
+        var dots = new System.Collections.Generic.List<RectTransform>(); var lines = new System.Collections.Generic.List<RectTransform>();
+        for (var i = 1; i <= 32; i++) { var d = canvasRect.Find("Day" + i) as RectTransform; if (d != null) dots.Add(d); var l = canvasRect.Find("Line" + i) as RectTransform; if (l != null) lines.Add(l); }
+        foreach (var d in dots) d.localScale = Vector3.zero;
+        foreach (var l in lines) l.localScale = new Vector3(0f, 1f, 1f);
+        if (truck != null) truck.localScale = Vector3.zero;
+        Vector2 titleHome = Vector2.zero; if (title != null) { titleHome = title.anchoredPosition; title.anchoredPosition = titleHome + new Vector2(0f, 400f); }
+        while (SceneTransitionManager.Instance != null && SceneTransitionManager.Instance.IsTransitioning()) yield return null;
+        yield return new WaitForSeconds(0.25f);
+        if (title != null)
+        {
+            PlayChime("chime_1");
+            for (var t = 0f; t < 1f; t += Time.deltaTime / 0.45f) { var k = Mathf.Clamp01(t); title.anchoredPosition = Vector2.LerpUnclamped(titleHome + new Vector2(0f, 400f), titleHome, BackOut(k)); yield return null; }
+            title.anchoredPosition = titleHome;
+        }
+        // the road draws itself, the days pop in
+        for (var i = 0; i < dots.Count; i++)
+        {
+            if (i > 0 && i - 1 < lines.Count && lines[i - 1] != null)
+            {
+                var line = lines[i - 1]; var end = line.anchoredPosition; var len = line.sizeDelta.x;
+                var dir = new Vector2(Mathf.Cos(line.localEulerAngles.z * Mathf.Deg2Rad), Mathf.Sin(line.localEulerAngles.z * Mathf.Deg2Rad)); var start = end - dir * len / 2f;
+                for (var t = 0f; t < 1f; t += Time.deltaTime / 0.07f) { var k = Mathf.Clamp01(t); line.localScale = new Vector3(k, 1f, 1f); line.anchoredPosition = start + dir * len * k / 2f; yield return null; }
+                line.localScale = Vector3.one; line.anchoredPosition = end;
+            }
+            var dot = dots[i];
+            for (var t = 0f; t < 1f; t += Time.deltaTime / 0.12f) { dot.localScale = Vector3.one * BackOut(Mathf.Clamp01(t)); yield return null; }
+            dot.localScale = Vector3.one;
+            if (i % 4 == 0) PlayChime("chime_" + (1 + (i / 4) % 3));
+        }
+        // sparkles over the sea and a fanfare
+        PlayChime("chime_fin3"); Haptics.Tap();
+        var sparks = new System.Collections.Generic.List<(RectTransform rt, Vector2 v)>();
+        var centre = dots.Count > 0 ? dots[dots.Count / 2].anchoredPosition : Vector2.zero;
+        for (var i = 0; i < 26; i++)
+        {
+            var sp = NewImage("Spark", canvasRect, starSprite); sp.raycastTarget = false; var a = i / 26f * Mathf.PI * 2f;
+            Place(sp.rectTransform, centre, new Vector2(40f, 40f)); sparks.Add((sp.rectTransform, new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * Random.Range(380f, 760f)));
+        }
+        if (truck != null) StartCoroutine(PopTruck(truck));
+        for (var t = 0f; t < 1.1f; t += Time.deltaTime)
+        {
+            var k = t / 1.1f;
+            foreach (var s in sparks) if (s.rt != null) { s.rt.anchoredPosition = centre + s.v * (1f - (1f - k) * (1f - k)); s.rt.localScale = Vector3.one * (1f - 0.6f * k); s.rt.localRotation = Quaternion.Euler(0f, 0f, 300f * k); s.rt.GetComponent<Image>().color = new Color(1f, 0.95f, 0.7f, 1f - Mathf.Clamp01((k - 0.5f) / 0.5f)); }
+            yield return null;
+        }
+        foreach (var s in sparks) if (s.rt != null) Destroy(s.rt.gameObject);
+        if (SessionManager.Instance != null) SessionManager.Instance.MarkChapter2MapSeen();
+        yield return new WaitForSeconds(0.2f);
+        ceremonyRunning = false;
+    }
+
+    private System.Collections.IEnumerator PopTruck(RectTransform truck)
+    {
+        var s0 = Vector3.one;
+        for (var t = 0f; t < 1f; t += Time.deltaTime / 0.4f) { if (truck == null) yield break; truck.localScale = s0 * BackOut(Mathf.Clamp01(t)); yield return null; }
+        if (truck != null) truck.localScale = s0;
+    }
+
+    // ---- day 9 by itself (owner, 24 November 2026) ----
+    /// After the truck (and the bonus days' show): day 9's star on a gift card when day 9 is reached; chapter 2's opening
+    /// (the truck along the dotted line, the arrow) when day 9 is done. Then the day card opens as on any day.
+    private System.Collections.IEnumerator Day9Moments()
+    {
+        while (truckDriving || ceremonyRunning) yield return null;
+        yield return new WaitForSeconds(0.3f);
+        if (pendingDay9Gift) { yield return StarGiftCard(); pendingDay9Gift = false; }
+        if (pendingChapter2 && page == 0) { yield return Chapter2Ceremony(); }
+        pendingChapter2 = false;
+    }
+
+    private System.Collections.IEnumerator StarGiftCard()
+    {
+        ceremonyRunning = true;
+        var card = new GameObject("StarGift", typeof(RectTransform)); card.transform.SetParent(canvasRect, false);
+        var cr = (RectTransform)card.transform; cr.anchorMin = Vector2.zero; cr.anchorMax = Vector2.one; cr.offsetMin = cr.offsetMax = Vector2.zero;
+        var dim = NewImage("Dim", cr, null); dim.color = new Color(0f, 0f, 0f, 0f); Stretch(dim.rectTransform);
+        var panel = NewImage("Panel", cr, Load("day_paper")); panel.preserveAspect = false; Place(panel.rectTransform, Vector2.zero, new Vector2(780f, 820f));
+        var ink = new Color(0.36f, 0.20f, 0.09f); var soft = new Color(0.47f, 0.31f, 0.20f);
+        var title = NewText("Title", panel.rectTransform, "A GIFT FOR YOU!", 78f, ink); Place(title.rectTransform, new Vector2(0f, 262f), new Vector2(700f, 120f)); title.alignment = TextAlignmentOptions.Center;
+        var star = NewImage("Star", panel.rectTransform, starSprite); Place(star.rectTransform, new Vector2(0f, 60f), new Vector2(240f, 240f)); star.transform.localScale = Vector3.zero;
+        var hand = Resources.Load<TMP_FontAsset>("Fonts & Materials/Delius SDF");
+        var line = NewText("Line", panel.rectTransform, "A star for reaching day 9!\nFinish day 9 to open chapter 2", 38f, soft); Place(line.rectTransform, new Vector2(0f, -122f), new Vector2(680f, 150f));
+        if (hand != null) line.font = hand; line.alignment = TextAlignmentOptions.Center; line.enableWordWrapping = true; line.alpha = 0f;
+        var go = NewImage("LetsGo", panel.rectTransform, Resources.Load<Sprite>("UI/cookie_letsgo")); Place(go.rectTransform, new Vector2(0f, -262f), new Vector2(340f, 122f)); go.transform.localScale = Vector3.zero;
+        var pressed = false; go.gameObject.AddComponent<Button>().onClick.AddListener(() => pressed = true);
+        panel.transform.localScale = Vector3.one * 0.6f;
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.28f) { var k = Mathf.Clamp01(t); dim.color = new Color(0f, 0f, 0f, 0.55f * k); panel.transform.localScale = Vector3.one * Mathf.LerpUnclamped(0.6f, 1f, BackOut(k)); yield return null; }
+        PlayChime("chime_fin2"); Haptics.Tap();
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.45f) { var k = Mathf.Clamp01(t); star.transform.localScale = Vector3.one * BackOut(k); star.transform.localRotation = Quaternion.Euler(0f, 0f, -90f * (1f - k)); line.alpha = k; yield return null; }
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.25f) { go.transform.localScale = Vector3.one * BackOut(Mathf.Clamp01(t)); yield return null; }
+        var w = 0f; var auto = GiftAutoSeconds > 0f ? GiftAutoSeconds : float.MaxValue;
+        while (!pressed && w < auto) { w += Time.unscaledDeltaTime; star.transform.localScale = Vector3.one * (1f + 0.06f * Mathf.Sin(w * 4f)); yield return null; }
+        if (SessionManager.Instance != null) SessionManager.Instance.GiveDay9Star();
+        // the paper goes; the star flies up and away (into the player's stars)
+        var group = panel.gameObject.AddComponent<CanvasGroup>();
+        star.transform.SetParent(cr, true); var from = star.rectTransform.anchoredPosition; var to = new Vector2(0f, canvasRect.rect.height * 0.5f - 200f);
+        PlayChime("chime_3");
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.7f)
+        {
+            var k = Mathf.Clamp01(t); group.alpha = 1f - Mathf.Clamp01(k / 0.3f); dim.color = new Color(0f, 0f, 0f, 0.55f * (1f - k));
+            star.rectTransform.anchoredPosition = Vector2.Lerp(from, to, k * k); star.transform.localScale = Vector3.one * Mathf.Lerp(1f, 0.4f, k);
+            star.transform.localRotation = Quaternion.Euler(0f, 0f, 360f * k); star.color = new Color(1f, 1f, 1f, 1f - Mathf.Clamp01((k - 0.7f) / 0.3f)); yield return null;
+        }
+        Destroy(card);
+        if (day9Rect != null) { var bounce = day9Rect.GetComponent<MapTodayBounce>(); if (bounce != null) Destroy(bounce); }
+        ceremonyRunning = false;
+    }
+    public static float GiftAutoSeconds;   // recordings: Let's go by itself after this many seconds (0 = waits for the tap)
+    private static float BackOut(float k) { const float c = 1.7f; k -= 1f; return 1f + (c + 1f) * k * k * k + c * k * k; }
 
     // ---- bonus days (owner, 24 November 2026) ----
     private const int BonusDays = 3;

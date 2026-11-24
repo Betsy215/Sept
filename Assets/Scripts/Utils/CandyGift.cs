@@ -49,7 +49,9 @@ public static class CandyGift
         get
         {
             var s = S; var sm = SessionManager.Instance;
-            return s != null && sm != null && !s.candyGiftSeen && sm.GetCurrentLevelIndex() == Day;
+            // the first time day 3 is reached, the jar still empty (a replay of day 3, or candies bought under an older
+            // version, would turn the gift into a loss: review, 24 November 2026)
+            return s != null && sm != null && !s.candyGiftSeen && sm.GetCurrentLevelIndex() == Day && sm.DaysDoneIn(1) == Day && sm.Candies == 0;
         }
     }
 
@@ -69,10 +71,12 @@ public static class CandyGift
     {
         var jar = Object.FindObjectOfType<CandyJar>(); var s = S;
         if (jar == null || s == null) yield break;
-        SessionManager.Instance.MarkCandyGiftSeen();
+        var before = s.candies;
         var paused = !PreviewMode; var oldScale = Time.timeScale; if (paused) Time.timeScale = 0f;
         var sr = jar.GetComponent<SpriteRenderer>(); var col = jar.GetComponent<Collider>();
         var ui = Overlay();
+        var block = Img("Block", ui, null, new Color(0f, 0f, 0f, 0f)); Stretch(block.rectTransform); block.raycastTarget = true;   // no taps through (the pause button)
+        if (paused) KitchenClock.Pause();
         switch (Current)
         {
             case Style.Card: yield return CardShow(jar, sr, ui); break;
@@ -80,10 +84,14 @@ public static class CandyGift
             default: yield return SparkleShow(jar, sr, ui); break;
         }
         if (sr != null) sr.enabled = true; if (col != null) col.enabled = true;
-        SetCandies(jar, Mathf.Max(s.candies, Gift));
+        SetCandies(jar, before + Gift);
+        SessionManager.Instance.MarkCandyGiftSeen();   // after the show: a show left half way comes again next time
         Object.Destroy(ui.gameObject);
-        if (paused) Time.timeScale = oldScale == 0f ? 1f : oldScale;
+        if (paused) { Time.timeScale = oldScale == 0f ? 1f : oldScale; KitchenClock.Resume(); }
     }
+
+    /// The jar's picture only (nothing saved): the show counts the candies in
+    private static void ShowCount(SpriteRenderer sr, int n) { if (sr != null) { var sp = JarSprite(n); if (sp != null) sr.sprite = sp; } }
 
     private static void SetCandies(CandyJar jar, int n)
     {
@@ -101,8 +109,8 @@ public static class CandyGift
 
     private static IEnumerator CardShow(CandyJar jar, SpriteRenderer sr, RectTransform ui)
     {
-        SetCandies(jar, 0); if (sr != null) sr.enabled = false;
-        var dim = Img("Dim", ui, null, new Color(0f, 0f, 0f, 0f)); Stretch(dim.rectTransform);
+        ShowCount(sr, 0); if (sr != null) sr.enabled = false;
+        var dim = Img("Dim", ui, null, new Color(0f, 0f, 0f, 0f)); Stretch(dim.rectTransform); dim.raycastTarget = true;   // nothing under the card takes a tap (the pause button)
         var panel = Img("Panel", ui, Resources.Load<Sprite>("Map/day_paper"), Color.white); panel.rectTransform.sizeDelta = new Vector2(780f, 820f);
         var title = Txt("Title", panel.rectTransform, Title(), 78f, Ink, "A GIFT FOR YOU!"); Place(title.rectTransform, new Vector2(0f, 262f), new Vector2(700f, 120f));
         var jarImg = Img("Jar", panel.rectTransform, JarSprite(0), Color.white); jarImg.preserveAspect = true; Place(jarImg.rectTransform, new Vector2(0f, 70f), new Vector2(250f, 250f));
@@ -136,14 +144,14 @@ public static class CandyGift
             var size = Mathf.Lerp(250f, endSize, e); jarImg.rectTransform.sizeDelta = new Vector2(size, size); jarImg.transform.localScale = Vector3.one;
             yield return null;
         }
-        if (sr != null) sr.enabled = true; SetCandies(jar, Gift); Sound("Audio/pop");
+        if (sr != null) sr.enabled = true; ShowCount(sr, Gift); Sound("Audio/pop");
         Object.Destroy(jarImg.gameObject);
         yield return WorldSquash(jar.transform);
     }
 
     private static IEnumerator DropShow(CandyJar jar, SpriteRenderer sr, RectTransform ui)
     {
-        SetCandies(jar, 0); if (sr != null) sr.enabled = true;
+        ShowCount(sr, 0); if (sr != null) sr.enabled = true;
         var rest = jar.transform.localPosition; var drop = rest + new Vector3(0f, 6f, 0f);
         jar.transform.localPosition = drop;
         yield return Wait(0.2f);
@@ -153,7 +161,7 @@ public static class CandyGift
         for (var i = 1; i <= Gift; i++)
         {
             yield return FallInto(ui, null, ScreenOf(jar.transform.position, ui) + new Vector2(i == 1 ? -30f : 30f, 300f), ScreenOf(jar.transform.position, ui));
-            SetCandies(jar, i); Sound("Audio/pop"); Haptics.Tap();
+            ShowCount(sr, i); Sound("Audio/pop"); Haptics.Tap();
             yield return WorldSquash(jar.transform, 0.12f);
         }
         // the note beside the jar
@@ -169,7 +177,7 @@ public static class CandyGift
 
     private static IEnumerator SparkleShow(CandyJar jar, SpriteRenderer sr, RectTransform ui)
     {
-        SetCandies(jar, 0); if (sr != null) sr.enabled = true;
+        ShowCount(sr, 0); if (sr != null) sr.enabled = true;
         var at = ScreenOf(jar.transform.position, ui);
         var glow = Img("Glow", ui, SoftGlow(), new Color(1f, 0.9f, 0.55f, 0f)); Place(glow.rectTransform, at, new Vector2(420f, 420f)); glow.transform.SetAsFirstSibling();
         var baseScale = jar.transform.localScale; jar.transform.localScale = Vector3.zero;
@@ -182,7 +190,7 @@ public static class CandyGift
         jar.transform.localScale = baseScale;
         for (var i = 1; i <= Gift; i++)
         {
-            yield return Wait(0.25f); SetCandies(jar, i); Sound("Audio/Stars/chime_" + i); Burst(ui, at + new Vector2(0f, 40f), 6); yield return WorldSquash(jar.transform, 0.1f);
+            yield return Wait(0.25f); ShowCount(sr, i); Sound("Audio/Stars/chime_" + i); Burst(ui, at + new Vector2(0f, 40f), 6); yield return WorldSquash(jar.transform, 0.1f);
         }
         // the banner and the hand
         var banner = Img("Banner", ui, Resources.Load<Sprite>("Map/day_paper"), Color.white);
@@ -220,7 +228,9 @@ public static class CandyGift
     private static float JarScreenHeight(SpriteRenderer sr, RectTransform ui)
     {
         if (sr == null || Camera.main == null) return 160f;
-        var b = sr.bounds; var a = ScreenOf(b.min, ui); var c = ScreenOf(b.max, ui); return Mathf.Abs(c.y - a.y);
+        if (sr.sprite == null) return 160f;
+        var h = sr.sprite.bounds.size.y * Mathf.Abs(sr.transform.lossyScale.y); var p = sr.transform.position;
+        return Mathf.Abs(ScreenOf(p + Vector3.up * h, ui).y - ScreenOf(p, ui).y);
     }
 
     private static IEnumerator FallInto(RectTransform parent, RectTransform jar, Vector2 from, Vector2? toOverride = null)
