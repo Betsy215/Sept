@@ -15,11 +15,11 @@ using UnityEngine.UI;
 public static class CandyGift
 {
     public enum Style { Card = 1, Drop = 2, Sparkle = 3 }
-    public static Style Current = Style.Card;
+    public static Style Current = Style.Card;   // the owner's pick, 24 November 2026 ("use A gift card")
     public const int Day = 2;          // day index: day 3
     public const int Gift = 2;         // candies given
     public static bool PreviewMode;    // recordings: game time, no pause, Let's go pressed by itself
-    public const string Words = "Tap the jar: a candy gives\na waiting customer more time";
+    public const string Words = "Tap the jar to give customer\na candy to keep them happy";   // the owner's words, 24 November 2026
 
     private static SessionData S => SessionManager.Instance != null ? SessionManager.Instance.GetCurrentSession() : null;
 
@@ -106,9 +106,9 @@ public static class CandyGift
         var panel = Img("Panel", ui, Resources.Load<Sprite>("Map/day_paper"), Color.white); panel.rectTransform.sizeDelta = new Vector2(780f, 820f);
         var title = Txt("Title", panel.rectTransform, Title(), 78f, Ink, "A GIFT FOR YOU!"); Place(title.rectTransform, new Vector2(0f, 262f), new Vector2(700f, 120f));
         var jarImg = Img("Jar", panel.rectTransform, JarSprite(0), Color.white); jarImg.preserveAspect = true; Place(jarImg.rectTransform, new Vector2(0f, 70f), new Vector2(250f, 250f));
-        var line = Txt("Line", panel.rectTransform, Hand(), 36f, Soft, "2 candies!\n" + Words); Place(line.rectTransform, new Vector2(0f, -132f), new Vector2(680f, 150f)); line.alpha = 0f;
+        var line = Txt("Line", panel.rectTransform, Hand(), 38f, Soft, "Candies!\n" + Words); Place(line.rectTransform, new Vector2(0f, -118f), new Vector2(680f, 150f)); line.alpha = 0f;
         var letsGo = Resources.Load<Sprite>("UI/cookie_letsgo");
-        var go = Img("LetsGo", panel.rectTransform, letsGo, Color.white); go.preserveAspect = true; Place(go.rectTransform, new Vector2(0f, -300f), new Vector2(360f, 130f));
+        var go = Img("LetsGo", panel.rectTransform, letsGo, Color.white); go.preserveAspect = true; Place(go.rectTransform, new Vector2(0f, -262f), new Vector2(340f, 122f));   // inside the paper's border (owner, 24 November 2026)
         var pressed = false; go.gameObject.AddComponent<Button>().onClick.AddListener(() => pressed = true); go.transform.localScale = Vector3.zero;
         jarImg.transform.localScale = Vector3.zero; panel.transform.localScale = Vector3.one * 0.6f;
         for (var t = 0f; t < 1f; t += Dt / 0.28f) { var k = Mathf.Clamp01(t); dim.color = new Color(0f, 0f, 0f, 0.55f * k); panel.transform.localScale = Vector3.one * Mathf.LerpUnclamped(0.6f, 1f, Back(k)); yield return null; }

@@ -18,7 +18,7 @@ if os.path.exists(P + "/Docs/tools/.mcp_session"): os.remove(P + "/Docs/tools/.m
 log(ex(open(RC + "/gv_Store1320.cs").read())); log(ex(open(RC + "/ap/play.cs").read())); time.sleep(12)
 STEP = 'UnityEditor.EditorApplication.isPaused = true; Time.timeScale = 2f; UnityEditor.EditorApplication.Step(); return Time.time.ToString("F3") + "|" + StarCelebration.SoundCount + "|" + StarCelebration.LastSound + "|" + StarCelebration.LastSoundAt.ToString("F3");'
 clips = {}
-for style in (1, 2, 3):
+for style in [int(x) for x in os.environ.get("STYLES", "1,2,3").split(",")]:
     ex('UnityEditor.EditorApplication.isPaused = false; Time.timeScale = 1f; return "go";')
     for f in glob.glob(SHOTS + f"/cg{style}_*"): os.remove(f)
     log(exf(R + "/candy_day3.cs", __STYLE__=style)); time.sleep(10)
