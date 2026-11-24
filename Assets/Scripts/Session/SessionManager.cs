@@ -72,6 +72,8 @@ public class SessionData
     // a chapter's count is the larger of the two (older saves have only the run).
     public List<int> chapterDone;
     public bool chapter2Claimed;   // day 9's star was taken on the map: chapter 2 is open
+    // Chapters whose three bonus days were revealed on the map (24 November 2026); null in older saves
+    public List<int> bonusShown;
     // The star shop (14 November 2026): what was bought with stars, and how many stars that took. The stars a player
     // can spend are the stars earned minus these; the days keep their stars on the map.
     public List<string> starItems;
@@ -273,6 +275,15 @@ public class SessionManager : MonoBehaviour
     /// who reaches day 9 a star however they reach it"): also a player who played on to day 12 without tapping day 9, and
     /// a player who was already in chapter 2 before this release. The scene stays due until the star is taken, and the
     /// map opens on chapter 1 while it is (MapScreen.Start). It was lost once chapter 2 had started (ChaptersStarted < 2).
+    /// The map has shown this chapter's bonus days appearing (owner, 24 November 2026: the last three days of a chapter
+    /// are hidden at first and appear, with an animation, once the day before them is reached).
+    public bool BonusShown(int chapter) => currentSession != null && currentSession.bonusShown != null && currentSession.bonusShown.Contains(chapter);
+    public void MarkBonusShown(int chapter)
+    {
+        if (currentSession == null) return;
+        if (currentSession.bonusShown == null) currentSession.bonusShown = new List<int>();
+        if (!currentSession.bonusShown.Contains(chapter)) { currentSession.bonusShown.Add(chapter); SaveSession(); }
+    }
     public bool Chapter2CeremonyDue => currentSession != null && Chapter.Count >= 2 && !currentSession.chapter2Claimed && DaysDoneIn(1) >= Chapter2OpensAfterDays;
     /// The star is the player's and chapter 2 is open (saved at once, so leaving mid-scene loses nothing).
     public void ClaimChapter2()

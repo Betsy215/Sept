@@ -268,11 +268,19 @@ public class MapScreen : MonoBehaviour
         // waits. Later the card comes as on any day, star taken or not (23 November 2026).
         skipAutoCard = hasSpecial && todayHere && !allDone && (today == SpecialDay || (ceremonyDue && today == SpecialDay + 1));
         day9Rect = null; truckRect = null; arrowImage = null; curveDots.Clear();
+        // the chapter's last three days are bonus days: hidden until the day before them is reached, then they appear
+        // once with their animation (owner, 24 November 2026)
+        var bonusFrom = Mathf.Max(0, Mathf.Min(days, Stars.Length) - BonusDays);
+        var bonusOpen = sm == null || completed >= bonusFrom - 1;
+        var revealNow = bonusOpen && sm != null && !sm.BonusShown(page + 1) && todayHere && !allDone && today == bonusFrom - 1;
+        if (bonusOpen && sm != null && !revealNow && !sm.BonusShown(page + 1)) sm.MarkBonusShown(page + 1);   // past it already: no show
+        bonusLines.Clear(); bonusDots.Clear(); bonusDay = null;
 
         // Lines between the stars: bright up to today, faint after
         for (var i = 0; i < Stars.Length - 1; i++)
         {
             var a = P(Stars[i]); var b = P(Stars[i + 1]);
+            if (i + 1 >= bonusFrom && !bonusOpen) continue;   // hidden bonus days have no road yet
             var line = NewImage("Line" + (i + 1), canvasRect, null);
             line.color = i < today || allDone ? new Color(1f, 0.965f, 0.86f, 1f) : new Color(0.9f, 0.88f, 0.82f, 0.55f);
             var rt = line.rectTransform;
@@ -281,11 +289,13 @@ public class MapScreen : MonoBehaviour
             rt.anchoredPosition = (a + b) / 2f;
             rt.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(b.y - a.y, b.x - a.x) * Mathf.Rad2Deg);
             line.raycastTarget = false;
+            if (revealNow && i + 1 >= bonusFrom) { bonusLines.Add(rt); rt.localScale = new Vector3(0f, 1f, 1f); }   // grows in the reveal
         }
 
         // Days
         for (var i = 0; i < Stars.Length; i++)
         {
+            if (i >= bonusFrom && !bonusOpen) continue;   // a hidden bonus day
             var played = i < completed;
             var isToday = todayHere && !allDone && i == today;   // a page ahead of today has no today (21 October)
             var pos = P(Stars[i]);
@@ -328,6 +338,15 @@ public class MapScreen : MonoBehaviour
                     st.raycastTarget = false;
                 }
             }
+            if (i >= bonusFrom)
+            {
+                // a bonus day wears a small gold star on its top, always
+                var badge = NewImage("BonusBadge", dot.rectTransform, starSprite); badge.raycastTarget = false;
+                Place(badge.rectTransform, new Vector2(size * 0.36f, size * 0.36f), new Vector2(40f, 40f));
+                if (!played && !isToday) dot.color = new Color(1f, 0.9f, 0.62f);
+                if (revealNow) { bonusDots.Add(dot.rectTransform); dot.rectTransform.localScale = Vector3.zero; }
+            }
+            if (revealNow && i == bonusFrom - 1) bonusDay = dot.rectTransform;
             if (isToday) todayDay = first + i;
             if (played || isToday)
             {
@@ -430,6 +449,89 @@ public class MapScreen : MonoBehaviour
         home.rectTransform.sizeDelta = new Vector2(130f, 130f);
         var hb = home.gameObject.AddComponent<Button>();
         hb.onClick.AddListener(GoHome);
+        if (revealNow && bonusDots.Count > 0) { ceremonyRunning = true; StartCoroutine(RevealBonus(page + 1)); }
+    }
+
+    // ---- bonus days (owner, 24 November 2026) ----
+    private const int BonusDays = 3;
+    private readonly System.Collections.Generic.List<RectTransform> bonusLines = new System.Collections.Generic.List<RectTransform>();
+    private readonly System.Collections.Generic.List<RectTransform> bonusDots = new System.Collections.Generic.List<RectTransform>();
+    private RectTransform bonusDay;   // the day before them: it announces them
+
+    /// After the truck has arrived: the day before the bonus days flares (a burst of light and sparkles, a "BONUS DAYS!"
+    /// banner), then the road grows out day by day and each bonus day pops in with a chime.
+    private System.Collections.IEnumerator RevealBonus(int chapter)
+    {
+        while (truckDriving || (SceneTransitionManager.Instance != null && SceneTransitionManager.Instance.IsTransitioning())) yield return null;   // the map fully in view first
+        yield return new WaitForSeconds(0.35f);
+        var sm = SessionManager.Instance; if (sm != null) sm.MarkBonusShown(chapter);
+        var at = bonusDay != null ? bonusDay.anchoredPosition : Vector2.zero;
+        PlayChime("chime_fin2");
+        // the day flares: a big warm light swelling and fading, the day itself swelling once
+        var flare = NewImage("BonusFlare", canvasRect, GlowSprite()); flare.raycastTarget = false; flare.color = new Color(1f, 0.88f, 0.5f, 0f);
+        Place(flare.rectTransform, at, new Vector2(520f, 520f)); flare.transform.SetSiblingIndex(1);
+        var sparks = new System.Collections.Generic.List<(RectTransform rt, Vector2 v)>();
+        for (var i = 0; i < 14; i++)
+        {
+            var sp = NewImage("Spark", canvasRect, starSprite); sp.raycastTarget = false;
+            var a = i / 14f * Mathf.PI * 2f + Random.Range(-0.2f, 0.2f);
+            Place(sp.rectTransform, at, new Vector2(34f, 34f)); sparks.Add((sp.rectTransform, new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * Random.Range(320f, 520f)));
+        }
+        for (var t = 0f; t < 0.9f; t += Time.deltaTime)
+        {
+            var k = t / 0.9f;
+            flare.color = new Color(1f, 0.88f, 0.5f, 0.95f * Mathf.Sin(k * Mathf.PI)); flare.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.4f, 1.3f, k);
+            if (bonusDay != null) bonusDay.localScale = Vector3.one * (1f + 0.25f * Mathf.Sin(Mathf.Clamp01(k * 1.6f) * Mathf.PI));
+            foreach (var s in sparks) if (s.rt != null)
+            {
+                s.rt.anchoredPosition = at + s.v * (1f - (1f - k) * (1f - k)) * 0.6f; s.rt.localScale = Vector3.one * (1f - k * 0.7f);
+                s.rt.localRotation = Quaternion.Euler(0f, 0f, 300f * k); s.rt.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f - Mathf.Clamp01((k - 0.5f) / 0.5f));
+            }
+            yield return null;
+        }
+        foreach (var s in sparks) if (s.rt != null) Destroy(s.rt.gameObject);
+        Destroy(flare.gameObject); if (bonusDay != null) bonusDay.localScale = Vector3.one;
+        // the banner, above the day
+        var banner = NewImage("BonusBanner", canvasRect, Load("pill")); banner.raycastTarget = false; banner.preserveAspect = false;
+        Place(banner.rectTransform, at + new Vector2(at.x > 0f ? -120f : 120f, 150f), new Vector2(430f, 110f));
+        var word = NewText("Word", banner.rectTransform, "BONUS DAYS!", 54f, new Color(0.43f, 0.24f, 0.08f)); Stretch(word.rectTransform); word.alignment = TextAlignmentOptions.Center;
+        for (var t = 0f; t < 0.35f; t += Time.deltaTime) { var k = t / 0.35f; banner.rectTransform.localScale = Vector3.one * (k < 0.7f ? Mathf.SmoothStep(0f, 1.15f, k / 0.7f) : Mathf.Lerp(1.15f, 1f, (k - 0.7f) / 0.3f)); yield return null; }
+        banner.rectTransform.localScale = Vector3.one;
+        // the road grows out and each bonus day pops in
+        for (var d = 0; d < bonusDots.Count; d++)
+        {
+            if (d < bonusLines.Count && bonusLines[d] != null)
+            {
+                var line = bonusLines[d]; var end = line.anchoredPosition; var len = line.sizeDelta.x;
+                var dir = new Vector2(Mathf.Cos(line.localEulerAngles.z * Mathf.Deg2Rad), Mathf.Sin(line.localEulerAngles.z * Mathf.Deg2Rad));
+                var start = end - dir * len / 2f;
+                for (var t = 0f; t < 0.32f; t += Time.deltaTime)
+                {
+                    var k = Mathf.SmoothStep(0f, 1f, t / 0.32f); line.localScale = new Vector3(k, 1f, 1f); line.anchoredPosition = start + dir * len * k / 2f; yield return null;
+                }
+                line.localScale = Vector3.one; line.anchoredPosition = end;
+            }
+            var dot = bonusDots[d]; if (dot == null) continue;
+            PlayChime("chime_" + (d + 1));
+            for (var t = 0f; t < 0.34f; t += Time.deltaTime)
+            {
+                var k = t / 0.34f; dot.localScale = Vector3.one * (k < 0.6f ? Mathf.SmoothStep(0f, 1.3f, k / 0.6f) : Mathf.Lerp(1.3f, 1f, (k - 0.6f) / 0.4f));
+                dot.localRotation = Quaternion.Euler(0f, 0f, -25f * (1f - k)); yield return null;
+            }
+            dot.localScale = Vector3.one; dot.localRotation = Quaternion.identity;
+            yield return new WaitForSeconds(0.12f);
+        }
+        yield return new WaitForSeconds(0.9f);
+        for (var t = 0f; t < 0.3f && banner != null; t += Time.deltaTime) { banner.rectTransform.localScale = Vector3.one * (1f - t / 0.3f); yield return null; }
+        if (banner != null) Destroy(banner.gameObject);
+        ceremonyRunning = false;
+    }
+
+    private static void PlayChime(string name)
+    {
+        StarCelebration.LastSound = name; StarCelebration.LastSoundAt = Time.time; StarCelebration.SoundCount++;   // for the preview recordings
+        var clip = Resources.Load<AudioClip>("Audio/Stars/" + name);
+        if (clip != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(clip);
     }
 
     // ---- day popup on the pause board ----

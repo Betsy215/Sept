@@ -835,8 +835,12 @@ public class LevelManager : MonoBehaviour
         {
             var g = row.GetChild(k).Find("Gold");
             if (g == null) continue;
-            if (pop != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(pop);
-            Haptics.Tap();
+            if (StarCelebration.Current == StarCelebration.Style.Classic)
+            {
+                if (pop != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(pop);
+                Haptics.Tap();
+            }
+            else StarCelebration.OnStar(this, row.GetChild(k) as RectTransform, k, stars);   // its own sound, tap and burst (24 November 2026)
             const float grow = 0.2f, settle = 0.14f;
             for (var t = 0f; t < grow + settle; t += Time.deltaTime)
             {
@@ -848,6 +852,7 @@ public class LevelManager : MonoBehaviour
             g.localScale = Vector3.one; g.localRotation = Quaternion.identity;
             yield return new WaitForSeconds(0.16f);
         }
+        yield return StarCelebration.Finale(this, row as RectTransform, Mathf.Min(stars, row.childCount));
     }
 
     private void SetupLevelCompleteButtons()
