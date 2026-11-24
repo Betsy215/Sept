@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelNumber: 11
   levelName: Day 11
-  ordersPerLevel: 13
+  ordersPerLevel: 11
   orderDisplayTime: 5
   timeBetweenOrders: 4
-  dayDurationSeconds: 73
+  dayDurationSeconds: 58
   minOrderItems: 2
   maxOrderItems: 4
   starThreshold1: 470
