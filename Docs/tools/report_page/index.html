@@ -75,15 +75,12 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>Release 2026.11.23 is with Apple</b> (submitted 23 November, 13:20). It goes out by itself once approved.</p>
-<p><b>C chapter tab:</b> three cabin scenes from your new direction (pink, white, mint; cabin with a big window onto a ski resort), to pick from.</p>
-<p><b>Table start places fixed</b> (whole box out of the safe area): Current.</p>
-<p><b>Cloth front drop</b> in the bottom safe area, chapters 1 and 2: Current.</p>
-<p><b>Bug hunt:</b> four small fixes, both chapters played through clean: Current.</p>
-<p><b>Ads fix:</b> approved; in the next build.</p>
-<p><b>Header:</b> four contents on each of the three backgrounds you liked (Q&amp;A), for when you decide; search versions from A below it.</p>
+<p><b>Test build 2026.11.23 (3)</b> with everything below in MVP: on its way to TestFlight.</p>
+<p><b>Header:</b> your review continues (Q&amp;A).</p>
+<p><b>C chapter:</b> we talk tomorrow (pinks and cabin scenes on its tab).</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>I watch the review and tell you when the release is live.</p>
+<p>I watch the review and tell you when the release is live, and when build 3 can be tested.</p>
 </div>
 </div>
 
@@ -136,60 +133,17 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
-<div class="card">
-<p style="margin-top:0"><b>Table drag area: every food now starts inside it.</b> <small>23 November; not in a build yet. iPhone 6.9 inch (440 x 956 pt), with the phone's home bar simulated in the editor; both chapters use the same table.</small></p>
-<figure><img src="tb_c1.jpg" alt="Chapter 1 table with overlays: green frame, the drag area of 383 by 406 points; blue back band of 29 points under Ready; at the bottom a red home bar band of 34 points with an orange 10-point gap above it; white boxes around each food; the coffee machine, cups and bread all sit inside the green frame, above the gap"><figcaption>Chapter 1 after the fix: the coffee station sits 10 pt higher, its whole box inside the green.</figcaption></figure>
-<figure><img src="tb_c2.jpg" alt="Chapter 2 beach table with the same overlays: the ice cream station with its glasses and waffle machine, the coconuts, juice and bread all inside the green frame, the glasses resting on its bottom edge above the gap and the red home bar band"><figcaption>Chapter 2: the ice cream station and its glasses stand on the bottom edge of the green.</figcaption></figure>
-<ul>
-<li><b>Bottom safe area:</b> the home bar strip (34 pt on every Face ID iPhone) plus a 10 pt gap; the sides keep 29 pt, the back band 29 pt.</li>
-<li><b>Sizes:</b> iPhone 6.9 inch 383 x 406 pt; iPhone 15/16 342 x 358 pt; iPhone 13 mini 326 x 340 pt; iPhone SE (no home bar) 335 x 307 pt; iPad 13 inch 949 x 613 pt.</li>
-<li><b>Correction:</b> my first pictures were taken in the editor, which has no home bar, so they showed the glasses and cups lower than a phone does. On a phone the ice cream station was already kept inside; the coffee cups' box started 10 pt low, in the gap; other foods were checked by their centre only.</li>
-<li><b>Fixed:</b> the coffee station (machine, cups, tray) moves up together until its lowest box is inside, and every other food starts with its whole box inside, as a drag keeps it.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.tb23b.good"> Good</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>The cloth falls over the table's front edge: the join in between.</b> <small>23 November; not in a build. iPhone 6.9 inch, home bar simulated in the editor.</small></p>
-<figure><img src="cf_zoom.jpg" alt="Close-up of the bottom of both tables. Left, chapter 1: the red and white gingham runs over a soft rounded bend into the hanging front, the white checks continuing without a cut, the front gently darker. Right, chapter 2: the blue and cream stripes run over the same soft bend and straight down the darker front, the ice cream glasses standing on the edge"><figcaption>Close-up: the cloth bends over the edge; no line, no cut checks.</figcaption></figure>
-<figure><img src="cf_phones.jpg" alt="Two full phone screens, chapter 1 picnic and chapter 2 beach, each with the cloth's front drop along the bottom of the screen"><figcaption>The whole screen, chapters 1 and 2.</figcaption></figure>
-<ul>
-<li><b>The join:</b> between the last two: a soft shine on the bend and a gently darker front, so the edge shows without a line; one continuous cloth, no check or stripe cut. Easy to nudge either way.</li>
-<li><b>Size:</b> as before, 44 pt (the home bar plus the gap), now the same height on every phone and iPad so the pattern always joins; the drag area ends at the edge.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.cfront23.good"> Good</label></li>
-<li><label><input type="checkbox" data-id="cur.cfront23.deeper"> More depth (taller or darker front)</label></li>
-<li><label><input type="checkbox" data-id="cur.cfront23.lighter"> Softer (less dark, thinner edge)</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Bug hunt: four fixes, nothing that crashes.</b> <small>23 November; on main, not in a build.</small></p>
-<ul>
-<li><b>Checked:</b> a full review of every code change since the live 2026.11.20; chapter 1 played through all 12 days and chapter 2 through all 16 in the editor (no errors); TestFlight feedback and crashes (nothing new); the bugs folder (nothing new).</li>
-<li><b>Update card could lock a player out.</b> If a later release ever needs a newer iOS than a player's phone has, the card would ask for an update the phone cannot install, with no way past it. Now no card then. Copies of 2026.11.23 do not have this check, so I noted: keep the minimum iOS at 15.0 for now.</li>
-<li><b>Day card over the day 9 star scene:</b> tapping day 9 just as the map opened could open today's card on top of the star flying. The card now waits.</li>
-<li><b>Truck driving twice:</b> changing the map page while the truck drove could make it jitter. The page arrow now waits for the truck (at most 2 s).</li>
-<li><b>Tutorial carried into day 1:</b> the demo's coffee bag wait and picked apples stayed into the first day. The tutorial now resets the kitchen like every day end.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.hunt23.good"> Good</label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Ads start fix:</b> approved, on main; it goes into the next build.</p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.adsfix23.event"> Add the adsStarted event in Unity's dashboard</label></li>
-</ul>
-</div>
-
+<p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Nothing open. Release 2026.11.23 is submitted.</p>
+<p class="sub" style="margin:0 0 8px">The next release, after 2026.11.23. All in test build 2026.11.23 (3).</p>
+<ul>
+<li><b>Ads keep starting:</b> a failed Unity Ads start is tried again (5 s up to every 2 min); slow ad loads time out and back off.</li>
+<li><b>The table's front:</b> the cloth falls over the table's edge in the bottom safe area, chapters 1 and 2.</li>
+<li><b>Food starts on the table:</b> every food's whole box starts inside the drag area (the coffee station 10 pt higher).</li>
+<li><b>Bug fixes:</b> the update card never asks for an update the phone cannot install; the day card waits for day 9's star scene; no page change while the truck drives; the tutorial no longer carries its kitchen into day 1.</li>
+<li><b>Open:</b> the adsStarted analytics event needs one entry in Unity's Event Manager (optional; until then Unity ignores it).</li>
+</ul>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>
