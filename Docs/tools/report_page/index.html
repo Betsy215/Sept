@@ -77,7 +77,9 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p><b>Release 2026.11.23 is with Apple</b> (submitted 23 November, 13:20). It goes out by itself once approved.</p>
 <p><b>Test build 2026.11.23 (3) is in TestFlight</b> with everything in MVP: ready to test.</p>
 <p><b>Header:</b> your review continues (Q&amp;A).</p>
-<p><b>C chapter:</b> we talk tomorrow (pinks and cabin scenes on its tab).</p>
+<p><b>Menu stickers larger:</b> before and after in Current.</p>
+<p><b>Your store test session:</b> a plan in Q&amp;A.</p>
+<p><b>Coming:</b> star effects on the day-end card (three proposals, videos with sound), bonus days on the map, ChatGPT C chapter drafts.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
 <p>I watch the review and tell you when the release is live, build 3 is ready.</p>
@@ -85,6 +87,41 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="q"><h3>Your App Store test session: what we can learn from it (24 Nov)</h3>
+<p>The store copy is the only place real ads, real purchases and the player data (production) run, so one careful session checks things TestFlight never can.</p>
+<ul>
+<li><b>Before you start (2 minutes):</b>
+<ul>
+<li><b>Tell me the start time.</b> I find your phone's new player id in the data and keep it out of every player count, as always.</li>
+<li><b>Don't tap ads.</b> Unity counts a developer tapping their own real ads as invalid traffic, and that can put the ad account at risk. Watching them is fine. Safer still: add your phone as a test device in the Unity Ads dashboard; you then see test ads and the flow is the same.</li>
+<li><b>Turn on Settings &gt; Privacy &amp; Security &gt; Analytics &amp; Improvements &gt; Share with App Developers</b> for the day. Apple then sends us crash, hang and battery reports from your phone.</li>
+</ul></li>
+<li><b>During:</b>
+<ul>
+<li><b>Start as a new player:</b> delete the game and install it from the App Store. This is exactly what new players get: the tutorial, the first day and the first ad. Our data says many new players leave at the first ad, so notice when it comes, how long it runs and how easy it is to close.</li>
+<li><b>Jot a few timed notes</b> (or screenshots) of anything odd, for example "10:12 ad took long to appear". I match them against the data to check that every event fires when it should.</li>
+<li><b>Store-only things:</b> how fast an ad shows after a day ends, whether "Ads unavailable" ever appears, the Remove Ads price page (no need to buy), Restore Purchases.</li>
+<li><b>Feel:</b> stutters, heat or battery drop over about 30 minutes of play.</li>
+</ul></li>
+<li><b>After (me):</b> I read your session from the data: every event, in order, against your notes. Then I list what is missing or wrong. I also check the Unity Ads report for your ads (loads, shows, fill), and the crash and energy reports once Apple sends them.</li>
+<li><b>Logging I would add for the next build</b> (the session shows which matter most):
+<ul>
+<li>why an ad failed, and how long it took to show;</li>
+<li>session start and end (length, app put in the background);</li>
+<li>shop opened and what was looked at;</li>
+<li>menu changes and kitchen use;</li>
+<li>slow loading or low frame rate on a phone.</li>
+</ul></li>
+<li><b>A tester switch</b> (hidden, e.g. tap the title five times): your store copy then reports to the test data, so your play never mixes with players' again.</li>
+</ul>
+<p>Release 2026.11.23 is still waiting for Apple's review; I will tell you as soon as it is out.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="qa.test24.events"> Add the new logging for the next build</label></li>
+<li><label><input type="checkbox" data-id="qa.test24.switch"> Build the hidden tester switch</label></li>
+<li><label><input type="checkbox" data-id="qa.test24.testdevice"> Help me add my phone as a Unity Ads test device</label></li>
+</ul>
+</div>
+
 <div class="q"><h3>Header only, without a Search Results picture? (23 Nov)</h3>
 <ul>
 <li><b>Yes.</b> Each is optional and stands on its own. Apple: with no search results picture, search shows our screenshots (or app previews) as today.</li>
@@ -133,7 +170,19 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">Nothing open.</p>
+<div class="card">
+<p style="margin-top:0"><b>Menu stickers at the top: larger.</b> <small>24 November; not in a build. iPhone 6.9 inch.</small></p>
+<figure><img src="mb_stickers.jpg" alt="Four phone screens with the menu open, before and after for chapters 1 and 2. Before, the stickers of the foods not on the menu sit small along the top under the settings and pause buttons. After, the same stickers are about a third larger: chapter 1's Choux sticker and chapter 2's Apple, Choux, Cake and Coffee stickers are clearly bigger, still above the menu paper"><figcaption>Before and after, chapters 1 and 2.</figcaption></figure>
+<ul>
+<li>The stickers you can add are 29 % larger on phones (360 instead of 280), still overlapping a little like a pile. More stickers than fit scroll sideways, as before.</li>
+<li>iPads keep the old size: there the open menu paper reaches up to the row.</li>
+</ul>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.mbig24.good"> Good</label></li>
+<li><label><input type="checkbox" data-id="cur.mbig24.more"> Larger still</label></li>
+</ul>
+</div>
+
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
 <p class="sub" style="margin:0 0 8px">The next release, after 2026.11.23. All in test build 2026.11.23 (3).</p>
