@@ -76,6 +76,8 @@ public class OrderSystem : MonoBehaviour
 
     [Header("Audio")] public AudioSource audioSource;
     public AudioClip itemServedSound;
+    /// The speed of the order being handed over right now (OK, Nice, Perfect); None outside that moment
+    public static SimpleScorePopup.TipLevel ServedLevel = SimpleScorePopup.TipLevel.None;
 
     [Header("Debug Settings")] public bool enableDebugLogs = true;
 
@@ -755,7 +757,9 @@ public class OrderSystem : MonoBehaviour
         // (a customer that was opened for but is gone is not swapped for the other slot's customer)
         if (isUsingCustomerFlow && customerManager != null && (order.customer != null || !order.hadCustomer))
         {
+            ServedLevel = tipLevel;   // the customer's sound follows the order's speed (24 November 2026)
             customerManager.HandleOrderServed(order.customer, isPerfect);
+            ServedLevel = SimpleScorePopup.TipLevel.None;
             DebugLog($"Notified CustomerManager - Order completed (perfect: {isPerfect}, time left: {order.timer:F2}s)");
         }
 

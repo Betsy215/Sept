@@ -71,6 +71,19 @@ public abstract class CustomerController : MonoBehaviour
     }
 
     // SIMPLIFIED: Only called with perfect = true (orders are always completed correctly)
+    private static AudioClip soundOk, soundNice, soundPerfect;
+    /// The tuned order sounds (Resources/Audio/Orders): the game's own cash register and cha-ching, made plainer or brighter
+    private static AudioClip TunedOrderSound(SimpleScorePopup.TipLevel level)
+    {
+        switch (level)
+        {
+            case SimpleScorePopup.TipLevel.Perfect: return soundPerfect != null ? soundPerfect : soundPerfect = Resources.Load<AudioClip>("Audio/Orders/order_perfect");
+            case SimpleScorePopup.TipLevel.Nice: return soundNice != null ? soundNice : soundNice = Resources.Load<AudioClip>("Audio/Orders/order_nice");
+            case SimpleScorePopup.TipLevel.Ok: return soundOk != null ? soundOk : soundOk = Resources.Load<AudioClip>("Audio/Orders/order_ok");
+            default: return null;
+        }
+    }
+
     public virtual void OnOrderServed(bool perfect)
     {
         if (hasProcessedOrder)
@@ -79,7 +92,12 @@ public abstract class CustomerController : MonoBehaviour
             return;
         }
 
-        if (perfect)
+        // the order's speed picks its sound: OK, Nice, Perfect (owner, 24 November 2026: "Use different order complete
+        // sound for different level of speed ... just tune the current one"); a customer's own sound still wins
+        var tuned = TunedOrderSound(OrderSystem.ServedLevel);
+        var own = perfect ? perfectOrderSound : orderDoneSound;
+        if (own == null && tuned != null) { if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(tuned); }
+        else if (perfect)
         {
             var sound = perfectOrderSound ?? AudioManager.Instance.defaultPerfectOrderSound;
             if (sound != null) AudioManager.Instance.PlaySFX(sound);
