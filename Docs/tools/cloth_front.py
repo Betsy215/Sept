@@ -13,7 +13,7 @@ from PIL import Image
 G = "/Users/betzthebest/Desktop/Sept/FoodTruckCafe/Assets/"
 EDGE = 0.456 / 5.0          # the front edge: 0.456 world of the cloth's 5 (a Face ID iPhone's home bar + gap); TableLayer.frontHeight
 DEPTH = 1.3                  # world units of drop drawn (more than any screen shows)
-ROLL = 0.085                 # world units of the bend over the edge
+ROLL = 0.13                  # world units of the bend over the edge (v3, owner: 'the connection is too obvious': longer and gentler)
 def smooth(e0, e1, x): t = np.clip((x - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t)
 def build(src, out, p_mid, p_low, row_period):
     """p_mid, p_low: the cloth's column period at rows H/2 and 0.91 H (its perspective); row_period: its check row period
@@ -46,13 +46,13 @@ def build(src, out, p_mid, p_low, row_period):
         row = lambda r: a[r, x0] * (1 - fx) + a[r, x1] * fx
         out_px[y] = row(r0) * (1 - fr) + row(r1) * fr
     yy = np.arange(fh, dtype=np.float32)[:, None]; X = xs[None, :]; u = yy / roll_px; wy = yy / ppw
-    dark = 0.19 * smooth(0.35, 1.5, u) + 0.10 * np.clip((wy - ROLL) / 0.6, 0, 1) ** 0.8       # the front turned from the light
+    dark = 0.10 * smooth(0.2, 2.6, u) + 0.07 * np.clip((wy - ROLL) / 0.7, 0, 1) ** 0.8        # the front turned from the light, gently
     rng = np.random.default_rng(7); fold = np.zeros_like(X)
-    for lam, amp in ((0.55, 0.045), (0.83, 0.035), (1.37, 0.03)):
+    for lam, amp in ((0.55, 0.035), (0.83, 0.028), (1.37, 0.024)):
         lam_px = lam * ppw; ph = rng.uniform(0, 2 * np.pi); fold = fold + amp * np.sin(2 * np.pi * X / lam_px + ph + 0.35 * np.sin(2 * np.pi * X / (lam_px * 2.7)))
     m = (1 - dark) * (1 + fold * smooth(1.2, 3.5, u))
     img = out_px * m[..., None]
-    shine = 0.16 * np.exp(-((u - 0.42) / 0.32) ** 2)                # the bend catching the light, broad and soft
+    shine = 0.05 * np.exp(-((u - 0.45) / 0.45) ** 2)                # the bend catching the light: barely
     img = img + (255 - img) * shine[..., None]
     Image.fromarray(np.clip(img, 0, 255).astype(np.uint8)).save(out)
     print(out, W, "x", fh, "edge row", round(phase, 1), "check", round(sq, 1), "roll px", round(roll_px, 1))
