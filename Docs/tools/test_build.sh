@@ -3,7 +3,8 @@
 #   bash Docs/tools/test_build.sh <version>-<build> [upload]      e.g. 2026.11.21-0        (run in the background; 5 to 20 minutes)
 #   bash Docs/tools/test_build.sh <version>-<build> upload        only the upload, for an archive that exists
 # The version and build number must already be set in the Player Settings (bundleVersion, iPhone build number).
-# After it: `git checkout ProjectSettings/ProjectSettings.asset` if only preloadedAssets changed.
+# After it: reset only `preloadedAssets:` to `[]` in ProjectSettings/ProjectSettings.asset. Never `git checkout`
+# that file: it reverts bundleVersion and the build number too (24 Nov 2026 an upload was rejected that way).
 # Upload needs the Apple account signed in under Xcode > Settings > Accounts ("Failed to Use Accounts" = signed out;
 # only the owner can sign in). Processing: Docs/tools/asc_token.py + GET /v1/builds?filter[app]=6755611355&sort=-uploadedDate.
 V="$1"; [ -n "$V" ] || { echo "usage: test_build.sh <version>-<build> [upload]"; exit 1; }

@@ -33,8 +33,6 @@ left over in the code and the store. Done items are removed (git history and `Do
   checking nothing else reads it through `IsFoodItemPurchased`. Most players buy it in chapter 1, where it leaves the shop.
 - `Level13Data..Level16Data.asset` are unused (chapter 1 shrank to 12 days); `LevelData.starThreshold1..3` and
   `ordersPerLevel` are no longer read for stars or the day's end. Harmless.
-- `Docs/tools/test_build.sh`'s comment still says `git checkout ProjectSettings/ProjectSettings.asset` after a build;
-  the rule is to reset only `preloadedAssets:` to `[]` (the checkout reverts the version).
 - `Docs/systems/*.md` and `Docs/maintenance.md` describe October 2026 (ovens per food, 16-day chapters); MANUAL section 6
   and the code win.
 - From the 7 to 8 October review and the 13 October play test, not rechecked since:
