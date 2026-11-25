@@ -48,7 +48,7 @@ public class IceCreamStation : MonoBehaviour
     public float waffleHeight = 0.66f;                       // its height as a share of the box picture's height
     public float waffleGap = -0.03f;                           // between the box's right edge and the machine, a fraction of the box width
     public float waffleShift = -0.01f;                      // unused since 26 October; kept for the scene's value
-    public const int WafflesPerSession = 2; public const float WaffleSeconds = 8f;   // one session bakes two bowls in 8 s (owner, 25 October)
+    public const int WafflesPerSession = 2; public const float WaffleSeconds = 6f;   // one session bakes two bowls in 6 s (owner, 25 November 2026; was 8 s from 25 October)
     [Header("Dish row (owner, 26 October 2026)")]
     public float dishWidth = 0.165f;                           // one dish's width as a share of the box picture's width
     public float boxBottom = 0.16f;                           // where the painted box ends, a fraction of the canvas height

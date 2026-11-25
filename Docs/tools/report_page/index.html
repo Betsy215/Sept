@@ -75,6 +75,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>2026.11.24 is live</b> (Apple approved it overnight). Yesterday's players and your own play are in Analysis.</p>
+<p><b>Screenshots of the problems:</b> my link to Unity dropped. In Unity, open Window &gt; MCP for Unity and click Start Server (or Connect); then I take them.</p>
 <p><b>Game review:</b> problems at the top of Current, growth ideas in Marketing. Tick what to do; nothing is fixed yet.</p>
 <p><b>C chapter, the dessert house:</b> four watercolour ideas from Gemini and four of mine, by day and night, at the top of Current. Tick the ones you like; ChatGPT paints them tomorrow after 10:00.</p>
 <p>The shop pages, cloths and rooms below it still wait for your ticks.</p>
@@ -85,6 +86,33 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<div class="card">
+<p style="margin-top:0"><b>Q4. If an ad never answers, how do we fix it?</b> <small>25 November</small></p>
+<p>Add a safety net: when an ad starts, start a timer too. The game moves on as if the ad was skipped (no reward) when either happens first:</p>
+<ul>
+<li>90 seconds pass with no answer from the ad;</li>
+<li>the player is back in the game (the ad screen has closed) and 3 seconds pass with no answer.</li>
+</ul>
+<p>Moving on means: the Daily Treats card can be closed again, the map goes on to the day, and the shop's coin-ad button resets. A watched ad still pays as before. Small change in three files; I test it in the editor by faking a silent ad.</p>
+<ul class="checks"><li><label><input type="checkbox" data-id="qa.adfreeze.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="qa.adfreeze.fix"> <span>Do it (goes in the next test build)</span></label></li><li><label><input type="checkbox" data-id="qa.adfreeze.later"> <span>Later</span></label></li></ul>
+</div>
+<div class="card">
+<p style="margin-top:0"><b>Q3. "The Kid always orders the most items allowed": I thought the Chef orders a lot?</b> <small>25 November</small></p>
+<p>Both order more than the others, in different ways:</p>
+<ul>
+<li><b>Chef:</b> one item more than the day's smallest order. Meant that way.</li>
+<li><b>Kid:</b> the code asks for at least 4 items, and no day allows that many early on, so the Kid always gets the day's largest order. It looks accidental: the Kid's code was copied from an old customer and still carries its settings.</li>
+</ul>
+<p>Items per order:</p>
+<ul>
+<li>Day 1: others 1-2, Chef 2, Kid 2.</li>
+<li>Day 2: others 1-3, Chef 2, Kid 3.</li>
+<li>Day 3: others 2-3, Chef 3, Kid 3.</li>
+<li>Day 4 on: others 2-4, Chef 3, Kid 4.</li>
+</ul>
+<p>So from day 2 the Kid orders more than the Chef, and the Kid comes from day 1 (the Chef is bought).</p>
+<ul class="checks"><li><label><input type="checkbox" data-id="qa.kid25.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="qa.kid25.normal"> <span>Kid orders like the Girl and Boy</span></label></li><li><label><input type="checkbox" data-id="qa.kid25.small"> <span>Kid orders small (1 item less than others)</span></label></li><li><label><input type="checkbox" data-id="qa.kid25.keep"> <span>Keep as it is</span></label></li></ul>
+</div>
 <div class="card">
 <p style="margin-top:0"><b>Q2. Yesterday, not counting me, how much did we make?</b> <small>25 November</small></p>
 <p><b>$0.04</b>, all from ads: the US iPad player's 3 skipped ads. No in-app purchases (App Store Connect shows none all week).</p>
@@ -120,11 +148,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li><label><input type="checkbox" data-id="cur.rev25.r6"> <span><strong>If an ad never answers, the screen freezes</strong>: the Daily Treats card or the map stays stuck until the app is closed. Rare, but players lose the moment.</span></label></li>
 <li><label><input type="checkbox" data-id="cur.rev25.r4"> <span><strong>The map can lock for very old saves</strong> already in chapter 2, if Home is tapped during the day 9 moment. Rare.</span></label></li>
 </ul>
-<p><b>Your call</b></p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.rev25.waffle.up"> <span><strong>Waffle machine:</strong> it bakes 8 s and the Kitchen upgrade does not speed it up (everything else gets a quarter faster). Make the upgrade speed it up too</span></label></li>
-<li><label><input type="checkbox" data-id="cur.rev25.waffle.keep"> <span>Waffle machine: keep 8 s; I correct Mechanisms (it says about 2.4 s)</span></label></li>
-</ul>
+<p><b>Waffle machine:</b> now 6 s (you asked, 25 November; was 8 s). The sizzle sound is 3 s and stays as it is: it plays at the start, the ding when the lid opens. In the next test build. Mechanisms corrected.</p>
 <p><b>Small ones</b> <small>A candy can be used when no one's patience can go up; a 15 Stars purchase could pay twice if the app is killed at one exact moment; two Upgrade cards share one NEW tag; the tutorial card is 11 px too wide on tall iPhones; the used-up patience flower overlaps the bubble; Ready covers half the candy jar while arranging; analytics money is wrong on replays and real-money buys are not logged.</small></p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.rev25.small"> <span>Fix the small ones too</span></label></li>
