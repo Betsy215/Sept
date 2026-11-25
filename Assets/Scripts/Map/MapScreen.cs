@@ -545,37 +545,24 @@ public class MapScreen : MonoBehaviour
         var card = new GameObject("StarGift", typeof(RectTransform)); card.transform.SetParent(canvasRect, false);
         var cr = (RectTransform)card.transform; cr.anchorMin = Vector2.zero; cr.anchorMax = Vector2.one; cr.offsetMin = cr.offsetMax = Vector2.zero;
         var dim = NewImage("Dim", cr, null); dim.color = new Color(0f, 0f, 0f, 0f); Stretch(dim.rectTransform);
-        // Layout redrawn 25 November 2026 (owner: "fix day 9 gift card, redesign the layout"): the message's Place() had slipped
-        // behind a comment, so it wrapped in TMP's default 200 px box over the star. Now a taller card, top to bottom: title,
-        // star, a bold line, a softer line, Let's go; each text on its own line of code so no comment can swallow a call again.
-        var panel = NewImage("Panel", cr, Load("day_paper")); panel.preserveAspect = false; Place(panel.rectTransform, Vector2.zero, new Vector2(780f, 900f));
-        var ink = new Color(0.36f, 0.20f, 0.09f); var soft = new Color(0.47f, 0.31f, 0.20f);
+        // Layout (owner, 25 November 2026): no message on the card, the star says it (it flies up into the player's stars after
+        // Let's go). Title, a big star, Let's go. (The old message line had lost its Place() behind a comment and wrapped over the star.)
+        var panel = NewImage("Panel", cr, Load("day_paper")); panel.preserveAspect = false; Place(panel.rectTransform, Vector2.zero, new Vector2(780f, 820f));
+        var ink = new Color(0.36f, 0.20f, 0.09f);
         var title = NewText("Title", panel.rectTransform, "A GIFT FOR YOU!", 78f, ink);
-        Place(title.rectTransform, new Vector2(0f, 312f), new Vector2(700f, 110f));
+        Place(title.rectTransform, new Vector2(0f, 262f), new Vector2(700f, 120f));
         title.alignment = TextAlignmentOptions.Center;
         var star = NewImage("Star", panel.rectTransform, starSprite);
-        Place(star.rectTransform, new Vector2(0f, 118f), new Vector2(230f, 230f));
+        Place(star.rectTransform, new Vector2(0f, 22f), new Vector2(300f, 300f));
         star.transform.localScale = Vector3.zero;
-        var hand = Resources.Load<TMP_FontAsset>("Fonts & Materials/Delius SDF");
-        var lineTop = pendingChapter2 ? "A star for day 9!" : "A star for reaching day 9!";   // pendingChapter2: an older save already past day 9
-        var lineBottom = pendingChapter2 ? "Chapter 2 is opening" : "Finish day 9 to open chapter 2";
-        var line = NewText("Line", panel.rectTransform, lineTop, 46f, ink);
-        Place(line.rectTransform, new Vector2(0f, -44f), new Vector2(680f, 64f));
-        var line2 = NewText("Line2", panel.rectTransform, lineBottom, 36f, soft);
-        Place(line2.rectTransform, new Vector2(0f, -112f), new Vector2(680f, 56f));
-        foreach (var l in new[] { line, line2 })
-        {
-            if (hand != null) l.font = hand;
-            l.alignment = TextAlignmentOptions.Center; l.enableWordWrapping = false; l.overflowMode = TextOverflowModes.Overflow; l.alpha = 0f;
-        }
         var go = NewImage("LetsGo", panel.rectTransform, Resources.Load<Sprite>("UI/cookie_letsgo"));
-        Place(go.rectTransform, new Vector2(0f, -290f), new Vector2(340f, 122f));
+        Place(go.rectTransform, new Vector2(0f, -262f), new Vector2(340f, 122f));
         go.transform.localScale = Vector3.zero;
         var pressed = false; go.gameObject.AddComponent<Button>().onClick.AddListener(() => pressed = true);
         panel.transform.localScale = Vector3.one * 0.6f;
         for (var t = 0f; t < 1f; t += Time.deltaTime / 0.28f) { var k = Mathf.Clamp01(t); dim.color = new Color(0f, 0f, 0f, 0.55f * k); panel.transform.localScale = Vector3.one * Mathf.LerpUnclamped(0.6f, 1f, BackOut(k)); yield return null; }
         PlayChime("chime_fin2"); Haptics.Tap();
-        for (var t = 0f; t < 1f; t += Time.deltaTime / 0.45f) { var k = Mathf.Clamp01(t); star.transform.localScale = Vector3.one * BackOut(k); star.transform.localRotation = Quaternion.Euler(0f, 0f, -90f * (1f - k)); line.alpha = k; line2.alpha = k; yield return null; }
+        for (var t = 0f; t < 1f; t += Time.deltaTime / 0.45f) { var k = Mathf.Clamp01(t); star.transform.localScale = Vector3.one * BackOut(k); star.transform.localRotation = Quaternion.Euler(0f, 0f, -90f * (1f - k)); yield return null; }
         for (var t = 0f; t < 1f; t += Time.deltaTime / 0.25f) { go.transform.localScale = Vector3.one * BackOut(Mathf.Clamp01(t)); yield return null; }
         var w = 0f; var auto = GiftAutoSeconds > 0f ? GiftAutoSeconds : float.MaxValue;
         while (!pressed && w < auto) { w += Time.deltaTime; star.transform.localScale = Vector3.one * (1f + 0.06f * Mathf.Sin(w * 4f)); yield return null; }
