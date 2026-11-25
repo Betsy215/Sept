@@ -13,7 +13,7 @@ public class KidCustomer : CustomerController
     public override float PatienceLevel => girlPatienceLevel;
     public override string[] PreferredFoods => girlPreferredFoods;
     public override float OrderDelay => girlOrderDelay;
-    public override int MinOrderItems => 4; 
+    // Order size like the Girl and Boy (owner, 25 November 2026; it was MinOrderItems 4, which made every Kid order the day's largest order)
     protected override void Awake()
     {
         base.Awake();

@@ -75,7 +75,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>2026.11.24 is live</b> (Apple approved it overnight). Yesterday's players and your own play are in Analysis.</p>
-<p><b>Screenshots of the problems</b> are at the top of Current.</p>
+<p><b>Fixed today</b> (top of Current): day 9 gift card, sticker prices, Kid and Chef orders, waffle 6 s. In the next test build.</p>
 <p><b>Game review:</b> problems at the top of Current, growth ideas in Marketing. Tick what to do; nothing is fixed yet.</p>
 <p><b>C chapter, the dessert house:</b> four watercolour ideas from Gemini and four of mine, by day and night, at the top of Current. Tick the ones you like; ChatGPT paints them tomorrow after 10:00.</p>
 <p>The shop pages, cloths and rooms below it still wait for your ticks.</p>
@@ -96,69 +96,31 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p>Moving on means: the Daily Treats card can be closed again, the map goes on to the day, and the shop's coin-ad button resets. A watched ad still pays as before. Small change in three files; I test it in the editor by faking a silent ad.</p>
 <ul class="checks"><li><label><input type="checkbox" data-id="qa.adfreeze.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="qa.adfreeze.fix"> <span>Do it (goes in the next test build)</span></label></li><li><label><input type="checkbox" data-id="qa.adfreeze.later"> <span>Later</span></label></li></ul>
 </div>
-<div class="card">
-<p style="margin-top:0"><b>Q3. "The Kid always orders the most items allowed": I thought the Chef orders a lot?</b> <small>25 November</small></p>
-<p>Both order more than the others, in different ways:</p>
-<ul>
-<li><b>Chef:</b> one item more than the day's smallest order. Meant that way.</li>
-<li><b>Kid:</b> the code asks for at least 4 items, and no day allows that many early on, so the Kid always gets the day's largest order. It looks accidental: the Kid's code was copied from an old customer and still carries its settings.</li>
-</ul>
-<p>Items per order:</p>
-<ul>
-<li>Day 1: others 1-2, Chef 2, Kid 2.</li>
-<li>Day 2: others 1-3, Chef 2, Kid 3.</li>
-<li>Day 3: others 2-3, Chef 3, Kid 3.</li>
-<li>Day 4 on: others 2-4, Chef 3, Kid 4.</li>
-</ul>
-<p>So from day 2 the Kid orders more than the Chef, and the Kid comes from day 1 (the Chef is bought).</p>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.kid25.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="qa.kid25.normal"> <span>Kid orders like the Girl and Boy</span></label></li><li><label><input type="checkbox" data-id="qa.kid25.small"> <span>Kid orders small (1 item less than others)</span></label></li><li><label><input type="checkbox" data-id="qa.kid25.keep"> <span>Keep as it is</span></label></li></ul>
-</div>
-<div class="card">
-<p style="margin-top:0"><b>Q2. Yesterday, not counting me, how much did we make?</b> <small>25 November</small></p>
-<p><b>$0.04</b>, all from ads: the US iPad player's 3 skipped ads. No in-app purchases (App Store Connect shows none all week).</p>
-<ul>
-<li>Your own store play made $0.20 more (11 ads, 18:00 to 21:00 UTC), so the day's total was $0.24.</li>
-<li>Downloads on 24 November (UTC): 5.</li>
-<li>Counted 24 November 0:00 to 24:00 Pacific, from Unity Ads' hourly report. Unity's figures are estimates.</li>
-</ul>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.inc24.seen"> Seen, remove this</label></li></ul>
-</div>
-<div class="card">
-<p style="margin-top:0"><b>Q1. The US player skipped 3 ads. Do those count in our income?</b> <small>25 November</small></p>
-<p><b>Yes.</b> A skipped ad still started playing, and Unity counts it when it starts. Unity Ads for 25 November 01:00 to 02:00 (UTC), the hour that player's 3 ads started: <b>3 impressions, $0.04</b>. Nobody else saw an ad in that hour. About 1.3 cents an ad.</p>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.skip25.seen"> Seen, remove this</label></li></ul>
-</div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">25 November: game review. Problems only, nothing fixed yet. Tick what to fix.</p>
+<p class="sub" style="margin:0 0 8px">25 November: game review, and the first fixes.</p>
 <div class="card">
-<p style="margin-top:0"><b>Screenshots of the problems.</b> <small>Taken today in the editor on the live code (iPhone 6.9-inch and iPad 13-inch). The fix boxes are in the review card below.</small></p>
-<p><b>Day 9 gift card</b>: the message wraps into six short lines over the star; it should be two lines under it.</p>
-<div class="two"><figure style="margin:8px 0"><img src="rev25/day9_phone.jpg" alt="Day 9 gift card on iPhone: A GIFT FOR YOU!, a star, and the words A star for reaching day 9! Finish day 9 to open chapter 2 squeezed into a narrow column across the star" style="height:420px;max-height:420px;width:auto"><figcaption>iPhone</figcaption></figure><figure style="margin:8px 0"><img src="rev25/day9_ipad.jpg" alt="The same card on iPad with the same squeezed text over the star" style="height:420px;max-height:420px;width:auto"><figcaption>iPad</figcaption></figure></div>
-<p><b>Menu stickers, chapter 2</b> (after the 24 November resize): each sticker covers the price of the one before it, and on iPhone the Cake sticker runs off the right edge.</p>
-<figure style="margin:8px 0"><img src="rev25/menu_phone.jpg" alt="Top of the iPhone screen with the menu open: Apple, Choux and Cake stickers overlapping, prices hidden, Cake cut at the right edge" style="height:260px;max-height:260px;width:auto"><figcaption>iPhone</figcaption></figure><figure style="margin:8px 0"><img src="rev25/menu_ipad.jpg" alt="Top of the iPad screen: Apple, Choux, Cake, Coffee and Cookies stickers overlapping; Apple, Choux and Coffee prices hidden" style="height:260px;max-height:260px;width:auto"><figcaption>iPad</figcaption></figure>
-<p><b>Chapter 2 kitchen</b>: an empty dark oval on the counter (ringed), a shadow with nothing on it.</p>
-<figure style="margin:8px 0"><img src="rev25/c2_kitchen_shadow.jpg" alt="Chapter 2 kitchen counter: blender, whisk, baskets, and an empty oval shadow ringed in pink" style="height:300px;max-height:300px;width:auto"><figcaption>iPhone</figcaption></figure>
-<p><b>Chapter 2 patience flowers</b> sit on the top line of the order bubble.</p>
-<figure style="margin:8px 0"><img src="rev25/c2_flower.jpg" alt="Order bubble with a waffle bowl and a coconut; four hibiscus flowers sit across the top outline of the bubble, the last one faded" style="height:360px;max-height:360px;width:auto"><figcaption>iPhone</figcaption></figure>
-<p><b>Cone glasses at the bottom</b>: fine in today's capture, about 150 px above the screen edge and clear of the home bar. The 23 November picture misled me; I dropped this one.</p>
-<figure style="margin:8px 0"><img src="rev25/c2_glasses_bottom.jpg" alt="Ice cream station and six glasses near the bottom of the iPhone screen, with striped cloth below them" style="height:260px;max-height:260px;width:auto"><figcaption>iPhone</figcaption></figure>
-<ul class="checks"><li><label><input type="checkbox" data-id="cur.rev25shots.seen"> <span>Seen, remove this</span></label></li></ul>
+<p style="margin-top:0"><b>Fixed today, in the next test build.</b> <small>Captured in the editor on iPhone 6.9-inch and iPad 13-inch.</small></p>
+<p><b>Day 9 gift card, new layout</b>: a taller card; title, star, then the message in two lines under the star (the first bolder), then Let's go.</p>
+<div class="two"><figure style="margin:8px 0"><img src="rev25/day9_phone.jpg" alt="Before: the message squeezed in a narrow column over the star" style="height:420px;max-height:420px;width:auto"><figcaption>Before</figcaption></figure><figure style="margin:8px 0"><img src="rev25/day9_phone_new.jpg" alt="After on iPhone: A GIFT FOR YOU!, the star, A star for reaching day 9! and below it Finish day 9 to open chapter 2, then the LET'S GO! cookie" style="height:420px;max-height:420px;width:auto"><figcaption>After, iPhone</figcaption></figure><figure style="margin:8px 0"><img src="rev25/day9_ipad_new.jpg" alt="After on iPad, the same layout" style="height:420px;max-height:420px;width:auto"><figcaption>After, iPad</figcaption></figure></div>
+<p><b>Menu sticker prices</b>: bigger (48 instead of 34) and moved a little toward the middle; a small overlap stays.</p>
+<figure style="margin:8px 0"><img src="rev25/menu_ipad.jpg" alt="Before on iPad: Apple, Choux and Coffee prices hidden under the next sticker" style="height:220px;max-height:220px;width:auto"><figcaption>Before, iPad</figcaption></figure><figure style="margin:8px 0"><img src="rev25/menu_ipad_new.jpg" alt="After on iPad: every price readable, $ 20, $ 35, $ 35, $ 10, $ 30" style="height:220px;max-height:220px;width:auto"><figcaption>After, iPad</figcaption></figure><figure style="margin:8px 0"><img src="rev25/menu_phone_new.jpg" alt="After on iPhone: Apple $ 20, Choux $ 35, Cake $ 35, all readable" style="height:260px;max-height:260px;width:auto"><figcaption>After, iPhone</figcaption></figure>
+<p><b>Customers</b>: the Kid now orders like the Girl and Boy (checked in two days: 2, 3 and 4 items on a 2-4 day); the Chef always orders the day's largest order. <b>Waffle machine</b>: 6 s.</p>
+<p style="font-size:14px">Kitchen shadow: left as it is, as you said.</p>
+<ul class="checks"><li><label><input type="checkbox" data-id="cur.fix25.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.fix25.good"> <span>Good</span></label></li><li><label><input type="checkbox" data-id="cur.fix25.more"> <span>Change more (tell me in chat)</span></label></li></ul>
 </div>
+
 
 <div class="card">
 <p style="margin-top:0"><b>Game review: what I found.</b> <small>Code, screens and docs, on the live 2026.11.24. Full list for future agents: Docs/review-2026-11-25.md.</small></p>
-<p><b>Players see these</b></p>
+<p><b>Players see these</b> <small>(day 9 card and sticker prices fixed above; kitchen shadow kept)</small></p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.rev25.seen"> <span>Seen, remove this</span></label></li>
-<li><label><input type="checkbox" data-id="cur.rev25.r1"> <span><strong>Day 9 gift card text is jumbled</strong> (live now): its message never gets placed, so it wraps into about six lines over the star. A one-line fix.</span></label></li>
 <li><label><input type="checkbox" data-id="cur.rev25.r2"> <span><strong>First launch asks to allow notifications</strong>, but the game never sends any. One setting.</span></label></li>
 <li><label><input type="checkbox" data-id="cur.rev25.r8"> <span><strong>Store screenshots are out of date</strong> (23 November game: all 16 chapter 2 days on the map, old stickers, no cloth drop). On iPad the caption bands hide the menu's DONE button and the receipt in the tips shot. Retake them.</span></label></li>
 <li><label><input type="checkbox" data-id="cur.rev25.r3"> <span><strong>Play can wipe a saved game by accident</strong>: sliding the finger off Play still starts a new game, and tapping Continue then Play quickly does too.</span></label></li>
 <li><label><input type="checkbox" data-id="cur.rev25.r5"> <span><strong>Candies cost full price when the jar is almost full</strong>: at 7 or 8 candies, a buy adds only 2 or 1.</span></label></li>
 <li><label><input type="checkbox" data-id="cur.rev25.r9"> <span><strong>Money shows three ways</strong>: $ 1815 on the day card, $1814 in the shop, $ 1,814 on the map. When the card finishes counting, Order sale and Tips both read $0.</span></label></li>
-<li><label><input type="checkbox" data-id="cur.rev25.r10"> <span><strong>Menu stickers cover each other's prices</strong>, and Apple and Cookies are cut at the screen edges (still so after the 24 November resize: see the pictures).</span></label></li>
-<li><label><input type="checkbox" data-id="cur.rev25.r12"> <span><strong>Chapter 2 kitchen: a shadow with nothing on it</strong> (where chapter 1's bowl stands).</span></label></li>
 <li><label><input type="checkbox" data-id="cur.rev25.r6"> <span><strong>If an ad never answers, the screen freezes</strong>: the Daily Treats card or the map stays stuck until the app is closed. Rare, but players lose the moment.</span></label></li>
 <li><label><input type="checkbox" data-id="cur.rev25.r4"> <span><strong>The map can lock for very old saves</strong> already in chapter 2, if Home is tapped during the day 9 moment. Rare.</span></label></li>
 </ul>
