@@ -87,6 +87,11 @@ processing). iPhone Duo screenshots are required from April 2027 (`asc_fill.py d
 Header and other page assets (the store page header since 24 November 2026): there is no API. The owner uploads the
 picture to the **Asset Library** in the App Store Connect web UI and submits it for review; once Apple approves it, on
 the version page: **Header > Browse Assets > pick it > Next > Publish**.
+**The header does not carry over to a new version** (2026.11.24 went live on 25 November 2026 with an empty slot).
+Owner, 25 November 2026: keep the header on every release. So, every release: after `create`, set the header on the
+new version page (Header > Browse Assets > `header_E3_upload.png` > Next); and on the day the version goes live, open
+the live version page and check "1 of 1 Header Asset", else pick it again and Publish. This standing request is the
+owner's yes for re-selecting the SAME approved header; a different header still needs their yes.
 
 Things with no API, done by the owner in the web UI: App Privacy (the label: Usage Data / Product Interaction, not
 linked, not tracking, for Unity Analytics), pricing and availability (China mainland is off sale since

@@ -114,6 +114,7 @@ if __name__ == "__main__":
         print("texts copied from", live["attributes"]["versionString"], "; whatsNew:", repr(WHATS_NEW) or "left empty", "; description edits:", len(DESCRIPTION_EDITS))
         sets = api("GET", f"/appStoreVersionLocalizations/{loc['id']}/appScreenshotSets")["data"]
         print("screenshot sets on the new version:", [s["attributes"]["screenshotDisplayType"] for s in sets])
+        print("NOW: set the store header on this version in the web UI (Header > Browse Assets > header_E3_upload.png); it does not carry over")
 
     elif what == "build":
         if not ver: raise SystemExit(f"{v} does not exist; run create first")
@@ -150,6 +151,7 @@ if __name__ == "__main__":
                               "appStoreVersion": {"data": {"type": "appStoreVersions", "id": ver["id"]}}}}})
         api("PATCH", f"/reviewSubmissions/{sid}", {"data": {"type": "reviewSubmissions", "id": sid, "attributes": {"submitted": True}}})
         print("submitted", v)
+        print("When it goes live: check the live version page shows 1 of 1 Header Asset, else pick header_E3 again and Publish")
 
     elif what == "release":
         if not ver: raise SystemExit(f"{v} does not exist")
