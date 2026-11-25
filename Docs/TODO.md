@@ -1,87 +1,54 @@
 # TODO
 
-Current open work, as of 13 October 2026 (night). Done items are removed; the dated record is in `Docs/history/`
-(the 9 to 13 October TODO is `history/TODO_2026-10-13_before_rewrite.md`).
+Open items as of 24 November 2026. The report's Next and MVP hold the owner's current asks; this file holds what is
+left over in the code and the store. Done items are removed (git history and `Docs/history/` keep the record).
 
-## Release 26.10.18 with chapter 2 (owner, 25 October: "release today/tomorrow")
+## Now
 
-- [x] **Build 4 to TestFlight** (25 October morning, from the `coconut-five` worktree: everything on the branch, the owner's blender, station box and cone holder included).
-- [x] **Owner's 25 October batch** (build 5): the chapter 2 cloth's short dark edge line (TableLayer: the edge shadow was shrunk twice), the palm's blurred crown (`Store/artkit/palm_crown.py`), the two-well station cut from the owner's box (`owner_small.py`), the menu saved across days with no oven cap, ovens bought in the shop and the recipe picker. Open: the owner's eye on the crown and the picker; the kitchen doc (`Docs/systems/04-kitchen.md`) still describes the 7 October ovens.
-- [x] **Owner's second note of 25 October** (build 6): the level 1 box from the right two wells with a mirrored left end (the bunny mark is now on both ends), no lids, cones stacked without a stand, the cast-iron waffle machine on the table beside the stack (a tap bakes the stack back to four), the kitchen machine retired. Open: the owner's eye on the mirrored end and the waffle size; the driver's `step.cs` still calls `RefillCones` directly (fine) but the kitchen tap it used is gone.
-- [x] **25 October, midday (build 8):** cones in a row of six, the waffle machine behind the row with an 8 s session for two cones, the coconut tray shadows (n4, n5), ovens hidden when not bought, the picker as notes alone; bug scan on the worktree editor (`~/.claude/jobs/99912564/tmp/scan25.sh`): every station, oven and shop path as expected; one bug fixed (an oven bake finishing while the kitchen was closed threw MissingReferenceException from the destroyed oven's transform; the key is cached now). Waffle machine at 40 degrees drafted in both colourways (`Store/redesign/waffle/waffle40.py`), the owner picks.
-- [ ] **Ovens, owner's adjustments expected:** the card price (500, same for the second and the third), whether one recipe on the menu should still show the picker, the locked ovens' look (greyed with the small lock), the picker's place (above the oven, inside the screen).
-- [ ] **Owner plays build 4** ("Chapter 2 test" button on the main menu), says "good" or what is wrong (a fix = build 5).
-- [ ] **Owner's yes on the texts** (drafts in the report's MVP and in `Docs/tools/asc_release.py`: What's New; the description's "two customers" line stays unless ticked), the screenshot choice (keep the 26.10.13 set or new captures), release on approval or manual.
-- [ ] **On "submit":** `asc_release.py 26.10.18 create`, `build 4`, `submit`; the owner sets the privacy label (Usage Data, Product Interaction, not linked to you) in App Store Connect.
-- [ ] **Main:** the owner merges `worktree-coconut-five` (fast-forward) and pushes, so main matches the shipped build; then a play check on main and fresh captures for the Visuals tab (needs the Unity bridge: Start Server in Window, MCP for Unity).
-- [ ] Not in this release: the coconut tray redraw (ChatGPT), new store screenshots unless ticked, a driver run of the merged branch (bridge down on 25 October).
-- [ ] **Store screenshots:** redo for the menu, prices and background; the banner must not say "16 days", use
-  "earn stars along the trip" (owner, 16 October). `Store/screenshots/caption.py`.
-- [ ] **Next release after this one:** stars as a second currency (earned by play, a replay never pays the same star twice;
-  what they buy is open), chapter 2 fully built (`Docs/chapter2-plan.md` steps 3 to 14).
-- [ ] **Backlog (owner, 16 October):** a serve sound for every item (only Juice has one; the menu's placed sound uses it).
-- [ ] Coffee station: its moved spot is not saved between days (`FixedStation.Place` puts it bottom left every arrangement); save the machine's position if the owner wants it kept.
-- [ ] Ice cream: build the cone mechanic from Gemini's four-section station (`Store/chapter2/icecream_station/gemini_raw_3.jpg`): cut the station, the cone, scoops per flavour; tap the cone to float it, flavour taps add scoops, a red cross clears, serve on match (owner, 16 October).
-- [ ] **Menu stickers in the owner's oven-sticker style (owner, 18 October):** keep the three original oven stickers (`Assets/Images/Kitchen/ovens/sticker3/5/6`); redo the menu set that way with ChatGPT slots. Until then the clean v3 set stays. Also pending picks: chalky note background A to D (`Store/ui/popup_note`), Beachday price line on the popup, sticker font.
-- [ ] **ChatGPT list (owner, 16 October):** the chapter 2 beach background's right palm (its trunk leaves the frame; a painted trunk down to the bushes, `Resources/Chapter2/bg_day` and `bg_night`; my paint try was jagged and reverted); the chapter 2 stripe cloth, a texture pass so it reads as cloth (`Store/chapter2/table/cloth/stripes.png`, in the game as `Resources/Chapter2/cloth`); the apple basket, a new style as well as the 40-degree angle (Gemini's angle-only redraw in `Store/redesign/ai/apple` is not used); the menu sticker paper (a nicer pass on the notes); then the other foods at the angle (coffee machine, juice jug, bread basket, cookie plate, choux board) and their state strips.
-- [ ] **Cookies art is the owner's:** every related sprite is in `Store/handoff/cookies` with a README; the game holds the owner's original plates and my heart cut-outs until they replace them.
-- [ ] Shop descriptions and special notes: the owner tunes the list (report, Current). The popup layout is fixed places (price and two description lines in one label, a one-line note), so any new text must fit two lines at 68 pt bold on 1,000 px and the note one line at 56 pt on 940 px.
-- [ ] **Balance (16 October late run):** a perfect chapter 1 earns about $12,800 against the $8,740 shop; the owner's rule (most but not all) needs prices about 60% higher or more items; owner decides.
+- [ ] **2026.11.24 (build 1) in review** (AFTER_APPROVAL): watch `asc_release.py 2026.11.24 status`; once live, the next
+  test build takes the next day's date. Update MANUAL section 1.
+- [ ] **C chapter (chapter 3) art brainstorm**: read the ticks in the report's Current, then the ChatGPT restyles in
+  `Store/cchapter_2026-11-24c/prompts.md` (MANUAL section 10, memory note `cchapter-indoor-cafe`). Nothing in code yet.
+- [ ] **Privacy label**: confirm with the owner that App Privacy lists Usage Data / Product Interaction (not linked, not
+  tracking) for Unity Analytics (in the game since 16 October 2026; no API, the owner sets it in App Store Connect).
 
-## Waiting
+## Ideas, not started (owner's backlog)
 
-- [ ] **Star lines after the price change:** the 16 October check run gave 3 stars on 8 days, 2 on 7, 1 on 1 (owner's call to re-tune with `economy_tune.cs`).
-- [ ] **Privacy label:** with the next submission add "Usage Data / Product Interaction, not linked to you" for Unity Analytics (owner approves).
+- [ ] Shop item: a clock on the table's back band that shows the day's time left (owner, 17 October 2026).
+- [ ] Roll cake (owner's spec of 15 November 2026: the oven bakes a roll, a tap cuts a slice, serve cut slices; memory
+  note `roll-cake-feature`); art waits on the owner.
+- [ ] Locked star cards Chef (20) and Dining table (25) say "Coming soon": what they do is the owner's to decide.
+- [ ] Marketing: keywords, an Apple Search Ads test, short-video clips, cozy-game communities, a featuring request;
+  iPhone Duo screenshots before April 2027 (memory note `app-store-page-aso`).
+- [ ] Merge Unity's SKAdNetwork id list into `Assets/Editor/IOSPostBuild.cs` (not done; Unity Ads may already add its own).
 
-- [x] **26.10.13 build 4 released** (by 16 October).
-- [ ] **Owner to decide:** the description and promo text still say "serve two customers at a time" / "keep two
-  customers happy at once". The owner said not to say that in a caption. Rewording the description means pulling the
-  submission back and resubmitting (MANUAL section 9), or it waits for the next version.
+## Known issues, not fixed (owner's call)
 
-## Next version (MVP list in the report)
-
-- [ ] **Menu book (owner, 14 October afternoon: the next version's main feature; plan in `Docs/menu-book-plan.md`).**
-  Switch owned foods on and off with station caps, chosen in the arrangement phase; placeholder UI.
-- [ ] **Chapter 2, the beach (parked again 14 October, after the menu book).** Art three ways (ChatGPT, Gemini, my
-  kitchen-style painting), the owner picks. Parts: beach background day/night (picked); table and Shop background
-  (owner's pick, sheets in `Store/chapter2/table`, `shop_bg`); ice cream cones/cups and a freezer well, coconut drink
-  (brief `Store/chapter2/icecream`; Gemini draft in, ChatGPT pending); Cookies; hibiscus patience flowers; a beach
-  map page (`MapScreen`, the locked arrow after day 16); days 17 to 32 (`Level17..24Data` exist, 8 more to make);
-  chapter number in the save; "Chapter 1 complete!" (`LevelManager` line ~698) leads on to chapter 2.
-
-- [ ] **Table redesign at the 40-degree camera** (approved 13 October): each item keeps its art and is repainted at
-  the angle by ChatGPT. Briefs ready in `Store/redesign/ai/<item>/`: juice, choux, cookies, coffee cups, machine, cake
-  redo (flat napkin, no pink cut face). About three pictures a day on the free plan.
-- [ ] **Choux board stretch** to the 40-degree look (`Store/artkit/choux_board5.py`, K = 1.52, parked).
-- [ ] **Cookies** back in (MANUAL section 6, "Held back").
-- [ ] Fold the 13 October night fixes (commit 4cad84d) into the next build.
-
-## Economy (tuned 14 October 2026)
-
-The 13 October play test (a fast, perfect player through `Docs/tools/autoplay/driver.py`) reached three stars on no
-day and bought out the shop by day 9 (numbers in `Docs/tools/autoplay/run_2026-10-13_days.tsv`). On 14 October the
-star lines of all 16 days were reset from that run's earnings, smoothed over three days and never falling: 1 star at
-30 %, 2 at 55 %, 3 at 80 % of a perfect player's day (`Docs/tools/recipes/economy_tune.cs`; days 1 and 5 eased by
-hand). Check run (14 October): three stars on 14 of 16 days, two on days 1 and 5 before the easing. Cookies (600,
-fourth shop row, back since 14 October) are the late money sink for now; `Docs/economy_sim.py` is still the old
-model (Vase/Lantern/Radio, no day clock) and only worth updating if the tune needs more work.
-
-## Known issues found by the 21 October scan, not fixed (owner's call)
-
-- [ ] Chapter 2 shop still sells the coffee machine upgrade (800) although the coffee is off the table all chapter (the cup upgrade is hidden because its `upgradeFoodType` is Coffee; the machine's is CoffeeMachine, which `FoodChapter` does not list). Fix: `{ "CoffeeMachine", 1 }` in `SessionManager.FoodChapter`; check nothing else reads it through `IsFoodItemPurchased` first.
-- [x] "Keep at least 2 on" counted differently per chapter (Coffee sits in `enabledFoodItems`, IceCream never does): fixed 21 October afternoon on the owner's tick, `SessionManager.CanDisableFood` counts the chapter's fixed food when it is not in the list. Compiled offline; check in play in a chapter 2 session: with the ice cream plus two foods on, one of the two can go off.
-
-## Later
-
-- [ ] Rating prompt (`SKStoreReviewController` after a three-star day or day 5): not built (owner, 14 October: backlog).
-
-- [ ] Marketing: keyword work, an Apple Search Ads test, short-video clips, cozy-game communities, a featuring
-  request. The TikTok account is the owner's to create.
-- [ ] Re-read downloads, retention and conversion in November, then decide on content.
-- [ ] Country breakdown of downloads and ads into the report.
-- [ ] Unity Ads payout profile; merge Unity's SKAdNetwork id list into `IOSPostBuild.cs`.
-- [ ] Paid Apps Agreement, bank and tax (only before a purchase); Remove Ads (later); interstitial frequency once
-  retention data exists.
+- **Keep the minimum iOS at 15.0 while 2026.11.23 copies are around** (23 November 2026). The update card in 2026.11.23
+  does not check the store version's minimum iOS (fixed from 2026.11.24): if a later release needs a newer iOS than a
+  player's phone has, a 2026.11.23 copy would show the blocking card with an update the phone cannot install. Same if the
+  game leaves a country's store (the lookup asks the US store).
+- The chapter 2 shop still sells the coffee machine upgrade (650) though coffee is a chapter 1 food (its
+  `upgradeFoodType` CoffeeMachine is not in `SessionManager.FoodChapter`). Fix: `{ "CoffeeMachine", 1 }` there, after
+  checking nothing else reads it through `IsFoodItemPurchased`. Most players buy it in chapter 1, where it leaves the shop.
+- `Level13Data..Level16Data.asset` are unused (chapter 1 shrank to 12 days); `LevelData.starThreshold1..3` and
+  `ordersPerLevel` are no longer read for stars or the day's end. Harmless.
+- `Docs/tools/test_build.sh`'s comment still says `git checkout ProjectSettings/ProjectSettings.asset` after a build;
+  the rule is to reset only `preloadedAssets:` to `[]` (the checkout reverts the version).
+- `Docs/systems/*.md` and `Docs/maintenance.md` describe October 2026 (ovens per food, 16-day chapters); MANUAL section 6
+  and the code win.
+- From the 7 to 8 October review and the 13 October play test, not rechecked since:
+  - Leaving a day through Pause, Home keeps the coins earned so far and the day replays; Restart rolls them back.
+  - Players from 26.03.29 lost bought coffee upgrades in that build (it never saved them); nothing to recover.
+  - The item-served sound plays twice per correct serve; several clips are unassigned (button click, item pickup,
+    wrong item, level win).
+  - Bread and Cake reject a wrong tap silently; other foods buzz.
+  - Play and Continue clicks ignore Sound Off.
+  - Rewarded ad status labels are unassigned in the Shop scene, so they never show.
+  - `drag.anim` has an animation event with an empty function name.
+  - Settings panel animator runs on scaled time, so it freezes while paused.
+  - The ringer switch mutes the game (Ambient audio session). Standard for casual games.
+  - Editor only: "AudioManager: Cannot play music. Clip: False" once at menu start; Unity Ads shows a Placeholder ad.
 
 ## Leave alone (owner's decision, 7 October 2026)
 
@@ -97,66 +64,33 @@ The game is live and working. These were reviewed and the owner chose not to cha
 - AudioManager prefab vs scene overrides: fine, not every clip is meant to be wired.
 - Hold-to-refill only on Melon (an inactive object): leave. Details in `Docs/maintenance.md`.
 - Orphan entries Pie, Mont Blanc and Log Cake in the ScoreManager points table: harmless.
-- Kitchen bakes continuing through pause and into the Shop: logs an error, no player impact.
+- Kitchen bakes continuing through pause and into the Shop (since 20 to 23 November 2026 the kitchen clock stops on
+  pause and `KitchenDay.End` clears the kitchen at the day's end, Restart, Home and the shop's Next).
 - Small scene leftovers (missing script on the MainMenu Canvas, dead Inspector call on the kitchen back button,
-  silent pause button, four unreferenced scripts): leave unless they break something.
+  silent pause button, unreferenced scripts): leave unless they break something.
 - Upgrade shop items are one-shot by design.
-
-## Known issues (minor, not fixed)
-
-- **Keep the minimum iOS at 15.0 while 2026.11.23 copies are around** (23 November 2026). The update card in 2026.11.23 does not check the store version's minimum iOS (fixed for the next release): if a later release needs a newer iOS than a player's phone has, a 2026.11.23 copy would show the blocking card with an update the phone cannot install. Same if the game leaves a country's store (the lookup asks the US store).
-
-From the 7 to 8 October review (details in `Docs/systems`) and the 13 October play test.
-
-- Double-tapping Next Level while an interstitial is pending can run the Shop transition twice.
-- Leaving a day through Pause, Home keeps the coins earned so far and the day replays; Restart rolls them back.
-- Players from 26.03.29 lost bought coffee upgrades in that build (it never saved them); nothing to recover.
-- The item-served sound plays twice per correct serve.
-- Bread and Cake reject a wrong tap silently; other foods buzz.
-- The coffee machine's table position is not saved; food is not overlap-checked against the machine.
-- Shop Next Level briefly plays gameplay music before arrangement music.
-- Play and Continue clicks ignore Sound Off.
-- Kitchen bake timers carry over through Restart and Home; the oven ding can play in the Shop.
-- Rewarded ad status labels are unassigned in the Shop scene, so they never show.
-- `drag.anim` has an animation event with an empty function name (logs while the old hand animation plays).
-- Several clips are unassigned (button click, item pickup, wrong item, level win).
-- Settings panel animator runs on scaled time, so it freezes while paused.
-- The ringer switch mutes the game (Ambient audio session). Standard for casual games.
-- Editor only: "AudioManager: Cannot play music. Clip: False" once at menu start; Unity Ads shows a Placeholder ad.
 
 ## Clean-up ideas (not to do without the owner)
 
-- `StartArrangementPhase` runs twice per level load (harmless, idempotent).
+- `StartArrangementPhase` runs twice per level load (harmless, guarded).
 - Money state lives in both `ScoreManager` and `SessionManager`; new money features go through SessionManager.
-- String identifiers for foods, characters and upgrades; a shared constants class would make renames safe.
+- String identifiers for foods, characters, upgrades and cards; a shared constants class would make renames safe.
 - Git history is large (Library was committed early on); only worth rewriting on a fresh clone.
-- Unused packages: see `history/TODO_2026-10-13_before_rewrite.md` for the table of what each would save.
 
 ## Someday (needs device testing)
 
 - [ ] Crop the Choux source art (`Untitled_Artwork 5` to `9`) so it can sit at 512 px.
 
-## Test checklist for the next build
+## Test checklist for a release build
 
-- [ ] Fresh install: tracking prompt once, no notification prompt; tutorial plays; Let's go opens the map.
-- [ ] Two customers: bubbles over their heads, margins even, never the same person twice at once.
-- [ ] Daisies wilt in turn and come back on each serve; an expired order leaves without paying.
-- [ ] The day ends after the clock and the last customer; dusk and night tint on the way.
-- [ ] Finish card: sale, tips and stars right; a replay pays half and shows the half; three-star bonus once.
-- [ ] Shop: the lock arrow at the bottom; prices; buy with too little money shows the message.
-- [ ] Kitchen: tap each oven; bake completes once after closing mid-bake.
-- [ ] iPad: hen board beside the truck, pots on the cloth, nothing off screen.
-- [ ] Daily Treats: pays on the next Continue; day 5 bonus.
-- [ ] Kill the app mid-chapter, reopen, Continue: the map shows the right day and stars.
-
-## Ice cream (17 October)
-- Cone refill (22 October, `worktree-waffle-machine`): the waffle machine's pictures are the brief session's drafts (`Resources/Kitchen/waffle_*`, from `Store/redesign/icecream_row/out`; ChatGPT's version waits for the quota, the owner picks), no bake sound (`Kitchen/waffle_bake` is loaded if someone adds it); the holder level pictures `Resources/IceCream/holder_0..4` come from the cone sprite session. Design call left open for the owner: a cone cleared with the red cross is gone (like the scoops); giving it back would be one line in `ClearCone`.
-- The empty section wells are a flat steel paint (`cut_station.py` interior()); a drawn well would read better. Gemini's stainless redraw (`Store/chapter2/icecream_station/gemini_metal_raw.png`) is the alternative box; cutting it needs new section polygons.
-- Scoops drawn in the ice cream squash with the lowered levels (sec*_l2, l1).
-- The autoplay driver cannot build cones: read `OrderSystem.GetCurrentOrderTypesWithVariants()` and call `IceCreamStation.OnTap` (holder, sections by letter, cone).
-- Ice cream pays 35 flat (`ScoreManager.itemPoints`); per-scoop pay is the fairer option. No own scoop/serve sound yet.
-- The owner's "use it in the kitchen" could mean the station stands in the kitchen; built on the table (the 16 October design), to confirm.
-- Coconut palm (17 October): the crown behind the coconuts is a soft green fill where the painted coconuts were erased (`Resources/Chapter2/palm.png`); a painted frond centre would be nicer (ChatGPT list). The four coconuts are one lobe set four times; a drawn bunch would be nicer too.
-- Shop item: a clock (owner, 17 October backlog) on the table's top edge with the other fixed things (truck button, hen, pots); it shows the day's time so the player knows when the store closes. Not started.
-- Ice cream wells (18 October): the empty well is still a flat steel paint (`cut_station.py` interior()); the sinking levels (`levels_redraw.py`) are the owner's direction.
-- Coffee tray (18 October): redrawn at the 40-degree view (`Store/artkit/coffee_station40.py`, old flat one kept as `coffee_station_flat_v1.png`); the machine and cups stand at 0.34 of the tray's height. Verify in play.
+- [ ] Fresh install: tracking prompt once; the tutorial plays (apple tree tap, kitchen swipe); Let's go opens the map.
+- [ ] Day 1 has no arrangement; day 2 shows the arranging lesson; no ad before day 3, one after Play from day 3.
+- [ ] Two customers, thinking dots, flowers wilt and refill on each serve; receipt tip levels right.
+- [ ] Day ends after the clock and the last customer; dusk and night on the way; stars by customers served.
+- [ ] Kitchen: ovens and the picker, choux and cake flow (mixer, board), arranging (red blocks Ready); stops at day end.
+- [ ] Day 3 candy gift once; candies in the shop after day 3.
+- [ ] Day 9: the star card, chapter 2 opens on finishing it; bonus days revealed once.
+- [ ] Chapter 2: gift flower, ice cream wells, cones and waffle machine, blender refill, coconuts.
+- [ ] Shop: tabs, NEW tags, eaten cookie, book (journal, staff, cookies); $ tab and Restore on device.
+- [ ] iPad and iPhone SE: hen, handle, pots and jar in line, nothing off screen.
+- [ ] Daily Treats pays on the next Continue; kill the app mid-chapter, reopen, Continue: map and stars right.

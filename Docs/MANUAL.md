@@ -4,7 +4,7 @@ Read this first in every session on this project. It is the current state: what 
 where things live, how the game works now, and how each recurring job is done. Dated change notes are in
 `Docs/history/` (the 12 to 13 October log and the pre-rewrite manual and TODO are there).
 
-Last updated 24 November 2026 (state table and section 1 only; the sections below still describe the game as of late October and are trimmed facts, not a full tour: the memory files and git log hold the November detail).
+Last updated 24 November 2026: the whole manual was refreshed against the code, the git log and the memory notes (sections 1 and 2 earlier the same day, sections 3 to 11 in the evening).
 
 **Chapter 3 (winter) and the secret chapter (Day of the Dead):** the owner's plan for the rest of 2026 is in
 `Docs/chapter3-and-secret-plan.md` (15 November 2026). Read it before any work on either.
@@ -39,8 +39,12 @@ Last updated 24 November 2026 (state table and section 1 only; the sections belo
    The structure is fixed (owner, 9 November: "the report had fixed sections ... stop keep changing it"):
    **Next** (You / Me), **Q&A** (the owner's questions, newest first), **Current** (today's work, newest first),
    **MVP**, **Backlog**, **Analysis** (store and ads numbers only), **Marketing** (since 18 November 2026: the App
-   Store page, ratings, keywords, events; always there), **C chapter** (since 18 November 2026: the Christmas chapter's plan), plus the **Visuals** page of real captures.
+   Store page, ratings, keywords, events; always there), plus two pages that "clear the report" never touches:
+   **Visuals** (real captures) and **Mechanisms** (game data in numbers: prices, kitchen times, days, customers per
+   day, day lengths and money). The C chapter page existed 19 to 24 November 2026; the owner removed it ("this becomes
+   the main focus now") and C chapter work now goes in the main sections (Current with ticks, Next).
    Never add, rename, remove or reorder a section unless the owner asks.
+   At the end of every exchange: read the ticks, drop approved cards (approved work moves to MVP), refresh Next, publish.
    Every Q&A and Current entry ends with check boxes ("Seen, remove this", then the choices); they are the
    owner's action buttons and are saved in the page's db (doc `ticks/state`). Every session that touches the
    report reads them first (`db_get`), deletes the Seen entries and acts on the ticked choices before any other write.
@@ -61,279 +65,238 @@ Last updated 24 November 2026 (state table and section 1 only; the sections belo
 | Path | What | In git |
 | --- | --- | --- |
 | `Desktop/Sept/FoodTruckCafe` | Unity project and repo | yes |
-| `FoodTruckCafe/Art/kitchen_layers` | The owner's kitchen painting as 21 layer PNGs (1080 x 1920, alpha) with a README | yes |
-| `FoodTruckCafe/Docs/tools/recipes` | Every editor recipe (`*.cs` method bodies for `execute_code`) and capture shell scripts; `recipes/ap/` holds the 18 October play, session, kitchen, popup and ice cream tap recipes; `capture_s19.sh` captures every screen of both chapters plus iPad and iPhone SE (bash, about 15 minutes) | yes |
-| `FoodTruckCafe/Docs/tools/autoplay` | Full-chapter autoplay driver (`driver.py`) and its recipes; `run_2026-10-13_days.tsv` | yes |
-| `FoodTruckCafe/Captures` | Editor captures (`visual3`, `release-26.10.13`) | no (gitignored) |
-| `FoodTruckCafe/Assets/Screenshots` | Where the MCP `shot` writes | no (gitignored) |
-| `Desktop/Sept/Builds/iOS-<v>-<b>`, `Builds/archives` | Xcode exports; archives, logs, `exportOptions-upload.plist` | no |
-| `Desktop/Sept/Store/screenshots/final2` | 26.10.13 store screenshots, captioned (`iphone-01..06`, `ipad-01..06`); `caption.py` | no |
-| `Desktop/Sept/Store/video` | `frames2/` (26.10.13 footage), `cut3.py` (`short` = the 15.5 s store preview), `FoodTruckCafe_appstore_v3.mp4` | no |
-| `Desktop/Sept/Store/artkit` | Art scripts (section 8) and the brush engine (`brush/`) | no |
-| `Desktop/Sept/Store/redesign` | Table redesign: 40-degree angle guides (`*40.py`), ChatGPT briefs `ai/<item>/` | no |
-| `Desktop/Sept/Store/characters` | Customer art: `plain` (no outline), `shadowed` (the in-game set), `orig_game` | no |
-| `Desktop/Sept/Store/chapter2` | Beach background, Shop background picks | no |
-| `Desktop/Sept/Store/handoff` | Hand-off history: `icloud_backup_2026-10-18_2030/` (the old per-purpose iCloud layout with the layered PSDs), `layered/` and `layers.py` (retired PSD builder), `owner_updates_<date>/` (copies of what the owner drops in iCloud). The live hand-off is iCloud Drive `FoodTruckCafe art/`: ONE flat folder, one object per PNG, named `<group>_<object>.png`, table items at 40 degrees, no docs, no PSDs, no sheets (owner, 18 October). The owner's own `Updates/` subfolder inside it is their drop place (never delete owner-made folders); check it at the start of every art batch, cut the files into the game, refresh the flat copies | no |
-| `Desktop/Sept/Store/artkit/venv` | The durable Python for art scripts (numpy, pillow, scipy, opencv, pytoshop, psd-tools) | no |
+| `FoodTruckCafe/Assets/Scripts` | Game code by area: `LevelControl`, `ItemsAndOrders`, `Customer`, `Food`, `Kitchen`, `Map`, `Shop`, `Session`, `Scoring`, `Ads`, `Purchases`, `Analytics`, `DailyTreats`, `Tutorial`, `Utils` | yes |
+| `FoodTruckCafe/Assets/Entity/Level*Data.asset` | Day data. The scene's `LevelManager.allLevels` uses Level1..12 (chapter 1) and Level17..32 (chapter 2); Level13..16 are unused leftovers of the 16-day chapter 1 | yes |
+| `FoodTruckCafe/Assets/Resources` | Pictures and sounds loaded by name (`Chapter2/`, `Kitchen/`, `IceCream/`, `Cookies/`, `Journal/`, `Map/`, `UI/`, `Decor/`, `Yoga/`, `Audio/`, ...) | yes |
+| `FoodTruckCafe/Docs/tools` | Release tools (`test_build.sh`, `asc_*.py`), the bridge client (`unity_mcp.py`, `unity_mcp_long.py`), art helpers (`glow_brush.py`, `cloth_front.py`, `icecream_row_cut.py`, ...), `report_page/` (the report's source) | yes |
+| `FoodTruckCafe/Docs/tools/recipes` | Editor recipes (`*.cs` method bodies for `execute_code`), capture scripts `capture_*.sh`, per-round folders `r26`..`r34` (newest last), `ap/` session and play recipes | yes |
+| `FoodTruckCafe/Docs/tools/autoplay` | Autoplay drivers (`driver_now.py` chapter 1, `driver_ch2_now.py` chapter 2) and their recipes | yes |
+| `FoodTruckCafe/Art/kitchen_layers` | The owner's kitchen painting as 21 layer PNGs | yes |
+| `FoodTruckCafe/Captures`, `Assets/Screenshots` | Capture logs; where the bridge's `shot` writes | no (gitignored) |
+| `Desktop/Sept/Builds` | Xcode exports `iOS-<ver>-<n>`, `archives/` (archives, logs, `exportOptions-upload.plist`) | no |
+| `Desktop/Sept/Store/screenshots/final_r33` | The live store screenshots (2026.11.23 on: seven iPhone 6.9-inch, iPad 13-inch) | no |
+| `Desktop/Sept/Store/video` | Preview cuts (`cut_r31.py`, `FoodTruckCafe_preview_r31.mp4` is the live preview) | no |
+| `Desktop/Sept/Store/report` | Visuals page builders (`visuals_r33.py` newest) and old report pictures | no |
+| `Desktop/Sept/Store/<topic>_<date>` | Art work per topic and day (e.g. `cookies_2026-11-17`, `cchapter_2026-11-24c`); each has its scripts and `prompts.md` for ChatGPT/Gemini briefs | no |
+| `Desktop/Sept/Store/redesign`, `Store/ui`, `Store/characters`, `Store/chapter2`, `Store/artkit` | Older art work: table items and kitchen flow (`redesign/ai`, `redesign/kitchen_flow_2026-11-20`), UI papers and glass, customer sprites (the 13 November 2026 repaints cut by `characters/cut_pil2.py`, the Boy's own head by `boy_headswap.py`), chapter 2 art, the art scripts and brush engine (`artkit/brush`) | no |
+| `Desktop/Sept/Store/artkit/venv` | Python with numpy, scipy, pillow, opencv, psd-tools (plain `python3` has no numpy) | no |
+| iCloud Drive `FoodTruckCafe art/` | Hand-off to the owner: one flat folder, one object per PNG. Their drop places: `Updates/` (art; check it at the start of every art batch) and `bugs/` (TestFlight bug screenshots; check every session, delete an image once its bug is fixed). Never delete owner-made folders | no |
 | `~/.private_keys/AuthKey_<id>.p8`, `asc.json` | App Store Connect API key, key id, issuer | never |
-
-Python with numpy, scipy, pillow, opencv, pytoshop, psd-tools: `Store/artkit/venv/bin/python` (made 19 October);
-plain `python3` has no numpy.
 
 ## 4. Doc map
 
 | File | Read when |
 | --- | --- |
 | `CLAUDE.md` | Always loaded. Coding rules and the offline compile command |
+| `Docs/ios-testing-and-release.md` | **The release guide**: test builds, TestFlight, store releases, store assets, upload errors |
+| `Docs/tools/report_page/README.md` | **The report guide**: the page's source, sections, ticks and the update recipe |
+| `Docs/art-style.md` | **The art style guide**: the game's looks and how new art is made and briefed |
 | `Docs/architecture.md` | Before touching gameplay code: scene flow, singletons, systems |
-| `Docs/systems/*.md` | Before changing one system (01 scenes, 02 levels/orders/customers, 03 food/drag/refill, 04 kitchen, 05 scoring/save/shop, 06 audio/UI/ads/iOS, 07 identifiers and tunables). Written before 12 October; check section 6 here for what changed since |
-| `Docs/maintenance.md` | Scene wiring invisible in code, scoring, shop table, refill catalogue |
-| `Docs/ios-testing-and-release.md` | Builds and the store: manual steps, errors seen, the automated chain |
-| `Docs/TODO.md` | Open work, Leave alone, known issues, economy findings, test checklist |
-| `Docs/economy_sim.py` | The economy model (see TODO for the 13 October play-test numbers) |
+| `Docs/systems/*.md` | Before changing one system (01 scenes, 02 levels/orders/customers, 03 food/drag/refill, 04 kitchen, 05 scoring/save/shop, 06 audio/UI/ads/iOS, 07 identifiers and tunables). Written before 12 October 2026: section 6 here and the code win where they differ (the kitchen doc still describes the October ovens) |
+| `Docs/maintenance.md` | Scene wiring invisible in code, scoring, shop table, refill catalogue (October state) |
+| `Docs/chapter3-and-secret-plan.md` | Before any chapter 3 (winter) or secret chapter work |
+| `Docs/chapter2-plan.md`, `Docs/menu-book-plan.md` | History of how chapter 2 and the menu book were planned (both built) |
+| `Docs/TODO.md` | Open items, Leave alone, known issues |
 | `Docs/history/` | Dated logs; the old manual and TODO |
+| Memory notes (`~/.claude/projects/-Users-betzthebest-Desktop-Sept/memory/`) | The owner's picks and the detail behind each feature, by topic; code wins where they disagree |
 
 ## 5. Working in the code
 
-- Press Play from `Assets/Scenes/MainMenu.unity`; other scenes need the managers it creates.
+- Press Play from `Assets/Scenes/MainMenu.unity`; other scenes need the managers it creates. Scenes: MainMenu, Map,
+  GameSceneOne (the table), KitchenScene (loaded over the table), Shop.
 - Compile without Unity: the csc command in `CLAUDE.md` (no output = compiles). Use the newest `Library/Bee/artifacts/*.dag`.
-- Strings are identifiers (foods, characters, upgrades): grep everywhere before renaming. Add serialized fields,
-  never rename them. Three Shop methods are wired in scenes (`LoadNextGameLevel`, `ConfirmPurchase`, `CancelPurchase`).
+- Strings are identifiers (foods, characters, upgrades, shop cards): grep everywhere before renaming. Add serialized
+  fields, never rename them. Three Shop methods are wired in scenes (`LoadNextGameLevel`, `ConfirmPurchase`, `CancelPurchase`).
 - Input is EventSystem-based (3D BoxColliders plus a PhysicsRaycaster). No `OnMouse*`.
-- Money is a float at whole cents (`SessionManager.RoundToCents`, `CanAfford`). Show it with `Mathf.FloorToInt`,
-  never a rounding format, or $299.60 reads as $300.
-- **Never edit a scene file on disk while the editor has it open**: Unity raises a "modified externally" dialog that
-  blocks the bridge (13 October). Edit scenes through `execute_code` (open, change, save, reopen MainMenu; recipe
-  `Docs/tools/recipes/decor.cs`) or with the editor closed.
-- A new food needs an entry in the ScoreManager points table or it scores 0.
+- Money is a float at whole cents (`SessionManager.RoundToCents`, `CanAfford`). Show it with `Mathf.FloorToInt`.
+- Most new UI is built at runtime in code (map, receipts, cards, tutorials, journal, gift cards); look for the builder
+  class before searching the scene.
+- **Never edit a scene file on disk while the editor has it open** (a "modified externally" dialog blocks the bridge).
+  Edit scenes through `execute_code` (open, change, save, reopen MainMenu) or with the editor closed.
+- A new food needs its sale price in the ScoreManager points table, a `SessionManager.FoodStation` entry, a menu sticker
+  and a shop card with a cookie picture (`Resources/Cookies/<card name>.png`).
+- Days are counted with one running index in the save and analytics (chapter 2's first day is index 12); the player
+  sees days per chapter (`Chapter.DayInChapter`). Go through `Chapter.FirstDay / DaysIn / Of / TotalDays`, never 16 or 12.
+- Hidden work stays out of releases behind `Chapter.Count` and the TestFlight-only test buttons
+  (`AdsInitializer.IsTestFlightBuild`); see `Docs/chapter3-and-secret-plan.md`.
 
-## 6. The game as it is now (13 October)
+## 6. The game as it is now (24 November 2026)
 
-- **Flow:** MainMenu → (new game: tutorial "Day 0" in GameSceneOne, Let's go → Map) → Map → day board → GameSceneOne
-  (arrangement, then the day) → finish card → Next → Map → Play → interstitial → Shop → Next → the day.
-  **Day 1 has no arrangement (owner, 31 October 2026):** `GamePhaseManager.SkipsArrangement` (level index 0, tutorial not due)
-  taps Ready itself one frame after the load, the table as saved or as the scene lays it out; the hint rotation starts on
-  day 2 with "Drag to arrange your table"; no arrangement music that day.
-  Continue opens the map (enabled once a day is done). Pause home → Map.
-- **Days:** 16 per chapter (`MapScreen.ChapterDays`), `Level1..16Data.asset`. A day is `dayDurationSeconds` long
-  (35 s on day 1 to 70 s on day 16). Customers set off every `timeBetweenOrders` (5 s) while the clock runs, at most
-  two at the counter. The day ends when the clock is 0 and no order or customer is left (`LevelManager.TryEndDay`).
-  No countdown on screen; `DayNightTint` goes to dusk at 65 % and night at 85 % of the day.
-- **Two customers:** `OrderSystem` keeps a list of `ActiveOrder` (slot 0 right, slot 1 left); `TryServeItem` serves
-  the oldest order needing the food. `CustomerManager.Spot` spaces the two so two big bubbles leave three equal
-  margins (`OrderSystem.TwoSlotBigBubbleWidth`); the second customer is never the same person as the first.
-  `OrderSystem.PlaceBubbleOverCustomer` puts each bubble on its customer's head. The tutorial forces one slot.
-- **Patience:** three daisies per order (`PatienceMeter`, sprites in `Resources/Patience`), centred on the bubble's
-  top (`OrderSystem.MeterPosition`); each wilts in turn; each served item refills the draining one
-  (`OrderSystem.RefillPatience`). Tip = item points x seconds left x 0.1 x the customer's tip multiplier.
-- **Money and stars:** `ScoreManager` (level score, tips, `payFactor` 0.5 on replays of a finished day). Star lines
-  (`Level1..16Data.starThreshold1..3`) were reset on 14 October from a perfect fast player's earnings: 30 / 55 / 80 %
-  (`Docs/tools/recipes/economy_tune.cs`; check run: three stars on 14 of 16 days);
-  `SessionManager` holds the wallet, `levelStars`, `starBonusPaidDays` (three-star bonus $100 once per day).
-  The finish card shows today's sale and tips (the replay share), counts into Earned, and shows the day's stars.
-- **Table:** cloth `Assets/Images/knockout 1.PNG` (from `Store/redesign/cloth_picnic.py`), edge shadow
-  `decor/tableedge_soft.png` on `TableOuterShadow`. The back band (0.75 units from the cloth's top) takes no food
-  (`TableLayer.topReserve`): it holds the truck button (`KitchenButtonOverTable`, `OverlapShare` 0.56), the hen
-  money board (`MoneyFlipClock`, sprite `Resources/UI/money_hen.png`, follows the truck's right edge so iPad keeps
-  the same gap) and the pots (`TableDecor/KitchenPots` in GameSceneOne).
-- **Menu book (14 October):** `SessionData.enabledFoodItems` beside `purchasedFoodItems`; a food is in play when
-  bought AND on (`SessionManager.IsFoodItemActive`, read by the table, `KitchenFoodGate`, and so the orders).
-  Stations and caps in `SessionManager.FoodStation` / `StationCap` (oven none since 25 October, machine 1, counter 2), at least two on.
-  `MenuBook.cs` draws the placeholder panel in code (button left of Ready during the arrangement; never on Day 0).
-  Cookies are a shop buy again (600, fourth row, `BottomBoundary` 2700); `FoodChapter` is empty until chapter 2. The book
-  is a grid; the baked foods' icons are their oven notes (`Resources/UI/stickers`). **The menu is saved across days**
-  (`SessionData.enabledFoodItems`, written by every sticker move): a bought food goes onto the paper at once
-  (`PurchaseFoodItem`, unless the menu or its station is full), a food taken off stays off until the player puts it back.
-  **Ovens (owner, 25 October 2026):** any oven bakes any recipe. A tap on an idle owned oven opens the recipe picker (since the
-  25 October afternoon a centred panel in the shop panel's style, white at 70 % with rounded corners drawn in code, notes 260 px three
-  to a row, a tap outside the panel closes it; the shop's oven card shows the off oven without a sticker)
-  (`OvenPicker` in OvenAssigner.cs: the oven notes of the baked foods on today's menu, next to the oven; one recipe on the
-  menu bakes at once without the picker; a recipe baking in another oven is greyed). The oven shows that recipe's note
-  only while it bakes (`OvenKitchenBase.ShowNote`), the bake time is the recipe's (`BakeTimes`: Bread 8, Choux 10, Cake 15,
-  Cookies 6 s), the bake is keyed by the oven's spot (`Oven:spot1/oven2`; `OvenKitchenBase.Recipes` remembers the recipe
-  across kitchen loads) and refills that food's table item. **Ovens are bought:** the player starts with one (the top one,
-  spot1/oven2, the tutorial's); the shop's `OvenUpgrade` card (Upgrade of "Oven", 500, sold twice: "Second oven", "Third
-  oven"; `Docs/tools/oven_card.py`, picture `Images/Kitchen/ovens/oven_card_icon.png`) raises `SessionManager.OvensOwned`
-  (the Oven upgrade level, 1 to 3; a save from before keeps as many ovens as it had oven foods bought). `OvenAssigner`
-  (first oven's Awake) collects the note pictures from the scene's stickers, marks the first `OvensOwned` ovens owned and the
-  rest locked (greyed, `Map/lock_small`, taps ignored), hides every note and switches the old per-oven `KitchenFoodGate`s off.
-  Cookies bake in an oven; the shelf plate (`CookiesInKitchen`) is disabled, a decoration. The three oven subclasses are
-  empty shells. The coffee machine follows Coffee.
-- **Shop:** three rows (`BottomBoundary` 1800); at the bottom the down arrow shows a lock (more next chapter);
-  people icons share one height (`EvenOutCharacterIcons`). Prices: Juice 150, Grandma 300, Chef 300, Coffee up 350,
-  Apple 350, Yoga 500, Machine up 600, Businessman 700, Choux 750, Cake 750.
-- **Customers' art:** the shadowed set (`Store/characters/shadowed`, via `Store/artkit/rim_shadow.py` and
-  `swap_customers_shadow.py`, then `girl_head_center.py` for the Girl's happy head). Walk-out: after one pass of the
-  looping clip the code walks them off (`CustomerController.WalkOffScreen`).
-- **Map:** `MapScreen` (title under the Dynamic Island, pills above the home indicator, today's circle bounces).
-- **Daily Treats:** `DailyTreats.cs` in MainMenu, +50 a day, +100 extra on day 5, paid into the next Continue or new
-  game (`ftc.daily.*` PlayerPrefs).
+Numbers players feel (sale prices, kitchen times, customers per day, day lengths, money) are on the report's
+Mechanisms page, source `Docs/tools/report_page/mechanisms.html`; keep it current when they change.
 
-- **Chapter 2 pieces (17 October):** the kitchen blender is its own object (`KitchenBlender.Apply` from the first
-  oven's Awake): chapter 1 shows the owner's cream blender cut from the background (`Resources/Kitchen/blender`,
-  the background `kitchen_bg_notree.png` has it filled in), chapter 2 Gemini's steel one (`blender2`) whose drawn
-  swirl (`blender2_fill`, tinted) churns through the four ice cream colours on a tap (`BlenderAnim`) and then
-  refills the ice cream station. **Ice cream** (`IceCreamStation` on the table object `IceCream`, the chapter 2
-  fixed food, no purchase, no tray under it): four sections of three scoops, the holder; tap the holder or a section
-  for a floating cone, section taps add scoops (three max), the red cross clears, a tap on the cone serves the
-  oldest order wanting that count and those flavours in any order (`OrderItemInstance.variant`, sorted letters
-  v s c m; `OrderSystem.TryServeItem(food, variant)`); the order bubble builds the cone from the parts
-  (`IceCreamOrderIcon`, `Prefabs/IceCream`); 35 points flat. Sprites `Assets/Images/icecream` from
-  `Store/chapter2/icecream_station/cut_station.py` (ChatGPT's station turned metal) and ChatGPT's cones sheet.
-  **Cones run out too (22 October, branch `worktree-waffle-machine` until merged):** the holder stacks four
-  (`IceCreamStation.ConesFull`, `ConesLeft`, `TakeCone` in `StartCone`, `RefillCones`); a started cone is gone whether
-  served or cleared, an empty holder refuses with a shake, the holder picture per count comes from
-  `Resources/IceCream/holder_0..4` (the cone sprite session's files; `holderSprite` greyed when they are missing). Until 25 October the
-  **kitchen waffle machine** (`KitchenWaffleMachine.Apply`, now a no-op: `OnTheTable`) refilled the holder as the
-  tap landed and played the bake (`WaffleAnim`: a warm glow, three steam puffs, the lid opens, a cone pops out, the lid
-  shuts). Pictures `Resources/Kitchen/waffle_closed`, `waffle_open`, `waffle_steam`, optional `waffle_cone` and
-  `waffle_bake` sound (none yet): the pictures are the brief session's 22 October drafts (`Store/redesign/icecream_row/out`), ChatGPT's version waits for the quota and the owner's pick. The driver
-  (`step.cs`) calls `RefillCones` when the holder is empty. Check after the merge: `Docs/tools/recipes/verify22/run22.sh`.
-  Cone holder fill states (22 October, for the waffle machine refill): `Resources/IceCream/holder_0..4.png`, 0 to 4
-  cones, cut from `holder.png` by `Store/chapter2/icecream_station/holder_states.py` (same 195 x 267 canvas and
-  centre pivot, so `holderRect` holds; `holder_4` is `holder.png` itself; the empty stand's back wire and dish are
-  painted). Loaded by `Resources.Load<Sprite>("IceCream/holder_" + n)`, `holderSprite` stays the scene fallback.
-  **Coconuts:** four on the kitchen palm (`CoconutInKitchen` on the window's cluster, only when Coconut is on the
-  menu), one per tap onto the tray (five fit since 23 October, owner; `customMaxCount` 5 on the scene object, pictures `n4`, `n5` from `Store/artkit/coconut_tray_five.py`; a full tray refuses), regrow after 8 s like the apples; the palm picture has no
-  painted coconuts. Since 21 October Coconut is a chapter 2 food in `FoodChapter` (only the chapter 2 kitchen has a palm,
-  so on a chapter 1 day it was unservable); test session recipes enable it after `SetCurrentLevel(16)`. The autoplay driver builds cones (`step.cs`); `driver_ch2.py` runs days 17 to 32.
-  **At night (21 October evening)** the palm darkens like the chapter 1 apple tree: a navy copy of the palm sprite (`PalmNight`, a
-  child of the window's Palm) fades in with the day's clock in `DayNightTint`'s window colours (dusk 0.40, night 0.78 alpha),
-  the coconut cluster sits above it and stays bright, like the apples; the old multiplicative palm dim is gone. Captures:
-  `recipes/capture_cn21.sh` (chapter 2 kitchen by day and at night, `night_hold.cs` freezes the clock at night).
-  **One row, two levels (owner, 22 October; reshaped 25 October):** the station is one row of wells with the cone stack and the
-  waffle machine at its right end, box canvas 1200 x 420 at scene scale 0.31. Level 1 (two flavours, `IceCreamStation.BaseFlavours`)
-  shows the SHORT box: the owner's long box cut to its right two wells with the right end mirrored as the left end
-  (`Store/redesign/icecream_row/v1navy/owner_small2.py`, cut by `Docs/tools/icecream_small_cut.py --holder-keep <x> 149`;
-  `smallBoxSprite`, `smallSectionLevels`, `smallSectionRects`, `smallHolderRect`, `smallBuildPoint`). The shop's "Two more flavours"
-  card (`IceCreamUpgrade`, Upgrade of `IceCream`, 900, chapter 2 shop only, one level: `SessionManager.MaxUpgradeLevel`) sets IceCream
-  level 2 (`ActiveFlavours`) and the LONG four-well box (the owner's repaint, `front_out/station_box.png`); orders ask only for open
-  flavours (`RandomVariant`). **No lids** (owner, 25 October: "we don't need the lid ever"): the lid sprite, field and rects are gone.
-  **No stand:** the cones stand in a ROW of six (`Resources/IceCream/holder_0..6`, 390 x 124, `cone_row.py`; `holder.png` = six;
-  `ConesFull` 6); the station's `holderRect` is that canvas. **The waffle machine stands on the table behind the row**, centred over
-  it (owner, 25 October: the cast-iron one, smaller, behind): `Resources/IceCream/waffle_closed|open` (300 x 220, the owner's iCloud
-  copies until 25 October 15:00, since then the owner's own black machine from iCloud Updates with the open state built from its pixels by `Store/redesign/waffle/waffle_owner_open.py`, 300 x 263), `waffleHeight` 0.58 of the box picture's height (0.38 until the 25 October afternoon, 0.5 for the painter's sprite), `waffleGap` above the row,
-  `waffleShift` -0.01 of the box width (owner: bigger, a little to the left; measured centred over the six cones within 4 px before the shift), the drag collider
-  grown to cover it so station, machine and cone row move as one in the arrangement; a tap (`IceCreamTap.Kind.Waffle`) starts a
-  session (`BakeCones`): 8 s closed with a warm pulse, then the lid opens on two waffles for 1.2 s and two cones join the row
-  (`WafflesPerSession`, `WaffleSeconds`); a running session or a full row refuses. The 40-degree rounded machine (both colourways,
-  `Store/redesign/waffle/waffle40.py`) waits for the owner's pick. The kitchen machine is retired (`KitchenWaffleMachine.OnTheTable`).
-  Art contract: every part on the box canvas at its place; `Docs/tools/icecream_row_cut.py <parts>` crops the long set into
-  `Assets/Images/icecream`, writes the rects, the collider and the scale into GameSceneOne; `icecream_upgrade_card.py` added the
-  shop card. Blockout parts and painter: `Store/chapter2/icecream_station/row/`.
-
-- **Cookie style (17 November 2026, owner's pick: Gemini's iced cookies):** the single cookies live in
-  `Store/cookies_2026-11-17/cut` (39, cut from Gemini's sheets by `cut_gemini.py`; briefs in `prompts.md`).
-  **Start menu:** the scrolling background `Assets/Images/IMG_0452.png` (1890 x 1730, built by `menu_tile.py`, thirty
-  different cookies; RawImage uvRect 1 x 2 on `scrolling bg`, scrolled upward by `ScrollingBg`) and the menu truck
-  `Assets/Images/truck_cookie.png` (the map keeps `truck.png`).
-  **Shop:** `Assets/Scripts/Shop/ShopCookies.cs` and `Resources/Cookies/<card object name>.png`: every card shows its
-  cookie (`Dress`), a bought cookie is eaten in five bites with `crunch_1..3.wav` (`Eat`, about two seconds), owned
-  things leave the shop (`ShopManager.IsOwned` / `LeavesShop`; the candies and the star pack stay; the oven card stays
-  until three ovens) and are listed in the book (`CookieBookButton` above the up arrow, page "MY COOKIES": a grid of
-  cookies, a tap shows the name and the card's text). A new shop card needs a cookie picture of its object name, or it
-  keeps its drawing and flies to the way out as before.
+- **Flow:** MainMenu (scrolling iced-cookie background, `ScrollingBg`; cookie truck; Daily Treats) → Play/Continue →
+  new game: the chapter 1 tutorial ("Day 0", `TutorialDirector`, its Ready-to-go card on doily paper) → Map →
+  tap a day → day card → Play → between-days interstitial (from day 3 on, `MapScreen.FirstAdDay`; Remove Ads, TestFlight
+  and a 45 s spacing skip it) → GameSceneOne: arrangement (none on day 1, `GamePhaseManager.SkipsArrangement`; day 2
+  teaches it on the real coffee machine and coffee bags, `ArrangeLesson`), Ready, the day → day-end journal page
+  (stars, sale, tips; the Cookie sprinkles celebration, `StarCelebration`) → Next → Shop → Next → Map. Pause Home →
+  Map. `UpdateGate` blocks an outdated copy with an UPDATE card once a store version is 36 h old (from 2026.11.23 on).
+  `RatingPrompt` asks Apple's rating popup once, in the first shop after day 3.
+- **Chapters:** `Chapter.DaysPerChapter = { 12, 16 }`, `Chapter.Count = 2`. Chapter 1 is the picnic field, chapter 2
+  the beach (`Resources/Chapter2`: day and night backgrounds, cloth, palm, shop background; `Chapter.Art`). Day numbers
+  restart per chapter for the player. **Chapter 2 opens after chapter 1 day 9** (`SessionManager.Chapter2OpensAfterDays`):
+  day 9's star comes on a gift card when day 9 is reached, and when day 9 is finished the map opens chapter 2 by itself
+  (`chapter2Claimed`, a chime, the truck drives to the arrow); days 10 to 12 stay playable. **Bonus days:** each
+  chapter's last three days are hidden until the day before them is reached, then revealed once on the map
+  (`MapScreen.BonusDays`, `SessionData.bonusShown`). The map truck is the truck cookie, stands at the next day and
+  drives to a tapped day before its card opens. Chapter 2's first day: its own tutorial (waffle machine, blender,
+  ice cream) and the gift of a fourth patience flower; every ice cream that day is a waffle bowl of one or two scoops.
+- **Days:** a day lasts `dayDurationSeconds` (chapter 1: 48 s on days 1-2, 58 s from day 3; chapter 2: 95 s, set
+  24 November 2026). A customer sets off every `timeBetweenOrders` (4 s chapter 1, 5 s chapter 2), at most two waiting.
+  The day ends when the clock is out and no customer is left (`LevelManager.TryEndDay`); `ordersPerLevel` no longer
+  ends a day. No countdown; `DayNightTint` goes to dusk at 65 % and night at 85 % of the clock (fireflies and lit truck
+  windows at night). The day's end, Restart, Home and the shop's Next stop the whole kitchen (`KitchenDay.End`).
+- **Orders and patience:** `OrderSystem` keeps two slots (`ActiveOrder`; `TryServeItem` serves the oldest order needing
+  the food). A customer thinks 2 s (three dots, `OrderSystem.ThinkSeconds`) before the order shows. Patience is three
+  flowers in chapter 1, four hibiscus in chapter 2 (`PatienceMeter.BaseFlowers / Chapter2Flowers`), each as long;
+  every served item fills the meter up to the next whole flower. The receipt rises where the bubble was with a tip
+  level by flowers left: Perfect (green tag, the cha-ching), Nice (yellow), Just OK (grey) (`OrderSystem.ServedLevel`,
+  sounds in `Resources/Audio/Orders`). Haptics on serve (`Haptics.cs`).
+- **Money:** sale price per item (ScoreManager points table; Mechanisms has the list) plus a tip of price x seconds
+  left x 10 % x the customer's tip multiplier; a replayed day pays half (`LevelManager.ReplayPayFactor`); three stars
+  pay $100 once per day (`ThreeStarBonus`). `SessionManager` holds the wallet; the hen board (`MoneyFlipClock`) counts it.
+- **Stars:** from customers served whole, not money (`StarRule`, owner 14 November 2026): 3 = every customer, 2 = 80 %
+  (`TwoStarPercent`, rounded to whole customers), 1 = more than half. The hen shows the projected end of the day.
+  `LevelData.starThreshold1..3` are no longer read. Stars are also a currency: earned stars + bought (15 Stars, US$0.99)
+  + granted (day 9) + bought with coins (1 star for 999) - spent (`SessionManager.StarsAvailable`).
+- **Table:** cloth with a front drop into the bottom safe area (`TableLayer.UpdateClothFront`, `Resources/Table/cloth_front`,
+  `Chapter2/cloth_front`; made by `Docs/tools/cloth_front.py`). The back band holds the fixed things aligned on one line
+  (`TableBackRowAlign`): the pull handle to the kitchen (`PullHandle`, switch `KitchenButtonOverTable.Handle`; movable up
+  and down while arranging), the hen, the flower pots (`DecorGate`, +15 % patience each) and the candy jar. Every food
+  starts with its whole box inside the drag area. The coffee station row (machine, cups, tray; `FixedStation`) keeps
+  its moved spot. A swipe right opens the kitchen, left closes it (`KitchenSwipe`).
+- **Candy jar:** not on the table and not sold before day 3; when day 3's play begins the jar arrives on a gift card
+  with two candies (`CandyGift`), then candies are a shop buy (three per buy). A tap gives one candy to the customer
+  lowest on patience and fills their flowers to full (`CandyJar`, `SessionManager.Candies`).
+- **Menu book:** `MenuBook` (button beside Ready during the arrangement): sticker carousel on the oven-note paper; a food
+  plays when bought AND on (`SessionManager.IsFoodItemActive`, `SessionData.enabledFoodItems`, saved across days);
+  no caps (`StationCap` 99), at least two on (`CanDisableFood`). Chapter-only foods (`SessionManager.FoodChapter`):
+  Apple and Coffee chapter 1, IceCream and Coconut chapter 2; Cookies and Coconut stay locked in the shop until
+  chapter 2 opens (`UnlockChapter`).
+- **Kitchen** (`KitchenScene`, slides in over the table; its clock stops on pause, `KitchenClock`):
+  ovens (one at the start, `OvenUpgrade` card 500 for the second and third, `SessionManager.OvensOwned`); a tap on an
+  idle oven opens the recipe picker (`OvenPicker` in `OvenAssigner.cs`); bake times `OvenKitchenBase.BakeTimes`
+  (Bread 5 s, Choux, Cake, Cookies 3 s). **Kitchen flow for choux and cake** (`KitchenFlow`): the bake lands on the
+  baking tray or cake stand in the kitchen, the mixer runs, the fruit board cuts, the done picture sparkles
+  (`DoneStyle 1`) and the table refills; it runs by itself (a tap starts the next step at once). Apples and coconuts
+  grow back; the blender refills the ice cream wells (`KitchenBlender`). **Kitchen arrangement** (`KitchenArrange`):
+  blender, board, whisk, basket, cake, coffee bags, baking tray, mixer and juice can be moved on the counter top
+  (cabinet openings snap); a red piece keeps Ready off. Tap-me glows on usable things (`KitchenGlow`, `GlowFx`).
+  The **Kitchen upgrade** (15 stars, `KitchenSpeed.Factor` 0.75) makes every kitchen wait a quarter shorter.
+- **Chapter 2 foods:** **Ice cream** (`IceCreamStation` on the table, no purchase): wells of four scoops per flavour,
+  two flavours until the "Two more flavours" card (900, `IceCreamUpgrade`); cones from a row of six refilled by the
+  waffle machine behind the station (tap: a session bakes two); build a cone by tapping wells (up to three scoops), a
+  tap on the cone serves the matching order (count and flavours, `OrderItemInstance.variant`). **Coconut** (700): picked
+  from the palm in the chapter 2 kitchen, five on the tray.
+- **Shop** (`ShopManager`, `ShopCookies`, `ShopGlass`): a liquid-glass panel with three glass tab buttons, Stars | Coins | $
+  (Coins first). Every card is an iced cookie; a bought cookie is eaten in bites with a crunch and the item leaves the
+  shop for the book (`ShopManager.IsOwned`; candies, the star pack and the oven card until three ovens stay). NEW tags
+  on unseen cards and tabs (`NewTag`); cards the player cannot afford show a red price and do not open. Locked cards
+  show a padlock: Chef (20 stars) and Dining table (25 stars) "Coming soon". Coin prices (chapter 1): Juice 110,
+  Candies 100, Apple 300, Grandma 380, Extra cup 380, PotGreen 450, Cookies 600, Coffee machine 650, Chef customer 700,
+  Choux 800, PotFlowers 900, Cake 1000, Businessman 1400 (the yoga customer card 220); chapter 2 adds Coconut 700,
+  Oven 500 (x2), Two more flavours 900. Stars tab: the **yoga lady** (staff, 15 stars, `YogaHire`: poses in the
+  background, each finished pose fills every waiting customer to full), Kitchen upgrade 15. $ tab: Remove Ads US$1.99
+  (`RemoveAds`, stops the between-days ad only) and 15 Stars US$0.99 (`StarPack`, consumable), shown only while the
+  App Store offers them; Restore purchases.
+- **The book** (button above the shop's up arrow): a red book with three tabs: Journal (milestone pages, earned by
+  `SessionManager.EarnJournal`: open, star3, icecream, cake, choux, machine, kitchen; `Resources/Journal`), Staff (once
+  someone is hired), My cookies (owned things). A new page shows itself in the shop and flies into the book.
+- **Customers:** Girl, Boy, Kid, Grandma, Businessman, Chef, Yoga (`Assets/Scripts/Customer`); the repainted set of
+  13 November 2026 (faces kept). The Girl is forced only while a tutorial runs.
+- **Daily Treats** (`DailyTreats.cs`, MainMenu): a four-day row on a mint card, 50 coins a day and a gift on day 4,
+  paid into the next Continue or new game (`ftc.daily.*` PlayerPrefs), waits until the first tutorial is done; "One more
+  treat" rewarded ad after collecting (`DailyTreatsAd`).
+- **UI look:** buttons are cookies that press down with a crunch (`CookiePress`), panels are paper (doily day card,
+  journal page day end, receipt), hand-written font Delius in the shop popups and the book. 60 fps (`FrameRate`).
+- **Ads, purchases, analytics:** Unity Ads (`AdsInitializer` retries a failed start: 5, 15, 30, 60 s then every 120 s;
+  `InterstitialAdService`, `RewardedAdButton`); Unity IAP (`RemoveAds.cs`); Unity Analytics (`AnalyticsLog`: tutorial
+  steps, day start/finish/left, purchases, ads; store builds to `production`, editor and TestFlight to `development`;
+  a new event or parameter must be defined on the Unity dashboard first).
+- **Test-only:** the "Chapter 2 test" main-menu button (editor and TestFlight only, `Chapter2TestButton`: everything
+  bought, chapter 2's first day, 100 stars); a test-build count line on the day-end receipt.
 
 ## 7. Driving the Unity editor
 
 - Open: `open -a /Applications/Unity/Hub/Editor/2022.3.50f1/Unity.app --args -projectPath <repo>`. The MCP for Unity
-  bridge (http://127.0.0.1:8080/mcp) starts on load because `MCPForUnity.AutoStartOnLoad` is set in
-  `com.unity3d.UnityEditor5.x` defaults; without it someone must click Start Server.
-- From the shell: `python3 Docs/tools/unity_mcp.py call <tool> '<json>'`, `exec <file.cs>`, `shot <name>`
-  (Game view to `Assets/Screenshots/<name>.png`), `reset` (new MCP session; do it after an editor restart).
-  `manage_scene get_active` tells you the editor is responsive. `refresh_unity` after editing scripts (stop play first).
-- Recipes (copy from `Docs/tools/recipes` to `/tmp` or exec in place): `newgame.cs` (all foods and people, $420,
-  day 3), `startday.cs`, `state.cs`, `serve.cs`, `kitchen.cs`, `bake.cs` (needs a raycast in the event, as written),
-  `closekitchen.cs`, `tomap.cs`, `toshop.cs`, `freshshop.cs`, `tut.cs`, `ff_dusk.cs` / `ff_night.cs` (jump the day
-  clock), `gv_<Store1320|iPad|iPhoneSE|Preview886>.cs` (Game view size; set it **before** Play), `decor.cs` (scene
-  edits for the table decor, truck sprite, edge shadow, kitchen cookies off).
-- **21 October fixes, verified by `Docs/tools/recipes/verify21/run21.sh` (+ `run21c.sh`):** the chapter 2 map arrow opens
-  only once chapter 1 is done (`MapScreen`), Continue works right after the tutorial, a food switched on in the menu is
-  draggable at once (`LevelManager.ReapplyServeableItems` re-runs `EnableArrangementMode`), the blender refills the
-  station as the blend starts (closing the kitchen mid-blend killed the coroutine), the palm cluster shows the real count
-  after a kitchen reload and resets on a new game, out-of-season stickers are greyed in the carousel (`MenuBook.OwnsFood`),
-  no ice cream taps under the finish board. Runs of 21 October: `run_2026-10-21_days.tsv` (16 days, three stars each),
-  `run_2026-10-21_ch2_days.tsv` (day 17 two stars, the rest three), no exceptions.
-- `Docs/tools/recv.py <outdir>`: local receiver (127.0.0.1:8765) to pull ChatGPT/Gemini images out of the page (POST the
-  `blob:` src from the JS tool). ChatGPT free plan: exactly three pictures a day.
-- Capture scripts: `capture_one.sh <size>` (table + two-order play), `capture_store.sh <size>` (the five store
-  shots), `capture_release.sh` (12-screen release series), `record_video.sh` (preview footage with `PreviewRecorder`).
-  `capture_s25.sh` (25 October: every screen of both chapters at the store size plus iPad and iPhone SE, the chapter 2 waffle
-  session, cone row and station level 2; about 18 minutes) and `capture_s25_ipad.sh` (the iPad store shots and the recipe
-  picker) feed `Store/visuals/build_sheets_s25.py` and `build_sprites_s25.py` for the Visuals tab, and `Store/screenshots/final4`.
-- **Full chapter test:** `python3 Docs/tools/autoplay/driver.py 1.5 1.0` (time scale, seconds per action) plays the
-  tutorial through its real taps, then days 1 to 16 with the shop between days, logging state, purchases and the
-  console to `/tmp/ap/run.log` and `/tmp/ap/days.tsv`. About 20 minutes. Its recipes must sit in `/tmp/ap` (copy
-  `Docs/tools/autoplay/*.cs` there first). Kill stray drivers before starting another (`pgrep -f driver.py`).
-- Editor quirks: Unity Ads shows a "Placeholder" ad in play mode after Next; a recompile wipes editor statics;
-  `ClickContinue` reads the session only on Start/OnEnable (refresh it with `SendMessage("UpdateButtonState")`
-  in tests); never `git checkout` during an export.
+  bridge (http://127.0.0.1:8080/mcp) starts on load (Auto-Start).
+- From the shell: `python3 Docs/tools/unity_mcp.py exec <file.cs>` (runs the file as a method body in the editor),
+  `call <tool> '<json>'` (e.g. `call refresh_unity '{}'` after editing scripts, stop play first; `call manage_editor
+  '{"action":"play"}'`; `call read_console` with `include_stacktrace` false), `shot <name>` (Game view capture to
+  `Assets/Screenshots/<name>.png`), `reset`. **When a call fails, delete `Docs/tools/.mcp_session` first and retry**
+  (needed after every editor restart). `no_unity_session` while Unity runs = the plugin ended its session: only the
+  owner's click in Window > MCP for Unity (or a script reload) brings it back. `unity_mcp_long.py` is the same client
+  with a 2400 s timeout (exports). Two editors open: set `UNITY_INSTANCE`.
+- Recipes in `Docs/tools/recipes` (exec in place): sessions `ap/fresh_session.cs`, `ap/ch1_session.cs`,
+  `ap/ch2_full.cs` (chapter 2 with everything bought), `newgame.cs`; play `startday.cs`, `state.cs`, `serve.cs`,
+  `kitchen.cs`, `bake.cs`, `closekitchen.cs`, `tomap.cs`, `toshop.cs`, `tomenu.cs`, `ff_dusk.cs` / `ff_night.cs`,
+  `ap/stop.cs`; Game view size `gv_<Store1320|iPad|iPhoneSE|Preview886|iPhone16ProMax>.cs` (set it **before** Play:
+  `TableLayer` sizes the cloth once); version `setver.cs` / `getver.cs`. The newest round's recipes are in `r33/`, `r34/`.
+- **Captures:** `recipes/capture_r33.sh` (the store set, iPhone 6.9-inch and iPad 13-inch; the newest of the
+  `capture_rNN.sh` series, each a copy of the last with new names); `recipes/r34/*_capture.py` record frame-by-frame
+  videos with the editor paused and stepped (star celebrations, candy gift, bonus days, map). The report's Visuals page:
+  run a capture, then `Store/report/visuals_r33.py` (art venv) writes `Docs/tools/report_page/visuals/`.
+  Real captures only in the report.
+- **Autoplay:** `mkdir -p /tmp/ap && cp Docs/tools/recipes/gv_Store1320.cs /tmp/`, then
+  `python3 Docs/tools/autoplay/driver_now.py 1.5 1.0` (time scale, seconds per action: fresh session, tutorial,
+  chapter 1's 12 days with the shop between) or `driver_ch2_now.py` (chapter 2's 16 days from a full session); logs in
+  `/tmp/ap/run.log` and `/tmp/ap/days.tsv` (`run_ch2.log`, `days_ch2.tsv`). Kill stray drivers first
+  (`pgrep -f driver`). The older `driver.py` / `driver_ch2.py` predate the 12-day chapter.
+- Editor quirks: Unity Ads shows a "Placeholder" ad in play mode; a recompile wipes editor statics; after an iOS
+  export a modal "No Adaptive Performance provider found" can block Play (only a human click clears it; the empty
+  `com.unity.adaptiveperformance.none` package is meant to stop it); never `git checkout` during an export.
 
 ## 8. Art pipeline
 
-- **Owner's art first.** Kitchen layers are in `Art/kitchen_layers`; cut pieces with `Store/artkit/kitchen_layers.py`
-  and bake contact shadows with `Store/artkit/contact_shadow.py`. The choux board is the owner's painting turned level
-  (`choux_board5.py`, `K` = 1.0; the 40-degree stretch K = 1.52 is parked for the next release).
-- **Table redesign (next release):** one camera for everything, 40 degrees above the table, long lens (approved
-  13 October). Per item give ChatGPT the original painting plus the angle guide from `Store/redesign/*40.py`, prompt
-  in `Store/redesign/ai/<item>/prompts.md`; cut the states with `Store/redesign/ai/cut_states.py`. Done 13 October: cake, bread,
-  apples (bread and apples then reverted to the originals at the owner's word). 21 October: a second round briefed with
-  the owner's heart-rim plate as the camera reference (`Store/redesign/ai/chatgpt_2026-10-21/`, README there); the
-  owner picked the apple basket and the bread basket, juice stays as drawn. Cut by `cut_pick.py` in that folder: the
-  basket body scaled and placed on the old frame's basket footprint (canvas sizes kept, 366x379 and 496x496), ChatGPT's
-  soft shadow repainted as the hard navy, the white inside the handle made transparent; the replaced frames are in
-  `cut/orig_assets`. Still to brief: choux, coffee cups, machine, cake redo (flat napkin, no pink cut face). ChatGPT free plan: about three pictures a day; wait a few
-  seconds after an upload before typing or the text is lost. Gemini keeps a style but redraws shapes.
-- Other scripts: `daisy_sprites.py` (patience petals), `cloth_picnic.py` (cloth), `edge_soft.py` (edge shadow),
-  `pots_round.py`, `money_hen.py` (fallback hen), brush engine `Store/artkit/brush` (26 brushes, Da Cookie grain).
+The style rules, the looks per place and how to brief ChatGPT and Gemini are in `Docs/art-style.md`. In short:
 
-- **Cookie plates (18 October night):** the plate holds six cookies (`Cookies.cs`, `customMaxCount` 6 in GameSceneOne,
-  sprites `Assets/Images/cookies/k0..k6`, the full plate k6 is the shop card picture). Built by
-  `Store/artkit/plate_hearts/plate_six2.py <plate> <red> <choc> <pink> <outdir>`: the owner's heart-rim plate
-  (`Updates/plate_original_k0_empty.png`, rim ellipse 0.79, a 38-degree camera, left as drawn) with the three
-  40-degree hearts (all three the owner's repainted hearts since 21 October 12:04, when their red landed in Updates; the old red cut is in `Store/artkit/plate_hearts/old_red_2026-10-18`; capture chain `recipes/capture_rc21.sh` with `ap/ch2_cookies.cs`),
-  three where the originals sat and three on top turned 24, 20 and 10 degrees with a soft shadow; the same hearts
-  are the order icons `cookie_red/choc/pink.png`. A driver run with six per plate scored the same as with three
-  (`Docs/tools/autoplay/run_2026-10-19_sixcookies_days.tsv`), so no star line moved. Plain `python3` lacks numpy;
-  use `Store/artkit/venv/bin/python`.
-- **Table item shadows (18 October):** every table sprite carries the owner's hard navy shadow (rgb 45,45,66 at 82 %) to the lower left, light from the upper right; new sprites go through `Store/table/shadows/navy_shadows.py` (originals in `orig/`), and a padded canvas means converting any rect fractions that refer to the sprite (the ice cream station's in GameSceneOne).
+- **Owner's art first.** AI only adds missing parts or repaints at a new angle with the art kept; never regenerate a
+  face. New art = three drafts (ChatGPT, Gemini, mine) side by side in the report; nothing goes in before the owner picks.
+- Work lives in `Store/<topic>_<date>/` with its scripts and `prompts.md`. ChatGPT's free plan gives about three
+  pictures a day; pull pictures out of the pages with the clipboard trick or `Docs/tools/recv.py` (memory notes
+  `chatgpt-drafts-nov9`, `night-fixes-2026-10-26`).
+- Table items are seen from a 40-degree camera (ellipse 0.77); table shadows are one near-black (20, 16, 24) at 60 %
+  in each item's own shape; kitchen pieces keep their painted shadows. Tap-me glows: `Docs/tools/glow_brush.py`.
+- Buttons and shop cards are iced cookies (Gemini's look, `Store/cookies_2026-11-17`); panels are paper.
+- Use `Store/artkit/venv/bin/python` for image scripts. Hand-offs go to the flat iCloud folder (section 3).
 
 ## 9. Store and release
 
-- **Build:** version = build day as YYYY.MM.DD, build 0, 1, 2 within the day (see ios-testing-and-release.md); bump `bundleVersion` / `buildNumber: iPhone:` in `ProjectSettings/ProjectSettings.asset`; close the editor;
-  `Unity -batchmode -quit -projectPath . -buildTarget iOS -executeMethod CommandLineBuild.iOS -exportPath
-  ../Builds/iOS-<v>-<b> -logFile ../Builds/export-<v>-<b>.log` (about 4 minutes); archive with xcodebuild
-  (`ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO`, about 10 minutes), upload with `-exportArchive` and
-  `Builds/archives/exportOptions-upload.plist`; poll `GET /v1/builds?filter[app]=6755611355&sort=-uploadedDate`
-  until VALID (5 to 20 minutes). Full steps: `Docs/ios-testing-and-release.md`. Reopen the editor afterwards.
-  Editor open, or batchmode without a licence (18 October: the Hub's licensing client needs a Mac admin password once):
-  export from inside the editor with `Docs/tools/build_in_editor.cs` through the bridge (a `unity_mcp.py` copy with
-  `timeout=2400`; the call blocks about 30 s for an incremental export), then the same archive and upload.
-- **API:** `python3 Docs/tools/asc_token.py` gives a 15-minute JWT. `Docs/tools/asc_fill.py texts|build|screenshots|
-  preview IPHONE_67|status` fills a version (ids, `BUILD` and asset paths at the top). Create a version:
-  `POST /v1/appStoreVersions` (platform IOS, versionString, releaseType MANUAL, app). Submit: `POST /v1/reviewSubmissions`,
-  `POST /v1/reviewSubmissionItems` (the appStoreVersion), `PATCH reviewSubmissions/<id>` with `submitted: true`.
-  Pull back for edits: `PATCH` with `canceled: true` (state DEVELOPER_REJECTED, editable), then submit anew.
-  Add one screenshot: `POST /v1/appScreenshots` to the set, upload operations, `PATCH uploaded: true` + md5; order a
-  set with `PATCH appScreenshotSets/<id>/relationships/appScreenshots`. TestFlight feedback screenshots:
-  `GET /v1/apps/6755611355/betaFeedbackScreenshotSubmissions`.
-- **Store rules learned:** previews 15 to 30 s (14.5 s failed processing), 886 x 1920, in-game footage only;
-  screenshots `APP_IPHONE_67` 1320 x 2868, `APP_IPAD_PRO_3GEN_129` 2064 x 2752; age rating Advertising = Yes.
-- **26.10.13 page:** the owner's What's New (New patience system / New order mechanism / Visual updates / A new map /
-  Daily rewards), captions (Serve quickly to earn tips; Bake fresh bread in your kitchen; Earn tips and stars; Play
-  from morning to night; Unlock new foods and regulars; Earn stars along the road). The description and promo still
-  mention two customers; the owner may want that reworded (asked 13 October, no answer yet).
+The steps are in `Docs/ios-testing-and-release.md` (test build: setver/getver, `bash Docs/tools/test_build.sh
+<ver>-<n>`, reset only `preloadedAssets:` to `[]`, commit, push; release: `asc_release.py <ver> create`, `build <n>`,
+`whatsnew <file>`, `auto`, `submit`, `release`, `status`). No submission, release or store-text change without the
+owner's yes each time.
+
+- **Store page now (2026.11.24):** the owner's What's New, promotional text and description edits of 24 November 2026
+  (the "two customers" line is gone), screenshots `Store/screenshots/final_r33` (from 2026.11.23), preview
+  `Store/video/FoodTruckCafe_preview_r31.mp4` (from 2026.11.20), header E3 (`Store/store_header_2026-11-24/tray/header_E3_upload.png`) live
+  since 24 November 2026. Purchases: Remove Ads US$1.99, 15 Stars US$0.99. Not on sale in China mainland (since
+  18 November 2026). App Store page analysis and ideas: memory note `app-store-page-aso`.
+- Store rules learned: previews 15 to 30 s, 886 x 1920, in-game footage only; screenshots 1320 x 2868 (iPhone 6.9-inch)
+  and 2064 x 2752 (iPad 13-inch); iPhone Duo screenshots required from April 2027; age rating Advertising = Yes.
+- Player data: Unity Analytics SQL Data Explorer, production environment (recipe in memory note `unity-analytics`);
+  the report's Analysis section holds the reads. Leave the owner's own devices out of every count.
 
 ## 10. Open work
 
-See the report's Next and MVP and `Docs/TODO.md`. In short: watch the 26.10.13 review and answer anything Apple
-raises; after release, the next version. **Its goal (owner, 14 October, afternoon): the menu book** (`Docs/menu-book-plan.md`); chapter 2 (the beach,
-`Docs/chapter2-plan.md`) is parked again behind it. Also: the table redesign at 40 degrees, the
-choux board stretch, Cookies, the economy tune (TODO has the play-test numbers: no player reaches 3 stars now),
-store text. New art follows the kitchen style: `Store/brushes/STYLE.md` rules 1 to 22 (third study 14 October),
-painter `Store/artkit/brush/ks2.py`; ice cream brief in `Store/chapter2/icecream`.
+See the report's Next and MVP and `Docs/TODO.md`. On 24 November 2026: 2026.11.24 (build 1) is in review and goes
+live by itself; the MVP list for the next release is empty.
+
+**C chapter (chapter 3).** The owner's main focus since 24 November 2026, at the art brainstorm stage: an indoor
+winter cabin cafe (shop page: the cabin big in front with the truck parked behind; game scene: the inside of a real
+cabin that reads like a dessert shop, a big window with winter outside, customers seated facing the viewer behind
+table cloths, the serving table a little smaller; candy-pink and white gingham cloth with the front drop). Winter is a
+must. Drafts and briefs: `Desktop/Sept/Store/cchapter_2026-11-24c` (`prompts.md`; earlier rounds in
+`cchapter_2026-11-21`, `-23`, `-24`, `-24b`); the owner's picks are ticks in the report's Current; detail and
+measurements in the memory note `cchapter-indoor-cafe`. **Nothing is built in code yet:** `Chapter.DaysPerChapter`
+holds two chapters and `Chapter.Count` is 2, there is no `Resources/Chapter3` and no level data for it. Building it
+means a third `DaysPerChapter` entry, its Level assets in `allLevels`, `Resources/Chapter3` art, a map page, and
+keeping it hidden behind `Chapter.Count` until release (plan, dates and the secret Day of the Dead chapter:
+`Docs/chapter3-and-secret-plan.md`; target mid-December 2026).
 
 ## 11. Keeping this manual current
 
 Change it when a fact changes, in place: this file is the current state, not a diary. Put dated notes in
-`Docs/history/`. Save new editor recipes to `Docs/tools/recipes` (`/tmp` is wiped on reboot).
+`Docs/history/`, game numbers on the report's Mechanisms page, and save new editor recipes to `Docs/tools/recipes`
+(`/tmp` and the scratchpad are wiped).
