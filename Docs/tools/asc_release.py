@@ -23,6 +23,7 @@ WHATS_NEW_2026_11_23 = "New kitchen flow for baking.\nAdd more kitchen equipment
 WHATS_NEW_2026_11_20 = "New look for shop;\nAdd a journal;\nAdd a new kitchen upgrade;\nNew looks for UI;"   # 2026.11.20: the owner's words of 20 November 2026 (set with `whatsnew`)
 WHATS_NEW_2611_18 = "Add cookies collection.\nNew feature for kitchen, allow customization in kitchen.\nNew design for choux and blender.\nAdd labels for new item."   # 2026.11.18: the owner's words of 18 November 2026 (set with `whatsnew`)
 WHATS_NEW_2611_22 = "Hire new staff.\nNew sound effects.\nRemove ads feature.\nNew swipe gesture and pulling handle for kitchen."   # 26.11.22: the owner's words of 15 November 2026 ("What's new for today's release"). 26.11.21 was "Bug fixes"; 26.11.13: "- Tune balance\n- Night decorations\n- Added star as a currency in shop\n- Sprites tune"
+PROMO_TEXT = "Run a tiny bakery truck: brew coffee, bake bread and cake, gather fresh ingredients, hire staff, upgrade your kitchen, grow your bakery along the way!"   # owner, 24 November 2026; "" keeps the live one
 DESCRIPTION_EDITS = {"serve two customers at a time from morning to night": "serve customers from morning to night",
                      "and invite new regulars to your truck.": "and invite new regulars to your truck. Hire staff with your stars to help keep every customer happy."}  # owner, 24 November 2026  # {"old words": "new words"}; filled only on the owner's tick, e.g. the "two customers" line
 
@@ -106,7 +107,7 @@ if __name__ == "__main__":
         for old, new in DESCRIPTION_EDITS.items():
             assert old in desc, old
             desc = desc.replace(old, new)
-        attrs = {"description": desc, "keywords": src["keywords"], "promotionalText": src["promotionalText"], "whatsNew": WHATS_NEW,
+        attrs = {"description": desc, "keywords": src["keywords"], "promotionalText": PROMO_TEXT or src["promotionalText"], "whatsNew": WHATS_NEW,
                  "supportUrl": src.get("supportUrl"), "marketingUrl": src.get("marketingUrl")}
         attrs = {k: val for k, val in attrs.items() if val}
         api("PATCH", f"/appStoreVersionLocalizations/{loc['id']}", {"data": {"type": "appStoreVersionLocalizations", "id": loc["id"], "attributes": attrs}})
