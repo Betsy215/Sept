@@ -74,75 +74,22 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Release 2026.11.24 (build 1) is submitted</b> (24 November, 13:00); it goes live by itself once Apple approves. Test build 2026.11.24 (1) is the same build, in TestFlight now: your test.</p>
-<p><b>Day lengths, your numbers:</b> chapter 1 days 3 to 12 all 58 s, chapter 2 days all 95 s. <b>A good balance:</b> chapter 2 still opens after about the same play (4 % less money by day 9); chapter 1's bonus days and chapter 2 pay less per day, so the chapter 2 shop takes about a fifth longer. The numbers are on Mechanisms, 6.</p>
-<p><b>In the release:</b> your What's New, the description (serve customers; hire staff) and the promotional text (hire staff, ingredients).</p>
-<p><b>Header E3:</b> still in Apple's review; I set it on the store page as soon as it is approved, with this release.</p>
-<p><b>C chapter:</b> no ChatGPT drafts; waiting for your new ideas.</p>
+<p><b>Release 2026.11.24 is submitted</b> (24 November, 13:00) with everything that was in MVP, your What's New, the new description and promotional text. It goes live by itself once Apple approves. Test build 2026.11.24 (1) in TestFlight is the same build.</p>
+<p><b>C chapter, indoor cafe:</b> 4 shop pages and 6 cabin rooms (Gemini, ChatGPT, mine) are on the C chapter tab, at the top. ChatGPT draws its shop page tomorrow.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>I watch the review, set header E3 once Apple approves it, and read your test notes.</p>
+<p>I watch the review and set header E3 on the store page once Apple approves it (still in review).</p>
 </div>
 </div>
 
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
-<div class="q"><h3>Release today: 2026.11.24 (24 Nov)</h3>
-<ul>
-<li><b>In it:</b> everything in MVP: ads keep starting and the ad moves to day start (from day 3), the table's front drop, food start places, the bug fixes, bigger menu stickers, Cookie sprinkles stars, bonus days, the Perfect sound, the smaller map truck, the day 3 candy jar, candy and yoga lady to full, NEW on the tray and mixer.</li>
-<li><b>Now:</b> a code review of everything since 2026.11.23, and both chapters played through in the editor. Then a test build 2026.11.24 (0) for your last check, then the submission.</li>
-<li><b>What's New:</b> your words are coming; my draft for reference:
-<br><i>"Sprinkles and hearts when you earn stars. Three bonus days in each chapter. A candy jar arrives on day 3: candies fill a customer's patience. A cosier table and a smaller truck on the map. Smoother ads and many small fixes."</i></li>
-<li><b>Screenshots:</b> I would keep them. They do not show the new things much (the map shot still has the old truck); new ones can come with the next release.</li>
-</ul>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="qa.rel24.shots"> Keep the screenshots</label></li>
-<li><label><input type="checkbox" data-id="qa.rel24.newshots"> Make new screenshots</label></li>
-</ul>
-</div>
-
-<div class="q"><h3>Why are the baking tray and mixer set made by code, not placed in the kitchen picture? (24 Nov)</h3>
-<ul>
-<li><b>How it came about:</b> they arrived with the new kitchen flow (20 November), after the movable kitchen of 16 November. They were added the same way as that kitchen's moving parts: built in code when choux or cake is on the menu.</li>
-<li><b>Pros:</b>
-<ul>
-<li>They only exist when needed. The mixer set appears with choux or cake and takes the whisk's place; without them the kitchen keeps the plain whisk.</li>
-<li>They are found a free spot on the counter the first time, so they never land on another piece.</li>
-<li>Their size, shadow and look can be changed in code. Editing the kitchen scene file directly is risky: a slip there can break links in the scene.</li>
-<li>The kitchen flow (choux and cake stages, the mixer running) works on them directly.</li>
-</ul></li>
-<li><b>Cons:</b>
-<ul>
-<li>The rules attached to the scene's pieces (the NEW tag, show and hide by menu) do not reach them by themselves. That is how the NEW tag was missed.</li>
-<li>They do not show in the Unity editor until the game runs.</li>
-</ul></li>
-<li><b>My view:</b> keep them in code. The NEW tag is now given to them directly, and I checked the other scene-only rules: show and hide by menu is already in their code. Moving them into the scene would mean redoing the free-spot search and the flow links for little gain.</li>
-</ul>
-</div>
+<p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">Release 2026.11.24 (build 1), submitted 24 November. All approved.</p>
-<ul>
-<li><b>Ads keep starting:</b> a failed Unity Ads start is tried again; slow loads time out and back off.</li>
-<li><b>The table's front:</b> the cloth falls over the table's edge in the bottom safe area.</li>
-<li><b>Food starts on the table:</b> every food's whole box starts inside the drag area.</li>
-<li><b>Bug fixes:</b> update card and iOS versions; day card and day 9's star; page change while the truck drives; tutorial kitchen into day 1.</li>
-<li><b>Menu stickers larger</b> on phones (approved).</li>
-<li><b>Day-end stars: Cookie sprinkles</b> (your pick B): sprinkles and a crumbly pop per star, hearts for two, a sprinkle shower, shine and jingle for three.</li>
-<li><b>Bonus days:</b> each chapter's last three days appear with a show when the day before them is reached (approved).</li>
-<li><b>The between-days ad moves to the day's start:</b> right after Play on the day card. No ad before day 1 or day 2: the first comes when day 3 is started (your words). The end of a day goes straight to the shop.</li>
-<li><b>Order sounds:</b> Perfect gets a new sound (cha-ching and bells); OK and Nice keep today's (approved).</li>
-<li><b>Map truck:</b> smaller, parked on top of its day (approved).</li>
-<li><b>Candy jar from day 3:</b> no jar or candies before day 3; on day 3 the jar arrives with 2 candies on a gift card (approved); after day 3 candies in the shop, NEW.</li>
-<li><b>NEW tags</b> on the baking tray and mixer set when choux or cake is new (approved).</li>
-<li><b>Candy and the yoga lady fill flowers to full:</b> a candy fills the waiting customer lowest on flowers to full; the yoga lady fills every waiting customer to full (each was one flower).</li>
-<li><b>Day 9's star on a gift card when day 9 is reached; chapter 2 opens by itself after day 9;</b> chapter 2's map welcome; bigger wiggling menu stickers; mixer and tray start on the kitchen table.</li>
-<li><b>Day lengths:</b> chapter 1 days 1 and 2 stay 48 s, days 3 to 12 all 58 s; every chapter 2 day 95 s.</li>
-<li><b>Review fixes:</b> no taps while day 9's moments wait; the gift card's words for saves already past day 9; the mixer stays in the cabinet if you put it there.</li>
-<li><b>Open:</b> the adsStarted analytics event needs one entry in Unity's Event Manager (optional).</li>
-</ul>
+<p class="sub" style="margin:0 0 8px">The next release, after 2026.11.24: nothing yet.</p>
 
 <h2 id="backlog"><span class="n">5</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>
