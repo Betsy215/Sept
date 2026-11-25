@@ -1,49 +1,76 @@
-# The report page
+# The report: how to write it and how to use it
 
-The owner's report is the HTML artifact https://claude.ai/artifact/VeYt7HSLpyotQEW5sTMvPP
-(slug `e7fe0ca8-59d9-4f3f-b8c6-7ed7a3495e06`), two pages: `index.html` (the report) and
-`visuals.html` (captures). Style: the owner's bakery pages (Nunito, cream page, pastel cards,
-numbered circle headings, sticky section bar). The Claude Doc 726347e1-dd8c-42fd-917b-be80474ff9ae
-is history only.
+The owner reads the report, not the terminal. It is the HTML artifact
+https://claude.ai/artifact/VeYt7HSLpyotQEW5sTMvPP (slug `e7fe0ca8-59d9-4f3f-b8c6-7ed7a3495e06`), built from the files in
+this folder. Style: the owner's bakery pages (Nunito, cream page, pastel cards, numbered circle headings, sticky section
+bar). Chat replies stay short (a few lines); the substance goes in the page. The old Claude Doc
+726347e1-dd8c-42fd-917b-be80474ff9ae is history only (everything before 9 November 2026).
 
-## Fixed structure: eight sections (never add, rename, remove or reorder a section unless the owner asks)
+## Pages and sections (fixed; never add, rename, remove or reorder unless the owner asks)
 
-1. **Next**: You / Me cards. The owner reads this first; rewrite both at the start and the end of a batch.
-   My questions to the owner go in You, with check boxes.
-2. **Q&A**: the owner's questions only, newest first, numbered Q1..Qn as shown: bold question + date,
-   short answer, picture if it helps, then a check list.
-3. **Current**: today's work, one entry per batch, newest first: bold dated lead, ticks with commits,
-   pictures, then a check list.
-4. **MVP**: the next release's ordered list.
+`index.html`, the report, seven sections:
+
+1. **Next**: two cards, **You** (what the owner should look at or decide, my questions with tick boxes) and **Me** (what
+   I do next). The owner reads it first: rewrite both at the start and end of every batch. Two or three lines each.
+2. **Q&A**: the owner's questions only (never mine), newest first: bold question + date, a short answer, a picture if it
+   helps, then tick boxes. "Nothing open." when empty.
+3. **Current**: the work in progress, newest first: a card per piece of work with a short bold lead, pictures, one line
+   per option, then tick boxes for the owner's choice. Since 24 November 2026 the C chapter work lives here too.
+4. **MVP**: what goes into the next release, an ordered list. Approved Current cards move here (one line each).
 5. **Backlog**: one check list; items leave only when the owner says so.
-6. **Analysis**: store and ads numbers only (App Store Connect, Unity Ads), UTC; each refresh replaces the last.
-7. **Marketing** (owner, 18 November 2026: "move the app store page section to it's own section in the report, call it
-   marketing. i am not sure what to do on this yet but we would need to continue working on this ... keep this section
-   always there"): the App Store page, ratings, keywords, screenshots, video, in-app events, custom pages, anything that
-   brings players. Cards with check lists like Current. Always present, even when it holds only "Nothing open".
-8. **C chapter** (owner, 18 November 2026: "Put a section on report for c chapter (Christmas chapter), I will call it c
-   chapter for short"): the Christmas chapter's plan, starting from the owner's ideas (pink cloth and white snow, winter
-   clothes, cookies, hot drinks). Always present while the chapter is being made.
-Mechanisms (`mechanisms.html`; owner, 23 November 2026: "add this tab and keep it forever, call it mechanisms, this is the
-tab we keep game data and information etc."): game data in numbers (sale prices, kitchen times, ...). Never cleared with the
-report; keep its numbers current.
-Visuals (`visuals.html`): real captures of the live build in the Claude Doc's order
-(Store page, Menu and maps, Chapter 1 day, Chapter 2 tutorial, Chapter 2 day, Chapter change, Screen sizes).
+6. **Analysis**: store and ads numbers only (App Store Connect, Unity Analytics/Ads), UTC; each refresh replaces the
+   last. Exclude the owner's own phone from player counts (production USER_ID `ec14c6a5031c84057b578cfdccaa95c1`).
+7. **Marketing** (always present): the App Store page, ratings, keywords, screenshots, video, events, header.
 
-## Check boxes (the owner's action buttons)
+Two more pages that "clear/clean up the report" never touches:
+- `visuals.html` **Visuals**: real captures of the live build (store page, menu and maps, each chapter's day,
+  tutorial, chapter change, screen sizes, shop, journal).
+- `mechanisms.html` **Mechanisms** (owner, 23 Nov 2026: "keep it forever ... game data and information"): the game in
+  numbers (sale prices, kitchen times, days and chapters, customers per day, day lengths and money). Keep it current
+  whenever a number changes.
 
-Every Q&A and Current entry ends with `<ul class="checks">`: first `Seen, remove this`, then the choices.
-Each box has a unique `data-id` (`qa.plan.all`, `cur.oct31.keep`, `backlog.a`, `next.day16.yes`).
-Ticks are saved by the page script into the artifact's db, doc `ticks/state`
-(`{"<data-id>": true|false, "<data-id>@": "<iso time>"}`); the page declares `{db:{}, user:{}}`.
+The **C chapter** page existed 19 to 24 November 2026 and was removed by the owner ("this becomes the main focus now,
+let's put updates on the report itself").
 
-Every session that touches the report first reads the ticks:
-`db_get(slug, path "ticks/state")`. Then, before any other write: delete every entry whose `.seen`
-is true, act on ticked choices, and reword an entry whose choice cannot be carried out here.
-A removed entry's ids stay in the db; that is fine (the page only reads ids it still has).
+## Writing rules (the owner's, collected)
 
-## Republish
+- **Fewer words, always.** No process narration, no hedging, no restating the ask, no instruction text ("tick the box
+  to..."). One picture beats a paragraph.
+- **Real pictures only**: captures from the editor or device, or real mocks at the right size. Game-scene mocks are
+  phone-size (1320 x 2868) and laid out like the game (the background scaled to the screen height and centre-cropped,
+  the cloth from the screen middle, the drop at the cloth's edge row). One place per picture (table, kitchen, shop or UI;
+  never a shop icon in a kitchen sheet); the caption names it.
+- **Comparisons side by side**: e.g. a new shop page next to chapter 1's and chapter 2's.
+- **Every option gets its own tick**; add "More ideas" when brainstorming.
+- **Approved → MVP**: when the owner ticks a choice or says "good", drop the card from Current and add a line to MVP.
+  Questions answered or "Seen" are removed.
+- Dates are absolute ("24 November"), never "today".
+- Alt text on every image describes what it shows (the owner may read it; it is also how a future session knows).
 
-Edit here, then `publish_files` with the slug (`get_artifact` for `base_version`; default patch mode keeps
-the pictures). Small text: `edit_version`. Pictures: `Store/report/` (not in git) and `visuals/` here.
-A new section id needs a chip in `nav.toc`. Commit here after every publish.
+## The tick routine (every exchange that touches the report)
+
+1. `db_get(slug, "ticks/state")`: `{"<data-id>": true|false, "<data-id>@": "<iso time>"}`. Also `read_comments(slug)`.
+2. Act on the ticks before any other write: delete Seen/approved entries, carry out ticked choices (or say in the card
+   why one cannot be done), move approved work to MVP.
+3. Make the batch's changes, refresh Next, publish, commit this folder, push.
+
+Tick ids are unique and dated: `<section>.<topic+date>.<choice>`, e.g. `cur.c24.shop.desert`, `qa.day3.a`,
+`next.day16.no`. Old ids stay in the db; the page reads only ids it still has.
+
+The page's markup: `<div class="card">`, `<figure><img ...><figcaption>`, `<ul class="checks"><li><label><input
+type="checkbox" data-id="..."> Label</label></li></ul>`. The page script saves ticks itself (it declares
+`{db:{}, user:{}}`).
+
+## Publishing
+
+- Pictures go in a dated subfolder here (e.g. `c24/`, `bonus/`, `stars/`, `visuals/`), JPEG, sheets about 900 px tall.
+- Before `publish_files` on the existing artifact, call `list_files` (or use the last publish result) and pass
+  `base_version` = the live version. Default patch mode keeps files not named; list deleted pictures in `remove`.
+- Small text changes: `edit_version` (exact unique `old_text`).
+- A new section id needs a chip in `nav.toc` (only when the owner asks for a section).
+- After every publish: `git add Docs/tools/report_page && git commit && git push origin main`.
+
+## "Clean up the report" means
+
+Remove everything answered, approved or seen; Q&A, Current and Backlog may end as "Nothing open."; MVP keeps the next
+release's list (or "nothing yet"); Next is rewritten; Visuals and Mechanisms stay untouched.
