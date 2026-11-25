@@ -75,6 +75,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>2026.11.24 is live</b> (Apple approved it overnight). Yesterday's players and your own play are in Analysis.</p>
+<p><b>Game review:</b> problems at the top of Current, growth ideas in Marketing. Tick what to do; nothing is fixed yet.</p>
 <p><b>C chapter, the dessert house:</b> four watercolour ideas from Gemini and four of mine, by day and night, at the top of Current. Tick the ones you like; ChatGPT paints them tomorrow after 10:00.</p>
 <p>The shop pages, cloths and rooms below it still wait for your ticks.</p>
 </div>
@@ -101,6 +102,37 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="current"><span class="n">3</span>Current</h2>
+<p class="sub" style="margin:0 0 8px">25 November: game review. Problems only, nothing fixed yet. Tick what to fix.</p>
+<div class="card">
+<p style="margin-top:0"><b>Game review: what I found.</b> <small>Code, screens and docs, on the live 2026.11.24. Full list for future agents: Docs/review-2026-11-25.md.</small></p>
+<p><b>Players see these</b></p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.rev25.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r1"> <b>Day 9 gift card text is jumbled</b> (live now): its message never gets placed, so it wraps into about six lines over the star. A one-line fix.</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r2"> <b>First launch asks to allow notifications</b>, but the game never sends any. One setting.</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r8"> <b>Store screenshots are out of date</b> (23 November game: all 16 chapter 2 days on the map, old stickers, no cloth drop). On iPad the caption bands hide the menu's DONE button and the receipt in the tips shot. Retake them.</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r3"> <b>Play can wipe a saved game by accident</b>: sliding the finger off Play still starts a new game, and tapping Continue then Play quickly does too.</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r5"> <b>Candies cost full price when the jar is almost full</b>: at 7 or 8 candies, a buy adds only 2 or 1.</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r9"> <b>Money shows three ways</b>: $ 1815 on the day card, $1814 in the shop, $ 1,814 on the map. When the card finishes counting, Order sale and Tips both read $0.</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r10"> <b>Menu stickers cover each other's prices</b>, and Apple and Cookies are cut at the screen edges (seen before the 24 November resize: I recheck first).</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r11"> <b>Chapter 2: the cone glasses touch the bottom edge</b> of the iPhone screen.</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r12"> <b>Chapter 2 kitchen: a shadow with nothing on it</b> (where chapter 1's bowl stands).</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r6"> <b>If an ad never answers, the screen freezes</b>: the Daily Treats card or the map stays stuck until the app is closed. Rare, but players lose the moment.</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r4"> <b>The map can lock for very old saves</b> already in chapter 2, if Home is tapped during the day 9 moment. Rare.</label></li>
+</ul>
+<p><b>Your call</b></p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.rev25.waffle.up"> <b>Waffle machine:</b> it bakes 8 s and the Kitchen upgrade does not speed it up (everything else gets a quarter faster). Make the upgrade speed it up too</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.waffle.keep"> Waffle machine: keep 8 s; I correct Mechanisms (it says about 2.4 s)</label></li>
+</ul>
+<p><b>Small ones</b> <small>A candy can be used when no one's patience can go up; a 15 Stars purchase could pay twice if the app is killed at one exact moment; two Upgrade cards share one NEW tag; the tutorial card is 11 px too wide on tall iPhones; the used-up patience flower overlaps the bubble; Ready covers half the candy jar while arranging; analytics money is wrong on replays and real-money buys are not logged.</small></p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.rev25.small"> Fix the small ones too</label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.docs"> Update the old docs for future agents (architecture, maintenance, systems: they still describe October)</label></li>
+</ul>
+<p style="margin:8px 0 0;font-size:14px"><b>The US iPad player with no stars:</b> no bug. A customer who leaves with part of the order still pays for what was served, so a 0-star day can earn more. Days 2 and 3 are much harder than day 1: orders grow from 1-2 items to 2-3 while patience stays 7 s, and the Kid always orders the most items allowed.</p>
+</div>
+
 <p class="sub" style="margin:0 0 8px">24 November, late: the dessert house first, in watercolour.</p>
 <div class="card">
 <p style="margin-top:0"><b>The dessert house in watercolour, four ideas.</b> <small>A strawberry shortcake, B macaron, C mint chocolate, D cream puff. Top row by day, bottom row by night. My pick: Gemini's A or B.</small></p>
@@ -172,7 +204,27 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </div>
 
 <h2 id="marketing"><span class="n">7</span>Marketing</h2>
-<p class="sub" style="margin:0 0 8px">Nothing open.</p>
+<div class="card">
+<p style="margin-top:0"><b>How to grow: market research, 25 November.</b> <small>Our numbers: ~50 installs a week, mostly Philippines, Indonesia, Vietnam; no ratings; most players leave in days 1-3. Cooking games that do well start gently, run limited-time events and sell a retry right after a lost level. Players dislike heavy ads early.</small></p>
+<p><b>Quick wins</b></p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="mk.rev25.seen"> Seen, remove this</label></li>
+<li><label><input type="checkbox" data-id="mk.rev25.rating"> <b>Ask for a rating sooner</b>: after the first 3-star day. Today it waits for day 3, which most players never reach.</label></li>
+<li><label><input type="checkbox" data-id="mk.rev25.ads"> <b>Fewer early ads</b>: no ad right after a 1- or 2-star day (that is where players leave), and maybe the first ad later than day 3.</label></li>
+<li><label><input type="checkbox" data-id="mk.rev25.easy"> <b>Gentler days 2 and 3</b>: a little more patience or fewer items per order, so new players keep 3 stars.</label></li>
+<li><label><input type="checkbox" data-id="mk.rev25.event"> <b>Winter chapter on the App Store</b>: ask Apple to feature it (form in App Store Connect, needs 2+ weeks) and make an In-App Event "New Season" (two pictures, no words on them).</label></li>
+<li><label><input type="checkbox" data-id="mk.rev25.aso"> <b>Search words</b>: "cooking game" and "bakery" in the subtitle, and use all 100 keyword letters.</label></li>
+</ul>
+<p><b>Bigger steps</b></p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="mk.rev25.price"> Lower prices for the Philippines, Indonesia and Vietnam; a cheap starter pack after day 3; Remove Ads with a bonus</label></li>
+<li><label><input type="checkbox" data-id="mk.rev25.reward"> Rewarded ads players want: double coins at the day end, retry with extra time after a weak day</label></li>
+<li><label><input type="checkbox" data-id="mk.rev25.mediation"> More ad networks (Unity LevelPlay + AdMob) for better pay in Asia</label></li>
+<li><label><input type="checkbox" data-id="mk.rev25.lang"> Store page in Indonesian, Vietnamese and Thai</label></li>
+<li><label><input type="checkbox" data-id="mk.rev25.video"> Short videos (YouTube Shorts first) and a Reddit post and press email at the winter launch</label></li>
+</ul>
+<p style="margin:8px 0 0;font-size:14px">For scale: a typical casual game keeps about 22 % of players the next day (the best quarter about 30 %) and about 4 % after a week. Ads in Southeast Asia pay a fraction of the US.</p>
+</div>
 
 </main>
 <script>

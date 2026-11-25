@@ -6,6 +6,10 @@ where things live, how the game works now, and how each recurring job is done. D
 
 Last updated 24 November 2026: the whole manual was refreshed against the code, the git log and the memory notes (sections 1 and 2 earlier the same day, sections 3 to 11 in the evening).
 
+**Review of 25 November 2026:** `Docs/review-2026-11-25.md` lists the open bugs (R1-R19), the docs that are out of date
+(architecture.md, maintenance.md, systems/*), surprises for newcomers, and the market research. Read it before
+changing code or trusting those older docs.
+
 **Chapter 3 (winter) and the secret chapter (Day of the Dead):** the owner's plan for the rest of 2026 is in
 `Docs/chapter3-and-secret-plan.md` (15 November 2026). Read it before any work on either.
 
