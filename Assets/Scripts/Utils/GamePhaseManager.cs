@@ -243,6 +243,15 @@ public class GamePhaseManager : MonoBehaviour
     /// Ready sits just above the table's back row (owner, 26 November 2026: "during arrangement, move ready button around
     /// so it doesn't cover up candy jar"): it stood on the row itself, over the hen and half the jar. The row's top
     /// is measured on the real things (the hen, the jar, the pots), so every screen size gets its own place.
+    /// Where Ready stands (owner, 26 November 2026: "keep them same position in kitchen and in game scene, find a spot
+    /// that works for both"): 0 = table above the back row, kitchen on the rug; 1 = the table's spot in both; 2 = the
+    /// kitchen's rug spot (bottom middle) in both. Set to the owner's pick once seen.
+    public static int ReadySpot = 0;   // 3 = right of the middle and a little above the table's spot, over the kitchen window
+    private Vector2 RightSpot(RectTransform canvas)
+    {
+        var w = canvas != null ? canvas.rect.width : 1080f;
+        return new Vector2(w * 0.22f, doneButtonHome.y + 60f);
+    }
     private const float ReadyVisibleShare = 0.56f, ReadyGap = 18f;   // the cookie fills about this share of the button's height; canvas units of air above the row
     private System.Collections.IEnumerator ReadyAboveBackRow()
     {
@@ -262,9 +271,10 @@ public class GamePhaseManager : MonoBehaviour
         if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, screen, uiCam, out var local)) yield break;
         var half = rt.rect.height * Mathf.Abs(rt.localScale.y) * ReadyVisibleShare / 2f;
         var y = local.y + ReadyGap + half;
-        if (y <= doneButtonHome.y) yield break;   // already clear of the row
+        if (ReadySpot == 2) { KitchenShown(inKitchen); yield break; }   // the rug spot on the table too
         // anchoredPosition and the parent's local space share the origin here (the button is anchored at the canvas's middle)
-        doneButtonHome = new Vector2(doneButtonHome.x, doneButtonHome.y + (y - rt.localPosition.y));
+        if (y > doneButtonHome.y) doneButtonHome = new Vector2(doneButtonHome.x, doneButtonHome.y + (y - rt.localPosition.y));   // else already clear of the row
+        if (ReadySpot == 3) { KitchenShown(inKitchen); yield break; }
         if (!inKitchen) rt.anchoredPosition = doneButtonHome;
     }
 
@@ -279,7 +289,9 @@ public class GamePhaseManager : MonoBehaviour
             var rt = (RectTransform)doneButton.transform;
             if (!doneButtonHomeKept) { doneButtonHome = rt.anchoredPosition; doneButtonHomeKept = true; }
             var canvas = arrangmentUI != null ? arrangmentUI.transform as RectTransform : null;
-            if (open && canvas != null)
+            if (ReadySpot == 1) rt.anchoredPosition = doneButtonHome;   // one place for both: the table's spot above the back row
+            else if (ReadySpot == 3) rt.anchoredPosition = RightSpot(canvas);   // one place for both: right of the middle, a little higher
+            else if (canvas != null && (open || ReadySpot == 2))
             {
                 // on the rug: its own height (the button is drawn at scale 2) and the phone's home-bar strip above the bottom edge
                 var safeBottom = Screen.height > 0 ? Screen.safeArea.yMin / Screen.height * canvas.rect.height : 0f;

@@ -225,10 +225,11 @@ public static class CandyGift
         var n = CandyJar.Candies; var closed = false;
         var dim = Img("Tap", ui, null, new Color(0f, 0f, 0f, 0f)); Stretch(dim.rectTransform); dim.gameObject.AddComponent<Button>().onClick.AddListener(() => closed = true);
         var panel = Img("Panel", ui, Resources.Load<Sprite>("Map/day_paper"), Color.white); panel.rectTransform.sizeDelta = new Vector2(700f, 740f); panel.raycastTarget = true;
-        var title = Txt("Title", panel.rectTransform, Title(), 78f, Ink, "CANDIES"); Place(title.rectTransform, new Vector2(0f, 232f), new Vector2(620f, 110f));
-        var jarImg = Img("Jar", panel.rectTransform, JarSprite(n), Color.white); jarImg.preserveAspect = true; Place(jarImg.rectTransform, new Vector2(-110f, 30f), new Vector2(250f, 250f));
-        var count = Txt("Count", panel.rectTransform, Title(), 130f, Ink, "x " + n); Place(count.rectTransform, new Vector2(120f, 30f), new Vector2(330f, 170f)); count.enableWordWrapping = false;
-        var ok = Img("LetsGo", panel.rectTransform, Resources.Load<Sprite>("UI/btn_done"), Color.white); ok.preserveAspect = true; Place(ok.rectTransform, new Vector2(0f, -228f), new Vector2(300f, 200f));
+        // the journal's hand (Delius) for the words; everything sits close to the middle of the paper (owner, 26 November 2026)
+        var title = Txt("Title", panel.rectTransform, Hand(), 70f, Ink, "Candies"); Place(title.rectTransform, new Vector2(0f, 178f), new Vector2(620f, 100f));
+        var jarImg = Img("Jar", panel.rectTransform, JarSprite(n), Color.white); jarImg.preserveAspect = true; Place(jarImg.rectTransform, new Vector2(-92f, 18f), new Vector2(230f, 230f));
+        var count = Txt("Count", panel.rectTransform, Hand(), 110f, Ink, "x " + n); Place(count.rectTransform, new Vector2(98f, 14f), new Vector2(300f, 150f)); count.enableWordWrapping = false;
+        var ok = Img("LetsGo", panel.rectTransform, Resources.Load<Sprite>("UI/btn_done"), Color.white); ok.preserveAspect = true; Place(ok.rectTransform, new Vector2(0f, -168f), new Vector2(300f, 200f));   // the cookie carries its own word, DONE
         ok.gameObject.AddComponent<Button>().onClick.AddListener(() => closed = true);
         Sound("Audio/flower_pop");
         panel.transform.localScale = Vector3.one * 0.6f;
