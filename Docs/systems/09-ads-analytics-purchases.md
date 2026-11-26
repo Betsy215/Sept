@@ -41,8 +41,8 @@ Test mode: the Inspector flag or `IsTestFlightBuild()` (a sandbox receipt, `Asse
 | Shop coin button | `Ads/RewardedAdButton.cs` | `_coinsPerAd` (50) through `AddScoreImmediately`, only on `COMPLETED` and with an active session |
 | Daily Treats "One more treat" (MainMenu) | `DailyTreats/DailyTreatsAd.cs` | 20 to 50 coins at random on `COMPLETED`, into the Daily Treats pending coins |
 
-Remove Ads does not affect these. Daily Treats coins (`DailyTreats.CoinsFor(day)`: round 1 pays 30, 50, 70, gift 150;
-each later round of the streak adds 20 a day and 50 on the gift, up to round 5; since 26 Nov 2026) wait in PlayerPrefs `ftc.daily.pending` and are added to the wallet by `ContinueSession` or
+Remove Ads does not affect these. Daily Treats coins (`DailyTreats.CoinsFor(day)`: 30, 50, 70, then the gift 150 on the
+fourth day of a row; since 26 Nov 2026) wait in PlayerPrefs `ftc.daily.pending` and are added to the wallet by `ContinueSession` or
 `StartNewSession` (`DailyTreats.TakePending`).
 
 ## Analytics (`Analytics/AnalyticsLog.cs`, Unity Analytics)

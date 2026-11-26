@@ -16,31 +16,16 @@ using UnityEngine.UI;
 public class DailyTreats : MonoBehaviour
 {
     public const string LastKey = "ftc.daily.last";       // yyyy-MM-dd of the last collect
-    public const string StreakKey = "ftc.daily.streak";   // days collected in a row, 1.. (since 26 November 2026 it keeps
-                                                          // counting past the row; it was the row day 1..RowDays before, the same numbers)
+    public const string StreakKey = "ftc.daily.streak";   // days collected in the current row, 1..RowDays
     public const string PendingKey = "ftc.daily.pending"; // coins collected with no game running
 
     public const int DailyCoins = 50;
     public const int RowDays = 4;       // the row's length; its last day gives the gift
     public const int Day5Bonus = 100;   // the last day's surprise (the name is from the five-day row)
     /// Each day of the row gives a different amount (owner, 26 November 2026: "make them different numbers of coins"):
-    /// 30, 50, 70, then the gift's 150: the same 300 over the first row as the old 50, 50, 50, 150.
+    /// 30, 50, 70, then the gift's 150: the same 300 over the row as the old 50, 50, 50, 150.
     public static readonly int[] DayCoins = { 30, 50, 70, DailyCoins + Day5Bonus };
-    /// The streak goes on past the row (owner, 26 November 2026: "if it continues, we need to keep the streak and increase
-    /// reward"; a missed day goes back to round 1, day 1). Every new row is a round: each round adds 20 to the coin days and
-    /// 50 to the gift, up to round MaxRound (round 5: 110, 130, 150, gift 350).
-    public const int MaxRound = 5, RoundStep = 20, RoundGiftStep = 50;
-    /// The round the card is showing (set when it opens); CoinsFor reads it.
-    public static int Round = 1;
-    public static int CoinsFor(int day)
-    {
-        var r = Mathf.Clamp(Round, 1, MaxRound) - 1; var d = Mathf.Clamp(day, 1, DayCoins.Length);
-        return DayCoins[d - 1] + r * (d == RowDays ? RoundGiftStep : RoundStep);
-    }
-    /// The streak's day count, its round and the row day it falls on
-    public static int RoundOf(int streak) => (Mathf.Max(1, streak) - 1) / RowDays + 1;
-    public static int RowDayOf(int streak) => (Mathf.Max(1, streak) - 1) % RowDays + 1;
-    private int streakToday = 1;
+    public static int CoinsFor(int day) => DayCoins[Mathf.Clamp(day, 1, DayCoins.Length) - 1];
 
     /// The card's look (26 November 2026, DailyTreatsPreview): the owner picked 3, Spotlight and trail, with every treat
     /// face down until it is collected. 0 = the old card, 1 Stamp card, 2 Peel and take (kept for comparison).
@@ -61,7 +46,7 @@ public class DailyTreats : MonoBehaviour
     {
         dueDate = DateTime.Now.Date;
         if (!TutorialDone()) return;   // the day's treat waits; it shows on the first menu after the tutorial
-        if (DueStreak(out streakToday)) { dayToday = RowDayOf(streakToday); Show(dayToday); }
+        if (DueDay(out dayToday)) Show(dayToday);
     }
 
     /// No Daily Treats before the tutorial is done (owner, 19 November 2026, from the player data: new players watched the
@@ -73,23 +58,18 @@ public class DailyTreats : MonoBehaviour
         return s != null && s.isActive && (s.tutorialSeen || s.levelsCompleted >= 1);
     }
 
-    /// <summary>True when today's treat has not been collected; day is the row day (1..RowDays) it would be.</summary>
+    /// <summary>True when today's treat has not been collected; day is the row day (1..RowDays) it would be. After the
+    /// gift day the row starts again at day 1 (owner, 26 November 2026: "reset every 4 days"); a missed day also starts it again.</summary>
     public static bool DueDay(out int day)
     {
-        var due = DueStreak(out var streak); day = RowDayOf(streak); return due;
-    }
-
-    /// <summary>True when today's treat has not been collected; streak is the days in a row today makes (1 after a missed day).</summary>
-    public static bool DueStreak(out int streak)
-    {
-        streak = 1;
+        day = 1;
         var today = DateTime.Now.Date;
         var last = PlayerPrefs.GetString(LastKey, "");
         if (DateTime.TryParseExact(last, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var lastDate))
         {
             if (lastDate >= today) return false; // already collected today, or the clock was moved back
-            var saved = PlayerPrefs.GetInt(StreakKey, 0);
-            if (lastDate == today.AddDays(-1) && saved >= 1) streak = saved + 1;
+            var streak = PlayerPrefs.GetInt(StreakKey, 0);
+            if (lastDate == today.AddDays(-1) && streak >= 1 && streak < RowDays) day = streak + 1;
         }
         return true;
     }
@@ -103,15 +83,11 @@ public class DailyTreats : MonoBehaviour
     }
 
     /// <summary>Editor and test helper: show the popup for a given row day without touching the saved state.</summary>
-    public void DebugShow(int day) => DebugShowStreak(Mathf.Clamp(day, 1, RowDays));
-
-    /// <summary>Editor and test helper: show the popup for a given streak (days in a row), e.g. 6 = round 2, day 2.</summary>
-    public void DebugShowStreak(int streak)
+    public void DebugShow(int day)
     {
         if (root != null) Destroy(root);
         collecting = false;
-        streakToday = Mathf.Max(1, streak);
-        dayToday = RowDayOf(streakToday);
+        dayToday = Mathf.Clamp(day, 1, RowDays);
         Show(dayToday);
     }
 
@@ -121,7 +97,6 @@ public class DailyTreats : MonoBehaviour
 
     private void Show(int day)
     {
-        Round = RoundOf(streakToday);
         giftImage = null;
         root = new GameObject("DailyTreatsCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         var canvas = root.GetComponent<Canvas>();
@@ -236,14 +211,6 @@ public class DailyTreats : MonoBehaviour
         var button = collectButton.gameObject.AddComponent<Button>();
         button.transition = Selectable.Transition.None;
         button.onClick.AddListener(Collect);
-        // the streak: a red stamp in the top-left corner, across from the close button, with the days in a row
-        var badge = NewImage("StreakStamp", canvasRect, Resources.Load<Sprite>("Journal/day_stamp"), Color.white);
-        Place(badge.rectTransform, -ClosePos.x + 4f, ClosePos.y - 6f, 118f, 118f);
-        badge.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 10f);
-        var hand = Resources.Load<TMPro.TMP_FontAsset>("Fonts & Materials/Delius SDF");
-        var red = new Color(0.80f, 0.25f, 0.22f);
-        StampText(badge.rectTransform, streakToday.ToString(CultureInfo.InvariantCulture), 9f, streakToday >= 100 ? 40f : 52f, red, hand);
-        StampText(badge.rectTransform, streakToday == 1 ? "DAY" : "DAYS", -27f, 20f, red, hand);
         preview = PreviewStyle != 0 ? DailyTreatsPreview.Dress(canvasRect, day, PreviewStyle) : null;
     }
 
@@ -331,7 +298,7 @@ public class DailyTreats : MonoBehaviour
         PlayerPrefs.SetInt(PendingKey, PlayerPrefs.GetInt(PendingKey, 0) + amount);
         // The day the popup was opened for, so a tap just after midnight doesn't use up the next day
         PlayerPrefs.SetString(LastKey, dueDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
-        PlayerPrefs.SetInt(StreakKey, streakToday);
+        PlayerPrefs.SetInt(StreakKey, day);
         PlayerPrefs.Save();
 
         StartCoroutine(CloseAfterReveal(day == RowDays));
@@ -368,16 +335,6 @@ public class DailyTreats : MonoBehaviour
     }
 
     // ---- helpers ----
-
-    private static void StampText(RectTransform parent, string words, float y, float size, Color color, TMPro.TMP_FontAsset font)
-    {
-        var go = new GameObject("StampText", typeof(RectTransform)); go.transform.SetParent(parent, false);
-        var t = go.AddComponent<TMPro.TextMeshProUGUI>();
-        if (font != null) t.font = font;
-        t.text = words; t.fontSize = size; t.color = color; t.fontStyle = TMPro.FontStyles.Bold;
-        t.alignment = TMPro.TextAlignmentOptions.Center; t.enableWordWrapping = false; t.raycastTarget = false;
-        Place((RectTransform)go.transform, 0f, y, 110f, size * 1.25f);
-    }
 
     private static Sprite Load(string name) => Resources.Load<Sprite>("DailyTreats/" + name);
 
