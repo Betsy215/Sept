@@ -1,17 +1,25 @@
 # System notes index
 
-Deep notes per system, written 7 to 8 October 2026 from the code and scene YAML (file:line references throughout). Read the one for the area you are about to touch before changing it. Line numbers drift as code changes; the method names stay valid.
+Short notes per system: where the code is and how it works today. Every file carries the date it was last verified
+against the code; when you change a system, correct its note in the same commit and move the date. State, rules and
+features in plain words are in `../MANUAL.md` (section 6); numbers players feel are on the report's Mechanisms page.
 
 | File | Read before touching |
 | --- | --- |
-| [01-scene-flow-and-startup.md](01-scene-flow-and-startup.md) | Scene loads, the persistent singletons, startup order, button flows, events, pause and time scale |
-| [02-levels-orders-customers.md](02-levels-orders-customers.md) | LevelManager, the level-complete popup and money count-up, GamePhaseManager, OrderSystem, customers and their animation events, the level assets (24 since 9 October) |
-| [03-food-items-drag-refill.md](03-food-items-drag-refill.md) | Tap and drag input, ServeableItem, DraggableFood, TableLayer, RefillSystem, coffee machine and beans |
-| [04-kitchen.md](04-kitchen.md) | The additive kitchen scene, food gates, bake and respawn timers, CooldownRegistry |
-| [05-scoring-session-shop.md](05-scoring-session-shop.md) | Points and tips, the save file (SessionData) and its JSON, Play and Continue, the Shop purchase flow, adding a shop item |
-| [06-audio-ui-ads-ios.md](06-audio-ui-ads-ios.md) | AudioManager, canvases and popups, scene fades, Unity Ads (rewarded, interstitial, tracking prompt), the iOS build pipeline |
-| [07-data-and-identifier-reference.md](07-data-and-identifier-reference.md) | Every string key, PlayerPrefs key, layer, animation event, tunable number, and Inspector-wired field |
+| [01-scene-flow-and-startup.md](01-scene-flow-and-startup.md) | Scene loads, who goes where, startup order, pause and time scale, tutorials |
+| [02-levels-orders-customers.md](02-levels-orders-customers.md) | The day clock and the day's end, the arrangement and play phases, orders, patience, customers |
+| [03-food-items-drag-refill.md](03-food-items-drag-refill.md) | Tap and drag input, table items, the fixed station, stock, coffee, ice cream, adding a food |
+| [04-kitchen.md](04-kitchen.md) | Opening the kitchen, the kitchen clock and the day's reset, ovens, the choux and cake flow, arranging |
+| [05-scoring-session-shop.md](05-scoring-session-shop.md) | Sale and tips, the star rule, stars as currency, the save's fields, the shop and its tabs |
+| [06-audio-ui-ads-ios.md](06-audio-ui-ads-ios.md) | AudioManager, runtime UI builders, scene fades, logging, iOS settings the code depends on |
+| [07-data-and-identifier-reference.md](07-data-and-identifier-reference.md) | Every string that is matched across code, scenes and the save; PlayerPrefs keys; external ids |
+| [08-map-and-chapters.md](08-map-and-chapters.md) | `Chapter`, which chapter is open, the map, day 9, bonus days, adding a chapter |
+| [09-ads-analytics-purchases.md](09-ads-analytics-purchases.md) | Starting Unity Ads and its retries, where the between-days ad shows, rewarded ads, analytics events and parameters, Unity IAP |
 
-Higher-level docs: `../architecture.md` (overview), `../maintenance.md` (key facts and the refill catalogue), `../TODO.md` (open items, leave-alone list, known issues), `../ios-testing-and-release.md` (build and release).
+Overview: `../architecture.md`. Open problems: `../review-2026-11-25.md` and `../TODO.md`.
 
-Facts the notes were written before, now changed: final-day completion is saved when the last order ends (commit 2865ea7); oven taps on the sticker work (2865ea7); GamePhaseManager fills its food list in Awake (d9ccdee); the tracking prompt waits for the app to be active (90b1b51).
+The deep notes of 7 to 8 October 2026 that these replaced on 26 November 2026 are kept in
+`../history/systems_2026-10/` (with `../history/maintenance_2026-10-07.md`). They describe the October game: four
+scenes, one customer at a time, days ending on an order count, stars from money, one oven per food. Use them only for
+history, or as a starting point for low-level detail of scripts that have changed little since (`ServeableItem`,
+`RefillableItem`, `RefillSystem`, `AudioManager`, `SceneTransitionManager`, the coffee animator), and check the code.

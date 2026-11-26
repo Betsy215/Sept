@@ -1,3 +1,5 @@
+# Archived 26 November 2026. History only: models the 16-day chapter of 12 October 2026 (stars from money
+# thresholds, October prices, Kid = day's maximum). Not the current game; see Docs/MANUAL.md and the Mechanisms page.
 """Economy model for the 16-day chapter (12 October 2026). Mirrors the code: tip = item points x seconds left x 0.1 x
 customer tip multiplier (ScoreManager); order size uniform in [min,max]; items uniform over owned foods; customers uniform
 over owned customers (Kid always orders the max, Chef +1 min). A "natural path" player buys shop items in a sensible order

@@ -1,3 +1,5 @@
+> **Archived 26 November 2026. History only:** the plan of 14 October 2026; the menu book is built (`Assets/Scripts/Utils/MenuBook.cs`). The station caps in this plan were removed later (`SessionManager.StationCap` is 99). Current: `Docs/MANUAL.md` section 6.
+
 # Menu book: plan
 
 Owner, 14 October 2026: chapter 2 is postponed again; first a menu where the player switches owned foods on and off,

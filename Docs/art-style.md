@@ -28,7 +28,7 @@ What the game looks like and how new art is made. Written 24 November 2026 from 
 | Buttons | **Cookies** (iced cookies, Gemini's look picked 17 Nov 2026) | `Store/cookies_2026-11-17`, start menu `Assets/Images/IMG_0452.png` |
 | Panels | **Paper** (receipts, stickers, the finish card, day card, Daily Treats' mint checked card); the only other material is the wooden board | `Resources/DailyTreats/board_paper.png`, `Resources/Map/day_paper.png`, `Assets/Images/board.png` |
 | Tap-me glow | Bright at the edge, fading outward, width 4 px + 15 % of the piece's shorter side, cool white; never a Gaussian blur | `Docs/tools/glow_brush.py` |
-| Text | Delius (since 19 Nov 2026); black titles and money with a cream rim, brown hints | `Assets/TextMesh Pro/Fonts/Delius` |
+| Text | Two fonts, loaded by name: **beachday** (`beachday SDF`) for titles, money and captions (map, hen board, menu book, Daily Treats, the shop's EARNED line, tutorial captions) and **Delius** (`Delius SDF`, since 19 Nov 2026) for hand-written text (shop popups and the book, the words on the day-end card, the tutorial and update cards; the menu stickers' names and prices since 26 Nov 2026) | `Assets/TextMesh Pro/Resources/Fonts & Materials` |
 
 What the owner has rejected: pencil-thin outlines (mine at 2 % read as pencil), glossy 3D shading, glowing light
 effects, detailed "AI Christmas illustration" decoration, soft grey blob shadows on the table, wiggly edges.

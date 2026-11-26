@@ -2,13 +2,15 @@
 
 Read this first in every session on this project. It is the current state: what the game is, the owner's rules,
 where things live, how the game works now, and how each recurring job is done. Dated change notes are in
-`Docs/history/` (the 12 to 13 October log and the pre-rewrite manual and TODO are there).
+`Docs/history/` (the 12 to 13 October log, the pre-rewrite manual and TODO, the October system notes and the
+finished plans are there).
 
 Last updated 24 November 2026: the whole manual was refreshed against the code, the git log and the memory notes (sections 1 and 2 earlier the same day, sections 3 to 11 in the evening).
 
-**Review of 25 November 2026:** `Docs/review-2026-11-25.md` lists the open bugs (R1-R19), the docs that are out of date
-(architecture.md, maintenance.md, systems/*), surprises for newcomers, and the market research. Read it before
-changing code or trusting those older docs.
+**Review of 25 November 2026:** `Docs/review-2026-11-25.md` lists the open bugs (R1-R19), surprises for newcomers and
+the market research. Read it before changing code. The out-of-date docs it found were cleaned up on 26 November 2026:
+`Docs/architecture.md` and `Docs/systems/*.md` were rewritten against the code (each says when it was last verified),
+the October notes moved to `Docs/history/`.
 
 **Chapter 3 (winter) and the secret chapter (Day of the Dead):** the owner's plan for the rest of 2026 is in
 `Docs/chapter3-and-secret-plan.md` (15 November 2026). Read it before any work on either.
@@ -97,13 +99,11 @@ changing code or trusting those older docs.
 | `Docs/ios-testing-and-release.md` | **The release guide**: test builds, TestFlight, store releases, store assets, upload errors |
 | `Docs/tools/report_page/README.md` | **The report guide**: the page's source, sections, ticks and the update recipe |
 | `Docs/art-style.md` | **The art style guide**: the game's looks and how new art is made and briefed |
-| `Docs/architecture.md` | Before touching gameplay code: scene flow, singletons, systems |
-| `Docs/systems/*.md` | Before changing one system (01 scenes, 02 levels/orders/customers, 03 food/drag/refill, 04 kitchen, 05 scoring/save/shop, 06 audio/UI/ads/iOS, 07 identifiers and tunables). Written before 12 October 2026: section 6 here and the code win where they differ (the kitchen doc still describes the October ovens) |
-| `Docs/maintenance.md` | Scene wiring invisible in code, scoring, shop table, refill catalogue (October state) |
+| `Docs/architecture.md` | Before touching gameplay code: scenes and flow, objects that outlive a scene, which script does what, where to change things (verified 26 November 2026) |
+| `Docs/systems/*.md` | Before changing one system; short notes verified against the code on 26 November 2026 (index in `Docs/systems/README.md`): 01 scene flow and startup, 02 days/orders/customers, 03 food/drag/stock, 04 kitchen, 05 money/stars/save/shop, 06 audio/UI/fades/iOS settings, 07 identifiers and PlayerPrefs keys, 08 map and chapters, 09 ads/analytics/purchases. Correct the note in the same commit as the code |
 | `Docs/chapter3-and-secret-plan.md` | Before any chapter 3 (winter) or secret chapter work |
-| `Docs/chapter2-plan.md`, `Docs/menu-book-plan.md` | History of how chapter 2 and the menu book were planned (both built) |
 | `Docs/TODO.md` | Open items, Leave alone, known issues |
-| `Docs/history/` | Dated logs; the old manual and TODO |
+| `Docs/history/` | History only, never the current state: dated logs, the old manual and TODO, the October 2026 system notes (`systems_2026-10/`, `maintenance_2026-10-07.md`), the finished plans for chapter 2 and the menu book (`chapter2-plan_2026-10-14.md`, `menu-book-plan_2026-10-14.md`) and the October economy model (`economy_sim_2026-10-12.py`) |
 | Memory notes (`~/.claude/projects/-Users-betzthebest-Desktop-Sept/memory/`) | The owner's picks and the detail behind each feature, by topic; code wins where they disagree |
 
 ## 5. Working in the code

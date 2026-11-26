@@ -1,3 +1,5 @@
+> **Archived 26 November 2026. History only:** the plan of 14 October 2026; chapter 2 was built and released on 18 October 2026. Facts that changed since: chapter 1 has 12 days, so the chapter is no longer `1 + dayIndex / 16` (`Assets/Scripts/Map/Chapter.cs`); chapter 2 opens after day 9. Current: `Docs/systems/08-map-and-chapters.md`.
+
 # Chapter 2 (the beach): implementation plan
 
 Written 14 October 2026 from a full read of the code. Chapter 2 is the goal of the next version. Everything is

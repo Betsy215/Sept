@@ -33,8 +33,6 @@ left over in the code and the store. Done items are removed (git history and `Do
   checking nothing else reads it through `IsFoodItemPurchased`. Most players buy it in chapter 1, where it leaves the shop.
 - `Level13Data..Level16Data.asset` are unused (chapter 1 shrank to 12 days); `LevelData.starThreshold1..3` and
   `ordersPerLevel` are no longer read for stars or the day's end. Harmless.
-- `Docs/systems/*.md` and `Docs/maintenance.md` describe October 2026 (ovens per food, 16-day chapters); MANUAL section 6
-  and the code win.
 - From the 7 to 8 October review and the 13 October play test, not rechecked since:
   - Leaving a day through Pause, Home keeps the coins earned so far and the day replays; Restart rolls them back.
   - Players from 26.03.29 lost bought coffee upgrades in that build (it never saved them); nothing to recover.
@@ -60,7 +58,8 @@ The game is live and working. These were reviewed and the owner chose not to cha
 - Debug flag defaults: leave.
 - Buttons under the notch and home indicator: leave for now. `SafeAreaFitter` exists if this changes.
 - AudioManager prefab vs scene overrides: fine, not every clip is meant to be wired.
-- Hold-to-refill only on Melon (an inactive object): leave. Details in `Docs/maintenance.md`.
+- Hold-to-refill only on Melon (an inactive object): leave. Details in `Docs/history/maintenance_2026-10-07.md`
+  (section "Refill system").
 - Orphan entries Pie, Mont Blanc and Log Cake in the ScoreManager points table: harmless.
 - Kitchen bakes continuing through pause and into the Shop (since 20 to 23 November 2026 the kitchen clock stops on
   pause and `KitchenDay.End` clears the kitchen at the day's end, Restart, Home and the shop's Next).

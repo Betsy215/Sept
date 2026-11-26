@@ -1,85 +1,104 @@
 # Architecture
 
-How the game is put together, for someone opening the project after a break.
+Last verified against the code: 26 November 2026.
+
+How the game is put together. The state, the owner's rules and the features in plain words are in `MANUAL.md`
+(section 6); numbers players feel are on the report's Mechanisms page. This file and `systems/*.md` say where the
+code for each thing is. Paths are under `Assets/Scripts` unless they start with `Assets/`.
 
 ## Scenes and flow
 
+Five scenes in the build (`ProjectSettings/EditorBuildSettings.asset`): MainMenu, GameSceneOne, Shop, KitchenScene, Map.
+
 ```
-MainMenu ──Play / Continue──▶ Map ──a day's Play──▶ GameSceneOne ──finish board, Next──▶ Map ──Play──▶ ad ──▶ Shop ──Next──▶ GameSceneOne
-   ▲                           │  ▲                     │  (pause home ──▶ Map)
-   └────────── home ───────────┘  └─────────────────────┘
+MainMenu ──Play (always a new game)──▶ GameSceneOne as the tutorial ──Let's go──▶ Map
+MainMenu ──Continue──▶ Map
+Map ──tap a day, Play on its card──▶ (between-days ad, from the third day on) ──▶ GameSceneOne
+GameSceneOne ──day-end card, Next──▶ Shop ──Next──▶ Map
+GameSceneOne ──pause, Home──▶ Map            Map ──Home──▶ MainMenu
+GameSceneOne ⇄ KitchenScene (loaded additively over the table, unloaded on close)
 ```
 
-- **MainMenu** creates the persistent managers (below), starts menu music, initialises Unity Ads, and offers Play (new game, asks for a second tap if a saved game exists) and Continue (enabled once a level has been completed).
-- **GameSceneOne** is the only gameplay scene. Every level runs here; the level number comes from the saved session. It has two phases: *arrangement* (drag food onto the table, no timer) and *playing* (customers and orders).
-- **KitchenScene** loads additively on top of GameSceneOne when the kitchen button is tapped. It is where baking and brewing refill stock. While it is open, the game scene's colliders are disabled.
-- **Map** (10 October) is the chapter map: chapter 1 is Scorpio, 16 days; see `Map/MapScreen.cs` and the manual.
-- **Shop** runs between levels. Buys foods, characters, and upgrades with coins, and hosts the rewarded ad button.
+- **MainMenu** holds `SessionManager`, the `AudioManager` prefab, `AdsInitializer`, `DailyTreats` and `TransitionSetup`
+  (which creates `SceneTransitionManager`). Play (`Buttons/ClickPlay.cs`) acts on pointer-up, waits 2 s, calls
+  `StartNewSession()` (the old save is replaced, no confirm) and opens GameSceneOne, where the tutorial runs.
+  Continue (`Buttons/ClickContinue.cs`) is enabled once the tutorial was seen or a day is finished; it opens Map.
+- **Map** (`Map/MapScreen.cs`) is built in code: one page per chapter, a day card, Play. Details: `systems/08`.
+- **GameSceneOne** is the only gameplay scene; the day comes from the save (`SessionManager.GetCurrentLevelIndex`).
+  A day has two phases (`Utils/GamePhaseManager.cs`): arrangement (drag things, the menu book; skipped on day 1 and in
+  the tutorials) and play.
+- **KitchenScene** has no EventSystem and no AudioListener of its own; `Kitchen/KitchenSceneManager.cs` loads it
+  additively and switches off every enabled collider outside the `Kitchen` layer while it is open.
+- **Shop** (`Shop/ShopManager.cs`) comes after every finished day; its Next opens the Map.
 
-Scene changes go through `SceneTransitionManager.TransitionToScene`, which fades to black on its own canvas and uses unscaled time so it works while paused.
+Every scene change goes through `SceneTransitionManager.TransitionToScene` (its own fade canvas, unscaled time).
 
-## Level 0 tutorial (branch feature/tutorial-level)
+## Objects that outlive a scene
 
-`Tutorial/TutorialDirector.cs` is added to the LevelManager object at start when the session has not seen the tutorial (`SessionData.tutorialSeen`) or `TutorialDirector.ReplayRequested` is set. It builds its own overlay canvas (blocker, caption, arrow, end card), skips arrangement, forces a coffee-and-bread order (`OrderSystem.forcedNextOrder`) and freezes the order timer (`OrderSystem.freezeTimer`). Each step points the arrow at one thing (bread, coffee, coffee machine, kitchen button, bread oven) and waits for the player to tap it: the blocker catches every tap (`TapCatcher`), a tap that hits the target's collider or rect is forwarded to the real handler, anything else is ignored. Let's go! restores the coin snapshot, marks the tutorial seen and reloads into Day 1; Replay reloads with the flag set. Sprites live in `Resources/Tutorial` (arrow, moon).
-
-## Evening and night (branch feature/tutorial-level)
-
-`LevelControl/DayNightTint.cs` is added to the LevelManager object every level. It reads `OrderSystem.OrdersCompleted` each frame: with two orders left it fades the main Canvas `bg` image to a dusk blue over 3 s and shows a faint moon; with one left it deepens to night with moon and stars (runtime-built `NightSky` object right above `bg`). While the kitchen is open it overlays the painted window in the kitchen background (`NightWindow`, anchored to the pane's share of the `bg` rect) with the same stage. Nothing else is tinted. The scene reload at Restart or the next day brings daylight back. Days shorter than 4 orders never get night.
-
-## Persistent objects
-
-Created in MainMenu, marked DontDestroyOnLoad, and deduplicated when a scene that also contains them is reloaded.
-
-| Object | Script | Owns |
+| Object | Where it comes from | Holds |
 | --- | --- | --- |
-| SessionManager | `Session/SessionManager.cs` | Coins, current level, purchases, upgrade levels, saved food positions. Saves to PlayerPrefs on every change. |
-| AudioManager | `Utils/AudioManager.cs` | Music per scene or phase, sound effects, mute state. Starts menu music whenever MainMenu loads. |
-| SceneTransitionManager | `SceneTransition/SceneTransitionManager.cs` | Fade canvas and scene loading. |
-| KitchenSceneManager | `Kitchen/KitchenSceneManager.cs` | Opening and closing the kitchen; becomes persistent from the first game scene. |
+| `SessionManager` (`Session/SessionManager.cs`) | MainMenu scene; `SessionInitializer` creates one in MainMenu, GameSceneOne or Shop if it is missing | The save: coins, days done, stars, purchases, menu, positions. Also hosts `KitchenFlow`'s coroutines |
+| `AudioManager` (`Utils/AudioManager.cs`) | Prefab instance in MainMenu; `LevelManager.EnsureAudioManagerExists` as a fallback | Music and sound effects, mute state |
+| `SceneTransitionManager` | `TransitionSetup` in MainMenu | The fade and scene loading |
+| `KitchenSceneManager` | GameSceneOne scene | Open/close of the kitchen |
+| `[InterstitialAdService]` | Created on first use | The between-days ad; also runs `AdsInitializer`'s coroutines |
+| `RemoveAdsStore` | Created by `RemoveAds.Init()`, first called from the Shop | Unity IAP listener |
+| `KitchenTimerHelper` objects | Created per oven / fruit | Kitchen timers that survive the kitchen closing |
+| `[UpdateGate]`, `CookiePress`, `KitchenSwipe` objects | `RuntimeInitializeOnLoadMethod` | Update card, button crunch, swipe listener |
 
-Everything else is per scene.
+State also lives in statics that no scene load clears: `KitchenClock`, `CooldownRegistry`, `OvenKitchenBase.Recipes`,
+`KitchenFlow`, `AppleInKitchen.Count`, `CoconutInKitchen.Count`. `KitchenDay.End()` (`Kitchen/KitchenClock.cs`) resets
+them; new kitchen state must be cleared there too.
 
-## Gameplay systems in GameSceneOne
+## Systems, by script
 
-| System | Script | Role |
-| --- | --- | --- |
-| Level | `LevelControl/LevelManager.cs` | Loads `LevelData` for the current level, applies it to the other systems, handles pause, restart, level complete popup, and the money count-up. |
-| Phase | `Utils/GamePhaseManager.cs` | Switches between arrangement and playing; enables dragging or serving on each food item. |
-| Table | `Utils/TableLayer.cs` | Sizes the table to the camera and safe area; defines drag bounds. |
-| Customers | `Customer/CustomerManager.cs`, `CustomerController.cs`, `*Customer.cs` | Spawns one customer at a time from the purchased characters, plays walk-in and walk-out, and asks OrderSystem for an order. Girl, Boy and Kid are default; Grandma (tips x2), Chef (`ExtraOrderItems` 1), Yoga (`OrderTimeMultiplier` 1.5) and Businessman (tips x3, time x0.75) come from the shop; CustomerManager applies each customer's tip multiplier, extra items and order-time multiplier on arrival and restores the level values on the next spawn. New customer sprites live in `Assets/Images/Customers` with a chest pivot (0.5, 0.6) so both poses line up at the counter. |
-| Orders | `ItemsAndOrders/OrderSystem.cs` | Builds an order of 1 to 4 purchased foods, shows it in a speech bubble with a countdown, accepts served items, completes or expires the order. |
-| Food items | `ItemsAndOrders/ServeableItem.cs`, `DraggableFood.cs`, `Refill/RefillableItem.cs`, `Refill/RefillSystem.cs` | A tap serves; dragging only in arrangement. A 0.3 s hold refills, but only Melon has that enabled and Melon is inactive, so in practice stock comes from the kitchen. See Docs/maintenance.md for the per-item catalogue. Stock counts and out-of-stock state. |
-| Scoring | `Scoring/ScoreManager.cs`, `StarProgressBar.cs`, `SimpleScorePopup.cs` | Points per item plus a time-based tip per order, star thresholds per level, popups. Money goes to SessionManager when an order completes or expires. |
-| Kitchen | `Kitchen/*`, `Food/FoodInKitchen/*` | Ovens and machines with timers that refill stock; timers survive closing the kitchen via a persistent helper. |
-
-Level end: when completed plus expired orders reach `ordersPerLevel`, LevelManager records the level in the session, stops customers, waits 3 s, and shows the level-complete popup with Next Level (to Shop), Restart (reloads the scene and restores coins to the level-start snapshot), and Main Menu.
+| System | Scripts | Notes | Detail |
+| --- | --- | --- | --- |
+| Day | `LevelControl/LevelManager.cs`, `LevelData.cs` | Loads the day's `LevelData`, runs the day clock, pause, restart, the day-end card and its money count-up | `systems/02` |
+| Phase | `Utils/GamePhaseManager.cs` | Arrangement, then play; both the table's and the kitchen's Ready are needed | `systems/02` |
+| Orders | `ItemsAndOrders/OrderSystem.cs`, `Customer/PatienceMeter.cs` | Up to two open orders, a thinking pause, patience as flowers | `systems/02` |
+| Customers | `Customer/CustomerManager.cs`, `CustomerController.cs`, `*Customer.cs` | One arrival per beat while the clock runs, two slots | `systems/02` |
+| Food on the table | `ItemsAndOrders/ServeableItem.cs`, `DraggableFood.cs`, `Refill/*`, `Utils/TableLayer.cs`, `Utils/FixedStation.cs`, `Food/*` | Tap serves, drag only while arranging | `systems/03` |
+| Kitchen | `Kitchen/*`, `Food/FoodInKitchen/*` | Ovens with a recipe picker, the choux and cake flow, fruit, blender, arranging, the kitchen clock | `systems/04` |
+| Money and stars | `Scoring/ScoreManager.cs`, `StarRule.cs`, `StarProgressBar.cs`, `SimpleScorePopup.cs` | Sale + tip per order; stars from customers served | `systems/05` |
+| Save | `Session/SessionManager.cs` (`SessionData`) | One JSON blob in PlayerPrefs | `systems/05` |
+| Shop | `Shop/ShopManager.cs`, `ShopCookies.cs`, `ShopGlass.cs`, `ShopFlourish.cs` | Tabs Stars / Coins / $, cookie cards, the book | `systems/05` |
+| Map and chapters | `Map/MapScreen.cs`, `Map/Chapter.cs` | Days per chapter, day 9, bonus days | `systems/08` |
+| Ads, purchases, analytics | `Ads/*`, `Purchases/RemoveAds.cs`, `Analytics/AnalyticsLog.cs`, `DailyTreats/*` | | `systems/09` |
+| Audio, UI helpers | `Utils/AudioManager.cs`, `Buttons/*`, `SceneTransition/*` | | `systems/06` |
+| Tutorials | `Tutorial/TutorialDirector.cs`, `Utils/ArrangeLesson.cs`, `Utils/CandyGift.cs` | Added by `LevelManager.Start` when due | `systems/01` |
 
 ## Saving
 
-One JSON blob under the PlayerPrefs key `FoodTruckSession`, written synchronously after every change and on app pause. Upgrade levels are stored as two parallel lists because Unity's JsonUtility cannot serialise a Dictionary. A high score lives under `FoodTruckHighScore`. Settings (music and SFX on or off) are separate PlayerPrefs ints.
-
-## Ads
-
-`Ads/AdsInitializer.cs` (MainMenu) requests App Tracking Transparency, initialises Unity Ads with the iOS game ID, and preloads the interstitial. `Ads/RewardedAdButton.cs` (Shop) loads `Rewarded_iOS`, retries with backoff, shows on tap, and adds coins only when the ad completed and a session is active. `Ads/InterstitialAdService.cs` is a persistent object created on first use; `LevelManager.LoadNextLevel` asks it to show `Interstitial_iOS` and then opens the Shop, or opens the Shop at once when no ad is ready. `Assets/Editor/IOSPostBuild.cs` writes the tracking usage string and the export-compliance key into Info.plist on every export.
-
-Banners were considered and parked: they earn roughly a hundredth of an interstitial per impression and would cover the table or the order bubble in GameSceneOne. If ever added, show them only in Shop and MainMenu and hide them in `SceneTransitionManager.TransitionToScene`.
+`SessionManager.SaveSession` writes the whole `SessionData` as JSON to the PlayerPrefs key `FoodTruckSession` and calls
+`PlayerPrefs.Save()` after every change. Other keys (settings, Remove Ads, Daily Treats, shop NEW tags, rating prompt,
+high score) are listed in `systems/07`. Add fields to `SessionData`; never rename one (old saves would lose it).
 
 ## Where to change things
 
 | Want to | Go to |
 | --- | --- |
-| Tune a level (orders, timer, order size, star thresholds) | `Assets/Entity/Level<N>Data.asset` (9 October: every day got 2 more orders, thresholds scaled by the same ratio) |
-| Add a level | Duplicate a LevelData asset, add it to the `allLevels` array on LevelManager in GameSceneOne |
-| Add a shop item | Shop scene, duplicate a ShopItemPrefab under the item container, set type, name, price |
-| Add a food | Prefab under `Assets/Prefabs`, a `ServeableItem` + `RefillableItem` on it, matching `foodType` string in OrderSystem's list, shop item to unlock it |
-| Change music or SFX | AudioManager prefab fields |
-| Change ad reward amount | RewardedAdButton in the Shop scene, Coins Per Ad |
-| Change version or build number | Player Settings, see `Docs/ios-testing-and-release.md` |
+| Tune a day (length, beat, order size, patience) | `Assets/Entity/Level<N>Data.asset`; the scene's `LevelManager.allLevels` holds Level1..12 then Level17..32. Update the Mechanisms page |
+| Change days per chapter or add a chapter | `Map/Chapter.cs` (`DaysPerChapter`, `Count`), the assets in `allLevels`, `Resources/Chapter<n>` |
+| Change a sale price | The `ScoreManager` points table in GameSceneOne (an unlisted food pays 0) |
+| Change the star rule | `Scoring/StarRule.cs` |
+| Change bake or kitchen times | `OvenKitchenBase.BakeTimes`, `KitchenFlow.MixSeconds/CutSeconds`, `KitchenBlender.StepSeconds`, `IceCreamStation.WaffleSeconds`, `KitchenSpeed.Faster` |
+| Add a shop card | Shop.unity (a `ShopItemPrefab` instance), or a runtime card in `ShopManager.Start` (`Ensure...Card`) |
+| Change when the first ad shows | `MapScreen.FirstAdDay`; pacing in `InterstitialAdService` |
+| Change the rewarded coin amount | `RewardedAdButton` in Shop.unity (`_coinsPerAd`, 50 in the scene and in code) |
+| Add an analytics event | `AnalyticsLog` and the Unity dashboard's Event Manager (undefined events are dropped) |
+| Version and build number | `Docs/ios-testing-and-release.md` |
 
 ## Conventions and gotchas
 
-- Food types, character names, and upgrade keys are plain strings compared across scripts (`"Bread"`, `"Coffee"`, `"Girl"`, `"CoffeeMachine"`). Rename in every place at once or purchases silently stop matching.
-- Input is EventSystem based (`IPointerDown/Up/Click`, `IDrag`). Do not add `OnMouse*` handlers; they ignore pause and misbehave with multi-touch.
-- Pause sets `Time.timeScale = 0`. Anything that must move while paused uses unscaled time.
-- Debug logging is verbose; `Utils/LogControl.cs` filters it to warnings and errors in release builds.
-- Scripts can be compiled outside Unity for a quick check: see `CLAUDE.md`.
+- Foods, characters, upgrades and shop cards are plain strings matched across scripts and scenes (`systems/07`).
+- Input is EventSystem-based: a `PhysicsRaycaster` on the GameSceneOne camera and 3D `BoxCollider`s on the items.
+  No `OnMouse*`; no 2D colliders on tappable things.
+- Pause sets `Time.timeScale = 0` and `KitchenClock.Pause()`. Anything that must move while paused uses unscaled time;
+  anything in the kitchen uses `KitchenClock`.
+- Only three methods are called from scene files (Shop.unity buttons): `ShopManager.LoadNextGameLevel`,
+  `ConfirmPurchase`, `CancelPurchase`. `ShopManager.Wire` adds no runtime listener to a button that has one.
+- Most newer UI (map, cards, tabs, book, tutorials, gift cards) is built at runtime; look for the builder class.
+- `Utils/LogControl.cs` filters `Debug.Log` to warnings and errors outside the editor and development builds.
+- `Utils/FrameRate.cs` sets 60 fps.
+- Compile check without Unity: the csc command in `CLAUDE.md`.

@@ -10,19 +10,19 @@ bar). Chat replies stay short (a few lines); the substance goes in the page. The
 
 ## Pages and sections (fixed; never add, rename, remove or reorder unless the owner asks)
 
-`index.html`, the report, seven sections:
+`index.html`, the report, six sections (the Q&A section was removed by the owner on 26 November 2026; an answer to
+the owner's question goes in Current):
 
 1. **Next**: two cards, **You** (what the owner should look at or decide, my questions with tick boxes) and **Me** (what
    I do next). The owner reads it first: rewrite both at the start and end of every batch. Two or three lines each.
-2. **Q&A**: the owner's questions only (never mine), newest first: bold question + date, a short answer, a picture if it
-   helps, then tick boxes. "Nothing open." when empty.
-3. **Current**: the work in progress, newest first: a card per piece of work with a short bold lead, pictures, one line
-   per option, then tick boxes for the owner's choice. Since 24 November 2026 the C chapter work lives here too.
-4. **MVP**: what goes into the next release, an ordered list. Approved Current cards move here (one line each).
-5. **Backlog**: one check list; items leave only when the owner says so.
-6. **Analysis**: store and ads numbers only (App Store Connect, Unity Analytics/Ads), UTC; each refresh replaces the
+2. **Current**: the work in progress and the answers to the owner's questions, newest first: a card per piece of work
+   with a short bold lead, pictures, one line per option, then tick boxes for the owner's choice. Since 24 November 2026
+   the C chapter work lives here too.
+3. **MVP**: what goes into the next release, an ordered list. Approved Current cards move here (one line each).
+4. **Backlog**: one check list; items leave only when the owner says so.
+5. **Analysis**: store and ads numbers only (App Store Connect, Unity Analytics/Ads), UTC; each refresh replaces the
    last. Exclude the owner's own phone from player counts (production USER_ID `ec14c6a5031c84057b578cfdccaa95c1`).
-7. **Marketing** (always present): the App Store page, ratings, keywords, screenshots, video, events, header.
+6. **Marketing** (always present): the App Store page, ratings, keywords, screenshots, video, events, header.
 
 Two more pages that "clear/clean up the report" never touches:
 - `visuals.html` **Visuals**: real captures of the live build (store page, menu and maps, each chapter's day,
@@ -56,8 +56,8 @@ let's put updates on the report itself").
    why one cannot be done), move approved work to MVP.
 3. Make the batch's changes, refresh Next, publish, commit this folder, push.
 
-Tick ids are unique and dated: `<section>.<topic+date>.<choice>`, e.g. `cur.c24.shop.desert`, `qa.day3.a`,
-`next.day16.no`. Old ids stay in the db; the page reads only ids it still has.
+Tick ids are unique and dated: `<section>.<topic+date>.<choice>`, e.g. `cur.c24.shop.desert`,
+`next.day16.no` (ids starting `qa.` are from the removed Q&A section). Old ids stay in the db; the page reads only ids it still has.
 
 The page's markup: `<div class="card">`, `<figure><img ...><figcaption>`, `<ul class="checks"><li><label><input
 type="checkbox" data-id="..."> Label</label></li></ul>`. The page script saves ticks itself (it declares
@@ -74,5 +74,5 @@ type="checkbox" data-id="..."> Label</label></li></ul>`. The page script saves t
 
 ## "Clean up the report" means
 
-Remove everything answered, approved or seen; Q&A, Current and Backlog may end as "Nothing open."; MVP keeps the next
+Remove everything answered, approved or seen; Current and Backlog may end as "Nothing open."; MVP keeps the next
 release's list (or "nothing yet"); Next is rewritten; Visuals and Mechanisms stay untouched.
