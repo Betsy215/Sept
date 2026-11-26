@@ -10,15 +10,29 @@ nine-card shop, a far smaller save and a Shop that led straight to the next day.
 - Sale price per item: the points table on the `ScoreManager` in GameSceneOne (an unlisted food pays 0). Ice cream
   pays per scoop (`AwardItemPointsValue(food, scoops)`).
 - Tip, when an order is completed: `item points × seconds left × timeBonusMultiplier / 100 × customer tip
-  multiplier`, rounded to cents; `timeBonusMultiplier` is 10 in the scene.
-- The wallet (`SessionData.totalScore`) is paid per order, not per item: on completion `(items + tip) × payFactor`, on
-  expiry `items served × payFactor`, through `SessionManager.AddScoreImmediately`. `payFactor` is 0.5 on a replayed
-  day (`LevelManager.ReplayPayFactor`).
+  multiplier`, rounded to the nearest whole dollar when earned (`Money.Whole`, a half goes up; it was cents until
+  26 November 2026); `timeBonusMultiplier` is 10 in the scene.
+- The wallet (`SessionData.totalScore`) is paid per order, not per item: on completion `Whole(items × payFactor) +
+  Whole(tip × payFactor)`, on expiry `Whole(items served × payFactor)`, through `SessionManager.AddScoreImmediately`.
+  `payFactor` is 0.5 on a replayed day (`LevelManager.ReplayPayFactor`), so the sale and the tip are each rounded to
+  a whole dollar by themselves (7.50 → 8). Example: a $45 order with an $18 tip pays 45 + 18 on a first play and
+  23 + 9 on a replay.
+- The same two numbers go to the receipt over the customer, to the wallet, and into `ScoreManager.PaidSaleToday` /
+  `PaidTipsToday`; the day-end card's Order sale and Tips lines read those sums, so the card is the sum of the day's
+  receipts. The level score (`GetCurrentScore`, analytics `dayEarnings`) keeps the full value on a replay.
 - Three stars pay `LevelManager.ThreeStarBonus` (100) once per day (`SessionManager.RecordLevelStars`,
   `starBonusPaidDays`).
 - Restart restores the wallet to the snapshot taken at the day's start (`SnapshotScoreBeforeLevel`, memory only) and
   re-adds a three-star bonus already paid. The pause menu's Home (`GoToMap`) does not restore it.
-- Money is a float kept at whole cents (`SessionManager.RoundToCents`); compare with `CanAfford`.
+- No cents at all (owner, 26 November 2026): every amount that reaches the wallet is whole dollars (item prices,
+  rounded tips and replay pay, the 100 bonus, Daily Treats, the coin ad's 50, shop prices). A save from before can
+  hold cents: `LoadSession` floors `totalScore` once. The wallet is still a float that goes through
+  `SessionManager.RoundToCents`; compare with `CanAfford`.
+- Every money text goes through `Money.Format` (`Utils/Money.cs`): "$ 1,814" (dollar sign, space, thousands comma;
+  a part of a dollar is cut off, which only the day-end count-up has). Used by the hen (`MoneyFlipClock`), the
+  receipt (`SimpleScorePopup`), the day-end card (`LevelManager`), the shop's EARNED line, its "Not enough points"
+  message and the CoinStar card (`ShopManager`), and the map pill (`MapScreen`). Prices typed in `Shop.unity`
+  ("$ 300", "$ 1400") and the painted menu stickers are not formatted by code.
 - The receipt's tip level (`Scoring/SimpleScorePopup.cs` `LevelFor`): Perfect at 70 % or more of the order's time
   left, Nice at 40 % or more, else OK.
 

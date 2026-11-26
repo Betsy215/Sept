@@ -86,7 +86,7 @@ public class SimpleScorePopup : MonoBehaviour
     /// see-through in each), so the yellow can carry its own brown rim: plain yellow does not read on the white paper.
     private void ColourTips(float basePoints, float bonusPoints, TipLevel level)
     {
-        var total = $" ${basePoints:F2}"; var tips = $" Tips: $ {bonusPoints:F2}";
+        var total = " " + Money.Format(basePoints); var tips = " Tips: " + Money.Format(bonusPoints);
         textComponent.text = total + "\n<alpha=#00>" + tips;
         var go = new GameObject("TipsLine", typeof(RectTransform)); go.transform.SetParent(textComponent.transform.parent, false);
         var rt = (RectTransform)go.transform; var from = textComponent.rectTransform;
@@ -160,13 +160,13 @@ public class SimpleScorePopup : MonoBehaviour
 
         if (bonusPoints > 0)
         {
-            // Money is whole cents; "$1.5" next to "Tips: $ 0.25" looked like a different unit
-            popupText = $" ${basePoints:F2}\n Tips: $ {bonusPoints:F2}";
+            // Whole dollars in the one money look (26 November 2026); the amounts come rounded from ScoreManager
+            popupText = " " + Money.Format(basePoints) + "\n Tips: " + Money.Format(bonusPoints);
             textColor = new Color(0.09f, 0.06f, 0.04f);   // money: black letters, cream rim from the font material (owner, 16 October)
         }
         else
         {
-            popupText = $"${basePoints:F2}";
+            popupText = Money.Format(basePoints);
             textColor = new Color(0.09f, 0.06f, 0.04f);   // money: black letters, cream rim from the font material (owner, 16 October)
         }
 

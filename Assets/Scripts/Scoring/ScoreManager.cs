@@ -42,6 +42,11 @@ public class ScoreManager : MonoBehaviour
     public float currentOrderItemPoints = 0; // Track points for current order items
     private float totalTipsEarned = 0f;
     private float currentTipMultiplier = 1.0f;
+    // What the wallet really got today, in whole dollars, as the receipts showed it: the day-end card reads these, so
+    // its two lines are the sum of the day's receipts (26 November 2026; on a replayed day each order is rounded by itself).
+    private float paidSaleToday = 0f, paidTipsToday = 0f;
+    public float PaidSaleToday => paidSaleToday;
+    public float PaidTipsToday => paidTipsToday;
 
     /// Share of each order's money that goes to the wallet: 1 on a first play, ReplayPayFactor on a day already
     /// finished (economy rebalance, 12 October 2026). The level score, and so the stars, still use the full value.
@@ -125,6 +130,7 @@ public class ScoreManager : MonoBehaviour
     {
         currentScore = 0;
         currentOrderItemPoints = 0; // Reset current order tracking
+        paidSaleToday = 0f; paidTipsToday = 0f;
 
         // Clear popup when starting new level
         if (clearPopupOnLevelStart) ClearScorePopup();
@@ -192,13 +198,18 @@ public class ScoreManager : MonoBehaviour
     {
         var timeBonusPoints = remainingTime * timeBonusMultiplier;
         var tipRaw = basepoints * timeBonusPoints / 100f * currentTipMultiplier;
-        var tip = (float)Math.Round(tipRaw, 2, MidpointRounding.AwayFromZero);
+        var tip = Money.Whole(tipRaw);   // whole dollars when earned (owner, 26 November 2026: no cents at all); it was cents
         totalTipsEarned += tip;
 
         currentScore += tip;
 
         // ADD ALL POINTS TO SESSION NOW
-        var totalPoints = (currentOrderItemPoints + tip) * payFactor;
+        // the sale and the tip are each rounded to a whole dollar after the replay share (7.50 -> 8): the receipt, the
+        // day-end card and the wallet all use these two numbers
+        var paidSale = Money.Whole(currentOrderItemPoints * payFactor);
+        var paidTip = Money.Whole(tip * payFactor);
+        paidSaleToday += paidSale; paidTipsToday += paidTip;
+        var totalPoints = paidSale + paidTip;
         if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
             SessionManager.Instance.AddScoreImmediately(totalPoints);
 
@@ -207,7 +218,7 @@ public class ScoreManager : MonoBehaviour
             starProgressBar.UpdateDisplay(currentScore);
 
         var tipLevel = SimpleScorePopup.PendingTip; SimpleScorePopup.PendingTip = SimpleScorePopup.TipLevel.None;   // the finished order's level, for its receipt
-        StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints * payFactor, tip * payFactor, tipLevel));
+        StartCoroutine(DelayedCombinedPopup(paidSale, paidTip, tipLevel));
         PlayBonusSound();
 
         currentOrderItemPoints = 0;
@@ -235,14 +246,16 @@ public class ScoreManager : MonoBehaviour
         // FIX: Still award points earned before expiration
         if (currentOrderItemPoints > 0)
         {
-            // Add accumulated points to session
+            // Add accumulated points to session (a whole dollar after the replay share, the same number on the receipt)
+            var paidSale = Money.Whole(currentOrderItemPoints * payFactor);
+            paidSaleToday += paidSale;
             if (SessionManager.Instance != null && SessionManager.Instance.HasActiveSession())
-                SessionManager.Instance.AddScoreImmediately(currentOrderItemPoints * payFactor);
+                SessionManager.Instance.AddScoreImmediately(paidSale);
 
             UpdateScoreUI(); // Update score display
 
             // Show popup with earned points (no bonus)
-            StartCoroutine(DelayedCombinedPopup(currentOrderItemPoints * payFactor, 0f));
+            StartCoroutine(DelayedCombinedPopup(paidSale, 0f));
         }
 
         ShowFeedback("Order Expired!", Color.red);
@@ -257,7 +270,7 @@ public class ScoreManager : MonoBehaviour
     {
         var displayScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : 0f;
 
-        var scoreDisplayText = "$ " + displayScore.ToString("F2");
+        var scoreDisplayText = Money.Format(displayScore);
 
         if (inGameScoreText != null)
             inGameScoreText.text = scoreDisplayText;

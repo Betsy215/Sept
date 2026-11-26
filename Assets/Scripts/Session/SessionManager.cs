@@ -863,6 +863,9 @@ public class SessionManager : MonoBehaviour
                 if (currentSession.purchasedDecor == null) currentSession.purchasedDecor = new List<string>();
 
                 currentSession.SyncUpgradesFromLists();
+                // No cents at all (owner, 26 November 2026): a save from before can hold some; they are dropped once, here.
+                // Everything added since is whole dollars (ScoreManager rounds tips and replay pay), so they never come back.
+                currentSession.totalScore = Mathf.Floor(currentSession.totalScore + 0.001f);
                 if (currentSession.levelStars == null) currentSession.levelStars = new List<int>();
                 if (currentSession.starBonusPaidDays == null) currentSession.starBonusPaidDays = new List<int>();
                 if (currentSession.enabledFoodItems == null)   // a save from before the menu book: everything bought is on

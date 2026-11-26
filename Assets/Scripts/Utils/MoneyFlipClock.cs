@@ -129,7 +129,7 @@ public class MoneyFlipClock : MonoBehaviour
         wallet = Mathf.Clamp(wallet, 0, 99999);
         if (wallet != shownMoney)
         {
-            money.text = "$" + wallet;
+            money.text = Money.Format(wallet);   // "$ 1,814", the one money look (26 November 2026); it was "$1814"
             if (!instant && shownMoney >= 0)
             {
                 if (bounce != null) StopCoroutine(bounce);

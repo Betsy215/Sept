@@ -244,7 +244,7 @@ public class ShopManager : MonoBehaviour
         if (!session.CanAfford(item.price))
         {
             var currentScore = session.GetTotalScore();
-            ShowPurchaseFailedFeedback($"Not enough points!\nNeed: {item.price} | Have: {currentScore:F2}");
+            ShowPurchaseFailedFeedback($"Not enough points!\nNeed: {Money.Format(item.price)} | Have: {Money.Format(currentScore)}");
             return false;
         }
 
@@ -415,7 +415,7 @@ public class ShopManager : MonoBehaviour
             playerScoreText.enableWordWrapping = false;
             if (scoreFontMax <= 0f) scoreFontMax = playerScoreText.fontSize;
             playerScoreText.enableAutoSizing = true; playerScoreText.fontSizeMax = scoreFontMax; playerScoreText.fontSizeMin = scoreFontMax * 0.55f;
-            playerScoreText.text = $"EARNED: ${Mathf.FloorToInt(currentScore)}<space=1.5em>{stars}";   // one line, whole dollars (owner, 13 October: it wrapped)
+            playerScoreText.text = $"EARNED: {Money.Format(currentScore)}<space=1.5em>{stars}";   // one line, whole dollars (owner, 13 October: it wrapped)
             playerScoreText.color = playerScoreOriginalColor;
             scoreMessageSerial++; // any pending feedback restore is now stale
             PlaceStarIcon(stars.ToString().Length);
@@ -1143,13 +1143,13 @@ public class ShopManager : MonoBehaviour
         var card = go.GetComponent<ShopItemController>();
         card.itemName = CoinStarCardName; card.itemType = ItemType.Decor; card.price = CoinStarPrice; card.isPurchased = false;
         card.upgradeFoodType = ""; card.specialNote = "";
-        card.popupInfoText = "$ " + CoinStarPrice + "\n1 " + TextStars.Token + " for the star shop.";
-        card.purchaseButtonText = "$ " + CoinStarPrice;
+        card.popupInfoText = Money.Format(CoinStarPrice) + "\n1 " + TextStars.Token + " for the star shop.";
+        card.purchaseButtonText = Money.Format(CoinStarPrice);
         var icon = Resources.Load<Sprite>("Cookies/" + CoinStarCardName);
         var iconT = go.transform.Find("ItemIcon"); var img = iconT != null ? iconT.GetComponent<Image>() : null;
         if (img != null && icon != null) img.sprite = icon;
         var priceT = go.transform.Find("PriceText"); var price = priceT != null ? priceT.GetComponent<TextMeshProUGUI>() : null;
-        if (price != null) price.text = "$ " + CoinStarPrice;
+        if (price != null) price.text = Money.Format(CoinStarPrice);
         if (!popupNames.ContainsKey(CoinStarCardName)) popupNames[CoinStarCardName] = "1 " + TextStars.Token;
     }
 

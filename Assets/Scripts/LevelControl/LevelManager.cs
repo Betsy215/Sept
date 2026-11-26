@@ -696,20 +696,19 @@ public class LevelManager : MonoBehaviour
             levelCompletePanel.SetActive(true);
         StyleDayEnd();
 
-        // GetCurrentScore() already includes tips, so split it: order sale + tips = level score.
-        // Each amount is transferred into "Earned" exactly once.
-        // on a replay the wallet got only payFactor of today's money (ScoreManager), so the board shows that share
-        var pay = scoreManager.payFactor;
-        var tips = scoreManager.GetTotalTipsEarned() * pay;
-        var todayScore = scoreManager.GetCurrentScore() * pay;
-        var orderSale = Mathf.Max(0f, todayScore - tips);
+        // Order sale + tips = what the wallet got today. Each amount is transferred into "Earned" exactly once.
+        // Both are the sums of the day's receipts in whole dollars (ScoreManager, 26 November 2026): on a replay each
+        // order's half pay is rounded by itself, so the level score times payFactor could be a dollar or two off.
+        var tips = scoreManager.PaidTipsToday;
+        var orderSale = scoreManager.PaidSaleToday;
+        var todayScore = orderSale + tips;
         var totalScore = SessionManager.Instance != null ? SessionManager.Instance.GetTotalScore() : todayScore;
         var earnedBeforeLevel = Mathf.Max(0f, totalScore - todayScore - threeStarBonusPaid);
         var earnedAfterSale = totalScore - tips - threeStarBonusPaid;
 
-        SetMoneyLine(todayTip, "Tips Earned:", $"$ {tips:F2}");
-        SetMoneyLine(todaySale, "Today Sale:", $"$ {orderSale:F2}");
-        SetMoneyLine(totalEarned, "Earned:", $"$ {earnedBeforeLevel:F2}");
+        SetMoneyLine(todayTip, "Tips Earned:", Money.Format(tips));
+        SetMoneyLine(todaySale, "Today Sale:", Money.Format(orderSale));
+        SetMoneyLine(totalEarned, "Earned:", Money.Format(earnedBeforeLevel));
 
         SetupLevelCompleteButtons();
         UpdateUnlockedItemsDisplay();
@@ -719,7 +718,7 @@ public class LevelManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         yield return StartCoroutine(AnimateFullTransfer(todayTip, totalEarned, "Tips:", "Earned:", tips,
             totalScore - threeStarBonusPaid));
-        if (threeStarBonusPaid > 0) SetMoneyLine(totalEarned, "Earned:", $"$ {totalScore:F2}");
+        if (threeStarBonusPaid > 0) SetMoneyLine(totalEarned, "Earned:", Money.Format(totalScore));
 
         var isLastLevel = currentLevelIndex >= LastDayIndex || Chapter.IsLastDay(currentLevelIndex);
         if (isLastLevel)
@@ -740,9 +739,9 @@ public class LevelManager : MonoBehaviour
         UpdateUnlockedItemsDisplay();
 
         if (isNewRecord)
-            totalEarned.text = $"New Record! ${totalScore:F2}";
+            totalEarned.text = "New Record! " + Money.Format(totalScore);
         else
-            totalEarned.text = $"Final Score: ${totalScore:F2}";
+            totalEarned.text = "Final Score: " + Money.Format(totalScore);
         // on the journal page the total is written on the pink ribbon: cream, and small enough to stay on it
         totalEarned.text = "<color=#FFF8EC>" + totalEarned.text + "</color>";
         totalEarned.enableAutoSizing = true; totalEarned.fontSizeMax = 60f; totalEarned.fontSizeMin = 30f;
@@ -1022,8 +1021,8 @@ public class LevelManager : MonoBehaviour
         var targetStart = targetFinalAmount - amountToTransfer;
 
         // Set initial values
-        SetMoneyLine(sourceText, sourcePrefix, $"$ {sourceStart:F0}");
-        SetMoneyLine(targetText, targetPrefix, $"$ {targetStart:F0}");
+        SetMoneyLine(sourceText, sourcePrefix, Money.Format(sourceStart));
+        SetMoneyLine(targetText, targetPrefix, Money.Format(targetStart));
 
         var elapsedTime = 0f;
         var nextSoundTime = 1f;
@@ -1044,8 +1043,8 @@ public class LevelManager : MonoBehaviour
             var currentTarget = Mathf.Lerp(targetStart, targetFinalAmount, easedProgress);
 
             // Update UI
-            SetMoneyLine(sourceText, sourcePrefix, $"$ {currentSource:F0}");
-            SetMoneyLine(targetText, targetPrefix, $"$ {currentTarget:F0}");
+            SetMoneyLine(sourceText, sourcePrefix, Money.Format(currentSource));
+            SetMoneyLine(targetText, targetPrefix, Money.Format(currentTarget));
 
             // Play sound every second
             if (elapsedTime >= nextSoundTime)
@@ -1059,10 +1058,10 @@ public class LevelManager : MonoBehaviour
         }
 
         // Final values
-        SetMoneyLine(sourceText, sourcePrefix, "$ 0");
+        SetMoneyLine(sourceText, sourcePrefix, Money.Format(0f));
         if (targetText != null)
         {
-            SetMoneyLine(targetText, targetPrefix, $"$ {targetFinalAmount:F0}");
+            SetMoneyLine(targetText, targetPrefix, Money.Format(targetFinalAmount));
             targetText.color = targetOriginalColor;
         }
 

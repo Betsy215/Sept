@@ -114,7 +114,8 @@ the October notes moved to `Docs/history/`.
 - Strings are identifiers (foods, characters, upgrades, shop cards): grep everywhere before renaming. Add serialized
   fields, never rename them. Three Shop methods are wired in scenes (`LoadNextGameLevel`, `ConfirmPurchase`, `CancelPurchase`).
 - Input is EventSystem-based (3D BoxColliders plus a PhysicsRaycaster). No `OnMouse*`.
-- Money is a float at whole cents (`SessionManager.RoundToCents`, `CanAfford`). Show it with `Mathf.FloorToInt`.
+- Money is whole dollars since 26 November 2026 (still a float through `SessionManager.RoundToCents`, `CanAfford`):
+  round anything new that reaches the wallet with `Money.Whole`, show every amount with `Money.Format` ("$ 1,814").
 - Most new UI is built at runtime in code (map, receipts, cards, tutorials, journal, gift cards); look for the builder
   class before searching the scene.
 - **Never edit a scene file on disk while the editor has it open** (a "modified externally" dialog blocks the bridge).
