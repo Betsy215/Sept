@@ -108,6 +108,7 @@ public class GamePhaseManager : MonoBehaviour
 
         // Start in arrangement phase
         StartArrangementPhase();
+        StartCoroutine(ReadyAboveBackRow());
 
         DebugLog("GamePhaseManager initialized");
     }
@@ -237,6 +238,34 @@ public class GamePhaseManager : MonoBehaviour
         var move = new Vector3(0f, want - card.position.y, 0f);
         card.position += move; if (words != null) words.position += move;
         card.localScale = hintCardScale * KitchenHintScale; if (words != null) words.localScale = hintTextScale * KitchenHintScale;
+    }
+
+    /// Ready sits just above the table's back row (owner, 26 November 2026: "during arrangement, move ready button around
+    /// so it doesn't cover up candy jar"): it stood on the row itself, over the hen and half the jar. The row's top
+    /// is measured on the real things (the hen, the jar, the pots), so every screen size gets its own place.
+    private const float ReadyVisibleShare = 0.56f, ReadyGap = 18f;   // the cookie fills about this share of the button's height; canvas units of air above the row
+    private System.Collections.IEnumerator ReadyAboveBackRow()
+    {
+        yield return null; yield return null;   // the back row is laid out in the first frames (CandyJar.Ensure, TableBackRowAlign)
+        if (doneButton == null) yield break;
+        var cam = Camera.main; var rt = (RectTransform)doneButton.transform; var parent = rt.parent as RectTransform;
+        if (cam == null || parent == null) yield break;
+        var top = float.MinValue; var any = false;
+        var decor = GameObject.Find("TableDecor");
+        if (decor != null) foreach (var r in decor.GetComponentsInChildren<SpriteRenderer>()) { if (!r.enabled) continue; top = Mathf.Max(top, r.bounds.max.y); any = true; }
+        var hen = FindObjectOfType<MoneyFlipClock>();
+        if (hen != null) foreach (var r in hen.GetComponentsInChildren<Renderer>()) { if (!r.enabled) continue; top = Mathf.Max(top, r.bounds.max.y); any = true; }
+        if (!any) yield break;
+        var canvas = rt.GetComponentInParent<Canvas>();
+        var uiCam = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
+        var screen = cam.WorldToScreenPoint(new Vector3(rt.position.x, top, 0f));
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, screen, uiCam, out var local)) yield break;
+        var half = rt.rect.height * Mathf.Abs(rt.localScale.y) * ReadyVisibleShare / 2f;
+        var y = local.y + ReadyGap + half;
+        if (y <= doneButtonHome.y) yield break;   // already clear of the row
+        // anchoredPosition and the parent's local space share the origin here (the button is anchored at the canvas's middle)
+        doneButtonHome = new Vector2(doneButtonHome.x, doneButtonHome.y + (y - rt.localPosition.y));
+        if (!inKitchen) rt.anchoredPosition = doneButtonHome;
     }
 
     /// The kitchen opened or closed while arranging (KitchenArrangeRunner): the Ready button goes down onto the

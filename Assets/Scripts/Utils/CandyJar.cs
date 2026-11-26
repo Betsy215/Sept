@@ -66,6 +66,9 @@ public class CandyJar : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         if (eventData.pointerCurrentRaycast.gameObject != gameObject) return;
+        // while arranging, a tap shows how many candies there are (owner, 26 November 2026); in the day it gives one away
+        var phase = FindObjectOfType<GamePhaseManager>();
+        if (phase != null && phase.GetCurrentPhase() == GamePhase.ARRANGEMENT) { CandyGift.ShowCountCard(this); return; }
         Tap();
     }
 

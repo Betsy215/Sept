@@ -209,6 +209,41 @@ public static class CandyGift
     private static readonly Color Ink = new Color(0.36f, 0.20f, 0.09f), Soft = new Color(0.47f, 0.31f, 0.20f);
     private static TMP_FontAsset Title() => Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF");
     private static TMP_FontAsset Hand() { var f = Resources.Load<TMP_FontAsset>("Fonts & Materials/Delius SDF"); return f != null ? f : Title(); }
+    // ---------------------------------------------------------------- the count card (26 November 2026)
+    /// A tap on the jar while arranging: a paper card with the jar and how many candies are in it (there is no upper
+    /// limit any more, and the jar's picture is full from nine up). The DONE cookie or a tap beside the card closes it.
+    private static bool countCardOpen;
+    public static void ShowCountCard(CandyJar jar)
+    {
+        if (countCardOpen || jar == null) return;
+        jar.StartCoroutine(CountCard());
+    }
+    private static IEnumerator CountCard()
+    {
+        countCardOpen = true;
+        var ui = Overlay(); ui.gameObject.name = "CandyCount";
+        var n = CandyJar.Candies; var closed = false;
+        var dim = Img("Tap", ui, null, new Color(0f, 0f, 0f, 0f)); Stretch(dim.rectTransform); dim.gameObject.AddComponent<Button>().onClick.AddListener(() => closed = true);
+        var panel = Img("Panel", ui, Resources.Load<Sprite>("Map/day_paper"), Color.white); panel.rectTransform.sizeDelta = new Vector2(700f, 740f); panel.raycastTarget = true;
+        var title = Txt("Title", panel.rectTransform, Title(), 78f, Ink, "CANDIES"); Place(title.rectTransform, new Vector2(0f, 232f), new Vector2(620f, 110f));
+        var jarImg = Img("Jar", panel.rectTransform, JarSprite(n), Color.white); jarImg.preserveAspect = true; Place(jarImg.rectTransform, new Vector2(-110f, 30f), new Vector2(250f, 250f));
+        var count = Txt("Count", panel.rectTransform, Title(), 130f, Ink, "x " + n); Place(count.rectTransform, new Vector2(120f, 30f), new Vector2(330f, 170f)); count.enableWordWrapping = false;
+        var ok = Img("LetsGo", panel.rectTransform, Resources.Load<Sprite>("UI/btn_done"), Color.white); ok.preserveAspect = true; Place(ok.rectTransform, new Vector2(0f, -228f), new Vector2(300f, 200f));
+        ok.gameObject.AddComponent<Button>().onClick.AddListener(() => closed = true);
+        Sound("Audio/flower_pop");
+        panel.transform.localScale = Vector3.one * 0.6f;
+        for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.22f) { var k = Mathf.Clamp01(t); dim.color = new Color(0f, 0f, 0f, 0.5f * k); panel.transform.localScale = Vector3.one * Mathf.LerpUnclamped(0.6f, 1f, Back(k)); yield return null; }
+        panel.transform.localScale = Vector3.one;
+        while (!closed && ui != null) yield return null;
+        if (ui != null)
+        {
+            var group = ui.gameObject.AddComponent<CanvasGroup>();
+            for (var t = 0f; t < 1f; t += Time.unscaledDeltaTime / 0.15f) { group.alpha = 1f - Mathf.Clamp01(t); yield return null; }
+            Object.Destroy(ui.gameObject);
+        }
+        countCardOpen = false;
+    }
+
     private static Sprite JarSprite(int n) => Resources.Load<Sprite>("Decor/candy_jar_" + Mathf.Clamp(n, 0, CandyJar.Full));
 
     private static RectTransform Overlay()
