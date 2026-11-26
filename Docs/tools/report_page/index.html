@@ -74,10 +74,10 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
+<p><b>Your store test today:</b> a short list to tick while you play is at the top of Current.</p>
 <p><b>Ads:</b> nothing must be fixed now; one thing I would add (measuring). At the top of Current.</p>
 <p><b>Shop page:</b> five new pictures (7 to 11) beside the first six. Tell me by number.</p>
 <p><b>Your questions</b> (Play wiping a save, money on screen, the map lock) are answered in Current, with boxes to pick from.</p>
-<p><b>Old docs</b> are cleaned up; one box to tick in Current.</p>
 <p><b>Yesterday (25 November)</b> is in Analysis: 10 new players, $0.10 from ads, 8 downloads.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
@@ -87,6 +87,20 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="current"><span class="n">2</span>Current</h2>
 <p class="sub" style="margin:0 0 8px">26 November: ads, the shop page, and what is left of the game review.</p>
+<div class="card">
+<p style="margin-top:0"><b>Your store test today: what helps most.</b> <small>The store copy is 2026.11.24. A new game is the most useful: it walks the first days, where players leave. Your phone is left out of the player counts; afterwards I read your session and compare it with what you tick here.</small></p>
+<p><b>Ads</b> (the first one is due when you start day 3):</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="test26.ad3"> <span>An ad showed at the start of day 3</span></label></li><li><label><input type="checkbox" data-id="test26.ad4"> <span>An ad showed at the start of day 4</span></label></li><li><label><input type="checkbox" data-id="test26.ad5"> <span>An ad showed at the start of day 5</span></label></li><li><label><input type="checkbox" data-id="test26.ad6"> <span>An ad showed at the start of day 6</span></label></li><li><label><input type="checkbox" data-id="test26.whole"> <span>I watched one ad to the end</span></label></li><li><label><input type="checkbox" data-id="test26.skip"> <span>I skipped one ad</span></label></li><li><label><input type="checkbox" data-id="test26.close"> <span>I closed the app during one ad and opened it again (this tells me what the game records then)</span></label></li><li><label><input type="checkbox" data-id="test26.stuck"> <span>An ad got stuck or the screen froze</span></label></li>
+</ul>
+<p><b>Other things to watch</b></p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="test26.rate"> <span>The "rate this game" popup came up (it is due in the shop after day 3)</span></label></li><li><label><input type="checkbox" data-id="test26.treats"> <span>Daily Treats: it was unclear which sticker is today's</span></label></li><li><label><input type="checkbox" data-id="test26.hard"> <span>Days 2 or 3 felt too hard to keep 3 stars</span></label></li><li><label><input type="checkbox" data-id="test26.other"> <span>Something else (tell me in chat)</span></label></li>
+</ul>
+<p style="font-size:14px">Already known in this version, no need to note: the jumbled text on the day 9 gift card, the notification question at first launch, money shown with and without cents.</p>
+<ul class="checks"><li><label><input type="checkbox" data-id="test26.seen"> <span>Seen, remove this</span></label></li></ul>
+</div>
+
 <div class="card">
 <p style="margin-top:0"><b>Ads: what happens when an ad should show.</b> <small>Store copies, 18 to 25 November, your phone left out. Unity Ads' own counts beside what the game logs. Almost all of it is on the older versions, where the ad came at the day's end.</small></p>
 <p><b>Do we need to fix anything? Nothing is broken that must be fixed now.</b></p>
@@ -154,25 +168,6 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.money26.d1"> <span><strong>Keep today's lines (my pick)</strong>: Order sale and Tips stay written; only the bottom line counts up, renamed WALLET (in the shop too); a "3-star bonus $ 100" line when it is paid.</span></label></li><li><label><input type="checkbox" data-id="cur.money26.d2"> <span><strong>Bottom line = TODAY</strong>: the card shows only the day's total; the wallet shows on the hen, shop and map.</span></label></li><li><label><input type="checkbox" data-id="cur.money26.d3"> <span><strong>Keep the pouring animation</strong>, then write the day's numbers back.</span></label></li>
 </ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>The map lock for very old saves: worth fixing?</b></p>
-<p><b>Not now.</b> It needs three things at once: a save that was already in chapter 2 before the day 9 gift existed (before 20 November), Home tapped in the two or three seconds before that gift shows, then the left arrow on the next visit. Only about four players have ever reached chapter 2, and closing and reopening the app clears it. The fix is small, but it sits in the map code we just changed. I would do it the next time that code is opened.</p>
-<ul class="checks"><li><label><input type="checkbox" data-id="cur.maplock26.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.maplock26.fix"> <span>Fix it anyway</span></label></li></ul>
-</div>
-
-
-<div class="card">
-<p style="margin-top:0"><b>Old docs: cleaned up.</b> <small>Every doc was checked against the code as it is today.</small></p>
-<ul>
-<li><b>Rewritten to match the game now:</b> the architecture guide and the seven system notes, each shorter and dated 26 November. Two new notes: the map and chapters; ads, analytics and purchases.</li>
-<li><b>Moved to history</b> (kept, each with a note on what is wrong): the October versions of those notes, the old maintenance guide, the chapter 2 plan, the menu book plan and the old economy script.</li>
-<li><b>Corrected:</b> the manual's state (2026.11.24 live, and what waits for a build), the report guide (six sections), the art guide's font line, the public README on GitHub.</li>
-<li><b>What was most misleading:</b> the old docs had the ad between the map and the shop, a day ending after a set number of orders, one customer at a time, stars from money, and a 5-coin ad reward. All wrong today.</li>
-</ul>
-<p style="font-size:14px">One file I left for you to decide: the project's CLAUDE.md, the first thing every new session reads, still says 2026.11.24 is in review and points only at the architecture guide.</p>
-<ul class="checks"><li><label><input type="checkbox" data-id="cur.docs26.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.docs26.claudemd"> <span>Update CLAUDE.md too (the live version, and a pointer to the new system notes)</span></label></li></ul>
 </div>
 
 <h2 id="mvp"><span class="n">3</span>MVP</h2>
