@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 /// pictures Resources/Decor/candy_jar_0..9 (Store/redesign/candy_jar/jar_states9.py). Candies live in the session (SessionManager.Candies).
 public class CandyJar : MonoBehaviour, IPointerClickHandler
 {
-    public const int Full = 9; public const int PerPurchase = 3;        // the jar holds nine (owner, 26 October 2026, night; was six); the shop sells three at a time
+    public const int Full = 9; public const int PerPurchase = 3;        // the jar PICTURE is full at nine; the shop sells three at a time. No cap on the count (owner, 26 November 2026: "keep a count, don't cap candy in the jar"): CountLabel shows it
     public static readonly Vector3 LocalPosition = new Vector3(0.62f, -0.065f, 0f); // on the back band between the hen and the pots, its bottom on the hen's line (owner, 26 October: all fixed items' bottoms align)
     public const float Scale = 0.42f;                                 // smaller (owner); Gemini's jar fills 0.6 of its canvas; its base lands on the pots' bottom line: centre = -0.357 + 0.696 x scale
 
@@ -38,7 +38,30 @@ public class CandyJar : MonoBehaviour, IPointerClickHandler
     {
         if (sr == null) sr = GetComponent<SpriteRenderer>();
         var s = Resources.Load<Sprite>("Decor/candy_jar_" + Mathf.Clamp(Candies, 0, Full)); if (s != null) sr.sprite = s;
+        CountLabel();
     }
+
+    /// The number of candies, at the jar's lower right (26 November 2026): the hen's yellow with a brown outline; hidden at zero
+    private TMPro.TextMeshPro count;
+    private void CountLabel()
+    {
+        if (count == null)
+        {
+            var g = new GameObject("Count"); g.transform.SetParent(transform, false); g.transform.localPosition = CountPos;
+            count = g.AddComponent<TMPro.TextMeshPro>();
+            var font = Resources.Load<TMPro.TMP_FontAsset>("Fonts & Materials/beachday SDF"); if (font != null) count.font = font;
+            count.fontSize = CountSize; count.alignment = TMPro.TextAlignmentOptions.Center; count.enableWordWrapping = false;
+            count.rectTransform.sizeDelta = new Vector2(1.6f, 0.8f);
+            count.color = new Color(1f, 0.78f, 0.3f);
+            count.fontMaterial = new Material(count.fontSharedMaterial);
+            count.fontMaterial.SetFloat("_OutlineWidth", 0.25f); count.fontMaterial.SetColor("_OutlineColor", new Color(0.27f, 0.15f, 0.05f));
+            count.fontMaterial.DisableKeyword("UNDERLAY_ON");
+            count.sortingLayerID = sr.sortingLayerID; count.sortingOrder = sr.sortingOrder + 1;
+        }
+        var n = Candies; count.text = ShowCountOnJar && n > 0 ? n.ToString() : "";
+    }
+    public static Vector3 CountPos = new Vector3(0.62f, -0.6f, 0f); public static float CountSize = 4.2f;
+    public static bool ShowCountOnJar = false;   // off: the owner asked for the count on a card (a tap on the jar while arranging); the number on the jar is a proposal
 
     public void OnPointerClick(PointerEventData eventData)
     {

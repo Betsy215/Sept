@@ -1018,15 +1018,15 @@ public class SessionManager : MonoBehaviour
         if (currentSession.newInBook.Count != before) SaveSession();
     }
 
-    /// The candy jar (owner, 26 October 2026): a shop purchase adds three (the jar holds nine, CandyJar.Full); a tap on the jar uses one
+    /// The candy jar (owner, 26 October 2026): a shop purchase adds three, with no upper limit since 26 November 2026 (the jar PICTURE is full at nine, CandyJar.Full, and a number on the jar gives the count); a tap on the jar uses one
     public int Candies => currentSession != null ? currentSession.candies : 0;
     public bool BuyCandies()
     {
-        if (currentSession == null || currentSession.candies >= CandyJar.Full) return false;
-        currentSession.candies = Mathf.Min(CandyJar.Full, currentSession.candies + CandyJar.PerPurchase); SaveSession(); return true;
+        if (currentSession == null) return false;
+        currentSession.candies += CandyJar.PerPurchase; SaveSession(); return true;   // no cap (owner, 26 November 2026): every buy adds three, the jar shows the count
     }
     /// Day 3's gift (CandyGift): the jar's count set, and the gift marked seen
-    public void SetCandies(int n) { if (currentSession == null) return; currentSession.candies = Mathf.Clamp(n, 0, CandyJar.Full); SaveSession(); }
+    public void SetCandies(int n) { if (currentSession == null) return; currentSession.candies = Mathf.Max(0, n); SaveSession(); }
     public void MarkCandyGiftSeen() { if (currentSession == null || currentSession.candyGiftSeen) return; currentSession.candyGiftSeen = true; SaveSession(); }
     public void UseCandy() { if (currentSession == null || currentSession.candies <= 0) return; currentSession.candies--; SaveSession(); }
 

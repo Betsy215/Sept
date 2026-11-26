@@ -150,8 +150,7 @@ public class ShopManager : MonoBehaviour
                     continue;
                 }
                 var canAfford = session != null && session.CanAfford(shopItem.price);
-                if (shopItem.itemType == ItemType.Decor && shopItem.itemName == "Candies" && session != null && session.Candies >= CandyJar.Full)
-                    canAfford = false;   // a full jar greys the card out and stops taps (owner, 26 October 2026: "when candy jar is full, disable the candy purchasing")
+                // no cap on candies any more (owner, 26 November 2026: "keep a count, don't cap candy in the jar"): the card is never greyed for a full jar
                 shopItem.UpdateAffordability(canAfford);
                 ShowCardLock(shopItem, IsLockedCard(shopItem));
             }
@@ -221,12 +220,6 @@ public class ShopManager : MonoBehaviour
         if (SessionManager.IsLockedInShop(item.itemName) || SessionManager.IsLockedInShop(item.gameObject.name))
         {
             ShowPurchaseFailedFeedback(SessionManager.LockReason(SessionManager.IsLockedInShop(item.itemName) ? item.itemName : item.gameObject.name));   // the card's lock stops taps; this stops every other path (16 October)
-            return false;
-        }
-
-        if (item.itemType == ItemType.Decor && item.itemName == "Candies" && session.Candies >= CandyJar.Full)
-        {
-            ShowPurchaseFailedFeedback("The candy jar is full");   // nothing charged (26 October 2026)
             return false;
         }
 
