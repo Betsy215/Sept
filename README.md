@@ -2,7 +2,7 @@
 
 A portrait 2D cafe game for iPhone and iPad, built in Unity 2022.3.50f1. Customers walk up to a food truck, order one to four items, and the player taps the right food in time. Coins buy new foods, characters, and upgrades in the shop between levels. Monetised with Unity Ads (a rewarded "watch to earn coins" button in the shop).
 
-Released on the App Store as version 26.03.29 (March 2026). Version 26.10.09 (24 days, night mode, tutorial, shop regulars) was submitted for review on 9 October 2026.
+On the App Store since March 2026; the live version on 26 November 2026 is 2026.11.24 (two chapters: 12 days at the orchard, 16 at the beach). The current state is always in `Docs/MANUAL.md`, section 1.
 
 ## Where things are
 
@@ -10,9 +10,9 @@ Released on the App Store as version 26.03.29 (March 2026). Version 26.10.09 (24
 | --- | --- |
 | `Desktop/Sept/FoodTruckCafe` | This Unity project and its git repo |
 | `Desktop/Sept/Builds/iOS-<version>` | Xcode exports (not committed) |
-| `Assets/Scenes` | MainMenu, GameSceneOne, Shop, KitchenScene (loaded additively over GameSceneOne) |
+| `Assets/Scenes` | MainMenu, Map, GameSceneOne, Shop, KitchenScene (loaded additively over GameSceneOne) |
 | `Assets/Scripts` | All game code, grouped by system (see `Docs/architecture.md`) |
-| `Assets/Entity` | Level tuning as ScriptableObjects, Level1Data to Level24Data |
+| `Assets/Entity` | Level tuning as ScriptableObjects (chapter 1 uses Level1 to 12, chapter 2 Level17 to 32) |
 | `Assets/Prefabs` | Customers, food items, AudioManager, Settings, shop item |
 | `Assets/Editor` | Editor-only tools, including the iOS post-build step |
 | `Docs/` | Architecture notes, iOS release guide, to-do list |
@@ -29,7 +29,8 @@ Follow `Docs/ios-testing-and-release.md`. Short version: bump Version and Build 
 ## Docs
 
 - `Docs/MANUAL.md`: start here. The working manual for Claude sessions: rules, paths, recipes, release summary.
-- `Docs/architecture.md`: scene flow, the persistent singletons, how levels, orders, scoring, saving, and ads fit together, and where to change things.
+- `Docs/architecture.md` and `Docs/systems/` (index in its README): how the game works today, checked against the code on 26 November 2026. `Docs/history/` is history only.
+- `Docs/review-2026-11-25.md`: the review of 25 November 2026 (open problems, surprises for newcomers).
 - `Docs/ios-testing-and-release.md`: step-by-step device testing, TestFlight, App Store submission, screenshots, and the fixes for every error hit so far.
 - `Docs/TODO.md`: known issues, suggestions, and the plan for banner or interstitial ads.
 

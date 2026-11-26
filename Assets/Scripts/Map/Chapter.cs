@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Chapters and their days (chapter 2, the beach, is on since 18 October 2026; plan in Docs/chapter2-plan.md).
+/// Chapters and their days (chapter 2, the beach, is on since 18 October 2026; plan in Docs/history/chapter2-plan_2026-10-14.md).
 /// Chapter 1 has 12 days since 25 October 2026 (owner: "reduce the days in level 1 to be 12 days"), chapter 2 keeps 16,
 /// so the days are per chapter here and every chapter sum goes through FirstDay / DaysIn / TotalDays.
 /// No save field: the chapter comes from the day index and levelsCompleted the save already has.
