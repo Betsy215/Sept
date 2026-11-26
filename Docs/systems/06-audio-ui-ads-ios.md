@@ -282,7 +282,7 @@ Packages: `com.unity.ads` 4.17.0 and `com.unity.ads.ios-support` 1.0.1 (`Package
 | Metal API validation | on (dev builds only) | 241 |
 | Scripting backend and architecture | not pinned (IL2CPP, ARM64 on iOS) | 734-736 |
 
-Mobile Notifications: `RequestAuthorizationOnAppLaunch` is now False (`Assets/Editor/com.unity.mobile.notifications/NotificationSettings.asset`). The March export still had `UnityNotificationRequestAuthorizationOnAppLaunch => true`, so the March build asked for notification permission at launch.
+Mobile Notifications: `RequestAuthorizationOnAppLaunch` is False since 26 November 2026 in `ProjectSettings/NotificationsSettings.asset` (the file package 2.3.2 reads; the older copy under `Assets/Editor/com.unity.mobile.notifications/` is not read, so the October change there never took effect and every store build until 2026.11.24 asked for notifications at first launch). The March export still had `UnityNotificationRequestAuthorizationOnAppLaunch => true`, so the March build asked for notification permission at launch.
 
 ### 5.2 IOSPostBuild (`Assets/Editor/IOSPostBuild.cs`)
 
