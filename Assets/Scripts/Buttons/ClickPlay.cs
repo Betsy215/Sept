@@ -17,20 +17,42 @@ public class ClickPlay : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     private bool launching;
 
+    /// One guard for Play and Continue together (review R3, 26 November 2026): once either has been accepted the other
+    /// ignores taps until the scene has changed, so Continue then Play inside the two-second wait cannot start a new
+    /// session over the save. Static, so it is cleared when the main menu loads again (Awake) and if the wait is cut short.
+    public static bool MenuLaunchAccepted;
+
+    /// True when the finger was lifted over this button; a press that slides off is cancelled, like a normal button.
+    public static bool ReleasedOver(Component button, PointerEventData eventData)
+    {
+        var rt = button.transform as RectTransform;
+        return rt == null || RectTransformUtility.RectangleContainsScreenPoint(rt, eventData.position, eventData.pressEventCamera);
+    }
+
+    private void Awake() { MenuLaunchAccepted = false; }
+
+    private void OnDisable()
+    {
+        if (launching) { launching = false; MenuLaunchAccepted = false; }   // the wait stops with the object: free the menu
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (launching) return;
+        if (launching || MenuLaunchAccepted) return;
         if (_img != null && _pressed != null) _img.sprite = _pressed;
         if (_source != null && _compressClip != null) _source.PlayOneShot(_compressClip);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (launching) return;
+        if (launching || MenuLaunchAccepted) return;
         if (_img != null && _default != null) _img.sprite = _default;
         if (_source != null && _uncompressClip != null) _source.PlayOneShot(_uncompressClip);
 
+        if (!ReleasedOver(this, eventData)) return;   // slid off the button: no new game
+
         launching = true;
+        MenuLaunchAccepted = true;
         StartCoroutine(WaitForDelay(2));
     }
 

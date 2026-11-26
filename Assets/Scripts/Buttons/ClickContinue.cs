@@ -15,6 +15,13 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     private bool launching; // Set on the first valid tap so a double-tap cannot continue the session twice
 
+    private void Awake() { ClickPlay.MenuLaunchAccepted = false; }   // the menu has loaded again: both buttons take taps
+
+    private void OnDisable()
+    {
+        if (launching) { launching = false; ClickPlay.MenuLaunchAccepted = false; }   // the wait stops with the object
+    }
+
     private void Start()
     {
         UpdateButtonState();
@@ -62,7 +69,7 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (launching) return;
+        if (launching || ClickPlay.MenuLaunchAccepted) return;
         var button = GetComponent<Button>();
         if (button != null && !button.interactable) return;
 
@@ -73,7 +80,7 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (launching) return;
+        if (launching || ClickPlay.MenuLaunchAccepted) return;
         var button = GetComponent<Button>();
         if (button != null && !button.interactable) return;
 
@@ -81,7 +88,10 @@ public class ClickContinue : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         if (_source != null && _uncompressClip != null)
             _source.PlayOneShot(_uncompressClip);
 
+        if (!ClickPlay.ReleasedOver(this, eventData)) return;   // slid off the button: nothing happens
+
         launching = true;
+        ClickPlay.MenuLaunchAccepted = true;   // Play ignores taps from here until the scene has changed (review R3)
         StartCoroutine(WaitForDelay(2));
     }
 

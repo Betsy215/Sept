@@ -23,6 +23,8 @@ GameSceneOne ⇄ KitchenScene (loaded additively over the table, unloaded on clo
   (which creates `SceneTransitionManager`). Play (`Buttons/ClickPlay.cs`) acts on pointer-up, waits 2 s, calls
   `StartNewSession()` (the old save is replaced, no confirm) and opens GameSceneOne, where the tutorial runs.
   Continue (`Buttons/ClickContinue.cs`) is enabled once the tutorial was seen or a day is finished; it opens Map.
+  Both act only when the finger lifts over the button, and share one guard (`ClickPlay.MenuLaunchAccepted`): once
+  either is accepted the other ignores taps until the scene has changed (review R3, 26 November 2026).
 - **Map** (`Map/MapScreen.cs`) is built in code: one page per chapter, a day card, Play. Details: `systems/08`.
 - **GameSceneOne** is the only gameplay scene; the day comes from the save (`SessionManager.GetCurrentLevelIndex`).
   A day has two phases (`Utils/GamePhaseManager.cs`): arrangement (drag things, the menu book; skipped on day 1 and in
