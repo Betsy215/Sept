@@ -1,3 +1,5 @@
+> **26 November 2026:** the owner removed the Q&A section. Sections now: Next, Current, MVP, Backlog, Analysis, Marketing (numbered 1 to 6). Answers to the owner's questions go in Current. In tick lists write `<span><strong>Title</strong> rest</span>`, never `<b>` (it is styled as a 22 px letter column).
+
 # The report: how to write it and how to use it
 
 The owner reads the report, not the terminal. It is the HTML artifact

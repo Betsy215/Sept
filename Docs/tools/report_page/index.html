@@ -69,132 +69,79 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h1>Food Truck Cafe</h1>
 <p class="sub">26 November. 2026.11.24 is live on the App Store.</p>
 
-<nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#qa"><b>2</b>Q&amp;A</a><a href="#current"><b>3</b>Current</a><a href="#mvp"><b>4</b>MVP</a><a href="#backlog"><b>5</b>Backlog</a><a href="#analysis"><b>6</b>Analysis</a><a href="#marketing"><b>7</b>Marketing</a><a href="visuals.html" class="page">Visuals</a><a href="mechanisms.html" class="page">Mechanisms</a><span id="saved"></span></nav>
+<nav class="toc" aria-label="Sections"><a href="#next"><b>1</b>Next</a><a href="#current"><b>2</b>Current</a><a href="#mvp"><b>3</b>MVP</a><a href="#backlog"><b>4</b>Backlog</a><a href="#analysis"><b>5</b>Analysis</a><a href="#marketing"><b>6</b>Marketing</a><a href="visuals.html" class="page">Visuals</a><a href="mechanisms.html" class="page">Mechanisms</a><span id="saved"></span></nav>
 
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
+<p><b>Ads:</b> the full picture is at the top of Current, with three things to decide.</p>
+<p><b>Shop page:</b> six numbered pictures in Current. Tell me by number what you like and don't.</p>
+<p><b>Game review:</b> the open problems are in Current; tick what to fix.</p>
 <p><b>Yesterday (25 November)</b> is in Analysis: 10 new players, $0.10 from ads, 8 downloads.</p>
-<p><b>New in Current:</b> three variations of your Gemini shop page (day and night), the notification prompt removed, and the menu stickers in the journal's font (waiting for your pick).</p>
-<p><b>Fixed today</b> (in the next test build): day 9 gift card (no text now), sticker prices, Kid and Chef orders, waffle 6 s.</p>
-<p><b>Game review:</b> problems at the top of Current, growth ideas in Marketing. Tick what to do; nothing is fixed yet.</p>
-<p><b>C chapter, the dessert house:</b> four watercolour ideas from Gemini and four of mine, by day and night, at the top of Current. Tick the ones you like; ChatGPT paints them tomorrow after 10:00.</p>
-<p>The shop pages, cloths and rooms below it still wait for your ticks.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>Header E3 was missing from the store after 2026.11.24 went live (it does not carry over). Put back 25 November; from now on I set it on every release.</p>
+<p>Everything in MVP is done on main and waits for the next test build. Say when you want one.</p>
 </div>
 </div>
 
-<h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
+<h2 id="current"><span class="n">2</span>Current</h2>
+<p class="sub" style="margin:0 0 8px">26 November: ads, the shop page, and what is left of the game review.</p>
 <div class="card">
-<p style="margin-top:0"><b>Q4. If an ad never answers, how do we fix it?</b> <small>25 November</small></p>
-<p>Add a safety net: when an ad starts, start a timer too. The game moves on as if the ad was skipped (no reward) when either happens first:</p>
+<p style="margin-top:0"><b>Ads: what happens when an ad should show.</b> <small>Store copies, 18 to 25 November, your phone left out. Unity Ads' own counts beside what the game logs. Almost all of it is on the older versions, where the ad came at the day's end.</small></p>
+<p><b>After 146 finished days:</b></p>
 <ul>
-<li>90 seconds pass with no answer from the ad;</li>
-<li>the player is back in the game (the ad screen has closed) and 3 seconds pass with no answer.</li>
+<li><b>47 times (32 %)</b> the ad played and ended normally, watched or skipped.</li>
+<li><b>51 times (35 %)</b> no ad showed at all: none was loaded in time. The player just went on, and we earned nothing.</li>
+<li><b>48 times (33 %)</b> the player closed the app, usually about 20 seconds after the day ended: while the ad was on screen.</li>
 </ul>
-<p>Moving on means: the Daily Treats card can be closed again, the map goes on to the day, and the shop's coin-ad button resets. A watched ad still pays as before. Small change in three files; I test it in the editor by faking a silent ad.</p>
-<ul class="checks"><li><label><input type="checkbox" data-id="qa.adfreeze.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="qa.adfreeze.fix"> <span>Do it (goes in the next test build)</span></label></li><li><label><input type="checkbox" data-id="qa.adfreeze.later"> <span>Later</span></label></li></ul>
+<p><b>Who closes the app:</b></p>
+<ul>
+<li><b>23 times</b> the player was back within a minute and played on. Closing the app is their way to skip the ad. Two players did nearly all of it: Japan 15 times (the one who played 20 days), US 7 times.</li>
+<li><b>20 times</b> the player did not come back then. At least 7 of them were on their first day.</li>
+</ul>
+<p><b>Unity agrees.</b> From 14 to 25 November Unity counted 161 ads started; the game saw only 88 of them end. The other 73 (45 %) started and never ended, which matches the closes above. Those ads still paid.</p>
+<p><b>Yesterday:</b> 15 ads started, 4 watched whole, 7 skipped, 4 ended by closing the app. All 3 players who closed it stopped playing right there.</p>
+<p><b>Is it a frozen ad?</b> The data cannot tell a stuck ad from a player closing the app. But the same two players do it after every day, 15 to 30 seconds in, and are back in 5 seconds: that reads as skipping, not freezing. The game does have three places where a truly silent ad would leave the screen stuck (the map, the Daily Treats card, the shop's coin button).</p>
+<p><b>2026.11.24</b> (first ad at the start of day 3, and ads start again if they failed) is too new to judge: 2 ad moments so far. I look again in a few days; that should also show whether "no ad loaded" gets better.</p>
+<ul class="checks">
+<li><label><input type="checkbox" data-id="cur.ads26.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.ads26.offer"> <span><strong>Offer Remove Ads to players who close the app during an ad</strong>: when they come back, one small card, once ("No more ads, $1.99"). They clearly mind ads and keep playing.</span></label></li><li><label><input type="checkbox" data-id="cur.ads26.net"> <span><strong>Safety net for a silent ad</strong>: if an ad gives no answer for 90 seconds, or 3 seconds after the player is back in the game, go on as if it was skipped (no reward).</span></label></li><li><label><input type="checkbox" data-id="cur.ads26.log"> <span><strong>Measure it properly</strong>: log when an ad starts, when none was ready, and when one fails. Today the game only logs ads that end.</span></label></li>
+</ul>
 </div>
 
-<h2 id="current"><span class="n">3</span>Current</h2>
-<p class="sub" style="margin:0 0 8px">26 November: shop page variations, and the notification prompt is gone.</p>
 <div class="card">
-<p style="margin-top:0"><b>No more notification prompt.</b> New players were asked to allow notifications on first launch, though the game never sends any. It came with Unity's mobile starter kit when the project was made (May 2025), with that prompt switched on by default; a fix in October edited a copy of the setting that Unity no longer reads. Now off in the right place, checked in the editor. In the next test build.</p>
-<ul class="checks"><li><label><input type="checkbox" data-id="cur.notif26.seen"> <span>Seen, remove this</span></label></li></ul>
+<p style="margin-top:0"><b>C chapter shop page, numbered.</b> <small>Cabin on the left, truck on the right in all of them. The one with the truck on the left is removed.</small></p>
+<div class="two"><figure style="margin:8px 0"><img src="rev25/shop_1.jpg" alt="Cream cabin with a strawberry-red snowy roof, pastel bulbs and a cake in the window, the red truck behind on the right, by day" style="height:520px;max-height:520px;width:auto"><figcaption><b>1</b> your pick, day</figcaption></figure><figure style="margin:8px 0"><img src="rev25/shop_2.jpg" alt="The same cream cabin at night, windows glowing, bulbs lit, warm light on the snow" style="height:520px;max-height:520px;width:auto"><figcaption><b>2</b> your pick, night</figcaption></figure><figure style="margin:8px 0"><img src="rev25/shop_3.jpg" alt="Strawberry-milk pink cabin with cream scalloped trim under the roof, a round gable window and a mint door, by day" style="height:520px;max-height:520px;width:auto"><figcaption><b>3</b> pink cabin, day</figcaption></figure></div>
+<div class="two"><figure style="margin:8px 0"><img src="rev25/shop_4.jpg" alt="The pink cabin at night" style="height:520px;max-height:520px;width:auto"><figcaption><b>4</b> pink cabin, night</figcaption></figure><figure style="margin:8px 0"><img src="rev25/shop_5.jpg" alt="Honey-brown log cabin with a porch, a bench, a little snowman and a mint door, by day" style="height:520px;max-height:520px;width:auto"><figcaption><b>5</b> log cabin, day</figcaption></figure><figure style="margin:8px 0"><img src="rev25/shop_6.jpg" alt="The log cabin at night" style="height:520px;max-height:520px;width:auto"><figcaption><b>6</b> log cabin, night</figcaption></figure></div>
+<ul class="checks"><li><label><input type="checkbox" data-id="cur.shop26.seen"> <span>Seen, remove this</span></label></li></ul>
 </div>
 
-<p class="sub" style="margin:0 0 8px">25 November, afternoon: the winter shop page and the menu fonts.</p>
 <div class="card">
-<p style="margin-top:0"><b>C chapter shop page: your Gemini pick and three variations.</b> <small>Same chat, same style, by day and night. ChatGPT's are removed.</small></p>
-<div class="two"><figure style="margin:8px 0"><img src="rev25/winter_g0.jpg" alt="Your pick: cream cabin with a strawberry-red snowy roof, pastel bulbs, cake in the window, the red truck behind on the right; day and night" style="height:520px;max-height:520px;width:auto"><figcaption>Your pick (kept)</figcaption></figure><figure style="margin:8px 0"><img src="rev25/winter_g1.jpg" alt="Variation 1: a strawberry-milk pink cabin with cream scalloped trim under the roof, a round gable window and a mint door; day and night" style="height:520px;max-height:520px;width:auto"><figcaption>1: pink cabin, scalloped trim</figcaption></figure></div>
-<div class="two"><figure style="margin:8px 0"><img src="rev25/winter_g2.jpg" alt="Variation 2: a honey-brown log cabin with a porch, a bench, a little snowman and a mint door; day and night" style="height:520px;max-height:520px;width:auto"><figcaption>2: log cabin, porch, snowman</figcaption></figure><figure style="margin:8px 0"><img src="rev25/winter_g3.jpg" alt="Variation 3: a cream cabin with mint trim and gingham curtains, a smoking chimney, bigger and to the right, the truck on the left; day and night" style="height:520px;max-height:520px;width:auto"><figcaption>3: truck on the left, gingham curtains</figcaption></figure></div>
-<ul class="checks"><li><label><input type="checkbox" data-id="cur.win26.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.win26.g0"> <span>Your pick</span></label></li><li><label><input type="checkbox" data-id="cur.win26.g1"> <span>Variation 1</span></label></li><li><label><input type="checkbox" data-id="cur.win26.g2"> <span>Variation 2</span></label></li><li><label><input type="checkbox" data-id="cur.win26.g3"> <span>Variation 3</span></label></li><li><label><input type="checkbox" data-id="cur.win26.more"> <span>More variations</span></label></li></ul>
-</div>
-
-
-<div class="card">
-<p style="margin-top:0"><b>Menu fonts vs the journal.</b> <small>The journal writes in Delius (its titles in the same round font as MENU and DONE). The menu stickers are written in a different hand, Gloria Hallelujah. Below: now, and the stickers in the journal's Delius. Only a preview: the game is unchanged.</small></p>
-<div class="two"><figure style="margin:8px 0"><img src="rev25/font_now_phone.jpg" alt="Now on iPhone: the menu open, sticker names and prices in Gloria Hallelujah" style="height:600px;max-height:600px;width:auto"><figcaption>Now, iPhone</figcaption></figure><figure style="margin:8px 0"><img src="rev25/font_journal_phone.jpg" alt="The same with the sticker names and prices in Delius, the journal font" style="height:600px;max-height:600px;width:auto"><figcaption>Journal font, iPhone</figcaption></figure></div>
-<div class="two"><figure style="margin:8px 0"><img src="rev25/font_now_ipad.jpg" alt="Now on iPad" style="height:560px;max-height:560px;width:auto"><figcaption>Now, iPad</figcaption></figure><figure style="margin:8px 0"><img src="rev25/font_journal_ipad.jpg" alt="Journal font on iPad" style="height:560px;max-height:560px;width:auto"><figcaption>Journal font, iPad</figcaption></figure></div>
-<p style="font-size:14px">Delius is cleaner and easier to read, especially the prices, and matches the journal; Gloria looks more playful and hand-written.</p>
-<ul class="checks"><li><label><input type="checkbox" data-id="cur.font25.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.font25.journal"> <span>Use the journal font on the stickers</span></label></li><li><label><input type="checkbox" data-id="cur.font25.keep"> <span>Keep the current one</span></label></li></ul>
-</div>
-
-<p class="sub" style="margin:0 0 8px">25 November: game review, and the first fixes.</p>
-<div class="card">
-<p style="margin-top:0"><b>Fixed today, in the next test build.</b> <small>Captured in the editor on iPhone 6.9-inch and iPad 13-inch.</small></p>
-<p><b>Day 9 gift card</b>: no message any more, as you said: the title, a bigger star, Let's go. After Let's go the star spins and flies up into your stars, as before.</p>
-<div class="two"><figure style="margin:8px 0"><img src="rev25/day9_phone.jpg" alt="Before: the message squeezed in a narrow column over the star" style="height:420px;max-height:420px;width:auto"><figcaption>Before</figcaption></figure><figure style="margin:8px 0"><img src="rev25/day9_phone_new.jpg" alt="After on iPhone: A GIFT FOR YOU!, the star, A star for reaching day 9! and below it Finish day 9 to open chapter 2, then the LET'S GO! cookie" style="height:420px;max-height:420px;width:auto"><figcaption>After, iPhone</figcaption></figure><figure style="margin:8px 0"><img src="rev25/day9_ipad_new.jpg" alt="After on iPad, the same layout" style="height:420px;max-height:420px;width:auto"><figcaption>After, iPad</figcaption></figure></div>
-<p><b>Menu sticker prices</b> (you: looks good): bigger (48 instead of 34) and moved a little toward the middle; a small overlap stays.</p>
-<figure style="margin:8px 0"><img src="rev25/menu_ipad.jpg" alt="Before on iPad: Apple, Choux and Coffee prices hidden under the next sticker" style="height:220px;max-height:220px;width:auto"><figcaption>Before, iPad</figcaption></figure><figure style="margin:8px 0"><img src="rev25/menu_ipad_new.jpg" alt="After on iPad: every price readable, $ 20, $ 35, $ 35, $ 10, $ 30" style="height:220px;max-height:220px;width:auto"><figcaption>After, iPad</figcaption></figure><figure style="margin:8px 0"><img src="rev25/menu_phone_new.jpg" alt="After on iPhone: Apple $ 20, Choux $ 35, Cake $ 35, all readable" style="height:260px;max-height:260px;width:auto"><figcaption>After, iPhone</figcaption></figure>
-<p><b>Customers</b>: the Kid now orders like the Girl and Boy (checked in two days: 2, 3 and 4 items on a 2-4 day); the Chef always orders the day's largest order. <b>Waffle machine</b>: 6 s.</p>
-<p style="font-size:14px">Kitchen shadow: left as it is, as you said.</p>
-<ul class="checks"><li><label><input type="checkbox" data-id="cur.fix25.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.fix25.good"> <span>Good</span></label></li><li><label><input type="checkbox" data-id="cur.fix25.more"> <span>Change more (tell me in chat)</span></label></li></ul>
-</div>
-
-
-<div class="card">
-<p style="margin-top:0"><b>Game review: what I found.</b> <small>Code, screens and docs, on the live 2026.11.24. Full list for future agents: Docs/review-2026-11-25.md.</small></p>
-<p><b>Players see these</b> <small>(day 9 card and sticker prices fixed above; kitchen shadow kept)</small></p>
+<p style="margin-top:0"><b>Game review: what is still open.</b> <small>Done since the review: day 9 card, sticker prices and font, the notification prompt, waffle 6 s, Kid and Chef orders. The ad freeze is in the ads card above. Full list: Docs/review-2026-11-25.md.</small></p>
 <ul class="checks">
 <li><label><input type="checkbox" data-id="cur.rev25.seen"> <span>Seen, remove this</span></label></li>
-<li><label><input type="checkbox" data-id="cur.rev25.r2"> <span><strong>First launch asks to allow notifications</strong>, but the game never sends any. One setting.</span></label></li>
-<li><label><input type="checkbox" data-id="cur.rev25.r8"> <span><strong>Store screenshots are out of date</strong> (23 November game: all 16 chapter 2 days on the map, old stickers, no cloth drop). On iPad the caption bands hide the menu's DONE button and the receipt in the tips shot. Retake them.</span></label></li>
-<li><label><input type="checkbox" data-id="cur.rev25.r3"> <span><strong>Play can wipe a saved game by accident</strong>: sliding the finger off Play still starts a new game, and tapping Continue then Play quickly does too.</span></label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r8"> <span><strong>Store screenshots are out of date</strong>, and on iPad the caption bands hide the menu's DONE button and the receipt. Retake them.</span></label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r3"> <span><strong>Play can wipe a saved game by accident</strong>: sliding the finger off Play still starts a new game, and so does Continue then Play quickly.</span></label></li>
 <li><label><input type="checkbox" data-id="cur.rev25.r5"> <span><strong>Candies cost full price when the jar is almost full</strong>: at 7 or 8 candies, a buy adds only 2 or 1.</span></label></li>
-<li><label><input type="checkbox" data-id="cur.rev25.r9"> <span><strong>Money shows three ways</strong>: $ 1815 on the day card, $1814 in the shop, $ 1,814 on the map. When the card finishes counting, Order sale and Tips both read $0.</span></label></li>
-<li><label><input type="checkbox" data-id="cur.rev25.r6"> <span><strong>If an ad never answers, the screen freezes</strong>: the Daily Treats card or the map stays stuck until the app is closed. Rare, but players lose the moment.</span></label></li>
-<li><label><input type="checkbox" data-id="cur.rev25.r4"> <span><strong>The map can lock for very old saves</strong> already in chapter 2, if Home is tapped during the day 9 moment. Rare.</span></label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r9"> <span><strong>Money shows three ways</strong>: $ 1815 on the day card, $1814 in the shop, $ 1,814 on the map; the finished card reads Order sale $0 and Tips $0.</span></label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.r4"> <span><strong>The map can lock for very old saves</strong> already in chapter 2. Rare.</span></label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.small"> <span><strong>The small ones</strong>: a candy used when no one's patience can rise; two Upgrade cards sharing one NEW tag; the tutorial card 11 px too wide on tall iPhones; Ready covering half the candy jar; wrong analytics money on replays.</span></label></li>
+<li><label><input type="checkbox" data-id="cur.rev25.docs"> <span><strong>Old docs</strong> for future agents (architecture, maintenance, systems still describe October).</span></label></li>
 </ul>
-<p><b>Waffle machine:</b> now 6 s (you asked, 25 November; was 8 s). The sizzle sound is 3 s and stays as it is: it plays at the start, the ding when the lid opens. In the next test build. Mechanisms corrected.</p>
-<p><b>Small ones</b> <small>A candy can be used when no one's patience can go up; a 15 Stars purchase could pay twice if the app is killed at one exact moment; two Upgrade cards share one NEW tag; the tutorial card is 11 px too wide on tall iPhones; the used-up patience flower overlaps the bubble; Ready covers half the candy jar while arranging; analytics money is wrong on replays and real-money buys are not logged.</small></p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.rev25.small"> <span>Fix the small ones too</span></label></li>
-<li><label><input type="checkbox" data-id="cur.rev25.docs"> <span>Update the old docs for future agents (architecture, maintenance, systems: they still describe October)</span></label></li>
-</ul>
-<p style="margin:8px 0 0;font-size:14px"><b>The US iPad player with no stars:</b> no bug. A customer who leaves with part of the order still pays for what was served, so a 0-star day can earn more. Days 2 and 3 are much harder than day 1: orders grow from 1-2 items to 2-3 while patience stays 7 s, and the Kid always orders the most items allowed.</p>
 </div>
 
-<p class="sub" style="margin:0 0 8px">24 November, late: the dessert house first, in watercolour.</p>
-<div class="card">
-<p style="margin-top:0"><b>The dessert house in watercolour, four ideas.</b> <small>A strawberry shortcake, B macaron, C mint chocolate, D cream puff. Top row by day, bottom row by night. My pick: Gemini's A or B.</small></p>
-<figure style="margin:8px 0"><img src="c24/house_gemini.jpg" alt="Gemini's four watercolour dessert houses by day and night: A cream cottage with a strawberry-red tiled roof, snow along the eaves, pink striped awning and red door; B pink two-storey patisserie with pistachio trim, a round bay window and a pink mansard roof; C mint-green chalet with chocolate-brown timber, a porch and a bench; D golden-cream cottage with a round stone turret topped by a cream-puff dome" style="width:100%;border-radius:8px"><figcaption>Gemini: A, B, C, D.</figcaption></figure>
-<figure style="margin:8px 0"><img src="c24/house_claude.jpg" alt="My four watercolour dessert houses by day and night, the same cabin shape in four colourings: A cream with a red roof, B pink with pistachio, C mint with chocolate beams, D golden with a turret" style="width:100%;border-radius:8px"><figcaption>Mine: A, B, C, D (one cabin shape, four colourings).</figcaption></figure>
-<ul class="checks"><li><label><input type="checkbox" data-id="cur.dh24.seen"> Seen, remove this</label></li><li><label><input type="checkbox" data-id="cur.dh24.gA"> Gemini A</label></li><li><label><input type="checkbox" data-id="cur.dh24.gB"> Gemini B</label></li><li><label><input type="checkbox" data-id="cur.dh24.gC"> Gemini C</label></li><li><label><input type="checkbox" data-id="cur.dh24.gD"> Gemini D</label></li><li><label><input type="checkbox" data-id="cur.dh24.cA"> My A</label></li><li><label><input type="checkbox" data-id="cur.dh24.cC"> My C</label></li><li><label><input type="checkbox" data-id="cur.dh24.more"> More ideas</label></li></ul>
-<p style="margin:8px 0 0;font-size:14px">Tomorrow after 10:00 ChatGPT paints the house ideas you tick.</p>
-</div>
+<h2 id="mvp"><span class="n">3</span>MVP</h2>
+<ol>
+<li>Day 9 gift card: A GIFT FOR YOU!, the star, Let's go; no other text.</li>
+<li>Menu stickers in the journal's font, prices bigger.</li>
+<li>Waffle machine 6 s.</li>
+<li>Kid orders like the Girl and Boy; Chef always orders the day's largest order.</li>
+<li>No notification prompt.</li>
+</ol>
 
-<p class="sub" style="margin:0 0 8px">C chapter brainstorm, 24 November night: winter everywhere, every picture by day and night. Your notes as suggestions, plus my own ideas.</p>
-<div class="card">
-<p style="margin-top:0"><b>Shop page: the cabin in front, the truck parked behind.</b> <small>Each sheet: chapter 1, chapter 2, then the C chapter day and night. Lights only on the house.</small></p>
-<figure style="margin:8px 0"><img src="c24/shop_dessert.jpg" alt="Chapter 1 and 2 shop pages beside the C chapter dessert cabin by day and night: a real wooden cabin styled like a strawberry shortcake, cream plank walls with a pink band, a red roof under puffy whipped-cream snow with white scallops, a cherry-red chimney, a blank cupcake sign, a window with a cake stand and cupcakes under a pink scalloped awning, a mint door with a wreath, pastel bulbs along the eave; the red truck smaller behind on the right; snowy pines framing the top, a snowman, calm snow below" style="width:100%;border-radius:8px"><figcaption>Dessert cabin: styled like a strawberry shortcake.</figcaption></figure><figure style="margin:8px 0"><img src="c24/shop_winter2.jpg" alt="Chapter 1 and 2 shop pages beside the pink winter cabin by day and night, big in front with the truck behind" style="width:100%;border-radius:8px"><figcaption>Winter: my pink cabin.</figcaption></figure><figure style="margin:8px 0"><img src="c24/shop_ginger.jpg" alt="Chapter 1 and 2 shop pages beside a gingerbread cafe on snowy hills with swirl lollipops in the top corners, by day and night" style="width:100%;border-radius:8px"><figcaption>My idea: gingerbread cafe in the snow.</figcaption></figure><ul class="checks"><li><label><input type="checkbox" data-id="cur.c24b.shop.dessert"> Dessert cabin</label></li><li><label><input type="checkbox" data-id="cur.c24b.shop.winter"> Pink winter cabin</label></li><li><label><input type="checkbox" data-id="cur.c24b.shop.ginger"> Gingerbread</label></li><li><label><input type="checkbox" data-id="cur.c24b.shop.more"> More ideas</label></li></ul>
-<p style="margin:8px 0 0;font-size:14px">Tomorrow after 10:00 ChatGPT repaints the page you pick in our art style, free to adjust it.</p>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Table cloth: candy-pink gingham, four textures.</b> <small>Phone size, laid out like the game. The drop now joins the table: the mocks had hung it at the bottom of the picture, the game hangs it at the cloth's edge line.</small></p>
-<figure style="margin:8px 0"><img src="c24/cloths.jpg" alt="Four candy pink and white gingham cloths at phone size with their drops: corduroy ribs, waffle weave squares, fine linen, and puffy quilted diamonds" style="width:100%;border-radius:8px"><figcaption>1 corduroy, 2 waffle weave, 3 linen, 4 quilted.</figcaption></figure><figure style="margin:8px 0"><img src="c24/cloth_join.jpg" alt="Close-ups of the four cloths where the table top bends into the front drop; the checks run on without a break" style="width:100%;border-radius:8px"><figcaption>Where the top meets the drop.</figcaption></figure><ul class="checks"><li><label><input type="checkbox" data-id="cur.c24b.cloth.cord"> Corduroy</label></li><li><label><input type="checkbox" data-id="cur.c24b.cloth.waffle"> Waffle weave</label></li><li><label><input type="checkbox" data-id="cur.c24b.cloth.linen"> Linen</label></li><li><label><input type="checkbox" data-id="cur.c24b.cloth.quilt"> Quilted</label></li></ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Inside the cabin: four winter rooms.</b> <small>Phone size, framed like the game (the sides a phone cuts off are left out). Very simple decoration, cute pastel lights above the window, lit at night. Customers at the side tables sit facing you behind long gingham cloths: our existing pictures, no new sitting art. The table is a little smaller (its top at 52 % of the screen; chapters 1 and 2: 50 %).</small></p>
-<figure style="margin:8px 0"><div style="display:flex;gap:14px;flex-wrap:wrap"><img src="c24/room_dessert_1_day.jpg" alt="Strawberry shortcake room by day and night: cream walls, pink lower panel and pink valance with cream scallops, a strawberry cake under a glass dome on the sill, a snowy window; the yoga lady and the businessman seated at side tables in long pink gingham cloths; chef and girl standing; candy-pink corduroy gingham cloth with four foods (day)" style="height:640px;max-height:640px;width:auto;border-radius:22px"><img src="c24/room_dessert_1_night.jpg" alt="Strawberry shortcake room by day and night: cream walls, pink lower panel and pink valance with cream scallops, a strawberry cake under a glass dome on the sill, a snowy window; the yoga lady and the businessman seated at side tables in long pink gingham cloths; chef and girl standing; candy-pink corduroy gingham cloth with four foods (night)" style="height:640px;max-height:640px;width:auto;border-radius:22px"></div><figcaption>Dessert 1: strawberry shortcake.</figcaption></figure><figure style="margin:8px 0"><div style="display:flex;gap:14px;flex-wrap:wrap"><img src="c24/room_dessert_2_day.jpg" alt="Mint chocolate room by day and night: mint walls, cocoa lower panel and valance with cream scallops, cream chairs, a pastel macaron tower with a tiny star on the sill, a snowy window (day)" style="height:640px;max-height:640px;width:auto;border-radius:22px"><img src="c24/room_dessert_2_night.jpg" alt="Mint chocolate room by day and night: mint walls, cocoa lower panel and valance with cream scallops, cream chairs, a pastel macaron tower with a tiny star on the sill, a snowy window (night)" style="height:640px;max-height:640px;width:auto;border-radius:22px"></div><figcaption>Dessert 2: mint chocolate.</figcaption></figure><figure style="margin:8px 0"><div style="display:flex;gap:14px;flex-wrap:wrap"><img src="c24/room_snow_1_day.jpg" alt="Snowy cabin room by day and night: cream planks, mint chairs, a window onto snowy pines and a tiny lit cabin, a potted pine with a star (day)" style="height:640px;max-height:640px;width:auto;border-radius:22px"><img src="c24/room_snow_1_night.jpg" alt="Snowy cabin room by day and night: cream planks, mint chairs, a window onto snowy pines and a tiny lit cabin, a potted pine with a star (night)" style="height:640px;max-height:640px;width:auto;border-radius:22px"></div><figcaption>Winter 1: cream cabin.</figcaption></figure><figure style="margin:8px 0"><div style="display:flex;gap:14px;flex-wrap:wrap"><img src="c24/room_snow_2_day.jpg" alt="Frosty blue room by day and night: blue walls, red chairs, a window onto a frozen pond and a snowman, an iron lantern lit at night (day)" style="height:640px;max-height:640px;width:auto;border-radius:22px"><img src="c24/room_snow_2_night.jpg" alt="Frosty blue room by day and night: blue walls, red chairs, a window onto a frozen pond and a snowman, an iron lantern lit at night (night)" style="height:640px;max-height:640px;width:auto;border-radius:22px"></div><figcaption>Winter 2: frosty blue, snowman outside.</figcaption></figure><ul class="checks"><li><label><input type="checkbox" data-id="cur.c24b.room.d1"> Dessert 1</label></li><li><label><input type="checkbox" data-id="cur.c24b.room.d2"> Dessert 2</label></li><li><label><input type="checkbox" data-id="cur.c24b.room.s1"> Winter 1</label></li><li><label><input type="checkbox" data-id="cur.c24b.room.s2"> Winter 2</label></li><li><label><input type="checkbox" data-id="cur.c24b.room.more"> More ideas</label></li></ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>ChatGPT's room in our kitchen's style.</b> <small>Left: ChatGPT's. Right: Gemini repainting it in the style of our kitchen background, seats behind the tables.</small></p>
-<figure style="margin:8px 0"><div style="display:flex;gap:14px;flex-wrap:wrap"><img src="c24/gpt_room.jpg" alt="ChatGPT: warm wooden cabin with detailed glossy Christmas decorations" style="height:640px;max-height:640px;width:auto;border-radius:22px"><img src="c24/gemini_restyle_room.jpg" alt="Gemini: the same room repainted flatter with soft outlines and fewer decorations, two front tables with a red booth behind them" style="height:640px;max-height:640px;width:auto;border-radius:22px"></div><figcaption>ChatGPT original, Gemini restyle.</figcaption></figure><ul class="checks"><li><label><input type="checkbox" data-id="cur.c24.gpt.restyle"> Keep going with this one</label></li></ul>
-</div>
-
-<h2 id="mvp"><span class="n">4</span>MVP</h2>
-<p class="sub" style="margin:0 0 8px">The next release: nothing yet.</p>
-
-<h2 id="backlog"><span class="n">5</span>Backlog</h2>
+<h2 id="backlog"><span class="n">4</span>Backlog</h2>
 <p class="sub" style="margin:0 0 8px">Nothing open.</p>
 
-<h2 id="analysis"><span class="n">6</span>Analysis</h2>
+<h2 id="analysis"><span class="n">5</span>Analysis</h2>
 <div class="card">
 <p style="margin-top:0"><b>Yesterday, 25 November (Pacific).</b> <small>Unity Analytics and Unity Ads, read 26 November 08:10; Apple for 25 November (UTC).</small></p>
 <p><b>Players (store copies)</b>: 10 new, 1 returning. You did not play (store or TestFlight).</p>
@@ -246,7 +193,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 </div>
 
-<h2 id="marketing"><span class="n">7</span>Marketing</h2>
+<h2 id="marketing"><span class="n">6</span>Marketing</h2>
 <div class="card">
 <p style="margin-top:0"><b>How to grow: market research, 25 November.</b> <small>Our numbers: ~50 installs a week, mostly Philippines, Indonesia, Vietnam; no ratings; most players leave in days 1-3. Cooking games that do well start gently, run limited-time events and sell a retry right after a lost level. Players dislike heavy ads early.</small></p>
 <p><b>Quick wins</b></p>
