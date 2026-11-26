@@ -105,6 +105,8 @@ public class GamePhaseManager : MonoBehaviour
         doneButton.onClick.AddListener(OnDoneButtonClicked);
         // Ready's place on the table, kept before any tap (a press moves it down for a moment)
         doneButtonHome = ((RectTransform)doneButton.transform).anchoredPosition; doneButtonHomeKept = true;
+        // a little smaller (owner, 26 November 2026: "resize the button to be slightly smaller")
+        doneButton.transform.localScale *= ReadyScale;
 
         // Start in arrangement phase
         StartArrangementPhase();
@@ -246,7 +248,10 @@ public class GamePhaseManager : MonoBehaviour
     /// Where Ready stands (owner, 26 November 2026: "keep them same position in kitchen and in game scene, find a spot
     /// that works for both"): 0 = table above the back row, kitchen on the rug; 1 = the table's spot in both; 2 = the
     /// kitchen's rug spot (bottom middle) in both. Set to the owner's pick once seen.
-    public static int ReadySpot = 0;   // 3 = right of the middle and a little above the table's spot, over the kitchen window
+    public static int ReadySpot = 1;   // 3 = right of the middle and a little above the table's spot, over the kitchen window
+    /// The owner's pick (26 November 2026): "put ready button in option 1, make it slightly higher, resize the button to be
+    /// slightly smaller": spot 1, ReadyLift canvas units above the back row's clearance, ReadyScale of its old size.
+    public const float ReadyLift = 40f, ReadyScale = 0.88f;
     private Vector2 RightSpot(RectTransform canvas)
     {
         var w = canvas != null ? canvas.rect.width : 1080f;
@@ -274,6 +279,7 @@ public class GamePhaseManager : MonoBehaviour
         if (ReadySpot == 2) { KitchenShown(inKitchen); yield break; }   // the rug spot on the table too
         // anchoredPosition and the parent's local space share the origin here (the button is anchored at the canvas's middle)
         if (y > doneButtonHome.y) doneButtonHome = new Vector2(doneButtonHome.x, doneButtonHome.y + (y - rt.localPosition.y));   // else already clear of the row
+        if (ReadySpot == 1) { doneButtonHome += new Vector2(0f, ReadyLift); rt.anchoredPosition = doneButtonHome; yield break; }   // the same spot in the kitchen
         if (ReadySpot == 3) { KitchenShown(inKitchen); yield break; }
         if (!inKitchen) rt.anchoredPosition = doneButtonHome;
     }
