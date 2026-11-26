@@ -23,6 +23,11 @@ public class DailyTreats : MonoBehaviour
     public const int RowDays = 4;       // the row's length; its last day gives the gift
     public const int Day5Bonus = 100;   // the last day's surprise (the name is from the five-day row)
 
+    /// Preview of the proposed looks (26 November 2026, DailyTreatsPreview): 0 = the card as it is (the game), 1 Stamp card,
+    /// 2 Peel and take, 3 Spotlight and trail. Set from the editor only; nothing in the game changes it.
+    public static int PreviewStyle = 0;
+    private DailyTreatsPreview preview;
+
     public Sprite boardSprite;   // Assets/Images/board.png
     public Sprite collectSprite; // Assets/Images/collect.png
     public Sprite starSprite;    // Assets/Images/star 1.png
@@ -200,6 +205,7 @@ public class DailyTreats : MonoBehaviour
         var button = collectButton.gameObject.AddComponent<Button>();
         button.transition = Selectable.Transition.None;
         button.onClick.AddListener(Collect);
+        preview = PreviewStyle != 0 ? DailyTreatsPreview.Dress(canvasRect, day, PreviewStyle) : null;
     }
 
     /// The wood board of before 19 November 2026, kept for a build without the paper pieces.
@@ -295,11 +301,15 @@ public class DailyTreats : MonoBehaviour
     private IEnumerator CloseAfterReveal(bool gift)
     {
         collectButton.gameObject.SetActive(false);
-        // The reward appears on the tap: the coin and +50 with sparkles, or on day 5 the gift opening into the +150
-        if (gift) giftImage.gameObject.SetActive(false);
-        sparkles.gameObject.SetActive(true);
-        rewardImage.gameObject.SetActive(true);
-        yield return new WaitForSeconds(gift ? 2f : 1.4f);
+        if (preview != null) yield return preview.Collect(rewardImage, sparkles, gift ? giftImage : null);   // PreviewStyle 1-3 only
+        else
+        {
+            // The reward appears on the tap: the coin and +50 with sparkles, or on day 5 the gift opening into the +150
+            if (gift) giftImage.gameObject.SetActive(false);
+            sparkles.gameObject.SetActive(true);
+            rewardImage.gameObject.SetActive(true);
+            yield return new WaitForSeconds(gift ? 2f : 1.4f);
+        }
         // One more treat (owner, 16 October): the board stays and the button comes back as a repeatable ad button
         var ad = root.AddComponent<DailyTreatsAd>();
         ad.Begin(root.GetComponent<RectTransform>(), rewardImage, sparkles, collectSprite, PayExtra, CloseBoard);
