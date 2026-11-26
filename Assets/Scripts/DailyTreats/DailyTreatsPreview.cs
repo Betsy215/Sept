@@ -100,19 +100,36 @@ public class DailyTreatsPreview : MonoBehaviour
                         Child(note, "Pale", Disc, new Color(paper.r, paper.g, paper.b, 0.62f), 0f, gift ? -6f : coinY, gift ? 120f : 102f, gift ? 120f : 102f);
                     }
                     break;
-                case 3:   // Spotlight and trail
-                    if (!today)
+                case 3:   // Spotlight and trail; every treat face down until collected (owner, 26 November 2026)
                     {
-                        img.color = Color.white;
-                        Child(note, "Veil", RoundRect, new Color(Cream.r, Cream.g, Cream.b, 0.66f), 0f, 0f, 150f, 200f);
-                    }
-                    else
-                    {
-                        todayBack = new GameObject("Back", typeof(RectTransform)); todayBack.transform.SetParent(note, false);
-                        var back = (RectTransform)todayBack.transform; Place(back, 0f, 0f, 10f, 10f);
-                        Child(back, "Cover", RoundRect, paper, 0f, -16f, 104f, 138f);
-                        Child(back, "BigTick", Load("tick"), Color.white, 0f, -12f, 84f, 84f);
-                        todayBack.SetActive(false);
+                        // the note's picture and its baked "+50" are covered by plain paper of the note's colour
+                        var cy = today ? -23f : -24f; var ch = today ? 148f : 120f;   // below the DAY label, over the coin and the baked +50
+                        if (done)
+                        {
+                            // collected: the treat it gave, its amount, and the tick
+                            Child(note, "Cover", RoundRect, paper, 0f, cy, 108f, ch);
+                            Child(note, "Coin", Load(d == DailyTreats.RowDays ? "gift_big" : "glyph_coin"), Color.white, 0f, -6f, 70f, 70f);
+                            Amount(note, "+" + DailyTreats.CoinsFor(d), -60f, 27f);
+                            if (tick != null) Place(tick, note.anchoredPosition.x + 50f, note.anchoredPosition.y - 66f, 42f, 42f);
+                        }
+                        else
+                        {
+                            // face down: plain paper and a question mark
+                            Child(note, "Cover", RoundRect, paper, 0f, cy, 108f, ch);
+                            Amount(note, "?", today ? -22f : -20f, today ? 80f : 68f);
+                        }
+                        if (!today) { img.color = Color.white; Child(note, "Veil", RoundRect, new Color(Cream.r, Cream.g, Cream.b, done ? 0.35f : 0.6f), 0f, 0f, 150f, 200f); }
+                        else
+                        {
+                            // what today's note shows once flipped: its treat and amount, ticked
+                            todayBack = new GameObject("Back", typeof(RectTransform)); todayBack.transform.SetParent(note, false);
+                            var back = (RectTransform)todayBack.transform; Place(back, 0f, 0f, 10f, 10f);
+                            Child(back, "Cover", RoundRect, paper, 0f, cy, 116f, ch);
+                            Child(back, "Coin", Load(d == DailyTreats.RowDays ? "gift_big" : "glyph_coin"), Color.white, 0f, -6f, 84f, 84f);
+                            Amount(back, "+" + DailyTreats.CoinsFor(d), -70f, 31f);
+                            Child(back, "Tick", Load("tick"), Color.white, 58f, -78f, 48f, 48f);
+                            todayBack.SetActive(false);
+                        }
                     }
                     // the dot on the trail under this note
                     if (done) { Dot(x, true); var t = Img("DotTick" + d, canvas, Load("tick"), Color.white); Place(t.rectTransform, x, -88f, 28f, 28f); }
@@ -408,6 +425,18 @@ public class DailyTreatsPreview : MonoBehaviour
     private static void CoinSound() { if (AudioManager.Instance != null) AudioManager.Instance.PlayMoneyTransferComplete(); }
 
     private static Sprite Load(string name) => Resources.Load<Sprite>("DailyTreats/" + name);
+
+    /// A word on a note in the card's title letters (brown), e.g. "?" or "+70"
+    private static void Amount(Transform parent, string words, float y, float size)
+    {
+        var go = new GameObject("Amount", typeof(RectTransform)); go.transform.SetParent(parent, false);
+        var t = go.AddComponent<TMPro.TextMeshProUGUI>();
+        var font = Resources.Load<TMPro.TMP_FontAsset>("Fonts & Materials/beachday SDF"); if (font != null) t.font = font;
+        var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) t.fontSharedMaterial = plain;
+        t.text = words; t.fontSize = size; t.color = words == "?" ? new Color(0.36f, 0.20f, 0.10f, 0.75f) : new Color(0.90f, 0.56f, 0.24f);
+        t.alignment = TMPro.TextAlignmentOptions.Center; t.enableWordWrapping = false; t.raycastTarget = false;
+        var rt = (RectTransform)go.transform; rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.anchoredPosition = new Vector2(0f, y); rt.sizeDelta = new Vector2(140f, size * 1.3f);
+    }
 
     private static Image Img(string name, Transform parent, Sprite sprite, Color color)
     {

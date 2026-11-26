@@ -62,7 +62,7 @@ Cookie pictures: `Resources/Cookies/<GameObject name>` (falling back to `itemNam
 | `GlobalAudioState`, `GlobalMusicState` | `SettingsButtonsController` | Sound and music switches |
 | `ftc_ads_removed` | `RemoveAds` | Remove Ads owned |
 | `ftc_starpack_done` | `RemoveAdsStore` | Last 20 paid 15 Stars transaction ids, `|`-separated |
-| `ftc.daily.last`, `ftc.daily.streak`, `ftc.daily.pending` | `DailyTreats` | Last collect date, row day, coins waiting for Continue / new game |
+| `ftc.daily.last`, `ftc.daily.streak`, `ftc.daily.pending` | `DailyTreats` | Last collect date, days in a row (keeps counting past the 4-day row since 26 Nov 2026; round = (streak-1)/4+1), coins waiting for Continue / new game |
 | `ftc_shop_seen_<card>`, `ftc_shop_seen_init` | `ShopFlourish` | NEW tags already seen |
 | `ftc.rating.asked` | `RatingPrompt` | The rating popup was asked for |
 
