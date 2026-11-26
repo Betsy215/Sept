@@ -74,13 +74,13 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="next"><span class="n">1</span>Next</h2>
 <div class="grid">
 <div class="who p1"><h3>You</h3>
-<p><b>Your store test today:</b> a short list to tick while you play is at the top of Current.</p>
-<p><b>Ads:</b> nothing must be fixed now; one thing I would add (measuring). At the top of Current.</p>
-<p><b>Shop page:</b> five new pictures (7 to 11) beside the first six. Tell me by number.</p>
-<p><b>Your questions</b> (Play wiping a save, money on screen, the map lock) are answered in Current, with boxes to pick from.</p>
+<p><b>Your store test today:</b> the list to tick while you play is at the top of Current.</p>
+<p><b>To pick:</b> a day-end card animation (A to D), a Daily Treats look (1 to 3), and the three ads choices.</p>
+<p><b>To look at:</b> the candy jar changes and the whole-dollar money, with screenshots.</p>
 <p><b>Yesterday (25 November)</b> is in Analysis: 10 new players, $0.10 from ads, 8 downloads.</p>
 </div>
 <div class="who p2"><h3>Me</h3>
+<p>Order bubble: a few designs that are easier to read. New cabins without string lights, in other colours (Gemini is out of pictures until tomorrow; I try ChatGPT today).</p>
 <p>Everything in MVP is done on main and waits for the next test build. Say when you want one.</p>
 </div>
 </div>
@@ -99,6 +99,30 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 </ul>
 <p style="font-size:14px">Already known in this version, no need to note: the jumbled text on the day 9 gift card, the notification question at first launch, money shown with and without cents.</p>
 <ul class="checks"><li><label><input type="checkbox" data-id="test26.seen"> <span>Seen, remove this</span></label></li></ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Candy jar: no limit, a count card, and Ready moved.</b> <small>The earlier one-candy change is undone: three for $100 as before.</small></p>
+<ul>
+<li><b>No limit:</b> every buy adds three, however many are in the jar (checked: 8, then 11, then 14). The jar's picture is full from nine up.</li>
+<li><b>Count card:</b> a tap on the jar while arranging shows the number. DONE or a tap beside it closes it.</li>
+<li><b>Ready</b> now sits just above the hen, jar and pots instead of on them. It finds that spot on every screen size.</li>
+</ul>
+<div class="two"><figure style="margin:8px 0"><img src="rev25/ready_before.jpg" alt="Before: the READY cookie on the back row, covering the hen and half the candy jar" style="height:300px;max-height:300px;width:auto"><figcaption>Ready before</figcaption></figure><figure style="margin:8px 0"><img src="rev25/ready_after.jpg" alt="After: READY above the row; the hen, the jar and the flower pot all visible" style="height:300px;max-height:300px;width:auto"><figcaption>Ready after</figcaption></figure><figure style="margin:8px 0"><img src="rev25/candy_card.jpg" alt="The count card: CANDIES, the jar picture, x 14, a DONE cookie" style="height:420px;max-height:420px;width:auto"><figcaption>The count card</figcaption></figure></div>
+<ul class="checks"><li><label><input type="checkbox" data-id="cur.jar26.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.jar26.good"> <span>Good</span></label></li><li><label><input type="checkbox" data-id="cur.jar26.onjar"> <span>Also show a small number on the jar itself during the day</span></label></li><li><label><input type="checkbox" data-id="cur.jar26.more"> <span>Change something (tell me)</span></label></li></ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Money is whole dollars everywhere now.</b> <small>Your pick. Tips are rounded to the nearest dollar when earned, so every screen shows the same number. Played one day in the editor: $ 1,200 + $ 492 for the day + $ 100 three-star bonus = $ 1,792 on the card, in the shop and on the map.</small></p>
+<div class="two"><figure style="margin:8px 0"><img src="rev25/money_day.jpg" alt="A receipt over a customer: $ 40, TIPS: $ 28, no cents" style="height:420px;max-height:420px;width:auto"><figcaption>Receipt</figcaption></figure><figure style="margin:8px 0"><img src="rev25/money_card.jpg" alt="The day-end card: EARNED $ 1,792" style="height:420px;max-height:420px;width:auto"><figcaption>Day-end card</figcaption></figure><figure style="margin:8px 0"><img src="rev25/money_shop.jpg" alt="The shop: EARNED: $ 1,792" style="height:420px;max-height:420px;width:auto"><figcaption>Shop</figcaption></figure></div>
+<figure style="margin:8px 0"><img src="rev25/money_map.jpg" alt="The map: $ 1,792" style="height:160px;max-height:160px;width:auto"><figcaption>Map</figcaption></figure><p style="font-size:14px">A replayed day pays half, each amount rounded to a dollar. An old save's leftover cents are dropped once. The card still ends with Order sale $ 0 and Tips $ 0: that goes with the new animation below.</p>
+<p><b>Day-end card: four animations to choose from.</b> <small>In all of them the day's amounts stay written, the stars finish before the money starts, and a "3 stars +$ 100" line shows when the bonus is paid (today it is added silently).</small></p>
+<ul class="checks"><li><label><input type="checkbox" data-id="cur.money26b.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.dayend26.a"> <span><strong>A. Coin cookies into the hen (my pick)</strong>: the lines pop in; coin cookies jump out of each amount and arc down to the hen at the bottom of the page; with every landing the hen bumps and the total ticks up. A big coin drops from the stars for the bonus. No new art.</span></label></li><li><label><input type="checkbox" data-id="cur.dayend26.b"> <span><strong>B. A printed receipt with a stamp</strong>: a receipt strip prints down over the page line by line, ends in TODAY $ 242, and a round red stamp thumps on it. The total rolls up once.</span></label></li><li><label><input type="checkbox" data-id="cur.dayend26.c"> <span><strong>C. Hand-written tally</strong>: each line writes itself in the journal's hand, gets underlined, and "Today $ 242" is circled in red. The calmest and the smallest to build.</span></label></li><li><label><input type="checkbox" data-id="cur.dayend26.d"> <span><strong>D. Sticker lines</strong>: each line slaps on as a taped paper slip, the bonus slip with a star cookie; the slips pulse in turn as the total jumps up in three steps.</span></label></li></ul>
+</div>
+
+<div class="card">
+<p style="margin-top:0"><b>Daily Treats: making the three states clear.</b> <small>Today a collected note is only paler with a small tick, today's is only a little bigger, and later ones look just as bright. After Collect, today's note does not change at all: the reward shows somewhere else.</small></p>
+<ul class="checks"><li><label><input type="checkbox" data-id="cur.treats26.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.treats26.1"> <span><strong>1. Stamp card (my pick)</strong>: collected notes keep their colour and get a red ring stamp with the tick; today's breathes and glows; later ones are pale and a little smaller. On Collect the stamp thumps onto today's note, the card shakes, and the coin flies out to the +50. No new art.</span></label></li><li><label><input type="checkbox" data-id="cur.treats26.2"> <span><strong>2. Peel and take</strong>: on Collect the coin lifts off today's note and flies to the middle; collected notes show an empty coin outline. Needs four notes re-cut without their coin.</span></label></li><li><label><input type="checkbox" data-id="cur.treats26.3"> <span><strong>3. Spotlight and trail</strong>: a dot under each note on the trail (gold with a tick, a pulsing ring for today, empty for later), the other notes under a soft veil, and today's note flips over when collected.</span></label></li></ul>
 </div>
 
 <div class="card">
@@ -138,36 +162,9 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p><b>New cabins</b>, with the ground and light of 1, 2, 5 and 6:</p>
 <div class="two"><figure style="margin:8px 0"><img src="rev25/shop_7.jpg" alt="Cream cabin with a porch on posts, a pink striped awning over the cake window, mint shutters and a round blank sign, by day" style="height:520px;max-height:520px;width:auto"><figcaption><b>7</b> porch and striped awning, day</figcaption></figure><figure style="margin:8px 0"><img src="rev25/shop_8.jpg" alt="The porch cabin at night" style="height:520px;max-height:520px;width:auto"><figcaption><b>8</b> porch and striped awning, night</figcaption></figure><figure style="margin:8px 0"><img src="rev25/shop_9.jpg" alt="A-frame cabin: a steep red roof under snow almost to the ground, a tall triangular window with a cake stand, mint door, bulbs along both roof edges, by day" style="height:520px;max-height:520px;width:auto"><figcaption><b>9</b> A-frame, day</figcaption></figure></div>
 <div class="two"><figure style="margin:8px 0"><img src="rev25/shop_10.jpg" alt="The A-frame cabin at night with a patch of warm light on the snow" style="height:520px;max-height:520px;width:auto"><figcaption><b>10</b> A-frame, night</figcaption></figure><figure style="margin:8px 0"><img src="rev25/shop_11.jpg" alt="Cream cabin with a round-topped door, gingham curtains, window boxes with holly, a lantern and firewood, by day" style="height:520px;max-height:520px;width:auto"><figcaption><b>11</b> gingham curtains and window boxes, day</figcaption></figure></div>
+<p style="font-size:14px"><b>Your notes so far:</b> 3 liked most, 9 and 10 cute; no string lights, nothing on the door, simpler details, other colours, same view of the cabin. The next cabins follow that.</p>
 <p style="font-size:14px">In 7 and 8 Gemini drifted: the ground came out whiter and the truck smaller. 9, 10 and 11 keep the ground and truck of your pick. Gemini then reached its picture limit for today: the night of 11 and one more cabin (mint green) come when it resets.</p>
 <ul class="checks"><li><label><input type="checkbox" data-id="cur.shop26.seen"> <span>Seen, remove this</span></label></li></ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Play can wipe a saved game: how to fix it.</b> <small>Today one tap on Play replaces the save at once. It also fires if the finger slides off the button, or if Play is tapped just after Continue.</small></p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.play26.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.play26.quiet"> <span><strong>Quiet fix (my pick)</strong>: Play only counts when the finger lifts on the button, and Play and Continue lock each other once one is tapped. Nothing looks different.</span></label></li><li><label><input type="checkbox" data-id="cur.play26.ask"> <span><strong>Ask first, only when there is something to lose</strong>: if the save is past day 3, Play shows one small card, "Start over? Your game on day 12 will be replaced." Yes / No.</span></label></li><li><label><input type="checkbox" data-id="cur.play26.backup"> <span><strong>Keep the old game</strong>: a new game keeps the old save aside, and Settings gets "Bring back my last game". More work.</span></label></li>
-</ul>
-</div>
-
-<div class="card">
-<p style="margin-top:0"><b>Money on screen: the full picture.</b> <small>The same $1,814.66 in the wallet, on each screen today:</small></p>
-<ul>
-<li><b>Hen on the table:</b> $1814</li>
-<li><b>Receipt over a customer:</b> $35.00 and Tips: $ 7.30</li>
-<li><b>Day-end card:</b> starts Order sale $ 120.00, Tips $ 21.66; counts both down to $ 0; EARNED ends at $ 1815 (rounded up)</li>
-<li><b>Shop:</b> EARNED: $1814 (cut down)</li>
-<li><b>Map:</b> $ 1,814</li>
-<li><b>Prices and menu stickers:</b> $ 300, $ 20</li>
-</ul>
-<p>Cents come only from tips, and from half pay on a replayed day. Every price is whole dollars, so cents can never be spent. One real catch: with $299.50 the day card says $ 300 while the $300 card in the shop stays locked. The wallet is also called $, coins, EARNED and points in different places.</p>
-<p><b>The numbers</b></p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.money26.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.money26.c"> <span><strong>No cents at all (my pick)</strong>: tips are rounded to the nearest dollar when earned, so every screen shows whole dollars and they always add up. $ 1,814 everywhere.</span></label></li><li><label><input type="checkbox" data-id="cur.money26.a"> <span><strong>Show whole dollars only</strong>: cents stay inside but are never shown, always cut down. Safest, but sums can be $1 off.</span></label></li><li><label><input type="checkbox" data-id="cur.money26.b"> <span><strong>Cents everywhere</strong>: $ 1,814.66 on every screen, prices as $ 300.00.</span></label></li>
-</ul>
-<p><b>The day-end card</b></p>
-<ul class="checks">
-<li><label><input type="checkbox" data-id="cur.money26.d1"> <span><strong>Keep today's lines (my pick)</strong>: Order sale and Tips stay written; only the bottom line counts up, renamed WALLET (in the shop too); a "3-star bonus $ 100" line when it is paid.</span></label></li><li><label><input type="checkbox" data-id="cur.money26.d2"> <span><strong>Bottom line = TODAY</strong>: the card shows only the day's total; the wallet shows on the hen, shop and map.</span></label></li><li><label><input type="checkbox" data-id="cur.money26.d3"> <span><strong>Keep the pouring animation</strong>, then write the day's numbers back.</span></label></li>
-</ul>
 </div>
 
 <h2 id="mvp"><span class="n">3</span>MVP</h2>
@@ -177,6 +174,9 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <li>Waffle machine 6 s.</li>
 <li>Kid orders like the Girl and Boy; Chef always orders the day's largest order.</li>
 <li>No notification prompt.</li>
+<li>Play can no longer wipe a save by a slipped or doubled tap.</li>
+<li>Money in whole dollars on every screen.</li>
+<li>Candy jar: no limit, a count card while arranging, Ready above the back row.</li>
 </ol>
 
 <h2 id="backlog"><span class="n">4</span>Backlog</h2>
