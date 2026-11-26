@@ -25,7 +25,7 @@ the October notes moved to `Docs/history/`.
 | Bundle id / app id / team | `com.BetzzzGame.FoodTruckCafe` / 6755611355 / XY39924J9T |
 | Repo | https://github.com/Betsy215/Sept (**public**: never commit keys, issuer ids or tokens), branch `main` |
 | Live | **2026.11.24 (build 1)**, live since 25 November 2026 (approved overnight, released by itself; the store header E3 was set again by hand that day: it does not carry over). Before it: 2026.11.23 (2), 2026.11.20 (0), 2026.11.18 (3), 26.11.22 (35, with the 15 Stars purchase), 26.11.21 (28, with Remove Ads US$1.99), 26.11.13 (24) |
-| On main, in no build yet (26 November 2026) | Day 9 gift card without text; menu stickers in Delius with bigger prices; waffle machine 6 s; Kid orders like Girl and Boy, Chef the day's maximum; no notification prompt; one candy for $35. The owner has not asked for a test build yet |
+| On main, in no build yet (26 November 2026) | Day 9 gift card without text; menu stickers in Delius with bigger prices; waffle machine 6 s; Kid orders like Girl and Boy, Chef the day's maximum; no notification prompt. The owner has not asked for a test build yet |
 | Version rule | Since 18 November 2026: version = YYYY.MM.DD of the build day, builds 0, 1, 2 that day; a version that went live closes its train (next test builds take the next day's date). Set with the setver recipe, check with getver; `Docs/tools/test_build.sh <ver>-<n>` exports, archives and uploads to TestFlight; afterwards only reset `preloadedAssets:` to `[]` in ProjectSettings.asset (a `git checkout` of ProjectSettings reverts the version) |
 | Release tool | `Docs/tools/asc_release.py` (status, create, build, whatsnew, auto, submit, release); store texts as constants in it. No submission, release or store-text change without the owner's yes each time |
 | Next | The C chapter (chapter 3): art brainstorm since 24 November 2026 (indoor cabin cafe; winter and desert ideas; candy-pink corduroy cloth). Drafts in `Desktop/Sept/Store/cchapter_2026-11-24c`, shown in the report's Current section |
@@ -173,7 +173,7 @@ Mechanisms page, source `Docs/tools/report_page/mechanisms.html`; keep it curren
   starts with its whole box inside the drag area. The coffee station row (machine, cups, tray; `FixedStation`) keeps
   its moved spot. A swipe right opens the kitchen, left closes it (`KitchenSwipe`).
 - **Candy jar:** not on the table and not sold before day 3; when day 3's play begins the jar arrives on a gift card
-  with two candies (`CandyGift`), then candies are a shop buy (one candy for $35 since 26 November 2026; it was three for $100). A tap gives one candy to the customer
+  with two candies (`CandyGift`), then candies are a shop buy (three per buy). A tap gives one candy to the customer
   lowest on patience and fills their flowers to full (`CandyJar`, `SessionManager.Candies`).
 - **Menu book:** `MenuBook` (button beside Ready during the arrangement): sticker carousel on the oven-note paper; a food
   plays when bought AND on (`SessionManager.IsFoodItemActive`, `SessionData.enabledFoodItems`, saved across days);
@@ -200,7 +200,7 @@ Mechanisms page, source `Docs/tools/report_page/mechanisms.html`; keep it curren
   shop for the book (`ShopManager.IsOwned`; candies, the star pack and the oven card until three ovens stay). NEW tags
   on unseen cards and tabs (`NewTag`); cards the player cannot afford show a red price and do not open. Locked cards
   show a padlock: Chef (20 stars) and Dining table (25 stars) "Coming soon". Coin prices (chapter 1): Juice 110,
-  Candy 35 (one candy), Apple 300, Grandma 380, Extra cup 380, PotGreen 450, Cookies 600, Coffee machine 650, Chef customer 700,
+  Candies 100, Apple 300, Grandma 380, Extra cup 380, PotGreen 450, Cookies 600, Coffee machine 650, Chef customer 700,
   Choux 800, PotFlowers 900, Cake 1000, Businessman 1400 (the yoga customer card 220); chapter 2 adds Coconut 700,
   Oven 500 (x2), Two more flavours 900. Stars tab: the **yoga lady** (staff, 15 stars, `YogaHire`: poses in the
   background, each finished pose fills every waiting customer to full), Kitchen upgrade 15. $ tab: Remove Ads US$1.99

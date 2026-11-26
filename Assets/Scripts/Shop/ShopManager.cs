@@ -1024,7 +1024,7 @@ public class ShopManager : MonoBehaviour
 
     /// The name shown on the popup's first line (the card keys stay as they are; the two Upgrade cards differ by object name)
     private static readonly Dictionary<string, string> popupNames = new Dictionary<string, string> {
-        { "Yoga", "Yoga coach" }, { "PotFlowers", "Flower pot" }, { "PotGreen", "Small plant" }, { "Candies", "Candy" }, { "Cake", "Strawberry cake" }, { "IceCream", "Ice cream" },
+        { "Yoga", "Yoga coach" }, { "PotFlowers", "Flower pot" }, { "PotGreen", "Small plant" }, { "Candies", "Candies" }, { "Cake", "Strawberry cake" }, { "IceCream", "Ice cream" },
         { "CoffeeMachineUpgrade", "Coffee machine" }, { "CoffeeUpgrade", "Extra cup" }, { "IceCreamUpgrade", "Two more flavours" } };
     private static string DisplayName(ShopItemController item)
     {
