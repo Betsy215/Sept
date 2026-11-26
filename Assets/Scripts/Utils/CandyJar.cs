@@ -3,12 +3,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// The candy jar on the table's back band (owner, 26 October 2026): an empty jar from the start; the shop sells candies
-/// (three fill it); every tap on the jar gives one candy away: the customer with the least patience left gets one whole
+/// (one a buy since 26 November 2026, nine fill it); every tap on the jar gives one candy away: the customer with the least patience left gets one whole
 /// flower of time back. Built at runtime by Ensure() from LevelManager.Start, next to the flower pots under TableDecor;
 /// pictures Resources/Decor/candy_jar_0..9 (Store/redesign/candy_jar/jar_states9.py). Candies live in the session (SessionManager.Candies).
 public class CandyJar : MonoBehaviour, IPointerClickHandler
 {
-    public const int Full = 9; public const int PerPurchase = 3;        // the jar holds nine (owner, 26 October 2026, night; was six); the shop sells three at a time
+    public const int Full = 9; public const int PerPurchase = 1;        // the jar holds nine (owner, 26 October 2026, night; was six); the shop sells ONE candy a buy for $35 (owner, 26 November 2026: "change candies in store to single candy, change price too"; it was three for $100, which charged the full price for a part refill at 7 or 8)
     public static readonly Vector3 LocalPosition = new Vector3(0.62f, -0.065f, 0f); // on the back band between the hen and the pots, its bottom on the hen's line (owner, 26 October: all fixed items' bottoms align)
     public const float Scale = 0.42f;                                 // smaller (owner); Gemini's jar fills 0.6 of its canvas; its base lands on the pots' bottom line: centre = -0.357 + 0.696 x scale
 

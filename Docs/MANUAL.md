@@ -173,7 +173,7 @@ Mechanisms page, source `Docs/tools/report_page/mechanisms.html`; keep it curren
   starts with its whole box inside the drag area. The coffee station row (machine, cups, tray; `FixedStation`) keeps
   its moved spot. A swipe right opens the kitchen, left closes it (`KitchenSwipe`).
 - **Candy jar:** not on the table and not sold before day 3; when day 3's play begins the jar arrives on a gift card
-  with two candies (`CandyGift`), then candies are a shop buy (three per buy). A tap gives one candy to the customer
+  with two candies (`CandyGift`), then candies are a shop buy (one candy for $35 since 26 November 2026; it was three for $100). A tap gives one candy to the customer
   lowest on patience and fills their flowers to full (`CandyJar`, `SessionManager.Candies`).
 - **Menu book:** `MenuBook` (button beside Ready during the arrangement): sticker carousel on the oven-note paper; a food
   plays when bought AND on (`SessionManager.IsFoodItemActive`, `SessionData.enabledFoodItems`, saved across days);
@@ -200,7 +200,7 @@ Mechanisms page, source `Docs/tools/report_page/mechanisms.html`; keep it curren
   shop for the book (`ShopManager.IsOwned`; candies, the star pack and the oven card until three ovens stay). NEW tags
   on unseen cards and tabs (`NewTag`); cards the player cannot afford show a red price and do not open. Locked cards
   show a padlock: Chef (20 stars) and Dining table (25 stars) "Coming soon". Coin prices (chapter 1): Juice 110,
-  Candies 100, Apple 300, Grandma 380, Extra cup 380, PotGreen 450, Cookies 600, Coffee machine 650, Chef customer 700,
+  Candy 35 (one candy), Apple 300, Grandma 380, Extra cup 380, PotGreen 450, Cookies 600, Coffee machine 650, Chef customer 700,
   Choux 800, PotFlowers 900, Cake 1000, Businessman 1400 (the yoga customer card 220); chapter 2 adds Coconut 700,
   Oven 500 (x2), Two more flavours 900. Stars tab: the **yoga lady** (staff, 15 stars, `YogaHire`: poses in the
   background, each finished pose fills every waiting customer to full), Kitchen upgrade 15. $ tab: Remove Ads US$1.99

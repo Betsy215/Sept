@@ -1018,7 +1018,7 @@ public class SessionManager : MonoBehaviour
         if (currentSession.newInBook.Count != before) SaveSession();
     }
 
-    /// The candy jar (owner, 26 October 2026): a shop purchase adds three (the jar holds nine, CandyJar.Full); a tap on the jar uses one
+    /// The candy jar (owner, 26 October 2026): a shop purchase adds CandyJar.PerPurchase (one since 26 November 2026; the jar holds nine, CandyJar.Full); a tap on the jar uses one
     public int Candies => currentSession != null ? currentSession.candies : 0;
     public bool BuyCandies()
     {
