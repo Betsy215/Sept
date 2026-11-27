@@ -716,7 +716,7 @@ public class LevelManager : MonoBehaviour
 
         SetupLevelCompleteButtons();
         UpdateUnlockedItemsDisplay();
-        if (DayEndPreview.PreviewStyle != 0)   // proposed day-end looks, editor preview only (DayEndPreview); 0 = the game as it is
+        if (DayEndPreview.PreviewStyle != 0)   // the day-end card's money part (DayEndPreview; the game plays look 5 since 27 November 2026); 0 = the old count-down
             yield return StartCoroutine(DayEndPreview.Play(this, starsPop, orderSale, tips, threeStarBonusPaid, totalScore));
         else
         {

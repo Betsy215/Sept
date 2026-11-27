@@ -30,7 +30,9 @@ using UnityEngine.UI;
 /// </summary>
 public class DayEndPreview : MonoBehaviour
 {
-    public static int PreviewStyle = 0;
+    /// The card the game plays: 5, the owner's pick E (27 November 2026, "looks good, build it"). 1-4 stay for comparison;
+    /// 0 = the old count-down into Earned.
+    public static int PreviewStyle = 5;
     /// Set when a look (or a replay) has run to its end; the recordings stop on it.
     public static bool Finished;
 
