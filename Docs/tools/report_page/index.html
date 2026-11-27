@@ -79,7 +79,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <p><b>To look at:</b> all customers with the S2 edge in their three outfits (top of Current).</p>
 </div>
 <div class="who p2"><h3>Me</h3>
-<p>Making the hanging bulb in full cookie style for the Night Light icon (mine now; ChatGPT and Gemini after 4 PM). Gemini drafts of yoga ideas 1 and 2 after 4 PM. A picture of the price sign fix.</p>
+<p>Making the hanging bulb for the Night Light icon (mine now; ChatGPT and Gemini after 4 PM). Gemini drafts of yoga ideas 1 and 2 after 4 PM. A picture of the price sign fix.</p>
 <p>Everything in MVP is done on main and waits for the next test build. Say when you want one.</p>
 </div>
 </div>
@@ -87,7 +87,8 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="qa"><span class="n">2</span>Q&amp;A</h2>
 <div class="card">
 <p style="margin-top:0"><b>Does the price change need UI changes?</b> <small>27 November</small></p>
-<p>The amounts, no: the shop shows whatever price the App Store sends for the player's country. But one real bug turned up: the shop's fonts have no ₱, ₫ or ฿ sign, so in the Philippines, Vietnam and Thailand the price showed a box (it already did before the change). Fixed on main: those prices now read "PHP 49", "THB 39", "VND 25,000"; $, €, £, ¥, Rp and RM stay as they are. Goes out with the next build; a picture follows.</p>
+<p>The amounts, no: the shop shows the price the App Store sends for each country. Checking it found a real bug, now fixed on main: Thailand's ฿ showed as a box, and Vietnam's ₫ looked thin and hollow and wrapped onto two lines. Now: Philippines ₱49.00 (draws fine), Thailand "THB 39", Vietnam "VND 25,000", all on one line, and the popup price is blue for every currency like $1.99. Goes out with the next build.</p>
+<figure style="margin:8px 0"><img src="rev25/price_signs.jpg" alt="Shop card and popup prices: PHP, THB, VND, USD after the fix, and the card before the fix underneath" style="width:100%;max-height:none;height:auto"><figcaption>after: card and popup for PHP, THB, VND, USD; before, underneath</figcaption></figure>
 </div>
 <div class="card">
 <p style="margin-top:0"><b>Why was the pricing tick not acted on?</b> <small>27 November</small></p>
@@ -177,6 +178,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
 <ol>
+<li>Shop prices draw in every currency: ฿ and ₫ as "THB 39", "VND 25,000"; one line on the card; blue in the popup.</li>
 <li>Tablecloth far edge a: the cloth rolls away at the far edge, chapters 1 and 2 (3aa7b508).</li>
 <li>Remove Ads prices set 27 Nov (live now): US$1.99 base; Philippines ₱49, Indonesia Rp15,000, Vietnam 25,000₫, Malaysia RM4.90, Thailand ฿39; other countries Apple's automatic conversion.</li>
 <li>Day 9 gift card: A GIFT FOR YOU!, the star, Let's go; no other text.</li>
