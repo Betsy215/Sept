@@ -273,6 +273,8 @@ public class OrderSystem : MonoBehaviour
         bubble.transform.localPosition = new Vector3(at.x, at.y, z);
         bubble.transform.localScale = Vector3.one;
         sr.color = Color.white;   // the old line art was tinted grey; the glass is painted in its own colours
+        // since 27 November 2026 the pictures are K3: the glass inside a scalloped biscuit rim with a white piped icing
+        // line (owner: "use K3 for bubbles, ship it"; Store/bubble_2026-11-26/paint_cookierim.py), same canvas and place
     }
 
     /// Each food sits in the middle of its spot by its drawn part (the pictures' empty edges are not even): the drawn
