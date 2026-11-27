@@ -49,7 +49,7 @@ the October notes moved to `Docs/history/`.
    **Visuals** (real captures) and **Mechanisms** (game data in numbers: prices, kitchen times, days, customers per
    day, day lengths and money). The C chapter page existed 19 to 24 November 2026; the owner removed it ("this becomes
    the main focus now") and C chapter work now goes in the main sections (Current with ticks, Next).
-   **Q&A was removed on 26 November 2026** (owner: "remove the q and a section"): the sections are now Next, Current,
+   **Q&A is back since 27 November 2026** (the owner meant clear its content, not remove it; 26 Nov it was removed by mistake): the sections are now Next, Current,
    MVP, Backlog, Analysis, Marketing; an answer to the owner's question goes in Current.
    Never add, rename, remove or reorder a section unless the owner asks.
    At the end of every exchange: read the ticks, drop approved cards (approved work moves to MVP), refresh Next, publish.
