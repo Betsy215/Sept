@@ -98,15 +98,16 @@ public class RemoveAdsStore : MonoBehaviour, IDetailedStoreListener
         UnityPurchasing.Initialize(this, builder);
     }
 
-    /// The store's price as the game's fonts can draw it. Delius and beachday have no ₱, ₫, ฿ (or ₹, ₩, ...) and no
-    /// fallback font, so such a sign showed as a box; those prices are written with the currency code instead
-    /// ("PHP 49", "THB 39", "VND 25,000"). $, €, £, ¥, Rp, RM and the rest stay exactly as the App Store sends them.
+    /// The store's price as the game's fonts can draw it. Delius and beachday lack most currency signs; TMP finds
+    /// U+20A0..U+20B5 (₩ ₪ ₫ ₱ ...) in the default LiberationSans fallback, but ฿, ₹, ₺, ₽, ₸ and others are in no font
+    /// and showed as a box (seen in the editor 27 Nov 2026: "□39.00" for Thailand). Those prices are written with the
+    /// currency code instead ("THB 39"); $, €, £, ¥, ₱, ₫, Rp, RM stay exactly as the App Store sends them.
     static string Drawable(ProductMetadata m)
     {
         var s = m.localizedPriceString.Replace('\u202F', ' ').Replace('\u2009', ' ');
         foreach (char ch in s)
         {
-            if (ch < 128 || "\u00A0€£¥".IndexOf(ch) >= 0) continue;
+            if (ch < 128 || "\u00A0£¥".IndexOf(ch) >= 0 || (ch >= '\u20A0' && ch <= '\u20B5')) continue;
             if (string.IsNullOrEmpty(m.isoCurrencyCode)) return s;
             var v = m.localizedPrice;
             return m.isoCurrencyCode + " " + v.ToString(v == decimal.Truncate(v) ? "#,0" : "#,0.00", System.Globalization.CultureInfo.InvariantCulture);

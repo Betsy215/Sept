@@ -965,7 +965,7 @@ public class ShopManager : MonoBehaviour
             }
             var lines = (item.popupInfoText ?? "").Split('\n');
             // the price line in blue chalk, for a price in stars as well (owner, 14 November 2026: the star card "use the same layout as the coins tab")
-            if (lines.Length > 0 && (lines[0].TrimStart().StartsWith("$") || TabOf(item) == ShopTab.Stars)) lines[0] = (onPaper ? "<color=#3A70B0>" : "<color=#9FD2FF>") + lines[0] + "</color>";
+            if (lines.Length > 0 && (lines[0].TrimStart().StartsWith("$") || lines[0] == RemoveAds.PriceText || lines[0] == StarPack.PriceText || TabOf(item) == ShopTab.Stars)) lines[0] = (onPaper ? "<color=#3A70B0>" : "<color=#9FD2FF>") + lines[0] + "</color>";
             var shown = DisplayName(item);                                                                    // the card's name on top (owner, 18 October: "why is it a big eater instead of chef")
             popupItemInfo.text = TextStars.Mark((shown != null ? shown + "\n" : "") + string.Join("\n", lines));   // a star picture where the text says [*]
             popupItemInfo.color = onPaper ? PaperInk : Color.white;
