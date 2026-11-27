@@ -18,6 +18,12 @@ using UnityEngine.UI;
 ///       written and circled in red; the total counts up gently.
 ///  4 D. Sticker lines: each line slaps on as a taped paper slip (the bonus slip with a star cookie); the slips pulse
 ///       in turn as the total jumps up in three steps.
+///  5 E. Slips, hand and hen: C + A + D in one (the owner, 26 November 2026: "i like hand writing as well as the flying
+///       to chicken effect, combine both and redesign", then "i like the sticker lines effect too, try to add this as
+///       well"): each line slaps on as a taped slip (mint, yellow, pink with the star cookie), its words and amount write
+///       themselves on it in the journal's hand, then coin cookies hop out of the amount into the page's hen (one coin per
+///       $ 100 or so, two to four), the hen bumps and Earned ticks up with each landing; the bonus line's big coin drops
+///       from the stars; "Today $ n" is written last and circled in red. The amounts stay written.
 /// Coordinates are the panel's (the PopupCanvas, 1080 x 1920 reference): the page (paper.png, 984 x 1456) is shown at
 /// 860 x 1272.5 around (-14, 215); its painted hen sits at (-252, -217), the ribbon from y -19 to 135.
 /// Replay(style) re-runs the card from its stars for the frame-by-frame recordings (style 0 = the card as it is).
@@ -39,10 +45,10 @@ public class DayEndPreview : MonoBehaviour
     private static Color C(int r, int g, int b) => new Color(r / 255f, g / 255f, b / 255f);
     private const float RowX = -14f;
     // the rows: today's size, 90 apart (C keeps them closer, its "Today" line goes under them)
-    private static bool Tight => PreviewStyle == 3;
-    private static float SaleY => Tight ? 420f : 400f;
-    private static float TipY => Tight ? 345f : 310f;
-    private static float BonusY => Tight ? 270f : 220f;
+    private static bool Tight => PreviewStyle == 3 || PreviewStyle == 5;
+    private static float SaleY => PreviewStyle == 5 ? 432f : Tight ? 420f : 400f;
+    private static float TipY => PreviewStyle == 5 ? 350f : Tight ? 345f : 310f;
+    private static float BonusY => PreviewStyle == 5 ? 268f : Tight ? 270f : 220f;
     private static float RowSize => Tight ? 54f : 58f;
     private static readonly Vector2 HenAt = new Vector2(-252f, -215f), HenTop = new Vector2(-250f, -170f);
 
@@ -64,12 +70,17 @@ public class DayEndPreview : MonoBehaviour
             case 2: yield return p.Receipt(); break;
             case 3: yield return p.Tally(); break;
             case 4: yield return p.Stickers(); break;
+            case 5: yield return p.WrittenIntoHen(); break;
         }
         Finished = true;
     }
 
     /// Editor recordings: the card re-runs from its stars with the day's own numbers. Style 0 = the card as it is today.
-    public static string Replay(int style)
+    public static string Replay(int style) => Replay(style, -1f, -1f, -1f);
+
+    /// The same, with the money of an earlier recorded day (sale, tips, wallet; -1 = the day's own), so a look recorded
+    /// on another three-star day shows the same numbers as the others.
+    public static string Replay(int style, float useSale, float useTips, float useWallet)
     {
         var lm = FindObjectOfType<LevelManager>(); if (lm == null || lm.levelCompletePanel == null) return "no card";
         var row = GameObject.Find("StarsRow"); if (row == null) return "no stars row";
@@ -87,6 +98,7 @@ public class DayEndPreview : MonoBehaviour
         var stars = sm != null && sm.starProgressBar != null ? sm.starProgressBar.GetEarnedStarsCount() : 0;
         float sale = sm.PaidSaleToday, tips = sm.PaidTipsToday, bonus = (int)typeof(LevelManager).GetField("threeStarBonusPaid", BF).GetValue(lm);
         var wallet = SessionManager.Instance.GetTotalScore();
+        if (useSale >= 0f) sale = useSale; if (useTips >= 0f) tips = useTips; if (useWallet >= 0f) wallet = useWallet;
         var co = lm.StartCoroutine((IEnumerator)typeof(LevelManager).GetMethod("PopStars", BF).Invoke(lm, new object[] { row.transform, stars }));
         typeof(LevelManager).GetField("starsPop", BF).SetValue(lm, co);
         PreviewStyle = style; Finished = false;
@@ -149,7 +161,7 @@ public class DayEndPreview : MonoBehaviour
             p.hen.rectTransform.pivot = new Vector2(0.5f, 0.1f);
             Place(p.hen.rectTransform, HenAt.x, HenAt.y - 0.4f * HenH, HenW, HenH, new Vector2(0.5f, 0.1f));
             p.henRest = p.hen.rectTransform.anchoredPosition;
-            p.hen.gameObject.SetActive(PreviewStyle == 1);
+            p.hen.gameObject.SetActive(PreviewStyle == 1 || PreviewStyle == 5);
         }
         return p;
     }
@@ -160,7 +172,7 @@ public class DayEndPreview : MonoBehaviour
         foreach (var r in new[] { sale, tip, bonusLine })
         {
             if (PreviewStyle == 1) r.transform.localScale = Vector3.zero;
-            else if (PreviewStyle == 3) r.maxVisibleCharacters = 0;
+            else if (Tight) r.maxVisibleCharacters = 0;
             else r.gameObject.SetActive(false);
         }
     }
@@ -385,6 +397,89 @@ public class DayEndPreview : MonoBehaviour
         var t = 0f;
         while (l.maxVisibleCharacters < n) { t += Time.deltaTime; l.maxVisibleCharacters = Mathf.Min(n, Mathf.FloorToInt(t * charsPerSecond) + 1); yield return null; }
         l.maxVisibleCharacters = 99999;
+    }
+
+    // ---------------------------------------------------------------- E. written, then into the hen
+
+    private IEnumerator WrittenIntoHen()
+    {
+        var hand = Resources.Load<TMP_FontAsset>("Fonts & Materials/Delius SDF");
+        var todayLine = Instantiate(tip.gameObject, tip.transform.parent).GetComponent<TextMeshProUGUI>();
+        todayLine.name = "TodayLine"; todayLine.transform.SetParent(root, true);
+        var rows = new List<(TextMeshProUGUI l, string words, string money, float y, float amount, Color c, float tilt)>
+            { (sale, "Order sale", Money.Format(saleAmt), SaleY, saleAmt, Mint, 1.2f), (tip, "Tips", Money.Format(tipAmt), TipY, tipAmt, Yellow, -1.1f) };
+        if (bonusAmt > 0) rows.Add((bonusLine, "3 stars", "+" + Money.Format(bonusAmt), BonusY, bonusAmt, Pinkish, 0.9f));
+        var layer = new GameObject("DayEndSlips", typeof(RectTransform)).GetComponent<RectTransform>();
+        layer.SetParent(sale.transform.parent, false); layer.anchorMin = Vector2.zero; layer.anchorMax = Vector2.one; layer.offsetMin = layer.offsetMax = Vector2.zero;
+        layer.SetSiblingIndex(sale.transform.GetSiblingIndex());   // under the rows' words
+        foreach (var r in rows) { Hand(r.l, hand, r.words, r.money, RowSize); r.l.maxVisibleCharacters = 0; }
+        const float TodayY = 178f;
+        Hand(todayLine, hand, "Today", Money.Format(saleAmt + tipAmt + bonusAmt), 62f);
+        todayLine.rectTransform.anchoredPosition = new Vector2(RowX, TodayY); todayLine.maxVisibleCharacters = 0;
+        var flying = 0;
+        foreach (var r in rows)
+        {
+            // the slip slaps on, the words write themselves on it
+            var slip = Img("Slip", layer, RoundRect, new Color(r.c.r, r.c.g, r.c.b, 0f)); slip.type = Image.Type.Sliced;
+            Place(slip.rectTransform, RowX - 6f, r.y, 690f, 70f);
+            foreach (var tx in new[] { -322f, 326f })
+            {
+                var tape = Img("Tape", slip.transform, Rect, new Color(1f, 0.98f, 0.9f, 0.72f));
+                Place(tape.rectTransform, tx, tx < 0f ? 24f : -22f, 84f, 28f); tape.rectTransform.localRotation = Quaternion.Euler(0, 0, -24f);
+            }
+            if (r.l == bonusLine)
+            {
+                var star = Img("Star", slip.transform, StarSprite(), Color.white);
+                Place(star.rectTransform, -100f, 4f, 56f, 56f); star.preserveAspect = true;
+            }
+            var st = slip.rectTransform; var l = r.l; var c = r.c; var tilt = r.tilt;
+            l.transform.localRotation = Quaternion.Euler(0, 0, tilt);
+            Sfx("Audio/pop");
+            yield return Tween(0.18f, e =>
+            {
+                st.localScale = Vector3.one * Mathf.Lerp(1.55f, 1f, e * e);
+                st.localRotation = Quaternion.Euler(0, 0, Mathf.Lerp(tilt + 9f, tilt, e));
+                slip.color = new Color(c.r, c.g, c.b, e);
+            });
+            Haptics.Tap();
+            StartCoroutine(Squash(st, l.transform));
+            Burst(st.anchoredPosition + new Vector2(-330f, 0f), Dot, 5, 120f, 260f, -200f, 0.35f, 8f, 14f, new[] { new Color(1f, 1f, 1f, 0.9f) }, 0f);
+            yield return Wait(0.08f);
+            yield return Write(r.l, 38f);
+            if (r.l == bonusLine)
+            {
+                // the bonus: one big coin from the stars
+                flying++;
+                StartCoroutine(Coin(new Vector2(RowX, 560f), 0.05f, 0.7f, 120f, Mathf.FloorToInt(r.amount + 0.0001f), 150f, () => flying--, true));
+                yield return Wait(0.3f);
+                continue;
+            }
+            var whole = Mathf.FloorToInt(r.amount + 0.0001f);
+            if (whole <= 0) { yield return Wait(0.15f); continue; }
+            var n = Mathf.Clamp(Mathf.RoundToInt(r.amount / 100f), 2, 4);
+            if (whole < 10) n = 1;
+            StartCoroutine(Pulse(r.l.transform, 0.05f, 0.25f));
+            for (var i = 0; i < n; i++)
+            {
+                flying++;
+                var share = whole * (i + 1) / n - whole * i / n;
+                StartCoroutine(Coin(new Vector2(250f + Random.Range(-16f, 16f), r.y), i * 0.09f, 0.5f, 64f, share, 200f, () => flying--, false));
+            }
+            yield return Wait(0.22f);   // the next line starts while these coins are still in the air
+        }
+        while (flying > 0) yield return null;
+        if (Mathf.Abs(shown - wallet) > 0.5f) { shown = wallet; LevelManager.SetMoneyLine(total, "Earned:", Money.Format(shown)); }
+        yield return Wait(0.12f);
+        yield return Write(todayLine, 30f);
+        var circle = Img("Circle", root, Loop, new Color(Red.r, Red.g, Red.b, 0.9f));
+        Place(circle.rectTransform, RowX + 222f, TodayY + 2f, 250f, 112f);
+        circle.rectTransform.localRotation = Quaternion.Euler(0, 0, 4f);
+        circle.type = Image.Type.Filled; circle.fillMethod = Image.FillMethod.Radial360; circle.fillOrigin = (int)Image.Origin360.Left; circle.fillClockwise = true; circle.fillAmount = 0f;
+        yield return Tween(0.45f, e => circle.fillAmount = Mathf.SmoothStep(0f, 1f, e));
+        StartCoroutine(Pulse(total.transform, 0.12f, 0.28f));
+        StartCoroutine(HenBump(0.12f));
+        CoinSound();
+        yield return Wait(0.3f);
     }
 
     // ---------------------------------------------------------------- D. sticker lines
