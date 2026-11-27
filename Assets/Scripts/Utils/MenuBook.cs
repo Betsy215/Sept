@@ -103,6 +103,7 @@ public class MenuBook : MonoBehaviour
         }
         // During the arrangement the menu is always on screen: full size, or small under the top buttons when
         // closed (owner, 16 October: the small menu is just a small version of the menu)
+        if (lessonBanner != null && !lessonRunning && (Input.GetMouseButtonDown(0) || Input.touchCount > 0)) EndLesson();   // the player's own finger: the banner goes, the touch still counts
         if (open || animating) return;
         if (panel == null) { BuildPanel(); Refresh(null); }
         if (!panel.activeSelf)
@@ -151,6 +152,7 @@ public class MenuBook : MonoBehaviour
         if (!Arranging)
         {
             // The day started (or the scene is leaving): no motion, just put everything away
+            EndLesson();
             if (motion != null) StopCoroutine(motion);
             motion = null; animating = false; open = false;
             if (panel != null) { panel.SetActive(false); var crt = (RectTransform)panel.transform; crt.localScale = Vector3.one; crt.localRotation = Quaternion.identity; }
@@ -187,11 +189,13 @@ public class MenuBook : MonoBehaviour
         carousel.SetActive(true);
         StartCoroutine(Pop(carousel.transform, 0.85f));
         animating = false; busy = false; motion = null;
+        if (SessionManager.Instance != null && SessionManager.Instance.MenuTutorialDue) lesson = StartCoroutine(Lesson());
     }
 
     /// Done: the paper shrinks back to its spot under the top buttons and stays there, small, until tapped.
     private IEnumerator Shrink()
     {
+        EndLesson();
         animating = true; busy = true;
         var crt = (RectTransform)panel.transform;
         carousel.SetActive(false);
@@ -357,6 +361,260 @@ public class MenuBook : MonoBehaviour
         if (levelManager == null || levelManager.serveableItems == null || AudioManager.Instance == null) return;
         foreach (var item in levelManager.serveableItems)
             if (item != null && item.GetFoodType() == food && item.serveSound != null) { AudioManager.Instance.PlaySFX(item.serveSound); return; }
+    }
+
+    #endregion
+
+
+    #region First-time lesson
+
+    /// The menu's lesson (owner, 26 November 2026: "The first time we show the menu for player to choose recipes, add a
+    /// tutorial step, Banner - 'You can remove or add items to today's menu', Then show an animation of removing a sticker
+    /// and adding it back"). On the first open of the first menu a player meets (SessionManager.MenuTutorialDue, day 2):
+    /// the tutorial's banner, then a hand taps a sticker's cross, the sticker peels off and flies to the strip of stickers
+    /// to add, the hand taps it there and it flies back to its spot. Only pictures move: the save and the table are never
+    /// touched, and the paper is laid out again from the save at the end. Touches wait during the demo (about four
+    /// seconds); after it, the player's first touch takes the banner away (and still counts), as does Done.
+    public const string LessonText = "You can remove or add items to today's menu";
+    private Coroutine lesson;
+    private bool lessonRunning;
+    private GameObject lessonBanner, lessonBlocker, lessonFlier, lessonSlot;
+    private RectTransform lessonHand;
+
+    private bool LessonGone => !open || panel == null || !panel.activeSelf;
+
+    private IEnumerator Lesson()
+    {
+        SessionManager.Instance.MarkMenuTutorialSeen();
+        lessonRunning = true; busy = true;
+        // touches wait while the pictures move (the Done button and the stickers lie under this)
+        var block = NewImage("LessonBlocker", canvasRect, new Color(0f, 0f, 0f, 0f)); Stretch(block.rectTransform); block.raycastTarget = true;
+        lessonBlocker = block.gameObject;
+        ShowLessonBanner();
+        for (var t = 0f; t < 1.0f; t += Dt) { if (LessonGone) { EndLesson(); yield break; } yield return null; }
+
+        // a sticker of today's menu that may come off (not the chapter's fixed food)
+        RectTransform sticker = null; string food = null; var sm = SessionManager.Instance;
+        foreach (var pass in new[] { true, false })
+        {
+            if (levelManager != null && levelManager.serveableItems != null)
+                foreach (var item in levelManager.serveableItems)
+                {
+                    if (item == null) continue; var f = item.GetFoodType();
+                    if (!placed.TryGetValue(f, out var rt) || rt == null || SessionManager.IsFixedFood(f)) continue;
+                    if (pass && !sm.CanDisableFood(f, out _)) continue;
+                    sticker = rt; food = f; break;
+                }
+            if (sticker != null) break;
+        }
+        if (sticker == null) { StopLessonDemo(); yield break; }   // nothing to take off: the banner alone
+        var cross = sticker.Find("Remove") as RectTransform;
+        var wig = sticker.GetComponent<Wiggle>(); if (wig != null) wig.enabled = false;
+
+        // the hand (the tutorial's pointing cookie hand, fingertip at its bottom middle) comes to the cross
+        var handSprite = Resources.Load<Sprite>("Tutorial/pointer_hand"); if (handSprite == null) handSprite = Resources.Load<Sprite>("Tutorial/arrow");
+        var hi = NewImage("LessonHand", canvasRect, Color.white); hi.sprite = handSprite; hi.preserveAspect = true; hi.raycastTarget = false;
+        lessonHand = hi.rectTransform; lessonHand.anchorMin = lessonHand.anchorMax = new Vector2(0.5f, 0.5f); lessonHand.pivot = new Vector2(0.5f, 0f);
+        lessonHand.sizeDelta = new Vector2(170f, 170f); lessonHand.SetAsLastSibling();
+        GlowFx.Shine(hi);
+        var crossAt = Local(cross != null ? cross : sticker);
+        yield return MoveHand(crossAt + new Vector2(140f, -260f), crossAt, 0.5f, true);
+        if (LessonGone) { EndLesson(); yield break; }
+        yield return PressHand(crossAt);
+        if (LessonGone) { EndLesson(); yield break; }
+
+        // peeling off: the corner lifts (as a real tap does), then the sticker flies to the strip at the top
+        var startRot = sticker.eulerAngles.z;
+        for (var t = 0f; t < 0.12f; t += Dt)
+        {
+            var k = Mathf.Clamp01(t / 0.12f);
+            sticker.localScale = Vector3.one * (1f + 0.12f * k); sticker.localRotation = Quaternion.Euler(0, 0, startRot + 8f * k);
+            yield return null;
+        }
+        if (LessonGone) { EndLesson(); yield break; }
+        var sprite = sticker.GetComponent<Image>().sprite;
+        var paperRot = sticker.eulerAngles.z; var paperSize = sticker.rect.size * (sticker.lossyScale.x / canvasRect.lossyScale.x);
+        var paperPos = sticker.position;
+        sticker.gameObject.SetActive(false);
+        // its place in the strip, as Refresh would lay it out (in the foods' order), empty until the sticker lands
+        var slot = NewImage("LessonSlot_" + food, carouselContent, new Color(1f, 1f, 1f, 0f)); slot.sprite = sprite; slot.preserveAspect = true; slot.raycastTarget = false;
+        var srt = slot.rectTransform; srt.anchorMin = srt.anchorMax = new Vector2(0.5f, 0.5f); srt.sizeDelta = new Vector2(CarouselSize, CarouselSize);
+        srt.localRotation = Quaternion.Euler(0, 0, (StableHash(food) % 9 - 4) * 1.5f);
+        srt.SetSiblingIndex(StripIndex(food));
+        lessonSlot = slot.gameObject;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(carouselContent);
+        yield return null;
+        var stripRot = srt.eulerAngles.z; var stripSize = srt.rect.size * (srt.lossyScale.x / canvasRect.lossyScale.x);
+        var handFrom = lessonHand.anchoredPosition;
+        yield return Fly(sprite, paperPos, paperSize, paperRot, srt, stripSize, stripRot, handFrom);
+        if (LessonGone) { EndLesson(); yield break; }
+        slot.color = Color.white;
+        yield return Pop(srt, 1.08f);
+        for (var t = 0f; t < 0.25f; t += Dt) { if (LessonGone) { EndLesson(); yield break; } yield return null; }
+
+        // the hand taps it in the strip and it goes back onto the paper, pressed on
+        var stripAt = Local(srt) + new Vector2(0f, -CarouselSize * 0.15f);
+        yield return MoveHand(lessonHand.anchoredPosition, stripAt, 0.35f, false);
+        if (LessonGone) { EndLesson(); yield break; }
+        yield return PressHand(stripAt);
+        if (LessonGone) { EndLesson(); yield break; }
+        slot.color = new Color(1f, 1f, 1f, 0f);
+        var target = NewImage("LessonTarget", board, new Color(1f, 1f, 1f, 0f)).rectTransform;   // the paper spot, as a world point
+        target.anchorMin = target.anchorMax = new Vector2(0.5f, 0.5f); target.position = paperPos; target.sizeDelta = Vector2.one;
+        yield return Fly(sprite, srt.position, stripSize, stripRot, target, paperSize / 1.12f, startRot, lessonHand.anchoredPosition);
+        Destroy(target.gameObject);
+        if (LessonGone) { EndLesson(); yield break; }
+        Destroy(lessonSlot); lessonSlot = null;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(carouselContent);
+        sticker.localScale = Vector3.one; sticker.localRotation = Quaternion.Euler(0, 0, startRot);
+        sticker.gameObject.SetActive(true);
+        StartCoroutine(Pop(sticker, 1.12f)); PlayPlacedSound(food);
+        // the hand leaves
+        var img = lessonHand.GetComponent<Image>();
+        for (var t = 0f; t < 0.35f; t += Dt)
+        {
+            if (lessonHand == null) break;
+            var k = t / 0.35f; img.color = new Color(1f, 1f, 1f, 1f - k);
+            lessonHand.anchoredPosition += new Vector2(0f, -220f * Dt);
+            yield return null;
+        }
+        StopLessonDemo();
+    }
+
+    /// The demo is over: the paper again exactly as the save says, touches back; the banner stays until a touch.
+    private void StopLessonDemo()
+    {
+        if (lessonFlier != null) Destroy(lessonFlier); if (lessonSlot != null) Destroy(lessonSlot); if (lessonBlocker != null) Destroy(lessonBlocker);
+        if (lessonHand != null) Destroy(lessonHand.gameObject);
+        lessonFlier = lessonSlot = lessonBlocker = null; lessonHand = null;
+        if (lessonRunning) { lessonRunning = false; busy = false; if (board != null && open) Refresh(null); }
+        lesson = null;
+    }
+
+    /// Everything of the lesson away (a touch after the demo, Done, the day starting).
+    private void EndLesson()
+    {
+        if (lesson != null) StopCoroutine(lesson);
+        lesson = null;
+        StopLessonDemo();
+        if (lessonBanner != null) Destroy(lessonBanner);
+        lessonBanner = null;
+    }
+
+    /// The tutorial's banner as the tutorials draw it (TutorialDirector.Say: the gingham card, brown hand letters,
+    /// a second line makes it taller), low on the screen under the paper, where nothing of the menu is; on a screen
+    /// with no room there (an iPad) it lies over the paper's foot.
+    private void ShowLessonBanner()
+    {
+        var box = NewImage("LessonBanner", canvasRect, Color.white);
+        var cardSprite = Resources.Load<Sprite>("Tutorial/card");
+        if (cardSprite != null) { box.sprite = cardSprite; box.type = Image.Type.Sliced; } else box.color = new Color(1f, 0.98f, 0.93f, 0.95f);
+        box.raycastTarget = false;
+        var brt = box.rectTransform; brt.anchorMin = brt.anchorMax = new Vector2(0.5f, 0.5f); brt.pivot = new Vector2(0.5f, 0f);
+        brt.sizeDelta = new Vector2(1000f, 200f);
+        var tf = Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF");
+        var caption = NewText("Caption", brt, tf != null ? tf : font, 64f, new Color(0.28f, 0.15f, 0.055f));
+        var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) caption.fontSharedMaterial = plain;
+        Stretch(caption.rectTransform); caption.rectTransform.offsetMin = new Vector2(40f, 36f); caption.rectTransform.offsetMax = new Vector2(-40f, -36f);
+        caption.enableWordWrapping = true; caption.characterSpacing = 3f;
+        caption.enableAutoSizing = true; caption.fontSizeMax = 64f; caption.fontSizeMin = 40f;
+        caption.text = LessonText;
+        caption.ForceMeshUpdate();
+        var lines = Mathf.Max(1, caption.textInfo.lineCount);
+        brt.sizeDelta = new Vector2(1000f, 200f + (lines - 1) * 72f);
+        caption.alignment = lines > 1 ? TextAlignmentOptions.Center : TextAlignmentOptions.Capline;
+        // under the paper, above the phone's home bar
+        var half = canvasRect.rect.height / 2f;
+        var safeBottom = Screen.height > 0 ? Screen.safeArea.yMin / Screen.height * canvasRect.rect.height : 0f;
+        var floor = -half + safeBottom + 18f;
+        var paperFoot = ((RectTransform)panel.transform).anchoredPosition.y - 1130f / 2f;
+        var scale = Mathf.Clamp((paperFoot - 10f - floor) / brt.sizeDelta.y, 0.8f, 1f);
+        brt.localScale = Vector3.one * scale;
+        brt.anchoredPosition = new Vector2(0f, floor);
+        lessonBanner = box.gameObject;
+        StartCoroutine(PopTo(brt, scale));
+    }
+
+    /// Pop, ending at the banner's own scale (Pop ends at 1).
+    private IEnumerator PopTo(RectTransform rt, float scale)
+    {
+        for (var t = 0f; t < 0.2f; t += Dt) { if (rt == null) yield break; rt.localScale = Vector3.one * scale * Mathf.Lerp(0.85f, 1f, t / 0.2f); yield return null; }
+        if (rt != null) rt.localScale = Vector3.one * scale;
+    }
+
+    /// The sticker's place in the strip when it is off: after the stickers of foods that come before it.
+    private int StripIndex(string food)
+    {
+        var order = new List<string>();
+        if (levelManager != null && levelManager.serveableItems != null) foreach (var item in levelManager.serveableItems) if (item != null && !order.Contains(item.GetFoodType())) order.Add(item.GetFoodType());
+        var mine = order.IndexOf(food); var index = 0;
+        for (var i = 0; i < carouselContent.childCount; i++)
+        {
+            var n = carouselContent.GetChild(i).name; if (!n.StartsWith("Sticker_")) continue;
+            if (order.IndexOf(n.Substring(8)) < mine) index = i + 1;
+        }
+        return index;
+    }
+
+    /// A point of the canvas (centre-anchored units) for a rect anywhere on this canvas.
+    private Vector2 Local(RectTransform rt)
+    {
+        var sp = RectTransformUtility.WorldToScreenPoint(null, rt.position);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, sp, null, out var local);
+        return local;
+    }
+
+    private IEnumerator MoveHand(Vector2 from, Vector2 to, float seconds, bool fadeIn)
+    {
+        var img = lessonHand.GetComponent<Image>();
+        for (var t = 0f; t < seconds; t += Dt)
+        {
+            if (lessonHand == null || LessonGone) yield break;
+            var k = Mathf.SmoothStep(0f, 1f, t / seconds);
+            lessonHand.anchoredPosition = Vector2.Lerp(from, to, k);
+            if (fadeIn) img.color = new Color(1f, 1f, 1f, Mathf.Clamp01(t / (seconds * 0.6f)));
+            yield return null;
+        }
+        if (lessonHand != null) { lessonHand.anchoredPosition = to; img.color = Color.white; }
+    }
+
+    /// A tap: the hand dips onto the point, presses, and lifts.
+    private IEnumerator PressHand(Vector2 at)
+    {
+        for (var t = 0f; t < 0.32f; t += Dt)
+        {
+            if (lessonHand == null || LessonGone) yield break;
+            var k = t / 0.32f; var dip = Mathf.Sin(k * Mathf.PI);
+            lessonHand.anchoredPosition = at + new Vector2(0f, -22f * dip);
+            lessonHand.localScale = Vector3.one * (1f - 0.1f * dip);
+            yield return null;
+        }
+        if (lessonHand != null) { lessonHand.anchoredPosition = at; lessonHand.localScale = Vector3.one; }
+    }
+
+    /// One flight as Move draws it (the hop, the grow in the middle, the turn), a little slower for the eye; the hand rides along.
+    private IEnumerator Fly(Sprite sprite, Vector3 fromPos, Vector2 fromSize, float fromRot, RectTransform to, Vector2 toSize, float toRot, Vector2 handFrom)
+    {
+        var flier = NewImage("LessonFlier", canvasRect, Color.white); flier.sprite = sprite; flier.preserveAspect = true; flier.raycastTarget = false;
+        lessonFlier = flier.gameObject;
+        var frt = flier.rectTransform; frt.anchorMin = frt.anchorMax = new Vector2(0.5f, 0.5f);
+        frt.SetSiblingIndex(lessonHand != null ? lessonHand.GetSiblingIndex() : canvasRect.childCount - 1);   // under the hand
+        const float seconds = 0.55f;
+        for (var time = 0f; time < seconds; time += Dt)
+        {
+            if (LessonGone || to == null) yield break;
+            var k = Mathf.Clamp01(time / seconds); var e = 1f - (1f - k) * (1f - k);
+            frt.position = Vector3.Lerp(fromPos, to.position, e) + Vector3.up * (Mathf.Sin(k * Mathf.PI) * 60f * canvasRect.lossyScale.y);
+            frt.sizeDelta = Vector2.Lerp(fromSize, toSize, e) * (1f + 0.15f * Mathf.Sin(k * Mathf.PI));
+            frt.rotation = Quaternion.Euler(0, 0, Mathf.LerpAngle(fromRot, toRot, e));
+            if (lessonHand != null && k > 0.25f)   // the hand lets go first, then drifts after the sticker
+            {
+                var hk = Mathf.SmoothStep(0f, 1f, (k - 0.25f) / 0.75f);
+                lessonHand.anchoredPosition = Vector2.Lerp(handFrom, Local(frt) + new Vector2(0f, -toSize.y * 0.15f), hk * 0.5f);
+            }
+            yield return null;
+        }
+        Destroy(lessonFlier); lessonFlier = null;
     }
 
     #endregion

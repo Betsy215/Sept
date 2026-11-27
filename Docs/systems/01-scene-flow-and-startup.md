@@ -60,6 +60,10 @@ also sets the time scale to 1.
   are restored, `tutorial2Seen` is saved and the scene reloads into the real day.
 - The first arrangement (day 2): the hint card and moving hand (`GamePhaseManager.HintDue`, `Utils/ArrangeLesson.cs`),
   saved as `arrangeTutorialSeen`.
+- The first menu (day 2, when the menu book first opens): the banner "You can remove or add items to today's menu" under
+  the paper and a hand that peels one sticker off to the strip and puts it back (pictures only, the save is untouched;
+  `MenuBook.Lesson`). Due by `SessionManager.MenuTutorialDue`: `menuTutorialSeen` false, at most day 1 finished and the
+  menu never changed, so players who already used the menu skip it. A touch after the demo, Done or Ready removes the banner.
 - Day 3: the candy jar's gift when play begins (`Utils/CandyGift.cs`, `candyGiftSeen`).
 - While a `TutorialDirector` exists: no `dayStarted` analytics, no day clock (`dayClockDisabled`), the customer is
   the Girl (`CustomerManager.SelectCustomerForLevel`).

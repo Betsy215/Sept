@@ -28,6 +28,9 @@ public class SessionData
     // The first arrangement's hint: the hand moving an item, on the table and in the kitchen (owner, 18 November 2026:
     // "only for tutorial, handle the same way as other things in tutorial"). Old saves: false, so they see it once.
     public bool arrangeTutorialSeen;
+    // The menu book's first-time lesson (owner, 26 November 2026: "You can remove or add items to today's menu", a sticker
+    // taken off and put back). Old saves: false, but MenuTutorialDue also wants a player who has not met the menu yet.
+    public bool menuTutorialSeen;
     // "NEW" labels (owner, 18 November 2026). Keys are "Food:Juice", "Decor:PotFlowers", "Upgrade:Oven" ... (ShopManager.KeyOf).
     public List<string> newThings;             // bought since the last day started: labelled in the arrangement, table and kitchen
     public List<string> newInBook;             // bought since the cookie book was last opened: labelled on the book and inside it
@@ -947,6 +950,23 @@ public class SessionManager : MonoBehaviour
 
     public bool ArrangeTutorialDue => currentSession != null && currentSession.isActive && !currentSession.arrangeTutorialSeen;
     public void MarkArrangeTutorialSeen() { if (currentSession == null || currentSession.arrangeTutorialSeen) return; currentSession.arrangeTutorialSeen = true; SaveSession(); }
+
+    /// The menu lesson, on the first menu a player meets: day 2 (day 1 has no arrangement, so no menu). A save from before
+    /// the lesson has no flag, so it also needs a player who has finished at most day 1 and never touched the menu
+    /// (every bought food on, no sticker moved): someone who has used the menu is not taught it.
+    public bool MenuTutorialDue
+    {
+        get
+        {
+            var s = currentSession;
+            if (s == null || !s.isActive || s.menuTutorialSeen || s.levelsCompleted > 1) return false;
+            if (s.menuStickerPositions != null && s.menuStickerPositions.Count > 0) return false;
+            if (s.purchasedFoodItems != null && s.enabledFoodItems != null)
+                foreach (var f in s.purchasedFoodItems) if (IsFoodInSeason(f) && !s.enabledFoodItems.Contains(f)) return false;
+            return true;
+        }
+    }
+    public void MarkMenuTutorialSeen() { if (currentSession == null || currentSession.menuTutorialSeen) return; currentSession.menuTutorialSeen = true; SaveSession(); }
 
     /// Something was just bought: new on the cookie book, and new in the next arrangement.
     public void NoteNew(string key)

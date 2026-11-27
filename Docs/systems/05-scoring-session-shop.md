@@ -63,7 +63,7 @@ change. Fields, by group:
 | Owned | `purchasedFoodItems` (starts Bread, Coffee, Apple), `purchasedCharacters` (starts Girl, Boy, Kid), `purchasedDecor`, `foodUpgradeKeys` + `foodUpgradeValues` (the upgrade dictionary: Coffee, CoffeeMachine, Oven, IceCream), `candies` |
 | Menu and places | `enabledFoodItems`, `savedFoodPositions`, `menuStickerPositions`, `kitchenPlaces`, `kitchenLayout`, `handleTableY/KitchenY`, `handleTableSet/KitchenSet`, `kitchenAutoPlaced` |
 | Stars as currency | `starItems`, `starsSpent`, `starsBought`, `starsGranted`, `starsFromCoins` |
-| Seen flags | `tutorialSeen`, `tutorial2Seen`, `chapter2GiftSeen`, `arrangeTutorialSeen`, `candyGiftSeen`, `chapter2Claimed`, `day9StarGiven`, `chapter2MapSeen`, `bonusShown` |
+| Seen flags | `tutorialSeen`, `tutorial2Seen`, `chapter2GiftSeen`, `arrangeTutorialSeen`, `menuTutorialSeen`, `candyGiftSeen`, `chapter2Claimed`, `day9StarGiven`, `chapter2MapSeen`, `bonusShown` |
 | NEW tags and journal | `newThings`, `newInBook`, `journal`, `journalNew`, `journalFilled`, `journalShown` |
 
 - Old saves: `LoadSession` fills missing lists, switches every bought food on when `enabledFoodItems` is missing and
