@@ -53,10 +53,17 @@ public class DayNightTint : MonoBehaviour
     /// Editor captures only: a stage forced from outside (-1 = off)
     public static float ForceStage = -1f;
 
+    /// The tutorials play at night (owner, 27 November 2026: "I want tutorial to be at night"): from the first frame to the
+    /// end card, with no dusk change on the way; real days keep their own progression (each load starts at day).
+    /// LevelManager adds the tutorial before the tint, so it is found here.
+    private TutorialDirector tutorial;
+
     public void Begin(OrderSystem os)
     {
         CurrentStage = 0f;
         orderSystem = os;
+        tutorial = FindObjectOfType<TutorialDirector>();
+        if (tutorial != null) { stage = 2f; CurrentStage = 2f; }
 
         var canvasGo = GameObject.Find("Canvas");
         var bg = canvasGo != null ? canvasGo.transform.Find("bg") : null;
@@ -213,6 +220,7 @@ public class DayNightTint : MonoBehaviour
     private int WantedStage()
     {
         if (ForceStage >= 0f) return Mathf.RoundToInt(ForceStage);
+        if (tutorial != null) return 2;   // the tutorial's night
         // Timed days (13 October): dusk at 65% of the day, night at 85%
         if (levelManager == null) levelManager = FindObjectOfType<LevelManager>();
         if (levelManager != null && levelManager.DayStarted && levelManager.DayDuration > 0f)
