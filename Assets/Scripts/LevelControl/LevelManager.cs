@@ -712,13 +712,18 @@ public class LevelManager : MonoBehaviour
 
         SetupLevelCompleteButtons();
         UpdateUnlockedItemsDisplay();
-        yield return new WaitForSeconds(1f);
-        yield return StartCoroutine(AnimateFullTransfer(todaySale, totalEarned, "Order Sale:", "Earned:",
-            orderSale, earnedAfterSale));
-        yield return new WaitForSeconds(1f);
-        yield return StartCoroutine(AnimateFullTransfer(todayTip, totalEarned, "Tips:", "Earned:", tips,
-            totalScore - threeStarBonusPaid));
-        if (threeStarBonusPaid > 0) SetMoneyLine(totalEarned, "Earned:", Money.Format(totalScore));
+        if (DayEndPreview.PreviewStyle != 0)   // proposed day-end looks, editor preview only (DayEndPreview); 0 = the game as it is
+            yield return StartCoroutine(DayEndPreview.Play(this, starsPop, orderSale, tips, threeStarBonusPaid, totalScore));
+        else
+        {
+            yield return new WaitForSeconds(1f);
+            yield return StartCoroutine(AnimateFullTransfer(todaySale, totalEarned, "Order Sale:", "Earned:",
+                orderSale, earnedAfterSale));
+            yield return new WaitForSeconds(1f);
+            yield return StartCoroutine(AnimateFullTransfer(todayTip, totalEarned, "Tips:", "Earned:", tips,
+                totalScore - threeStarBonusPaid));
+            if (threeStarBonusPaid > 0) SetMoneyLine(totalEarned, "Earned:", Money.Format(totalScore));
+        }
 
         var isLastLevel = currentLevelIndex >= LastDayIndex || Chapter.IsLastDay(currentLevelIndex);
         if (isLastLevel)
