@@ -18,7 +18,7 @@ using UnityEngine.UI;
 ///  - the table darkens: one navy sheet over the cloth (Table layer, order 2: over the cloth and its front drop, under
 ///    everything on it) whose alpha is Dark * k * (1 - pool); everything on the FoodItems layer (food, stations, hen,
 ///    jar, pots) and the truck button get a multiply tint toward NightTint by the same amount at their foot.
-///  - pool = exp(-Falloff d^2) (1.5; the wide light 1.0), d the distance from a point PoolDrop in front of the lamp's foot in an ellipse GlowRadius * (2.0 wide, 1.7 tall): the
+///  - pool = exp(-Falloff d^2) (1.5; the wide light 1.0), or exp(-Falloff d) with SoftTail, d the distance from a point PoolDrop in front of the lamp's foot in an ellipse GlowRadius * (2.0 wide, 1.7 tall): the
 ///    lamp lifts the dark around itself, most near the lamp, nothing far away.
 ///  - the warm light: one large additive sprite (Legacy Shaders/Particles/Additive, a 256 px exp falloff texture made at
 ///    runtime) over the table and the back row, peak GlowStrength * 0.22 of warm orange; plus a small additive halo
@@ -37,6 +37,7 @@ public class TableLampPreview : MonoBehaviour
     public static float LampWidth = 0f;           // > 0: size the lamp by its painted width instead (mushrooms: 0.52, clear of the hen and the jar)
     public static float LightYShare = -1f;        // > 0: the light's height as a share of the painted height (else the table below)
     public static float Falloff = 1.5f;           // pool = exp(-Falloff d^2): smaller = flatter, the light reaches further
+    public static bool SoftTail = false;          // true: pool = exp(-Falloff d), peaked at the lamp with a long soft tail (owner, 27 November: "more gradient")
     public static float PoolDrop = 0f;            // the pool's centre this far in front of (below) the lamp's foot, world units
     public static float WarmPeak = 0.22f;
     public static float HaloPeak = 0.35f;         // the small additive halo round the shade (mushrooms 0.12, so the cap keeps its colour)         // the additive warm light at the pool's centre (times GlowStrength)
@@ -119,15 +120,15 @@ public class TableLampPreview : MonoBehaviour
         // the warm light (additive), over the back row and the table
         var add = new Material(Shader.Find("Legacy Shaders/Particles/Additive"));
         add.SetColor("_TintColor", new Color(0.5f, 0.5f, 0.5f, 0.5f));   // the shader doubles: 0.5 = colour as given
-        glow = MakeSr("WarmGlow", GlowSprite(Falloff), "FoodItems", 60, new Vector3(LampX, PoolY, 0f));
+        glow = MakeSr("WarmGlow", GlowSprite(Falloff, SoftTail), "FoodItems", 60, new Vector3(LampX, PoolY, 0f));
         glow.sharedMaterial = add;
-        halo = MakeSr("ShadeHalo", GlowSprite(1.5f), "FoodItems", 61, new Vector3(LampX, lightY, 0f));
+        halo = MakeSr("ShadeHalo", GlowSprite(1.5f, false), "FoodItems", 61, new Vector3(LampX, lightY, 0f));
         halo.sharedMaterial = add;
         built = Design; builtR = -1f;
     }
 
     private Bounds sheetBounds;
-    private static float Key => GlowRadius * 1000f + GlowStrength + Falloff * 0.01f + PoolDrop * 0.0001f;
+    private static float Key => GlowRadius * 1000f + GlowStrength + Falloff * 0.01f + PoolDrop * 0.0001f + (SoftTail ? 0.5f : 0f);
 
     private SpriteRenderer MakeSr(string name, Sprite s, string layer, int order, Vector3 pos)
     {
@@ -137,20 +138,22 @@ public class TableLampPreview : MonoBehaviour
     }
 
     private static readonly Dictionary<float, Sprite> glowSprites = new Dictionary<float, Sprite>();
-    private static Sprite GlowSprite(float falloff)
+    private static float Curve(float d2, float falloff, bool soft) => soft ? Mathf.Exp(-falloff * Mathf.Sqrt(d2)) : Mathf.Exp(-falloff * d2);
+    private static Sprite GlowSprite(float falloff, bool soft)
     {
-        if (glowSprites.TryGetValue(falloff, out var cached) && cached != null) return cached;
+        var key = falloff + (soft ? 1000f : 0f);
+        if (glowSprites.TryGetValue(key, out var cached) && cached != null) return cached;
         const int n = 256; var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
         var px = new Color[n * n];
         for (var y = 0; y < n; y++) for (var x = 0; x < n; x++)
         {
             var dx = (x + 0.5f - n / 2f) / (n / 2f) * 2.2f; var dy = (y + 0.5f - n / 2f) / (n / 2f) * 2.2f;   // the texture spans +-2.2 radii
-            var g = Mathf.Exp(-falloff * (dx * dx + dy * dy)); g *= Mathf.Clamp01((2.2f - Mathf.Sqrt(dx * dx + dy * dy)) * 2f);
+            var g = Curve(dx * dx + dy * dy, falloff, soft); g *= Mathf.Clamp01((2.2f - Mathf.Sqrt(dx * dx + dy * dy)) * 2f);
             px[y * n + x] = new Color(1f, 1f, 1f, g);   // additive: adds colour * alpha * g
         }
         tex.SetPixels(px); tex.Apply();
         var sp = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n / 2f / 2.2f);   // 1 world unit = 1 radius
-        glowSprites[falloff] = sp;
+        glowSprites[key] = sp;
         return sp;
     }
 
@@ -159,7 +162,7 @@ public class TableLampPreview : MonoBehaviour
     private float Ry => 1.7f * GlowRadius;
     private float Pool(float x, float y)
     {
-        var dx = (x - LampX) / Rx; var dy = (y - PoolY) / Ry; return Mathf.Exp(-Falloff * (dx * dx + dy * dy));
+        var dx = (x - LampX) / Rx; var dy = (y - PoolY) / Ry; return Curve(dx * dx + dy * dy, Falloff, SoftTail);
     }
     private float Lift(float x, float y) => Mathf.Clamp01(0.85f * GlowStrength * Pool(x, y));
 
