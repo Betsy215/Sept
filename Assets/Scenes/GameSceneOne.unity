@@ -7320,9 +7320,9 @@ MonoBehaviour:
     displayPrefab: {fileID: 8878342301148696013, guid: f41492d90cec1497f915f57a353ecffd, type: 3}
   - foodType: IceCream
     displayPrefab: {fileID: 3070762145850539114, guid: 78a2e41d30ea64e5e877ff26a654fba8, type: 3}
-  itemSpacing: 1
+  itemSpacing: 0.82
   singleColumnStartPosition: {x: -0.55, y: 1.3, z: 0}
-  twoColumnStartPosition: {x: -1.15, y: 1.3, z: 0}
+  twoColumnStartPosition: {x: -1.06, y: 1.3, z: 0}
   scoreManager: {fileID: 1415756604}
   levelManager: {fileID: 905501929}
   customerManager: {fileID: 742151245}

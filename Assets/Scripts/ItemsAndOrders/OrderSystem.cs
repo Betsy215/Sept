@@ -235,6 +235,7 @@ public class OrderSystem : MonoBehaviour
         if (speechBubble2 != null) speechBubble2.transform.SetParent(s0.root, true);
         if (speechBubble4 != null) speechBubble4.transform.SetParent(s0.root, true);
         if (orderContainer != null) orderContainer.SetParent(s0.root, true);
+        foreach (var b in new[] { speechBubble1, speechBubble2, speechBubble4 }) PlaceGlassBubble(b);
         s0.bubble1 = speechBubble1; s0.bubble2 = speechBubble2; s0.bubble4 = speechBubble4; s0.container = orderContainer;
 
         var s1 = new SlotVisuals { root = new GameObject("OrderSlot1").transform };
@@ -253,6 +254,34 @@ public class OrderSystem : MonoBehaviour
         }
         slots = new[] { s0, s1 };
     }
+
+    /// The G1 glass bubbles (owner, 26 November 2026: "use G1 ... make it more compact, so we can resize the bubble to be
+    /// smaller, but don't change the items image size"; then "the trail under each bubble ... wrap it more horizontal so it
+    /// takes less height, then move bubble closer to the customer"; "order bubbles look good, ship it"). The pictures
+    /// (Assets/Images/1bubble, bubble2, bubble3; painted by Store/bubble_2026-11-26/paint_compact.py ROUND=2) are 200 pixels
+    /// per unit and drawn at scale 1; the body's middle is 0.095 above the picture's middle and sits on the middle of the
+    /// foods (one food every 0.82, itemSpacing in the scene). In the bubble root's space.
+    private static readonly Dictionary<string, Vector3> GlassBubbleSpot = new Dictionary<string, Vector3>
+    {
+        { "1bubble", new Vector3(-1.05f, 2.605f, 0f) }, { "bubble2", new Vector3(-1.05f, 2.195f, 0f) }, { "bubble3", new Vector3(-1.15f, 2.195f, 0f) }
+    };
+    private static void PlaceGlassBubble(GameObject bubble)
+    {
+        var sr = bubble != null ? bubble.GetComponent<SpriteRenderer>() : null;
+        if (sr == null || sr.sprite == null || !GlassBubbleSpot.TryGetValue(sr.sprite.name, out var at)) return;
+        var z = bubble.transform.localPosition.z;
+        bubble.transform.localPosition = new Vector3(at.x, at.y, z);
+        bubble.transform.localScale = Vector3.one;
+        sr.color = Color.white;   // the old line art was tinted grey; the glass is painted in its own colours
+    }
+
+    /// Each food sits in the middle of its spot by its drawn part (the pictures' empty edges are not even): the drawn
+    /// part's middle measured from the picture's middle, in the order container's units
+    private static readonly Dictionary<string, Vector2> FoodCentre = new Dictionary<string, Vector2>
+    {
+        { "Choux", new Vector2(0.01f, 0.04f) }, { "Juice", new Vector2(0.01f, -0.01f) }, { "Bread", new Vector2(0.02f, 0f) },
+        { "Cake", new Vector2(0.01f, -0.01f) }, { "Coffee", new Vector2(0.04f, -0.06f) }, { "Coconut", new Vector2(0.01f, 0.02f) }
+    };
 
     private static GameObject CloneUnder(GameObject original, Transform root)
     {
@@ -444,15 +473,16 @@ public class OrderSystem : MonoBehaviour
         order.thinkDots = root;
     }
 
-    /// The inside of each bubble picture (Assets/Images, 100 pixels per unit; measured inside the black line): its
+    /// The inside of each bubble picture (Assets/Images, 200 pixels per unit since the glass bubbles): its
     /// middle from the picture's middle and its size, in the sprite's own units
     private static bool BubbleInside(string sprite, out Vector3 centre, out Vector2 size)
     {
         switch (sprite)
         {
-            case "1bubble": centre = new Vector3(0.015f, 0.425f, 0f); size = new Vector2(3.29f, 3.05f); return true;
-            case "bubble2": centre = new Vector3(-0.08f, 0.535f, 0f); size = new Vector2(2.18f, 3.57f); return true;
-            case "bubble3": centre = new Vector3(-0.005f, 0.345f, 0f); size = new Vector2(1.79f, 5.19f); return true;
+            // the glass bubbles since 26 November 2026 (inside the rim, around the foods)
+            case "1bubble": centre = new Vector3(0f, 0.095f, 0f); size = new Vector2(1.05f, 1.05f); return true;
+            case "bubble2": centre = new Vector3(0f, 0.095f, 0f); size = new Vector2(1.05f, 1.87f); return true;
+            case "bubble3": centre = new Vector3(0f, 0.095f, 0f); size = new Vector2(1.87f, 1.87f); return true;
         }
         centre = Vector3.zero; size = Vector2.zero; return false;
     }
@@ -551,7 +581,7 @@ public class OrderSystem : MonoBehaviour
 
             // Create the display item
             var displayItem = Instantiate(orderItem.displayPrefab, s.container);
-            displayItem.transform.localPosition = itemPosition;
+            displayItem.transform.localPosition = itemPosition - (FoodCentre.TryGetValue(foodType, out var fc) ? (Vector3)fc : Vector3.zero);
 
             // ice cream: a random cone (one to three scoops, any flavours) shown as its parts
             string variant = null;
