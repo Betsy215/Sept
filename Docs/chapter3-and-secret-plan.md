@@ -58,3 +58,10 @@ store players:
 ## Status
 
 - 15 November 2026: plan written; nothing built.
+
+## Winter outfits (26 November 2026)
+Owner: "winter outfit looks good, make sure to apply for both sprites for each customer, we will use these only in winter
+chapters, chapter 3 (c chapter) is a winter chapter". `Chapter.WinterChapters = { 3 }`; `CustomerController.WearWinterOutfit`
+swaps both sprites to `Resources/Customers/Winter/{Name}_neutral` / `{Name}_happy` (Name = class name without "Customer")
+in a winter chapter. Faces are the original game pixels (ChatGPT drew only the clothes). Art: Store/characters/winter_2026-11-26.
+`Chapter.PreviewWinter = true` shows them anywhere for editor captures.

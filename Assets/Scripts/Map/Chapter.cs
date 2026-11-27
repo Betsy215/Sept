@@ -48,6 +48,12 @@ public static class Chapter
     /// True when the day index is the last day of its chapter.
     public static bool IsLastDay(int dayIndex) => dayIndex + 1 == FirstDay(Of(dayIndex)) + DaysIn(Of(dayIndex));
 
+    /// Winter chapters: the customers wear their winter outfits there (owner, 26 November 2026: "we will use these only in
+    /// winter chapters, chapter 3 (c chapter) is a winter chapter"). PreviewWinter puts them on anywhere, for editor captures.
+    public static readonly int[] WinterChapters = { 3 };
+    public static bool PreviewWinter;
+    public static bool IsWinter(int chapter) => PreviewWinter || System.Array.IndexOf(WinterChapters, chapter) >= 0;
+
     /// Chapter art from Resources/Chapter{n}/name, or null in chapter 1 (keep the scene's own art).
     public static T Art<T>(int chapter, string name) where T : Object
         => chapter <= 1 ? null : Resources.Load<T>($"Chapter{chapter}/{name}");

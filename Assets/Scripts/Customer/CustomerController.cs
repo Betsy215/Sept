@@ -57,8 +57,23 @@ public abstract class CustomerController : MonoBehaviour
                 happySpriteRenderer = happyChild.GetComponent<SpriteRenderer>();
         }
 
+        WearWinterOutfit();
         // Start in sad state
         SetSpriteState(false);
+    }
+
+    /// In a winter chapter both sprites swap to the winter outfit (Resources/Customers/Winter/{Name}_neutral and
+    /// {Name}_happy, Name = the class name without "Customer"; same faces, same size and feet point as the usual sprites).
+    /// A person without winter pictures keeps the usual ones.
+    private void WearWinterOutfit()
+    {
+        if (!Chapter.IsWinter(SessionManager.CurrentChapter)) return;
+        var name = GetType().Name.Replace("Customer", "");
+        var neutral = Resources.Load<Sprite>("Customers/Winter/" + name + "_neutral");
+        var happy = Resources.Load<Sprite>("Customers/Winter/" + name + "_happy");
+        if (neutral == null || happy == null) return;
+        if (sadSpriteRenderer != null) sadSpriteRenderer.sprite = neutral;
+        if (happySpriteRenderer != null) happySpriteRenderer.sprite = happy;
     }
 
     public virtual void SetSpriteState(bool isHappy)
