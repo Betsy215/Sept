@@ -64,6 +64,10 @@ also sets the time scale to 1.
   the paper and a hand that peels one sticker off to the strip and puts it back (pictures only, the save is untouched;
   `MenuBook.Lesson`). Due by `SessionManager.MenuTutorialDue`: `menuTutorialSeen` false, at most day 1 finished and the
   menu never changed, so players who already used the menu skip it. A touch after the demo, Done or Ready removes the banner.
+- Every tutorial banner (TutorialDirector's caption, the menu lesson, the arrangement hint on the table and in the
+  kitchen) is the taped note (`Tutorial/TapedNote.cs`, owner 27 November 2026): `Resources/Tutorial/note_paper`
+  (9-sliced, 200 ppu) with `note_tape` centred on top, Delius bold. It slides in on a tilt and settles with a little
+  flutter (about 0.7 s) when it newly shows; new words on a note already up just change.
 - Day 3: the candy jar's gift when play begins (`Utils/CandyGift.cs`, `candyGiftSeen`).
 - While a `TutorialDirector` exists: no `dayStarted` analytics, no day clock (`dayClockDisabled`), the customer is
   the Girl (`CustomerManager.SelectCustomerForLevel`).

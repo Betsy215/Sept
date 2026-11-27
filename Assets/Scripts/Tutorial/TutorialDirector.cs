@@ -760,15 +760,21 @@ public class TutorialDirector : MonoBehaviour
         AnalyticsLog.TutorialStep(++saidCount, text);
         caption.text = text;
         captionBox.anchoredPosition = new Vector2(0f, CaptionY);                      // its own place; PointAtScreen moves it if the arrow would cover it
+        var wasShown = captionBox.gameObject.activeSelf;
         captionBox.gameObject.SetActive(true);                                       // shown again after the chapter 2 demo hides it at the table
         caption.gameObject.SetActive(true);
-        // The card grows for a second line (owner, 12 October: two lines did not sit well on the one-line card)
+        // The note grows for a second line (owner, 12 October: two lines did not sit well on the one-line card)
+        captionBox.sizeDelta = new Vector2(NoteWidth, NoteHeight1);
         caption.ForceMeshUpdate();
         var lines = Mathf.Max(1, caption.textInfo.lineCount);
-        captionBox.sizeDelta = new Vector2(1000f, 200f + (lines - 1) * 72f);
-        // one line sits on its cap height (centred on the card); two lines are centred as a block (owner, 13 October)
-        caption.alignment = lines > 1 ? TextAlignmentOptions.Center : TextAlignmentOptions.Capline;
+        captionBox.sizeDelta = new Vector2(NoteWidth, NoteHeight1 + (lines - 1) * NoteLine);
+        // the taped note slides in when it newly appears; a new line on a note already up just changes its words
+        if (!wasShown && captionNote != null) captionNote.Appear();
     }
+
+    /// The taped note's size (TapedNote, owner 27 November 2026): 900 x 170 of paper for one line, plus the shadow margin.
+    private const float NoteWidth = 940f, NoteHeight1 = 210f, NoteLine = 70f;
+    private TapedNote captionNote;
 
     private IEnumerator PointAtWorld(Vector3 world)
     {
@@ -954,6 +960,9 @@ public class TutorialDirector : MonoBehaviour
         caption.enableAutoSizing = true; // long lines shrink a little instead of spilling off the card
         caption.fontSizeMax = 64f;
         caption.fontSizeMin = 40f;
+        // the taped note (owner, 27 November 2026): torn paper, the tape in the middle, Delius bold
+        captionNote = TapedNote.Dress(box, caption, 60f); TapedNote.FitWords(caption.rectTransform);
+        captionBox.sizeDelta = new Vector2(NoteWidth, NoteHeight1);
 
         // Pointing arrow
         var handImage = NewImage("Hand", canvasRect, Color.white);

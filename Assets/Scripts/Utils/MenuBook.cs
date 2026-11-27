@@ -506,40 +506,30 @@ public class MenuBook : MonoBehaviour
     /// with no room there (an iPad) it lies over the paper's foot.
     private void ShowLessonBanner()
     {
+        // the taped note every tutorial banner is (TapedNote, owner 27 November 2026)
         var box = NewImage("LessonBanner", canvasRect, Color.white);
-        var cardSprite = Resources.Load<Sprite>("Tutorial/card");
-        if (cardSprite != null) { box.sprite = cardSprite; box.type = Image.Type.Sliced; } else box.color = new Color(1f, 0.98f, 0.93f, 0.95f);
         box.raycastTarget = false;
         var brt = box.rectTransform; brt.anchorMin = brt.anchorMax = new Vector2(0.5f, 0.5f); brt.pivot = new Vector2(0.5f, 0f);
-        brt.sizeDelta = new Vector2(1000f, 200f);
-        var tf = Resources.Load<TMP_FontAsset>("Fonts & Materials/beachday SDF");
-        var caption = NewText("Caption", brt, tf != null ? tf : font, 64f, new Color(0.28f, 0.15f, 0.055f));
-        var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) caption.fontSharedMaterial = plain;
-        Stretch(caption.rectTransform); caption.rectTransform.offsetMin = new Vector2(40f, 36f); caption.rectTransform.offsetMax = new Vector2(-40f, -36f);
-        caption.enableWordWrapping = true; caption.characterSpacing = 3f;
-        caption.enableAutoSizing = true; caption.fontSizeMax = 64f; caption.fontSizeMin = 40f;
+        brt.sizeDelta = new Vector2(940f, 210f);
+        var caption = NewText("Caption", brt, font, 60f, TapedNote.Ink);
+        var note = TapedNote.Dress(box, caption, 60f); TapedNote.FitWords(caption.rectTransform);
         caption.text = LessonText;
         caption.ForceMeshUpdate();
         var lines = Mathf.Max(1, caption.textInfo.lineCount);
-        brt.sizeDelta = new Vector2(1000f, 200f + (lines - 1) * 72f);
-        caption.alignment = lines > 1 ? TextAlignmentOptions.Center : TextAlignmentOptions.Capline;
-        // under the paper, above the phone's home bar
+        brt.sizeDelta = new Vector2(940f, 210f + (lines - 1) * 70f);
+        // under the paper, above the phone's home bar; where there is no room for it there (an iPad), on the paper's
+        // empty lower half just above Done: it used to be squeezed under the paper and lay over Done
         var half = canvasRect.rect.height / 2f;
         var safeBottom = Screen.height > 0 ? Screen.safeArea.yMin / Screen.height * canvasRect.rect.height : 0f;
         var floor = -half + safeBottom + 18f;
-        var paperFoot = ((RectTransform)panel.transform).anchoredPosition.y - 1130f / 2f;
-        var scale = Mathf.Clamp((paperFoot - 10f - floor) / brt.sizeDelta.y, 0.8f, 1f);
+        var paperY = ((RectTransform)panel.transform).anchoredPosition.y; var paperFoot = paperY - 1130f / 2f;
+        var room = paperFoot - 10f - floor; var scale = 1f; var y = floor;
+        if (room >= brt.sizeDelta.y * 0.8f) scale = Mathf.Min(1f, room / brt.sizeDelta.y);
+        else y = paperY - 300f;                                                          // Done's top is 315 under the paper's middle
         brt.localScale = Vector3.one * scale;
-        brt.anchoredPosition = new Vector2(0f, floor);
+        brt.anchoredPosition = new Vector2(0f, y);
         lessonBanner = box.gameObject;
-        StartCoroutine(PopTo(brt, scale));
-    }
-
-    /// Pop, ending at the banner's own scale (Pop ends at 1).
-    private IEnumerator PopTo(RectTransform rt, float scale)
-    {
-        for (var t = 0f; t < 0.2f; t += Dt) { if (rt == null) yield break; rt.localScale = Vector3.one * scale * Mathf.Lerp(0.85f, 1f, t / 0.2f); yield return null; }
-        if (rt != null) rt.localScale = Vector3.one * scale;
+        if (note != null) note.Appear();
     }
 
     /// The sticker's place in the strip when it is off: after the stickers of foods that come before it.

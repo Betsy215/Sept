@@ -177,18 +177,17 @@ public class GamePhaseManager : MonoBehaviour
         // thing once (owner, 19 November 2026)
         var oldAnim = tutorialPanel != null ? tutorialPanel.transform.Find("AnimationContainer") : null;
         if (oldAnim != null) oldAnim.gameObject.SetActive(false);
-        if (tutorialText != null) tutorialText.gameObject.SetActive(on);
         var card = arrangmentUI != null ? arrangmentUI.transform.Find("HintCard") : null;
+        var note = DressHintNote(card);
+        var wasShown = card != null && card.gameObject.activeSelf;
+        if (tutorialText != null) tutorialText.gameObject.SetActive(on);
         if (card != null) card.gameObject.SetActive(on);
         if (!on) return;
         PlaceHint(card as RectTransform);
-        if (tutorialText != null)
-        {
-            tutorialText.text = inKitchen ? KitchenHint : TableHint;
-            // Hints: dark brown letters with no rim (owner, 16 October: one text style per purpose)
-            tutorialText.color = new Color(0.28f, 0.15f, 0.055f);
-            var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) tutorialText.fontSharedMaterial = plain;
-        }
+        if (tutorialText != null) tutorialText.text = inKitchen ? KitchenHint : TableHint;
+        // the taped note slides in when it newly shows (the menu book closing, the first arrangement); the kitchen's
+        // words on a note already up just change
+        if (!wasShown && note != null) note.Appear();
         // The lesson on a real thing, once in each place: the coffee machine on the table, the coffee bags in the kitchen
         var handPic = tutorialPanel != null ? tutorialPanel.transform.Find("AnimationContainer/Hand") : null;
         var handLook = handPic != null ? handPic.GetComponent<Image>() : null;
@@ -220,6 +219,21 @@ public class GamePhaseManager : MonoBehaviour
         }
     }
 
+    private TapedNote hintNote;
+
+    /// The hint card becomes the taped note every tutorial banner is (owner, 27 November 2026), once: torn paper with the
+    /// tape in the middle, its words (a sibling in the scene) moved inside it in Delius bold, so they travel with it.
+    private TapedNote DressHintNote(Transform card)
+    {
+        if (hintNote != null || card == null) return hintNote;
+        var image = card.GetComponent<Image>(); if (image == null) return null;
+        var crt = (RectTransform)card;
+        crt.sizeDelta = new Vector2(940f, 210f);
+        hintNote = TapedNote.Dress(image, tutorialText, 64f);
+        if (tutorialText != null) { tutorialText.rectTransform.SetParent(crt, false); TapedNote.FitWords(tutorialText.rectTransform); }
+        return hintNote;
+    }
+
     private Vector3 hintCardHome, hintTextHome, hintCardScale = Vector3.one, hintTextScale = Vector3.one; private bool hintHomeKept;
     // over the big opening under the counter (owner, 22 November 2026: back here from the kitchen floor, "put the drag to
     // arrange your kitchen banner in the previous location")
@@ -238,7 +252,7 @@ public class GamePhaseManager : MonoBehaviour
         if (!inKitchen || canvas == null) return;
         var want = canvas.TransformPoint(new Vector3(0f, canvas.rect.yMax - KitchenHintFromTop * canvas.rect.height, 0f)).y;
         var move = new Vector3(0f, want - card.position.y, 0f);
-        card.position += move; if (words != null) words.position += move;
+        card.position += move; if (words != null && words.parent != card) words.position += move;   // inside the note since 27 November 2026
         card.localScale = hintCardScale * KitchenHintScale; if (words != null) words.localScale = hintTextScale * KitchenHintScale;
     }
 
