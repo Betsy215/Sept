@@ -1,0 +1,79 @@
+// Taped note (owner's pick, 27 Nov 2026) and its show-up animations a-d, runtime only. __STYLE__: a b c d (or s = still); __T__ seconds.
+var ART = "__ART__/"; string style = "__STYLE__"; string ctx = "__CTX__"; float T = __T__f; string text = "__TEXT__"; bool bold = __BOLD__;
+string cname = "NotePreview_" + style + "_" + ctx + (bold ? "_b" : "_r");
+var cvGo = GameObject.Find(cname);
+if (cvGo == null) {
+    foreach (var o in UnityEngine.Object.FindObjectsOfType<Canvas>()) if (o.name.StartsWith("NotePreview_") || o.name == "BannerPreviewCanvas") UnityEngine.Object.DestroyImmediate(o.gameObject);
+    RectTransform target = null; Behaviour words = null; var gpm = UnityEngine.Object.FindObjectOfType<GamePhaseManager>();
+    if (ctx == "menu") { var lb = GameObject.Find("LessonBanner"); if (lb == null) return "no LessonBanner"; target = (RectTransform)lb.transform; }
+    else { target = gpm.arrangmentUI.transform.Find("HintCard") as RectTransform; words = gpm.tutorialText; }
+    var hide = target.GetComponent<CanvasGroup>(); if (hide == null) hide = target.gameObject.AddComponent<CanvasGroup>(); hide.alpha = 0f; if (words != null) words.enabled = false;
+    var rc = target.GetComponentInParent<Canvas>().rootCanvas; var cam = rc.renderMode == RenderMode.ScreenSpaceOverlay ? null : rc.worldCamera;
+    var c4 = new Vector3[4]; target.GetWorldCorners(c4);
+    var anchorScreen = RectTransformUtility.WorldToScreenPoint(cam, ctx == "menu" ? (c4[0] + c4[3]) / 2f : (c4[0] + c4[2]) / 2f);
+    cvGo = new GameObject(cname, typeof(RectTransform), typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler));
+    var cv = cvGo.GetComponent<Canvas>(); cv.renderMode = RenderMode.ScreenSpaceOverlay; cv.sortingOrder = 45;
+    var sc = cvGo.GetComponent<UnityEngine.UI.CanvasScaler>(); sc.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize; sc.referenceResolution = new Vector2(1080, 1920); sc.matchWidthOrHeight = 0.5f;
+    var crt = (RectTransform)cvGo.transform; Canvas.ForceUpdateCanvases();
+    RectTransformUtility.ScreenPointToLocalPointInRectangle(crt, anchorScreen, null, out var at);
+    System.Func<string, Sprite> file = f => { var t = new Texture2D(2, 2); t.LoadImage(System.IO.File.ReadAllBytes(ART + f)); return Sprite.Create(t, new Rect(0, 0, t.width, t.height), new Vector2(0.5f, 0.5f), 200f); };
+    System.Func<string, Transform, Sprite, Vector2, Vector2, UnityEngine.UI.Image> img = (n, p, s, pos, size) => {
+        var g = new GameObject(n, typeof(RectTransform), typeof(UnityEngine.UI.Image)); g.transform.SetParent(p, false);
+        var im = g.GetComponent<UnityEngine.UI.Image>(); im.sprite = s; im.raycastTarget = false;
+        var r = (RectTransform)g.transform; r.anchorMin = r.anchorMax = new Vector2(0.5f, 1f); r.pivot = new Vector2(0.5f, 0.5f); r.anchoredPosition = pos; r.sizeDelta = size; return im; };
+    float w = 900f, bodyH = ctx == "menu" ? 250f : 170f, pad = 20f;
+    // Note: pivot at the middle of the top edge (the tape); y of that point is kept
+    var note = new GameObject("Note", typeof(RectTransform), typeof(CanvasGroup)); note.transform.SetParent(crt, false);
+    var nrt = (RectTransform)note.transform; nrt.anchorMin = nrt.anchorMax = new Vector2(0.5f, 0.5f); nrt.pivot = new Vector2(0.5f, 1f); nrt.sizeDelta = new Vector2(w, bodyH);
+    nrt.anchoredPosition = ctx == "menu" ? at + new Vector2(0f, bodyH + 14f) : at + new Vector2(0f, bodyH / 2f);
+    var clip = new GameObject("Clip", typeof(RectTransform), typeof(UnityEngine.UI.RectMask2D)); clip.transform.SetParent(nrt, false);
+    var clrt = (RectTransform)clip.transform; clrt.anchorMin = clrt.anchorMax = new Vector2(0.5f, 1f); clrt.pivot = new Vector2(0.5f, 1f); clrt.anchoredPosition = new Vector2(0f, pad); clrt.sizeDelta = new Vector2(w + 2 * pad, bodyH + 2 * pad);
+    clip.GetComponent<UnityEngine.UI.RectMask2D>().enabled = style == "b";
+    var inner = new GameObject("Inner", typeof(RectTransform)); inner.transform.SetParent(clrt, false);
+    var irt = (RectTransform)inner.transform; irt.anchorMin = irt.anchorMax = new Vector2(0.5f, 1f); irt.pivot = new Vector2(0.5f, 1f); irt.anchoredPosition = new Vector2(0f, -pad); irt.sizeDelta = new Vector2(w, bodyH);
+    img("Paper", irt, file("A_" + ctx + ".png"), new Vector2(0f, -bodyH / 2f), new Vector2(w + 2 * pad, bodyH + 2 * pad));
+    var cr = img("Creases", irt, file("A_creases_" + ctx + ".png"), new Vector2(0f, -bodyH / 2f), new Vector2(w, bodyH)); cr.color = new Color(1, 1, 1, 0);
+    var tg = new GameObject("Text", typeof(RectTransform), typeof(TMPro.TextMeshProUGUI)); tg.transform.SetParent(irt, false);
+    var tx = tg.GetComponent<TMPro.TextMeshProUGUI>(); tx.font = Resources.Load<TMPro.TMP_FontAsset>("Fonts & Materials/Delius SDF"); tx.color = new Color(0.24f, 0.12f, 0.04f); tx.raycastTarget = false;
+    tx.text = text; tx.alignment = TMPro.TextAlignmentOptions.Center; tx.enableWordWrapping = true; tx.enableAutoSizing = true; tx.fontSizeMin = 36f;
+    tx.fontSizeMax = bold ? (ctx == "menu" ? 60f : 64f) : (ctx == "menu" ? 54f : 58f); if (bold) tx.fontStyle = TMPro.FontStyles.Bold;
+    var trt = (RectTransform)tg.transform; trt.anchorMin = trt.anchorMax = new Vector2(0.5f, 1f); trt.anchoredPosition = new Vector2(0f, -bodyH / 2f - 4f); trt.sizeDelta = new Vector2(w - 90f, bodyH - 44f);
+    var roll = img("Roll", nrt, file("A_roll.png"), new Vector2(0f, 0f), new Vector2(w, 45f)); roll.gameObject.SetActive(false);
+    var tape = img("Tape", nrt, file("A_tape2.png"), new Vector2(0f, -4f), new Vector2(234f, 90f)); tape.rectTransform.localRotation = Quaternion.Euler(0, 0, -4f);
+}
+// ---- pose ----
+var n2 = (RectTransform)cvGo.transform.GetChild(0); var grp = n2.GetComponent<CanvasGroup>();
+var clipT = (RectTransform)n2.Find("Clip"); var innerT = (RectTransform)clipT.Find("Inner"); var tapeI = n2.Find("Tape").GetComponent<UnityEngine.UI.Image>(); var rollI = n2.Find("Roll").GetComponent<UnityEngine.UI.Image>();
+var crI = innerT.Find("Creases").GetComponent<UnityEngine.UI.Image>();
+var home = n2.GetComponent<RectTransform>(); if (!n2.name.Contains("|")) n2.name = "Note|" + n2.anchoredPosition.x.ToString("F1", System.Globalization.CultureInfo.InvariantCulture) + "|" + n2.anchoredPosition.y.ToString("F1", System.Globalization.CultureInfo.InvariantCulture);
+var parts = n2.name.Split('|'); var P = new Vector2(float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(parts[2], System.Globalization.CultureInfo.InvariantCulture));
+float bH = innerT.sizeDelta.y; const float baseRot = -1.2f;
+System.Func<float, float> c01 = v => Mathf.Clamp01(v);
+System.Func<float, float> outCubic = u => 1f - Mathf.Pow(1f - c01(u), 3f);
+System.Func<float, float> outBack = u => { u = c01(u); const float k = 1.70158f; var x = u - 1f; return 1f + (k + 1f) * x * x * x + k * x * x; };
+Vector2 pos = P; float rot = baseRot; Vector3 scl = Vector3.one; float alpha = 1f; float tapeS = 1f, tapeA = 1f, tapeDark = 0.92f; float clipH = bH; float crease = 0f; bool rollOn = false; float rollY = 0f, rollS = 1f, rollA = 1f;
+var tt = T;
+if (style == "a") {          // drops in from above, swings on the tape line, the tape presses down
+    var u = tt / 0.38f; pos = P + new Vector2(0f, 300f * (1f - outCubic(u))); alpha = c01(tt / 0.12f);
+    rot = baseRot + 9f * Mathf.Exp(-5.5f * tt) * Mathf.Cos(2f * Mathf.PI * 2.2f * tt) * (tt < 0.9f ? 1f : 0f);
+    var v = (tt - 0.34f) / 0.18f; tapeA = c01(v * 3f); tapeS = Mathf.Lerp(1.22f, 1f, outCubic(v)); tapeDark = Mathf.Lerp(1f, 0.9f, c01(v));
+} else if (style == "b") {   // the tape first, then the paper unrolls from under it like being smoothed down
+    var v = tt / 0.15f; tapeA = c01(v * 2f); tapeS = Mathf.Lerp(1.15f, 1f, outCubic(v)); tapeDark = Mathf.Lerp(1f, 0.92f, c01(v));
+    var u = (tt - 0.1f) / 0.5f; var e = outCubic(u); clipH = (bH + 40f) * e;
+    rollOn = u > 0f && u < 1.05f; rollY = -(bH * e) - 4f; rollS = Mathf.Lerp(1f, 0.45f, c01((u - 0.7f) / 0.3f)); rollA = 1f - c01((u - 0.85f) / 0.2f);
+} else if (style == "c") {   // slides in on a tilt and settles with a little paper flutter
+    var u = tt / 0.4f; var e = outCubic(u); pos = P + new Vector2(-650f * (1f - e), 40f * Mathf.Sin(Mathf.PI * c01(u)) * (1f - e)); rot = baseRot - 10f * (1f - e); alpha = c01(tt / 0.1f);
+    var v = c01((tt - 0.36f) / 0.36f);
+    if (tt > 0.36f) { var damp = Mathf.Pow(1f - v, 1.5f); rot = baseRot + 3f * Mathf.Sin(2f * Mathf.PI * 2f * v) * damp; var sq = 0.06f * Mathf.Sin(Mathf.PI * c01(v * 2.2f)) * damp; scl = new Vector3(1f + sq, 1f - sq, 1f); }
+} else if (style == "d") {   // pops from a small crumple to flat
+    var u = tt / 0.6f; var e = outBack(u); var f = outCubic(u); var s = Mathf.LerpUnclamped(0.22f, 1f, e);
+    scl = new Vector3(s * Mathf.Lerp(0.55f, 1f, f), s * Mathf.Lerp(0.4f, 1f, f), 1f); rot = baseRot - 24f * (1f - f); alpha = c01(tt / 0.12f); crease = 1f - c01((u - 0.15f) / 0.6f);
+    pos = P + new Vector2(0f, -bH / 2f * (1f - scl.y));   // grow from the middle, not the tape line
+}
+n2.anchoredPosition = pos; n2.localRotation = Quaternion.Euler(0, 0, rot); n2.localScale = scl; grp.alpha = alpha;
+clipT.sizeDelta = new Vector2(clipT.sizeDelta.x, style == "b" ? clipH + 20f : bH + 40f);
+tapeI.rectTransform.localScale = Vector3.one * tapeS; tapeI.color = new Color(tapeDark, tapeDark, tapeDark, tapeA);
+crI.color = new Color(1, 1, 1, crease);
+rollI.gameObject.SetActive(rollOn); rollI.rectTransform.anchoredPosition = new Vector2(0f, rollY); rollI.rectTransform.localScale = new Vector3(1f, rollS, 1f); rollI.color = new Color(1, 1, 1, rollA);
+if (T == 0f && style == "d") { var clip = Resources.Load<AudioClip>("Audio/paper_flip"); if (clip != null && AudioManager.Instance != null) AudioManager.Instance.PlaySFX(clip); }
+return "ok " + style + " " + T.ToString("F3");
