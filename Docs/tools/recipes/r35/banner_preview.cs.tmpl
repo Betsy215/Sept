@@ -1,0 +1,66 @@
+var ART = "__ART__/"; int design = __D__; string ctx = "__CTX__"; string text = "__TEXT__";
+var meta = System.IO.File.ReadAllText(ART + "meta.json");
+var old = GameObject.Find("BannerPreviewCanvas"); if (old != null) UnityEngine.Object.DestroyImmediate(old);
+RectTransform target = null; Behaviour words = null;
+var gpm = UnityEngine.Object.FindObjectOfType<GamePhaseManager>();
+if (ctx == "menu") { var lb = GameObject.Find("LessonBanner"); if (lb == null) return "no LessonBanner"; target = (RectTransform)lb.transform; }
+else { if (gpm == null) return "no gpm"; target = gpm.arrangmentUI.transform.Find("HintCard") as RectTransform; words = gpm.tutorialText; if (target == null) return "no HintCard"; }
+var hide = target.GetComponent<CanvasGroup>(); if (hide == null) hide = target.gameObject.AddComponent<CanvasGroup>();
+hide.alpha = design == 0 ? 1f : 0f; if (words != null) words.enabled = design == 0;
+if (design == 0) return "today's banner";
+var rc = target.GetComponentInParent<Canvas>().rootCanvas; var cam = rc.renderMode == RenderMode.ScreenSpaceOverlay ? null : rc.worldCamera;
+var c4 = new Vector3[4]; target.GetWorldCorners(c4);
+var anchorScreen = RectTransformUtility.WorldToScreenPoint(cam, ctx == "menu" ? (c4[0] + c4[3]) / 2f : (c4[0] + c4[2]) / 2f);
+var go = new GameObject("BannerPreviewCanvas", typeof(RectTransform), typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler));
+var cv = go.GetComponent<Canvas>(); cv.renderMode = RenderMode.ScreenSpaceOverlay; cv.sortingOrder = 45;
+var sc = go.GetComponent<UnityEngine.UI.CanvasScaler>(); sc.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize; sc.referenceResolution = new Vector2(1080, 1920); sc.matchWidthOrHeight = 0.5f;
+var crt = (RectTransform)go.transform;
+Canvas.ForceUpdateCanvases();
+RectTransformUtility.ScreenPointToLocalPointInRectangle(crt, anchorScreen, null, out var at);
+System.Func<string, Sprite> file = f => { var t = new Texture2D(2, 2); t.LoadImage(System.IO.File.ReadAllBytes(ART + f)); t.filterMode = FilterMode.Bilinear; return Sprite.Create(t, new Rect(0, 0, t.width, t.height), new Vector2(0.5f, 0.5f), 200f); };
+System.Func<string, Transform, Sprite, Vector2, Vector2, float, UnityEngine.UI.Image> img = (n, p, s, pos, size, rot) => {
+    var g = new GameObject(n, typeof(RectTransform), typeof(UnityEngine.UI.Image)); g.transform.SetParent(p, false);
+    var im = g.GetComponent<UnityEngine.UI.Image>(); im.sprite = s; im.raycastTarget = false; im.preserveAspect = true;
+    var r = (RectTransform)g.transform; r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f); r.anchoredPosition = pos; r.sizeDelta = size; r.localRotation = Quaternion.Euler(0, 0, rot); return im; };
+var delius = Resources.Load<TMPro.TMP_FontAsset>("Fonts & Materials/Delius SDF"); var beach = Resources.Load<TMPro.TMP_FontAsset>("Fonts & Materials/beachday SDF");
+var brown = new Color(0.28f, 0.15f, 0.055f);
+System.Func<Transform, Vector2, Vector2, bool, float, TMPro.TextMeshProUGUI> label = (p, pos, size, hand, max) => {
+    var g = new GameObject("Text", typeof(RectTransform), typeof(TMPro.TextMeshProUGUI)); g.transform.SetParent(p, false);
+    var t = g.GetComponent<TMPro.TextMeshProUGUI>(); t.font = hand ? delius : beach; t.color = brown; t.raycastTarget = false;
+    if (!hand) { var plain = Resources.Load<Material>("Fonts & Materials/beachday SDF - Plain"); if (plain != null) t.fontSharedMaterial = plain; t.characterSpacing = 3f; }
+    t.text = text; t.alignment = TMPro.TextAlignmentOptions.Center; t.enableWordWrapping = true; t.enableAutoSizing = true; t.fontSizeMax = max; t.fontSizeMin = 34f;
+    var r = (RectTransform)g.transform; r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f); r.anchoredPosition = pos; r.sizeDelta = size; return t; };
+System.Func<string, float> num = key => { var i = meta.IndexOf(key); var j = meta.IndexOfAny(new[] { ',', '}' }, i); return float.Parse(meta.Substring(i + key.Length, j - i - key.Length).Trim(), System.Globalization.CultureInfo.InvariantCulture); };
+var L = new[] { "", "A", "B", "C", "D" }[design]; var key = L + "_" + ctx;
+var blk = meta.Substring(meta.IndexOf("\"" + key + "\""));
+System.Func<string, float> m = k => { var i = blk.IndexOf("\"" + k + "\": ") + k.Length + 4; var j = blk.IndexOfAny(new[] { ',', '}' }, i); return float.Parse(blk.Substring(i, j - i).Trim(), System.Globalization.CultureInfo.InvariantCulture); };
+float w = m("w"), h = m("h"), pad = m("pad");
+var root = new GameObject("Banner", typeof(RectTransform)); root.transform.SetParent(crt, false);
+var rrt = (RectTransform)root.transform; rrt.anchorMin = rrt.anchorMax = new Vector2(0.5f, 0.5f);
+float bodyH = h - 2 * pad; bool menu = ctx == "menu";
+float totalW = design == 4 ? w + 175f : design == 3 ? w + 70f : w; float scale = Mathf.Min(1f, (crt.rect.width - 30f) / totalW);
+rrt.localScale = Vector3.one * scale;
+rrt.anchoredPosition = menu ? at + new Vector2(0f, (bodyH / 2f) * scale + 6f) : at;
+if (design == 1) {
+    rrt.localRotation = Quaternion.Euler(0, 0, -1.2f);
+    img("Paper", rrt, file(key + ".png"), Vector2.zero, new Vector2(w, h), 0f);
+    var tape = file("A_tape.png");
+    img("TapeL", rrt, tape, new Vector2(-w / 2 + pad + 40, bodyH / 2 - 4), new Vector2(150, 56), 28f);
+    img("TapeR", rrt, tape, new Vector2(w / 2 - pad - 40, bodyH / 2 - 4), new Vector2(150, 56), -24f);
+    label(rrt, new Vector2(0, -4), new Vector2(w - 2 * pad - 90, bodyH - 36), true, menu ? 54f : 58f);
+} else if (design == 2) {
+    img("Cookie", rrt, file(key + ".png"), Vector2.zero, new Vector2(w, h), 0f);
+    label(rrt, new Vector2(0, -2), new Vector2(w - 2 * pad - 110, bodyH - 50), false, menu ? 60f : 64f);
+} else if (design == 3) {
+    rrt.localRotation = Quaternion.Euler(0, 0, 0.8f);
+    img("Card", rrt, file(key + ".png"), Vector2.zero, new Vector2(w, h), 0f);
+    img("Chef", rrt, Resources.Load<Sprite>("UI/handle_knob_kitchen"), new Vector2(-w / 2 + pad + 62, bodyH / 2 - 22), new Vector2(150, 150), -12f);
+    label(rrt, new Vector2(62, -14), new Vector2(w - 2 * pad - 190, bodyH - 50), true, menu ? 52f : 56f);
+} else if (design == 4) {
+    float henW = 215f; var left = -totalW / 2f;
+    img("Hen", rrt, Resources.Load<Sprite>("UI/money_hen"), new Vector2(left + henW / 2f + 8f, -bodyH / 2 + 104f), new Vector2(henW, henW * 222f / 236f), 0f);
+    var bx = left + 175f + w / 2f;
+    img("Bubble", rrt, file(key + ".png"), new Vector2(bx, 0f), new Vector2(w, h), 0f);
+    label(rrt, new Vector2(bx + 35f / 2f + 10f, -2f), new Vector2(w - 2 * pad - 35f - 70f, bodyH - 40), true, menu ? 52f : 56f);
+}
+return "design " + design + " " + ctx + " scale " + scale.ToString("F2");
