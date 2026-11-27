@@ -10,8 +10,8 @@ bar). Chat replies stay short (a few lines); the substance goes in the page. The
 
 ## Pages and sections (fixed; never add, rename, remove or reorder unless the owner asks)
 
-`index.html`, the report, six sections (the Q&A section was removed by the owner on 26 November 2026; an answer to
-the owner's question goes in Current):
+`index.html`, the report, seven sections (Q&A back since 27 November 2026; an answer to
+the owner's question goes in Q&A):
 
 1. **Next**: two cards, **You** (what the owner should look at or decide, my questions with tick boxes) and **Me** (what
    I do next). The owner reads it first: rewrite both at the start and end of every batch. Two or three lines each.
