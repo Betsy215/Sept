@@ -1,0 +1,15 @@
+// Taped-note paper variant preview (27 Nov 2026), runtime only: every TapedNote on screen gets art/note_paper_p<v>.png
+// (Store/ui/tutorial_banner_2026-11-26/paper_variants.py), 9-sliced like Resources/Tutorial/note_paper; kraft (4) gets darker words.
+var ART = "__ART__/"; int v = __V__;
+var tex = new Texture2D(2, 2); tex.LoadImage(System.IO.File.ReadAllBytes(ART + "note_paper_p" + v + ".png"));
+var sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 200f, 0, SpriteMeshType.FullRect, new Vector4(120f, 100f, 120f, 100f));
+var ink = v == 4 ? new Color(46f / 255f, 22f / 255f, 6f / 255f) : TapedNote.Ink;
+int n = 0;
+foreach (var note in UnityEngine.Object.FindObjectsOfType<TapedNote>(true))
+{
+    var im = note.GetComponent<UnityEngine.UI.Image>(); if (im == null) continue;
+    im.sprite = sp; im.type = UnityEngine.UI.Image.Type.Sliced;
+    foreach (var t in note.GetComponentsInChildren<TMPro.TMP_Text>(true)) t.color = ink;
+    n++;
+}
+return "paper " + v + " on " + n + " notes";
