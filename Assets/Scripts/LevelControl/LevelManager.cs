@@ -77,7 +77,10 @@ public class LevelManager : MonoBehaviour
     public bool DayOver => dayStarted && !dayClockDisabled && dayTimeLeft <= 0f;
 
     public const float ReplayPayFactor = 0.5f;   // share of order money paid when a finished day is replayed (12 October 2026)
-    public const int ThreeStarBonus = 100;   // paid once per day, the first time it gets three stars
+    public const int ThreeStarBonus = 60;    // the three-star step of StarBonus (was 100, paid only for three stars, until 26 November 2026)
+    /// The day-end star bonus (owner, 26 November 2026): 1 star 10, 2 stars 30, 3 stars 60; a day pays up to its best
+    /// (SessionManager.RecordLevelStars).
+    public static int StarBonus(int stars) => stars >= 3 ? ThreeStarBonus : stars == 2 ? 30 : stars == 1 ? 10 : 0;
     private int threeStarBonusPaid;
     private int LastDayIndex => Mathf.Min(allLevels.Length, Chapter.TotalDays) - 1;
 
@@ -664,6 +667,7 @@ public class LevelManager : MonoBehaviour
         if (scoreManager != null && scoreManager.starProgressBar != null) scoreManager.starProgressBar.CloseDay();
         var stars = scoreManager != null && scoreManager.starProgressBar != null ? scoreManager.starProgressBar.GetEarnedStarsCount() : 0;
         threeStarBonusPaid = SessionManager.Instance.RecordLevelStars(currentLevelIndex, stars, ThreeStarBonus);
+        DayEndPreview.StarsToday = stars;   // the bonus line names the stars (1 star 10, 2 stars 30, 3 stars 60)
         AnalyticsLog.DayFinished(currentLevelIndex, stars, levelScore);
 
         // Last day of the chapter: record the high score. The session stays active so every day

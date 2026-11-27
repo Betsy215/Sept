@@ -68,6 +68,9 @@ public class SessionData
     // three-star bonus has been paid. Missing (null) in sessions saved before the map.
     public List<int> levelStars;
     public List<int> starBonusPaidDays;
+    // The star bonus already paid per day (index = day - 1), since the bonus is paid for every star count (26 November
+    // 2026). Null or short in older saves; a day in starBonusPaidDays had the old three-star bonus and counts as fully paid.
+    public List<int> starBonusPaid;
     // Days finished in each chapter (index = chapter - 1), since chapter 2 opens after day 9 (20 November 2026) and
     // the chapters can be played side by side. levelsCompleted stays the unbroken run of finished days from day 1;
     // a chapter's count is the larger of the two (older saves have only the run).
@@ -117,6 +120,7 @@ public class SessionData
         savedFoodPositions = new List<FoodItemPosition>();
         levelStars = new List<int>();
         starBonusPaidDays = new List<int>();
+        starBonusPaid = new List<int>();
         SyncUpgradesToLists();
     }
 
@@ -740,20 +744,27 @@ public class SessionManager : MonoBehaviour
 
     /// Records the stars of a finished day (keeps the best) and pays the one-time three-star bonus.
     /// Returns the bonus paid now (0 when not three stars, or already paid for that day).
+    /// Records the day's stars and pays the star bonus (owner, 26 November 2026: "for day end, 1 star give 10 coins, 2 star
+    /// give 30 coins, 3 star give 100 coins", then "actually 3 star give 60 coins"; LevelManager.StarBonus). A day pays up
+    /// to its best: a better result later pays only the difference; the same or fewer stars pay nothing more. Returns what
+    /// was paid now. (threeStarBonus is unused since then; the parameter stays for the callers.)
     public int RecordLevelStars(int levelIndex, int stars, int threeStarBonus)
     {
         if (currentSession == null || !currentSession.isActive || levelIndex < 0) return 0;
         if (currentSession.levelStars == null) currentSession.levelStars = new List<int>();
         if (currentSession.starBonusPaidDays == null) currentSession.starBonusPaidDays = new List<int>();
+        if (currentSession.starBonusPaid == null) currentSession.starBonusPaid = new List<int>();
         while (currentSession.levelStars.Count <= levelIndex) currentSession.levelStars.Add(0);
+        while (currentSession.starBonusPaid.Count <= levelIndex) currentSession.starBonusPaid.Add(0);
         currentSession.levelStars[levelIndex] = Mathf.Max(currentSession.levelStars[levelIndex], stars);
         EarnJournal(JournalOpen, levelIndex + 1);                      // the journal: the first finished day, the first three stars
         if (stars >= 3) EarnJournal(JournalStar3, levelIndex + 1);
-        var bonus = 0;
-        if (stars >= 3 && !currentSession.starBonusPaidDays.Contains(levelIndex))
+        // a day that had the old three-star bonus (100) is fully paid
+        var paid = currentSession.starBonusPaidDays.Contains(levelIndex) ? int.MaxValue / 2 : currentSession.starBonusPaid[levelIndex];
+        var bonus = Mathf.Max(0, LevelManager.StarBonus(stars) - paid);
+        if (bonus > 0)
         {
-            currentSession.starBonusPaidDays.Add(levelIndex);
-            bonus = threeStarBonus;
+            currentSession.starBonusPaid[levelIndex] = paid + bonus;
             currentSession.totalScore = RoundToCents(currentSession.totalScore + bonus);
             OnTotalScoreChanged?.Invoke(currentSession.totalScore);
         }
@@ -868,6 +879,7 @@ public class SessionManager : MonoBehaviour
                 currentSession.totalScore = Mathf.Floor(currentSession.totalScore + 0.001f);
                 if (currentSession.levelStars == null) currentSession.levelStars = new List<int>();
                 if (currentSession.starBonusPaidDays == null) currentSession.starBonusPaidDays = new List<int>();
+                if (currentSession.starBonusPaid == null) currentSession.starBonusPaid = new List<int>();
                 if (currentSession.enabledFoodItems == null)   // a save from before the menu book: everything bought is on
                     currentSession.enabledFoodItems = new List<string>(currentSession.purchasedFoodItems ?? new List<string>());
                 // Apple is a starting food since 25 October 2026 and its shop card is gone: a save from before gets it,

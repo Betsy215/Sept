@@ -58,6 +58,11 @@ public class DayEndPreview : MonoBehaviour
     // ---------------------------------------------------------------- entry points
 
     /// From LevelManager.ShowLevelCompletePopup (PreviewStyle 1-4): the card's money part.
+    /// The day's stars, set by LevelManager when the day ends: the bonus line names them (the star bonus is paid for one,
+    /// two and three stars since 26 November 2026)
+    public static int StarsToday = 3;
+    private static string StarsLabel => StarsToday == 1 ? "1 star" : StarsToday + " stars";
+
     public static IEnumerator Play(LevelManager lm, Coroutine stars, float sale, float tips, float bonus, float wallet)
     {
         var p = Prepare(lm, sale, tips, bonus, wallet);
@@ -149,7 +154,7 @@ public class DayEndPreview : MonoBehaviour
         var b = p.tip.transform.parent.Find("BonusLine"); if (b != null) DestroyImmediate(b.gameObject);
         p.bonusLine = Instantiate(p.tip.gameObject, p.tip.transform.parent).GetComponent<TextMeshProUGUI>();
         p.bonusLine.name = "BonusLine"; p.bonusLine.transform.SetSiblingIndex(p.tip.transform.GetSiblingIndex() + 1);
-        LevelManager.SetMoneyLine(p.bonusLine, "3 stars", "+" + Money.Format(bonus));
+        LevelManager.SetMoneyLine(p.bonusLine, StarsLabel, "+" + Money.Format(bonus));
         Row(p.sale, SaleY, RowSize); Row(p.tip, TipY, RowSize); Row(p.bonusLine, BonusY, RowSize);
         p.bonusLine.gameObject.SetActive(bonus > 0);
         // the page's own hen, cut out so it can bump (A)
@@ -282,7 +287,7 @@ public class DayEndPreview : MonoBehaviour
         // pieces of the receipt picture (958 x 1042): the torn top with its dashes, plain paper, the dash line, the torn bottom
         float topH = 120f * k, dashH = 28f * k, botH = 82f * k;
         var lines = new List<(string words, string money, float size)> { ("Order sale", Money.Format(saleAmt), 44f), ("Tips", Money.Format(tipAmt), 44f) };
-        if (bonusAmt > 0) lines.Add(("3 stars", "+" + Money.Format(bonusAmt), 44f));
+        if (bonusAmt > 0) lines.Add((StarsLabel, "+" + Money.Format(bonusAmt), 44f));
         const float lineH = 54f, todayH = 78f;
         var y = topH - 12f;
         var stops = new List<float> { topH };
@@ -356,7 +361,7 @@ public class DayEndPreview : MonoBehaviour
         var todayLine = Instantiate(tip.gameObject, tip.transform.parent).GetComponent<TextMeshProUGUI>();
         todayLine.name = "TodayLine"; todayLine.transform.SetParent(root, true);
         var rows = new List<(TextMeshProUGUI l, string words, string money, float y)> { (sale, "Order sale", Money.Format(saleAmt), SaleY), (tip, "Tips", Money.Format(tipAmt), TipY) };
-        if (bonusAmt > 0) rows.Add((bonusLine, "3 stars", "+" + Money.Format(bonusAmt), BonusY));
+        if (bonusAmt > 0) rows.Add((bonusLine, StarsLabel, "+" + Money.Format(bonusAmt), BonusY));
         foreach (var r in rows) { Hand(r.l, hand, r.words, r.money, RowSize); r.l.maxVisibleCharacters = 0; }
         const float TodayY = 178f;
         Hand(todayLine, hand, "Today", Money.Format(saleAmt + tipAmt + bonusAmt), 62f);
@@ -408,7 +413,7 @@ public class DayEndPreview : MonoBehaviour
         todayLine.name = "TodayLine"; todayLine.transform.SetParent(root, true);
         var rows = new List<(TextMeshProUGUI l, string words, string money, float y, float amount, Color c, float tilt)>
             { (sale, "Order sale", Money.Format(saleAmt), SaleY, saleAmt, Mint, 1.2f), (tip, "Tips", Money.Format(tipAmt), TipY, tipAmt, Yellow, -1.1f) };
-        if (bonusAmt > 0) rows.Add((bonusLine, "3 stars", "+" + Money.Format(bonusAmt), BonusY, bonusAmt, Pinkish, 0.9f));
+        if (bonusAmt > 0) rows.Add((bonusLine, StarsLabel, "+" + Money.Format(bonusAmt), BonusY, bonusAmt, Pinkish, 0.9f));
         var layer = new GameObject("DayEndSlips", typeof(RectTransform)).GetComponent<RectTransform>();
         layer.SetParent(sale.transform.parent, false); layer.anchorMin = Vector2.zero; layer.anchorMax = Vector2.one; layer.offsetMin = layer.offsetMax = Vector2.zero;
         layer.SetSiblingIndex(sale.transform.GetSiblingIndex());   // under the rows' words
