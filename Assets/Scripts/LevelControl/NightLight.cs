@@ -70,6 +70,8 @@ public class NightLight : MonoBehaviour
         cloth = clothSr.bounds; clothTop = cloth.max.y;
         var front = GameObject.Find("ClothFront"); var frontSr = front != null ? front.GetComponent<SpriteRenderer>() : null;
         if (frontSr != null) cloth.Encapsulate(frontSr.bounds);
+        var back = GameObject.Find("ClothBack"); var backSr = back != null ? back.GetComponent<SpriteRenderer>() : null;   // the far edge's lip (TableLayer.AddBackEdge) dims with the cloth
+        if (backSr != null) cloth.Encapsulate(backSr.bounds);
         poolX = clothSr.bounds.center.x; poolY = clothSr.bounds.center.y;   // the middle of the cloth itself (not its front drop)
 
         sheet = MakeSr("NightSheet", transform, null, "Table", 2);   // over the cloth and its front drop, under everything on it

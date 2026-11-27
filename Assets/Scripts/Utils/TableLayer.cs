@@ -97,6 +97,7 @@ public class TableLayer : MonoBehaviour
             }
         }
         else if (cloth != null) tableClothSprite.sprite = cloth;
+        AddBackEdge();
 
         // Store initial values
         initialTableScale = tableClothSprite.transform.localScale;
@@ -279,6 +280,28 @@ public class TableLayer : MonoBehaviour
     /// area to show that, so our table has more dimensions"). The picture is as wide as the screen, drawn at one scale in
     /// x and y (its checks are square), its top on the edge, the rest running past the bottom of the screen. Art per
     /// chapter: Resources/Table/cloth_front (chapter 1), Resources/ChapterN/cloth_front. False when a chapter has none.
+    /// The cloth's far edge (owner, 27 November 2026, round 3 strength 'a'): its last rows roll away over the table's
+    /// rounded back edge - squeezed a little more, slightly darker, a soft light line on the curve, low uneven bumps on
+    /// the silhouette (Store/clothdrop_2026-11-27/round3/backedge.py). A child of the cloth at its top edge, so it follows
+    /// the cloth everywhere; one sprite, no collider, the default sprite shader, just over the cloth and under everything
+    /// on it. Table/cloth_back goes with the picnic cloth, ChapterN/cloth_back with a chapter's own cloth (the sprite's
+    /// pivot is the cloth's old top row). The scene's dark back-edge line goes while it is on.
+    private void AddBackEdge()
+    {
+        var chapter = SessionManager.CurrentChapter;
+        var band = Chapter.Art<Sprite>(chapter, "cloth") != null ? Chapter.Art<Sprite>(chapter, "cloth_back") : Resources.Load<Sprite>("Table/cloth_back");
+        if (band == null || tableClothSprite.sprite == null || tableClothSprite.transform.Find("ClothBack") != null) return;
+        var go = new GameObject("ClothBack");
+        go.transform.SetParent(tableClothSprite.transform, false);
+        go.transform.localPosition = new Vector3(0f, tableClothSprite.sprite.bounds.max.y, 0f);
+        var sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = band;
+        sr.sortingLayerID = tableClothSprite.sortingLayerID;
+        sr.sortingOrder = tableClothSprite.sortingOrder + 1;
+        var edge = tableClothSprite.transform.Find("TableOuterShadow");
+        if (edge != null) edge.gameObject.SetActive(false);
+    }
+
     private bool UpdateClothFront(float edgeY, float screenWidth, float centreX)
     {
         var chapter = SessionManager.CurrentChapter;
