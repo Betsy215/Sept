@@ -18,7 +18,7 @@ using UnityEngine.UI;
 ///  - the table darkens: one navy sheet over the cloth (Table layer, order 2: over the cloth and its front drop, under
 ///    everything on it) whose alpha is Dark * k * (1 - pool); everything on the FoodItems layer (food, stations, hen,
 ///    jar, pots) and the truck button get a multiply tint toward NightTint by the same amount at their foot.
-///  - pool = exp(-1.5 d^2), d the distance from the lamp's foot in an ellipse GlowRadius * (2.0 wide, 1.7 tall): the
+///  - pool = exp(-Falloff d^2) (1.5; the wide light 1.0), d the distance from a point PoolDrop in front of the lamp's foot in an ellipse GlowRadius * (2.0 wide, 1.7 tall): the
 ///    lamp lifts the dark around itself, most near the lamp, nothing far away.
 ///  - the warm light: one large additive sprite (Legacy Shaders/Particles/Additive, a 256 px exp falloff texture made at
 ///    runtime) over the table and the back row, peak GlowStrength * 0.22 of warm orange; plus a small additive halo
@@ -33,6 +33,13 @@ public class TableLampPreview : MonoBehaviour
     public static float Dark = 0.42f;             // the navy sheet's alpha at full night, far from the lamp
     public static float LampHeight = 0.9f;        // painted height in world units (the candy jar is about 0.73)
     public static float LampX = 0.16f;            // the middle of the gap between the hen and the jar
+    public static string Art = "lamp";            // picture set: "lamp" (the four drafts) or "mush" (the mushroom variants, 27 November)
+    public static float LampWidth = 0f;           // > 0: size the lamp by its painted width instead (mushrooms: 0.52, clear of the hen and the jar)
+    public static float LightYShare = -1f;        // > 0: the light's height as a share of the painted height (else the table below)
+    public static float Falloff = 1.5f;           // pool = exp(-Falloff d^2): smaller = flatter, the light reaches further
+    public static float PoolDrop = 0f;            // the pool's centre this far in front of (below) the lamp's foot, world units
+    public static float WarmPeak = 0.22f;
+    public static float HaloPeak = 0.35f;         // the small additive halo round the shade (mushrooms 0.12, so the cap keeps its colour)         // the additive warm light at the pool's centre (times GlowStrength)
     public static string ArtDir = "/Users/betzthebest/Desktop/Sept/Store/lamp_2026-11-26/";
 
     // the light's height in each painting, as a share of the painted height from the bottom (shade, flame or glass)
@@ -68,18 +75,27 @@ public class TableLampPreview : MonoBehaviour
         for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) if (px[y * w + x].a >= 128) { if (lo < 0) lo = y; hi = y; break; }
         for (var y = 0; y < h; y++) { var solid = false; for (var x = 0; x < w; x++) if (px[y * w + x].a >= 230) { solid = true; break; } if (solid) { solidRow = y; break; } }
         top = hi;
-        var ppu = ppuOverride > 0f ? ppuOverride : Mathf.Max(1, hi - solidRow) / LampHeight;   // ON and emit use OFF's scale
+        var x0 = w; var x1 = -1;
+        for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) if (px[y * w + x].a >= 128) { if (x < x0) x0 = x; if (x > x1) x1 = x; }
+        var ppu = ppuOverride > 0f ? ppuOverride
+            : LampWidth > 0f ? Mathf.Max(1, x1 - x0) / LampWidth
+            : Mathf.Max(1, hi - solidRow) / LampHeight;   // ON and emit use OFF's scale
+        paintedHeight = Mathf.Max(1, hi - solidRow) / ppu;
         return Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0f), ppu);
     }
+
+    private float paintedHeight;
 
     private void Build()
     {
         foreach (Transform c in transform) Destroy(c.gameObject);
         int solid, top;
-        off = Load($"lamp_{Design}_off.png", out solid, out top);
+        off = Load($"{Art}_{Design}_off.png", out solid, out top);
         var ppu = off.pixelsPerUnit;
-        on = Load($"lamp_{Design}_on.png", out _, out _, ppu);
-        emitSprite = Load($"lamp_{Design}_emit.png", out _, out _, ppu);
+        var h = paintedHeight;
+        on = Load($"{Art}_{Design}_on.png", out _, out _, ppu);
+        emitSprite = Load($"{Art}_{Design}_emit.png", out _, out _, ppu);
+        paintedHeight = h;
 
         // the back row's line: the flower pot's painted bottom (as TableBackRowAlign.Snap uses)
         var decor = GameObject.Find("TableDecor");
@@ -87,10 +103,11 @@ public class TableLampPreview : MonoBehaviour
         var potSr = pot != null ? pot.GetComponent<SpriteRenderer>() : null;
         lineY = potSr != null ? TableBackRowAlign.VisibleBottom(potSr) : -0.25f;
         var pos = new Vector3(LampX, lineY - solid / ppu, -0.02f);
-        lightY = lineY + LampHeight * LightY[Design];
+        lightY = lineY + paintedHeight * (LightYShare > 0f ? LightYShare : LightY[Mathf.Clamp(Design, 0, LightY.Length - 1)]);
 
         lamp = MakeSr("Lamp", off, "FoodItems", 0, pos);
-        emit = MakeSr("LampEmit", emitSprite, "FoodItems", 0, pos + new Vector3(0, 0, -0.01f));
+        // the glowing part over the additive light (order 62), so the shade keeps its painted colour (27 November: mint and lilac caps washed to cream)
+        emit = MakeSr("LampEmit", emitSprite, "FoodItems", 62, pos + new Vector3(0, 0, -0.01f));
 
         // the navy sheet over the cloth
         var cloth = GameObject.Find("TableCloth"); var front = GameObject.Find("ClothFront");
@@ -102,14 +119,15 @@ public class TableLampPreview : MonoBehaviour
         // the warm light (additive), over the back row and the table
         var add = new Material(Shader.Find("Legacy Shaders/Particles/Additive"));
         add.SetColor("_TintColor", new Color(0.5f, 0.5f, 0.5f, 0.5f));   // the shader doubles: 0.5 = colour as given
-        glow = MakeSr("WarmGlow", GlowSprite(), "FoodItems", 60, new Vector3(LampX, lineY - 0.2f, 0f));
+        glow = MakeSr("WarmGlow", GlowSprite(Falloff), "FoodItems", 60, new Vector3(LampX, PoolY, 0f));
         glow.sharedMaterial = add;
-        halo = MakeSr("ShadeHalo", GlowSprite(), "FoodItems", 61, new Vector3(LampX, lightY, 0f));
+        halo = MakeSr("ShadeHalo", GlowSprite(1.5f), "FoodItems", 61, new Vector3(LampX, lightY, 0f));
         halo.sharedMaterial = add;
         built = Design; builtR = -1f;
     }
 
     private Bounds sheetBounds;
+    private static float Key => GlowRadius * 1000f + GlowStrength + Falloff * 0.01f + PoolDrop * 0.0001f;
 
     private SpriteRenderer MakeSr(string name, Sprite s, string layer, int order, Vector3 pos)
     {
@@ -118,28 +136,30 @@ public class TableLampPreview : MonoBehaviour
         return sr;
     }
 
-    private static Sprite glowSprite;
-    private static Sprite GlowSprite()
+    private static readonly Dictionary<float, Sprite> glowSprites = new Dictionary<float, Sprite>();
+    private static Sprite GlowSprite(float falloff)
     {
-        if (glowSprite != null) return glowSprite;
+        if (glowSprites.TryGetValue(falloff, out var cached) && cached != null) return cached;
         const int n = 256; var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
         var px = new Color[n * n];
         for (var y = 0; y < n; y++) for (var x = 0; x < n; x++)
         {
             var dx = (x + 0.5f - n / 2f) / (n / 2f) * 2.2f; var dy = (y + 0.5f - n / 2f) / (n / 2f) * 2.2f;   // the texture spans +-2.2 radii
-            var g = Mathf.Exp(-1.5f * (dx * dx + dy * dy)); g *= Mathf.Clamp01((2.2f - Mathf.Sqrt(dx * dx + dy * dy)) * 2f);
+            var g = Mathf.Exp(-falloff * (dx * dx + dy * dy)); g *= Mathf.Clamp01((2.2f - Mathf.Sqrt(dx * dx + dy * dy)) * 2f);
             px[y * n + x] = new Color(1f, 1f, 1f, g);   // additive: adds colour * alpha * g
         }
         tex.SetPixels(px); tex.Apply();
-        glowSprite = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n / 2f / 2.2f);   // 1 world unit = 1 radius
-        return glowSprite;
+        var sp = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n / 2f / 2.2f);   // 1 world unit = 1 radius
+        glowSprites[falloff] = sp;
+        return sp;
     }
 
+    private float PoolY => lineY - 0.2f - PoolDrop;
     private float Rx => 2.0f * GlowRadius;
     private float Ry => 1.7f * GlowRadius;
     private float Pool(float x, float y)
     {
-        var dx = (x - LampX) / Rx; var dy = (y - (lineY - 0.2f)) / Ry; return Mathf.Exp(-1.5f * (dx * dx + dy * dy));
+        var dx = (x - LampX) / Rx; var dy = (y - PoolY) / Ry; return Mathf.Exp(-Falloff * (dx * dx + dy * dy));
     }
     private float Lift(float x, float y) => Mathf.Clamp01(0.85f * GlowStrength * Pool(x, y));
 
@@ -157,14 +177,14 @@ public class TableLampPreview : MonoBehaviour
         sheet.transform.localScale = new Vector3(b.size.x / b.size.y, 1f, 1f);
         glow.transform.localScale = new Vector3(Rx, Ry, 1f);
         halo.transform.localScale = new Vector3(0.32f, 0.32f, 1f);
-        builtR = GlowRadius * 1000f + GlowStrength;
+        builtR = Key;
     }
 
     private void Update()
     {
         if (Design == 0 || lamp == null) return;
         if (built != Design) Build();
-        if (builtR != GlowRadius * 1000f + GlowStrength) BuildSheet();
+        if (builtR != Key) BuildSheet();
         var s = DayNightTint.CurrentStage;
         var k = s <= 1f ? 0.4f * s : 0.4f + 0.6f * Mathf.Clamp01(s - 1f);
         var lit = k > 0.3f;
@@ -173,8 +193,8 @@ public class TableLampPreview : MonoBehaviour
         emit.enabled = lit;
         sheet.color = new Color(1f, 1f, 1f, Dark * k);
         var g = lit ? k : 0f;
-        glow.color = new Color(Warm.r, Warm.g, Warm.b, Mathf.Clamp01(0.22f * GlowStrength * g));
-        halo.color = new Color(1f, 0.8f, 0.45f, 0.35f * g);
+        glow.color = new Color(Warm.r, Warm.g, Warm.b, Mathf.Clamp01(WarmPeak * GlowStrength * g));
+        halo.color = new Color(1f, 0.8f, 0.45f, HaloPeak * g);
 
         // night tint on everything standing on the table, by the dark left at its foot
         if (Time.unscaledTime >= nextScan)
