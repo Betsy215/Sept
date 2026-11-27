@@ -141,6 +141,8 @@ public class LevelManager : MonoBehaviour
 
         // Evening and night over the last two customers; draws only on the background image
         if (orderSystem != null) gameObject.AddComponent<DayNightTint>().Begin(orderSystem);
+        // the table dims a little at night, and the night light (star shop) hangs over it (owner, 27 November 2026)
+        if (orderSystem != null) gameObject.AddComponent<NightLight>();
 
         // REMOVED: StartGameplayMusic(); - Music now handled by phase transitions
     }

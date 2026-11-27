@@ -64,6 +64,7 @@ public class ShopManager : MonoBehaviour
         EnsureStarCard(SessionManager.StarChefName, SessionManager.StarChefPrice, "Coming soon", Resources.Load<Sprite>("Cookies/Chef"), "Chef");   // locked for now (owner, 20 November 2026)
         EnsureStarCard(SessionManager.StarTableName, SessionManager.StarTablePrice, "Coming soon", Resources.Load<Sprite>("Cookies/StarTable"), "Dining table");   // locked for now (owner, 20 November 2026)
         EnsureKitchenUpgradeCard();   // 15 stars: the kitchen cooks faster (owner, 19 November 2026)
+        EnsureStarCard(NightLight.ItemName, NightLight.StarPrice, "A cosy glow for\nyour table at night", Resources.Load<Sprite>("Cookies/" + NightLight.ItemName), "Night Light");   // 3 stars (owner, 27 November 2026)
         EnsureCoinStarCard();    // one star for 999 coins (owner, 19 November 2026)
         EvenOutCharacterIcons();
         foreach (var card in GetAllShopItems()) ShopCookies.Dress(card);   // the cards' pictures as iced cookies (owner, 17 November 2026)
