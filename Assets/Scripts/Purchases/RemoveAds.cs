@@ -98,6 +98,22 @@ public class RemoveAdsStore : MonoBehaviour, IDetailedStoreListener
         UnityPurchasing.Initialize(this, builder);
     }
 
+    /// The store's price as the game's fonts can draw it. Delius and beachday have no ₱, ₫, ฿ (or ₹, ₩, ...) and no
+    /// fallback font, so such a sign showed as a box; those prices are written with the currency code instead
+    /// ("PHP 49", "THB 39", "VND 25,000"). $, €, £, ¥, Rp, RM and the rest stay exactly as the App Store sends them.
+    static string Drawable(ProductMetadata m)
+    {
+        var s = m.localizedPriceString.Replace('\u202F', ' ').Replace('\u2009', ' ');
+        foreach (char ch in s)
+        {
+            if (ch < 128 || "\u00A0€£¥".IndexOf(ch) >= 0) continue;
+            if (string.IsNullOrEmpty(m.isoCurrencyCode)) return s;
+            var v = m.localizedPrice;
+            return m.isoCurrencyCode + " " + v.ToString(v == decimal.Truncate(v) ? "#,0" : "#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+        }
+        return s;
+    }
+
     public void OnInitialized(IStoreController c, IExtensionProvider e)
     {
         controller = c; extensions = e; Ready = true; initializing = false;
@@ -105,12 +121,12 @@ public class RemoveAdsStore : MonoBehaviour, IDetailedStoreListener
         ProductAvailable = p != null && p.availableToPurchase;
         if (p != null)
         {
-            if (!string.IsNullOrEmpty(p.metadata?.localizedPriceString)) LocalizedPrice = p.metadata.localizedPriceString;
+            if (!string.IsNullOrEmpty(p.metadata?.localizedPriceString)) LocalizedPrice = Drawable(p.metadata);
             if (p.hasReceipt) RemoveAds.SetOwned();     // bought on another device, or before a reinstall
         }
         var s = c.products.WithID(StarPack.ProductId);
         StarPackAvailable = s != null && s.availableToPurchase;
-        if (s != null && !string.IsNullOrEmpty(s.metadata?.localizedPriceString)) StarPackPrice = s.metadata.localizedPriceString;
+        if (s != null && !string.IsNullOrEmpty(s.metadata?.localizedPriceString)) StarPackPrice = Drawable(s.metadata);
         Debug.Log("[RemoveAds] store ready, price " + LocalizedPrice + ", star pack " + (StarPackAvailable ? StarPackPrice : "not offered"));
     }
 
