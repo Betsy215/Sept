@@ -869,6 +869,35 @@ public class LevelManager : MonoBehaviour
         // Every day, the last one included, ends with Next (to the map) and Restart
         if (nextLevelButton != null) nextLevelButton.gameObject.SetActive(true);
         if (levelCompleteRestartButton != null) levelCompleteRestartButton.gameObject.SetActive(true);
+        TryAgainLabel();
+    }
+
+    /// "Try again" under the day-end card's replay cookie (owner, 27 November 2026: "for the replay button, change text to
+    /// try again"; a new player had started whole new games to retry day 1, not seeing that the cookie replays the day).
+    /// In the journal's hand, cream with a brown edge so it reads on the dimmed table; tapping it replays too.
+    private TextMeshProUGUI tryAgainLabel;
+    private void TryAgainLabel()
+    {
+        if (tryAgainLabel != null || levelCompleteRestartButton == null) return;
+        var b = (RectTransform)levelCompleteRestartButton.transform;
+        var sx = Mathf.Abs(b.localScale.x); var sy = Mathf.Abs(b.localScale.y);
+        // straight under the cookie's middle, in the button's parent space (anchors do not matter for localPosition)
+        var under = b.localPosition + new Vector3(b.rect.center.x * sx, b.rect.center.y * sy - b.rect.height * sy / 2f - 4f, 0f);
+        TextMeshProUGUI Word(string name, Color colour, Vector3 at)
+        {
+            var go = new GameObject(name, typeof(RectTransform)); go.transform.SetParent(b.parent, false);
+            var t = go.AddComponent<TextMeshProUGUI>();
+            var hand = Resources.Load<TMP_FontAsset>("Fonts & Materials/Delius SDF"); if (hand != null) t.font = hand;
+            t.text = "Try again"; t.fontSize = 52f; t.fontStyle = FontStyles.Bold; t.color = colour;
+            t.alignment = TextAlignmentOptions.Top; t.enableWordWrapping = false; t.raycastTarget = false;
+            var rt = (RectTransform)go.transform; rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f); rt.pivot = new Vector2(0.5f, 1f);
+            rt.sizeDelta = new Vector2(380f, 72f); rt.localPosition = at;
+            return t;
+        }
+        // a soft brown copy behind, so the cream words read on the dimmed table
+        Word("TryAgainShadow", new Color(0.30f, 0.16f, 0.07f, 0.85f), under + new Vector3(3f, -4f, 0f));
+        tryAgainLabel = Word("TryAgainLabel", new Color(1f, 0.96f, 0.86f), under);
+        tryAgainLabel.raycastTarget = true; tryAgainLabel.gameObject.AddComponent<Button>().onClick.AddListener(() => levelCompleteRestartButton.onClick.Invoke());
     }
 
     public void LoadNextLevel()
