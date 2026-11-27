@@ -316,7 +316,9 @@ public class OrderSystem : MonoBehaviour
     public float customerCanvasPadPx = 40f;
     private void PlaceBubbleOverCustomer(SlotVisuals s, CustomerController customer)
     {
-        if (customer == null || maxConcurrentOrders <= 1) return;
+        // with one customer too (owner, 27 November 2026: "in tutorial, show the bubble the regular way instead of far away
+        // from customer"): the small glass bubble no longer reached down to the customer from the scene's fixed place
+        if (customer == null) return;
         var b = s.bubble1 != null && s.bubble1.activeSelf ? s.bubble1 : s.bubble2 != null && s.bubble2.activeSelf ? s.bubble2 : s.bubble4;
         var cr = customer.GetComponentInChildren<SpriteRenderer>();
         if (b == null || cr == null) return;
