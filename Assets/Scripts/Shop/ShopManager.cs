@@ -1093,9 +1093,17 @@ public class ShopManager : MonoBehaviour
         var iconT = go.transform.Find("ItemIcon"); var img = iconT != null ? iconT.GetComponent<Image>() : null;
         if (img != null && icon != null) img.sprite = icon;
         var priceT = go.transform.Find("PriceText"); var price = priceT != null ? priceT.GetComponent<TextMeshProUGUI>() : null;
-        if (price != null) price.text = RemoveAds.PriceText;
+        if (price != null) { price.text = RemoveAds.PriceText; FitStorePrice(price); }
         RemoveAds.Init();
         if (!popupNames.ContainsKey(RemoveAdsCardName)) popupNames[RemoveAdsCardName] = "Remove ads";
+    }
+
+    /// A store price in another currency ("VND 25,000") is longer than "$1.99" and wrapped onto two lines: one line,
+    /// shrunk to fit if needed (27 November 2026).
+    static void FitStorePrice(TextMeshProUGUI price)
+    {
+        price.enableWordWrapping = false;
+        price.fontSizeMax = price.fontSize; price.fontSizeMin = price.fontSize * 0.6f; price.enableAutoSizing = true;
     }
 
     // --- Stars for money (owner, 15 November 2026): one pack of 15 stars on the $ tab, a card cloned like Remove Ads ---
@@ -1121,7 +1129,7 @@ public class ShopManager : MonoBehaviour
         var iconT = go.transform.Find("ItemIcon"); var img = iconT != null ? iconT.GetComponent<Image>() : null;
         if (img != null && icon != null) img.sprite = icon;
         var priceT = go.transform.Find("PriceText"); var price = priceT != null ? priceT.GetComponent<TextMeshProUGUI>() : null;
-        if (price != null) price.text = StarPack.PriceText;
+        if (price != null) { price.text = StarPack.PriceText; FitStorePrice(price); }
         RemoveAds.Init();
         if (!popupNames.ContainsKey(StarPackCardName)) popupNames[StarPackCardName] = StarPack.Stars + " " + TextStars.Token;
         starPackShown = StarPack.Available;
