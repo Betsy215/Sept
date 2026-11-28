@@ -75,7 +75,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="grid">
 <div class="who p1"><h3>You</h3>
 <p><b>To look at:</b> the café sets with Grandma seated; six chapter 3 window views; the yoga snowman animation; the chapter 3 gingham cloths and room, round 2; Q&amp;A (price question); why the glasses are still wrong (Q&amp;A); Boy neck fixed; the Night Light, built.</p>
-<p><b>To pick:</b> the Businessman's glasses A or B (top of Current); a chapter 3 window view (1 to 6); the cookie bulb icon (use it or wait for the AI ones); the chapter 3 gingham (A, B or C), the room and a yoga idea; the C chapter colours (A, B or C).</p>
+<p><b>To pick:</b> a chapter 3 window view (1 to 6); the cookie bulb icon (use it or wait for the AI ones); the chapter 3 gingham (A, B or C), the room and a yoga idea; the C chapter colours (A, B or C).</p>
 <p><b>To look at:</b> all customers with the S2 edge in their three outfits (top of Current).</p>
 </div>
 <div class="who p2"><h3>Me</h3>
@@ -93,7 +93,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <div class="card">
 <p style="margin-top:0"><b>What goes in the next test build?</b> <small>27 November</small></p>
 <p><b>Done and on main (goes in):</b> everything in MVP, plus the Night Light (3-star shop item, light per chapter, night slightly dimmer, in the tutorials), the customer clean-ups (Yoga, Girl, Chef, Boy neck), the tablecloth far edge, the price-sign fix.</p>
-<p><b>Almost done (can go in today):</b> 1. the Businessman's glasses: A or B ready, waiting for your pick; 2. the cookie hanging bulb icon: in (on main). The build waits for your go.</p>
+<p><b>Almost done (can go in today):</b> 1. the Businessman's glasses: A in (on main); 2. the cookie hanging bulb icon: in (on main). The build waits for your go.</p>
 <p><b>Not in this build:</b> everything for chapter 3 (room, cloths, window, yoga, café sets, winter outfits), the beach outfits.</p>
 <p>Version 2026.11.27 build 0. The Night Light has only been tried in the editor so far, so this build is where to check it on a phone.</p>
 </div>
@@ -118,9 +118,9 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 <h2 id="current"><span class="n">3</span>Current</h2>
 <p class="sub" style="margin:0 0 8px">26 November: ads, the shop page, and what is left of the game review.</p>
 <div class="card">
-<p style="margin-top:0"><b>Businessman glasses, done properly: pick A or B.</b> <small>My earlier arc was on a circle about 1.4× too big and off-centre. Now the lens is measured from his original (a round lens, slightly taller than wide, 2 px dark-brown rim) and the rim beyond his face follows that exact circle, solid like the left lens. No dark edge inside the lens any more; the outline runs only around the outside. <b>A</b> clear glass; <b>B</b> a faint pale glass tint with a small shine. Each block: original | now | A | B at 1×, 2×, 4× and 6× pixels, light then dark; all six of his pictures. On a dark background the rim beyond his face is as dark as the left lens, so it shows only softly there.</small></p>
+<p style="margin-top:0"><b>Businessman glasses: fixed, A (clear glass) is in the game (on main).</b> In-game picture follows. <small>My earlier arc was on a circle about 1.4× too big and off-centre. Now the lens is measured from his original (a round lens, slightly taller than wide, 2 px dark-brown rim) and the rim beyond his face follows that exact circle, solid like the left lens. No dark edge inside the lens any more; the outline runs only around the outside. <b>A</b> clear glass; <b>B</b> a faint pale glass tint with a small shine. Each block: original | now | A | B at 1×, 2×, 4× and 6× pixels, light then dark; all six of his pictures. On a dark background the rim beyond his face is as dark as the left lens, so it shows only softly there.</small></p>
 <figure style="margin:8px 0"><img src="rev25/bm_glass_fix.jpg" alt="Businessman glasses: original, now, A clear, B tint, at four zooms on light and dark, all six files" style="width:100%;max-height:none;height:auto"><figcaption>original | now | A | B</figcaption></figure>
-<ul class="checks"><li><label><input type="checkbox" data-id="cur.bmglass.A"> <span>A clear</span></label></li><li><label><input type="checkbox" data-id="cur.bmglass.B"> <span>B pale tint</span></label></li><li><label><input type="checkbox" data-id="cur.bmglass.more"> <span>Still wrong (tell me)</span></label></li></ul>
+<ul class="checks"><li><label><input type="checkbox" data-id="cur.bmglass.seen"> <span>Seen, remove this</span></label></li><li><label><input type="checkbox" data-id="cur.bmglass.B"> <span>Use B (pale tint) instead</span></label></li><li><label><input type="checkbox" data-id="cur.bmglass.more"> <span>Still wrong (tell me)</span></label></li></ul>
 </div>
 <div class="card">
 <p style="margin-top:0"><b>Chapter 3 café sets: chairs behind the tables, facing us; Grandma sitting with cocoa.</b> <small>Back centre a table for two with two chairs side by side behind it; front left and right a round table with one chair behind. Grandma sits at the back table facing us, both hands round a lilac mug (her own face; the sitting body is Gemini's, ChatGPT was out of images). In the game she stays visible between the standing customers. Small things: a few chipped light edges at the chair and table feet, her head sits a little over the scarf.</small></p>
@@ -218,6 +218,7 @@ h3 small{font-weight:600;color:var(--soft);font-size:13px;margin-left:6px}
 
 <h2 id="mvp"><span class="n">4</span>MVP</h2>
 <ol>
+<li>Businessman glasses: the right lens frame on its original circle, clear glass; Night Light icon: the cookie hanging bulb.</li>
 <li>Shop prices draw in every currency: ฿ and ₫ as "THB 39", "VND 25,000"; one line on the card; blue in the popup.</li>
 <li>Tablecloth far edge a: the cloth rolls away at the far edge, chapters 1 and 2 (3aa7b508).</li>
 <li>Remove Ads prices set 27 Nov (live now): US$1.99 base; Philippines ₱49, Indonesia Rp15,000, Vietnam 25,000₫, Malaysia RM4.90, Thailand ฿39; other countries Apple's automatic conversion.</li>
